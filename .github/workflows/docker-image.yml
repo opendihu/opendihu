@@ -1,0 +1,17 @@
+name: CI
+on:
+  push:
+    branches: [ github-actions ]
+jobs:
+  container-test-job:
+    runs-on: ubuntu-latest
+    container: maierbn/opendihu:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          path: opendihu
+      - name: Run tests
+        working-directory: opendihu
+        run: python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE USE_MPI_ALLOC=TRUE -j1   # only use 1 core because of limited RAM
+      
