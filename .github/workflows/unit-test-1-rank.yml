@@ -11,9 +11,9 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: opendihu
-      - name: Check directory exists
+      - name: Build tests
         working-directory: opendihu/testing/unit_testing
-        run: ls
+        run: scons
       - name: Run tests
         working-directory: opendihu/testing/unit_testing/build_release
         run: ./1_rank_tests  
