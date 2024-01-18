@@ -10,7 +10,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          path: opendihu
+          path: opendihu         
+      - name: Check directory exists
+        working-directory: opendihu/testing/unit_testing
+        run: ls
       - name: Run tests
-        working-directory: opendihu/testing/unit_tests/build_release
+        working-directory: opendihu/testing/unit_testing/build_release
         run: ./2_rank_tests  

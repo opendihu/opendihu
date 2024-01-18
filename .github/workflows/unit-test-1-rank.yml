@@ -12,9 +12,9 @@ jobs:
         with:
           path: opendihu
       - name: Check directory exists
-        working-directory: opendihu/testing/unit_tests
+        working-directory: opendihu/testing/unit_testing
         run: ls
       - name: Run tests
-        working-directory: opendihu/testing/unit_tests/build_release
+        working-directory: opendihu/testing/unit_testing/build_release
         run: ./1_rank_tests  
   
