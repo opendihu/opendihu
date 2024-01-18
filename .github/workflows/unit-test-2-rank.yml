@@ -13,7 +13,7 @@ jobs:
           path: opendihu         
       - name: Build tests
         working-directory: opendihu/testing/unit_testing
-        run: mkorn && sr
+        run: python3 ../../dependencies/scons/scons.py BUILD_TYPE=RELEASE
       - name: Run tests
         working-directory: opendihu/testing/unit_testing/build_release
         run: ./2_rank_tests  
