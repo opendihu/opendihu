@@ -1,0 +1,16 @@
+name: unit-tests-6-rank
+on:
+  push:
+    branches: [ github-actions ]
+jobs:
+  container-test-job:
+    runs-on: ubuntu-latest
+    container: maierbn/opendihu:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          path: opendihu
+      - name: Run tests
+        working-directory: opendihu/testing/unit_tests/build_release
+        run: ./2_rank_tests  

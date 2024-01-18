@@ -1,0 +1,17 @@
+name: unit-tests-1-rank
+on:
+  push:
+    branches: [ github-actions ]
+jobs:
+  container-test-job:
+    runs-on: ubuntu-latest
+    container: maierbn/opendihu:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          path: opendihu
+      - name: Run tests
+        working-directory: opendihu/testing/unit_tests/build_release
+        run: ./1_rank_tests  wir haben verstande# only use 1 core because of limited RAM
+      

@@ -1,4 +1,4 @@
-name: CI
+name: unit-tests-2-rank
 on:
   push:
     branches: [ github-actions ]
@@ -12,6 +12,5 @@ jobs:
         with:
           path: opendihu
       - name: Run tests
-        working-directory: opendihu
-        run: python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE USE_MPI_ALLOC=TRUE -j1   # only use 1 core because of limited RAM
-      
+        working-directory: opendihu/testing/unit_tests/build_release
+        run: ./2_rank_tests  
