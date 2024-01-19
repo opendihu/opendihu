@@ -5,9 +5,10 @@ on:
 jobs:
   container-test-job:
     runs-on: ubuntu-latest
-    container: maierbn/opendihu:latest
-    environment: 
-      FOO: bar
+    container: 
+      image: maierbn/opendihu:latest
+      environment: 
+        FOO: bar
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
