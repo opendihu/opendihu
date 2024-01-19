@@ -1,6 +1,6 @@
 name: unit-tests-2-rank
 on:
-  push:
+  pull_request:
     branches: [ github-actions ]
 jobs:
   container-test-job:
