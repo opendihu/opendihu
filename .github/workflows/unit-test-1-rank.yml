@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     container: 
       image: maierbn/opendihu:latest
-      environment: 
+      env: 
         FOO: bar
     steps:
       - name: Checkout repository
