@@ -1,9 +1,8 @@
 > [!IMPORTANT]  
-> This is the new repository for OpenDiHu!
-> Until the Version 1.4 release, OpenDiHu was hosted in another [repository](https://github.com/maierbn/opendihu), which is no longer maintained. 
+> This is the new repository for OpenDiHu! Here you will find OpenDiHu's latest version. 
+> 
+> The [original repository](https://github.com/maierbn/opendihu) of OpenDiHu is no longer mainained. There you can find versions 1.0, 1.1, 1.2, 1.3 and 1.4 of OpenDiHu. 
 
-> [!WARNING]
-> The CI pipeline for this repository is still under construction. The same goes for the documentation website, which is up-to-date until the Version 1.4 release. 
 
 # Overview
 OpenDiHu is a software framework to solve 1D, 2D, and 3D multi-physics problems in parallel with the Finite Element Method.

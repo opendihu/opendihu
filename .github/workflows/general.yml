@@ -1,7 +1,5 @@
 name: general
-on:
-  push:
-    branches: [ github-actions ]
+on: push
 jobs:
   container-test-job:
     runs-on: ubuntu-latest
