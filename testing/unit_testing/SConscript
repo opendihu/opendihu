@@ -79,8 +79,12 @@ if not env['no_tests']:
     AlwaysBuild(test)
 
   # ---- parallel unit tests: 6 ranks ----
-  if True:
-    src_files = ['src/6_ranks/numberings.cpp', 'src/6_ranks/diffusion.cpp', 'src/6_ranks/partitioned_petsc_vec.cpp', 'src/6_ranks/main.cpp', 'src/utility.cpp']
+  if True and not env["circle_ci"]:
+    src_files = ['src/6_ranks/numberings.cpp', 
+                 'src/6_ranks/diffusion.cpp', 
+                 'src/6_ranks/partitioned_petsc_vec.cpp', 
+                 'src/6_ranks/main.cpp', 
+                 'src/utility.cpp']
     #src_files = ['src/6_ranks/partitioned_petsc_vec.cpp', 'src/6_ranks/main.cpp', 'src/utility.cpp']
 
     program = env.Program('6_ranks_tests', source=src_files)
