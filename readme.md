@@ -9,7 +9,7 @@ OpenDiHu is a software framework to solve 1D, 2D, and 3D multi-physics problems 
 It is used in the domain of skeletal muscle simulations: Electrophysiology, contraction, neuro-chemo-electro-mechanics.
 Design goals are usability, performance and extensibility.
 
-The software is developed at [SGS](https://www.ipvs.uni-stuttgart.de/abteilungen/sgs/index.html?__locale=en) and [IANS](https://www.ians.uni-stuttgart.de/institute/) at the [University of Stuttgart](https://www.uni-stuttgart.de/en/index.html).
+The software is developed at [SGS](https://www.ipvs.uni-stuttgart.de/departments/sgs/) and [IANS](https://www.ians.uni-stuttgart.de/institute/) at the [University of Stuttgart](https://www.uni-stuttgart.de/en/index.html).
 
 Link to Documentation: https://opendihu.readthedocs.io/en/latest/
 
