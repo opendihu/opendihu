@@ -81,7 +81,7 @@ if not env['no_tests']:
     AlwaysBuild(test)
 
   # ---- parallel unit tests: 6 ranks ----
-  if True and not env["circle_ci"]:
+  if True:
     src_files = ['src/6_ranks/numberings.cpp', 
                  'src/6_ranks/diffusion.cpp', 
                  'src/6_ranks/partitioned_petsc_vec.cpp', 
@@ -113,8 +113,6 @@ if not env['no_tests']:
 
   if env["BUILD_TYPE"] == "release" and not env["circle_ci"]:
     Depends(test, ['test_examples', 'test1', 'test2', 'test6'])
-  if env["circle_ci"]:
-    Depends(test, ['test1', 'test2'])
   else:
     Depends(test, ['test1', 'test2', 'test6'])
 
