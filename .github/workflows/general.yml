@@ -11,5 +11,5 @@ jobs:
           path: opendihu
       - name: Build 
         working-directory: opendihu
-        run: python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE USE_MPI_ALLOC=TRUE circle_ci=TRUE -j1
+        run: python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE circle_ci=TRUE
 

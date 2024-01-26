@@ -117,6 +117,8 @@ if not env['no_tests']:
 
   if env["BUILD_TYPE"] == "release" and not env["circle_ci"]:
     Depends(test, ['test_examples', 'test1', 'test2', 'test6'])
+  if env["circle_ci"]:
+    Depends(test, ['test1', 'test2'])
   else:
     Depends(test, ['test1', 'test2', 'test6'])
 
