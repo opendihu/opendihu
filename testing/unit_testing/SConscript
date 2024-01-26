@@ -94,10 +94,10 @@ if not env['no_tests']:
     # add command that runs the tests after build
     if env["circle_ci"]:
       test = env.Command(target = 'test6', source = './6_ranks_tests', action = 
-      'cd testing/unit_testing/'+variant_directory+' && mpirun -n 6 --allow-run-as-root -quiet ./6_ranks_tests || [ -f "SUCCESS6" ]')
+      'cd testing/unit_testing/'+variant_directory+' && mpirun -n 6 --oversubscribe --allow-run-as-root -quiet ./6_ranks_tests || [ -f "SUCCESS6" ]')
     else:
       test = env.Command(target = 'test6', source = './6_ranks_tests', action = 
-      'cd testing/unit_testing/'+variant_directory+' && mpirun -n 6 --oversubscribe --allow-run-as-root -quiet ./6_ranks_tests || [ -f "SUCCESS6" ]')
+      'cd testing/unit_testing/'+variant_directory+' && mpirun -n 6 --allow-run-as-root -quiet ./6_ranks_tests || [ -f "SUCCESS6" ]')
 
     AlwaysBuild(test)
 
