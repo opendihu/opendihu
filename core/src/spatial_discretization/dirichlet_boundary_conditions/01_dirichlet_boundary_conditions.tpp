@@ -86,7 +86,7 @@ initializeGhostElements()
       }
     }
 
-    for (const std::pair<int,std::vector<global_no_t>> &nonBoundaryConditionDofs : nonBoundaryConditionDofsOfRankGlobalPetsc)
+    for (const std::pair<const int,std::vector<global_no_t>> &nonBoundaryConditionDofs : nonBoundaryConditionDofsOfRankGlobalPetsc)
     {
       // create new ghost element
       GhostElement ghostElement;
@@ -143,7 +143,7 @@ initializeGhostElements()
   std::vector<int> localMemory(nRanks);
 
   // put number of ghost elements to the corresponding processes
-  for (const std::pair<int,std::vector<GhostElement>> &ghostElement : foreignGhostElements_)
+  for (const std::pair<const int,std::vector<GhostElement>> &ghostElement : foreignGhostElements_)
   {
     int foreignRankNo = ghostElement.first;
     int nGhostElements = ghostElement.second.size();

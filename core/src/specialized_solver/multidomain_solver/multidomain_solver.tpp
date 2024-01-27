@@ -394,8 +394,9 @@ initializeLinearSolver()
   PetscErrorCode ierr;
   ierr = KSPSetOperators(*this->linearSolver_->ksp(), this->singleSystemMatrix_, this->singlePreconditionerMatrix_); CHKERRV(ierr);
 
-  if (this->alternativeLinearSolver_)
+  if (this->alternativeLinearSolver_) {
     ierr = KSPSetOperators(*this->alternativeLinearSolver_->ksp(), this->singleSystemMatrix_, this->singlePreconditionerMatrix_); CHKERRV(ierr);
+  }
 
   // set block information in preconditioner for block jacobi and node positions for MG preconditioners
   setInformationToPreconditioner();

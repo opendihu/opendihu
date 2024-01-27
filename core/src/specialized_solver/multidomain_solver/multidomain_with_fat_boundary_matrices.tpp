@@ -542,8 +542,9 @@ setEntriesBoundaryMatrices(Mat originalMatrixB, Mat originalMatrixC, Mat matrixB
           PetscInt columnNoGlobalMuscle = getDofNoGlobalMuscleFromDofNoGlobalFat(columnNoGlobal);
 
           // add the matrix entry of C to matrix B
-          if (enableFatComputation_)
+          if (enableFatComputation_) {
             ierr = MatSetValue(matrixB, rowNoGlobalMuscle, columnNoGlobalMuscle, value, ADD_VALUES); CHKERRV(ierr);
+          }
         }
         else 
         {
