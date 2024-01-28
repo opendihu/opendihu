@@ -418,7 +418,7 @@ addBoundaryConditions(std::vector<ElementWithNodes> &newBoundaryConditionElement
 
         // loop over elemental dof indices and add all entries
         // std::vector<std::pair<int,ValueType>> elementalDofIndex;
-        for (const std::pair<int,ValueType> &newElementalDofIndex : newElementWithNodes.elementalDofIndex)
+        for (const std::pair<const int,ValueType> &newElementalDofIndex : newElementWithNodes.elementalDofIndex)
         {
           bool elementalDofIndexFound = false;
 
@@ -474,7 +474,7 @@ addBoundaryConditions(std::vector<ElementWithNodes> &newBoundaryConditionElement
     int elementNoLocal = elementWithNodes.elementNoLocal;
 
     // loop over elemental dof indices
-    for (const std::pair<int,ValueType> &elementalDofIndexAndValues : elementWithNodes.elementalDofIndex)
+    for (const std::pair<const int,ValueType> &elementalDofIndexAndValues : elementWithNodes.elementalDofIndex)
     {
       int elementalDofIndex = elementalDofIndexAndValues.first;
       ValueType boundaryConditionValue = elementalDofIndexAndValues.second;

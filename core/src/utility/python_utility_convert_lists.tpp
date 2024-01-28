@@ -841,7 +841,7 @@ struct PythonUtility::convertToPython<std::map<KeyType,ValueType>>
   static PyObject *get(const std::map<KeyType,ValueType> &value)
   {
     PyObject *result = PyDict_New();
-    for (const std::pair<KeyType,ValueType> &entry : value)
+    for (const std::pair<const KeyType,ValueType> &entry : value)
     {
       PyObject *key = PythonUtility::convertToPython<KeyType>::get(entry.first);
       PyObject *value = PythonUtility::convertToPython<ValueType>::get(entry.second);

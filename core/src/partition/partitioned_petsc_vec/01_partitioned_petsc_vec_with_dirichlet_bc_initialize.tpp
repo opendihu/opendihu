@@ -182,7 +182,7 @@ initialize(int offsetInGlobalNumberingPerRank)
   std::vector<int> localMemory(nRanks);
 
   // fill send buffer in localMemory
-  for (const std::pair<int,DofsRequest> &requestDofsFromRank : requestDofsFromRanks_)
+  for (const std::pair<const int,DofsRequest> &requestDofsFromRank : requestDofsFromRanks_)
   {
     int foreignRankNo = requestDofsFromRank.first;
     int nRequestedDofs = requestDofsFromRank.second.dofNosLocal.size();
@@ -192,7 +192,7 @@ initialize(int offsetInGlobalNumberingPerRank)
 
 #ifdef USE_MPI_RMA   // implementation using RMA, not very stable with OpenMPI
   // put number of requested ghost dofs to the corresponding processes
-  for (const std::pair<int,DofsRequest> &requestDofsFromRank : requestDofsFromRanks_)
+  for (const std::pair<const int,DofsRequest> &requestDofsFromRank : requestDofsFromRanks_)
   {
     int foreignRankNo = requestDofsFromRank.first;
 
@@ -306,7 +306,7 @@ initialize(int offsetInGlobalNumberingPerRank)
   if (VLOG_IS_ON(1))
   {
     std::stringstream s;
-    for (const std::pair<int,DofsRequest> &requestDofsFromRank : requestDofsFromRanks_)
+    for (const std::pair<const int,DofsRequest> &requestDofsFromRank : requestDofsFromRanks_)
     {
       s << "[rank " << requestDofsFromRank.first << ", dofNosGlobalPetsc: " << requestDofsFromRank.second.dofNosGlobalPetsc
         << ", dofNosLocal: " << requestDofsFromRank.second.dofNosLocal << "], ";
@@ -372,7 +372,7 @@ initialize(int offsetInGlobalNumberingPerRank)
   std::vector<std::vector<double>> requestedDofsGlobalPetscReceiveBufferValues(requestDofsFromRanks_.size());
 
   i = 0;
-  for (const std::pair<int,DofsRequest> &requestDofsFromRank : requestDofsFromRanks_)
+  for (const std::pair<const int,DofsRequest> &requestDofsFromRank : requestDofsFromRanks_)
   {
     int foreignRankNo = requestDofsFromRank.first;
     int nRequestedDofs = requestDofsFromRank.second.dofNosLocal.size();
@@ -412,7 +412,7 @@ initialize(int offsetInGlobalNumberingPerRank)
   i = 0;
   nonBcGhostDofNosGlobal_.clear();
   VLOG(1) << "n recv buffer values: " << requestedDofsGlobalPetscReceiveBufferValues.size();
-  for (const std::pair<int,DofsRequest> &requestDofsFromRank : requestDofsFromRanks_)
+  for (const std::pair<const int,DofsRequest> &requestDofsFromRank : requestDofsFromRanks_)
   {
     int nRequestedDofs = requestDofsFromRank.second.dofNosLocal.size();
 
@@ -504,7 +504,7 @@ communicateBoundaryConditionGhostValues()
   std::vector<std::vector<double>> requestedDofsGlobalPetscReceiveBufferValues(requestDofsFromRanks_.size());
 
   i = 0;
-  for (const std::pair<int,DofsRequest> &requestDofsFromRank : requestDofsFromRanks_)
+  for (const std::pair<const int,DofsRequest> &requestDofsFromRank : requestDofsFromRanks_)
   {
     int foreignRankNo = requestDofsFromRank.first;
     int nRequestedDofs = requestDofsFromRank.second.dofNosLocal.size();
@@ -530,7 +530,7 @@ communicateBoundaryConditionGhostValues()
   // copy received dofs to new vector
   // and copy received values
   i = 0;
-  for (const std::pair<int,DofsRequest> &requestDofsFromRank : requestDofsFromRanks_)
+  for (const std::pair<const int,DofsRequest> &requestDofsFromRank : requestDofsFromRanks_)
   {
     int nRequestedDofs = requestDofsFromRank.second.dofNosLocal.size();
 

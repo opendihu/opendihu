@@ -39,7 +39,7 @@ initialize(const std::map<int,std::vector<int>> remoteDofNosAtRanks, std::vector
 
   // output remoteDofNosAtRanks
 #ifndef NDEBUG
-  for (const std::pair<int,std::vector<int>> &remoteDofNosAtRank : remoteDofNosAtRanks)
+  for (const std::pair<const int,std::vector<int>> &remoteDofNosAtRank : remoteDofNosAtRanks)
   {
     VLOG(1) << "to rank " << remoteDofNosAtRank.first << " send: ";
     for (const int &remoteDofNo : remoteDofNosAtRank.second)
@@ -50,7 +50,7 @@ initialize(const std::map<int,std::vector<int>> remoteDofNosAtRanks, std::vector
 #endif
 
   // put number of value to send to remote rank
-  for (const std::pair<int,std::vector<int>> &remoteDofNosAtRank : remoteDofNosAtRanks)
+  for (const std::pair<const int,std::vector<int>> &remoteDofNosAtRank : remoteDofNosAtRanks)
   {
     int foreignRankNo = remoteDofNosAtRank.first;
     int nNodesToSend = remoteDofNosAtRank.second.size();
@@ -174,7 +174,7 @@ communicate(const std::map<int,std::vector<double>> valuesToSendToRanks, std::ve
   std::vector<MPI_Request> receiveRequests;
 
   // iterate over rank to send values to
-  for (const std::pair<int,std::vector<double>> &valuesToSendToRank : valuesToSendToRanks)
+  for (const std::pair<const int,std::vector<double>> &valuesToSendToRank : valuesToSendToRanks)
   {
     int foreignRankNo = valuesToSendToRank.first;
     int nToRank = valuesToSendToRank.second.size();
