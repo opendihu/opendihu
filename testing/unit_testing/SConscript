@@ -81,7 +81,7 @@ if not env['no_tests']:
     AlwaysBuild(test)
 
   # ---- parallel unit tests: 6 ranks ----
-  if True and not env["circle_ci"]:
+  if True:
     src_files = ['src/6_ranks/numberings.cpp', 
                  'src/6_ranks/diffusion.cpp', 
                  'src/6_ranks/partitioned_petsc_vec.cpp', 
@@ -92,7 +92,11 @@ if not env['no_tests']:
     program = env.Program('6_ranks_tests', source=src_files)
 
     # add command that runs the tests after build
-    test = env.Command(target = 'test6', source = './6_ranks_tests', action = 
+    if env["circle_ci"]:
+      test = env.Command(target = 'test6', source = './6_ranks_tests', action = 
+      'cd testing/unit_testing/'+variant_directory+' && mpirun -n 6 --oversubscribe --allow-run-as-root -quiet ./6_ranks_tests || [ -f "SUCCESS6" ]')
+    else:
+      test = env.Command(target = 'test6', source = './6_ranks_tests', action = 
       'cd testing/unit_testing/'+variant_directory+' && mpirun -n 6 --allow-run-as-root -quiet ./6_ranks_tests || [ -f "SUCCESS6" ]')
 
     AlwaysBuild(test)
