@@ -115,10 +115,8 @@ if not env['no_tests']:
     [ -f "SUCCESS6" ] && (echo unit tests on 6 ranks SUCCEDED) || (echo unit tests on 6 ranks FAILED) && \
     (([ ! -f "SUCCESS1" ] || [ ! -f "SUCCESS2" ] || [ ! -f "SUCCESS6" ]) && exit 1) || exit 0')
 
-  if env["BUILD_TYPE"] == "release" and not env["circle_ci"]:
+  if env["BUILD_TYPE"] == "release":
     Depends(test, ['test_examples', 'test1', 'test2', 'test6'])
-  if env["circle_ci"]:
-    Depends(test, ['test1', 'test2'])
   else:
     Depends(test, ['test1', 'test2', 'test6'])
 
