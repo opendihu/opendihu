@@ -366,14 +366,6 @@ It contains the source code for the build system.
 The main implementation is in `Package.py`, all other classes inherit from this class. 
 Usually you find the file that is named like the dependency, e.g., `LAPACK.py` for Lapack or `PETSc.py` for PETSc.
 
-If you change something here, you need to rebuild the python `egg` file of `scons-config`:
-
-.. code-block:: bash
-
-  cd <your-opendihu-path>
-  cd dependencies/scons-config
-  . install_manually.sh
-
 Then, rerun the installation from the `opendihu` directory with `scons`.
 
 If you don't succeed, ask for help and send us the `config.log` file.
