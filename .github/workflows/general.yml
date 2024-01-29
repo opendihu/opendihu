@@ -1,5 +1,5 @@
 name: general
-on: push, pull_request
+on: [push, pull_request]
 jobs:
   container-test-job:
     runs-on: ubuntu-latest
