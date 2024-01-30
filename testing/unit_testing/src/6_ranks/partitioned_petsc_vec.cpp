@@ -11,8 +11,6 @@
 #include "partition/partitioned_petsc_vec/01_partitioned_petsc_vec_with_dirichlet_bc.h"
 #include "spatial_discretization/dirichlet_boundary_conditions/01_dirichlet_boundary_conditions.h"
 
-// this test case usually works, but not on the circle ci testcase
-#ifndef HAVE_CIRCLE_CI
 TEST(PartitionedPetscVecTest, Test)
 {
   // explicit functionSpace with node positions
@@ -211,5 +209,3 @@ config = {
 
   nFails += ::testing::Test::HasFailure();
 }
-
-#endif
