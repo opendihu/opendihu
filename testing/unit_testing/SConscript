@@ -93,7 +93,7 @@ if not env['no_tests']:
 
     # add command that runs the tests after build
     test = env.Command(target = 'test6', source = './6_ranks_tests', action = 
-      'cd testing/unit_testing/'+variant_directory+' && mpirun -n 6 ---oversubscrive -allow-run-as-root -quiet ./6_ranks_tests || [ -f "SUCCESS6" ]') #Use oversubscribe because of resource limitations in GitHub Actions
+      'cd testing/unit_testing/'+variant_directory+' && mpirun -n 6 --oversubscribe -allow-run-as-root -quiet ./6_ranks_tests || [ -f "SUCCESS6" ]') #Use oversubscribe because of resource limitations in GitHub Actions
 
     AlwaysBuild(test)
 
