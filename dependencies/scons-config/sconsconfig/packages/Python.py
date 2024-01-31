@@ -60,18 +60,6 @@ class Python(Package):
     self.check_options(env)
     res = super(Python, self).check(ctx)
 
-    # if installation failed with the current command, retry with different options 
-    if not res[0]:
-      ctx.Log('Retry with python 3.6\n')
-      ctx.Message('Retry with python 3.6 ...')
-
-      # python 3.6
-      self.libs = ["python3.6m"]
-      self.download_url = 'https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz'
-
-      self.check_options(env)
-      res = super(Python, self).check(ctx)
-
     self.check_required(res[0], ctx)
     ctx.Result(res[0])
     return res[0]
