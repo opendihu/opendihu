@@ -11,5 +11,5 @@ jobs:
           path: opendihu
       - name: Build 
         working-directory: opendihu
-        run: python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE
+        run: python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE no_examples = TRUE
 
