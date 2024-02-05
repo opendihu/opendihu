@@ -203,7 +203,7 @@ If you like, you can copy the following aliases to your `~/.bashrc` or `~/.bash_
 Then, the following commands can be used for the build:
 
   * ``scons BUILD_TYPE=release`` or ``scons BUILD_TYPE=r`` or ``scons`` or ``s``:
-    Build the file in the current directory in `release` mode, either to be used in the OpenDiHu main directory to build the core library or in any example directory. You can optionally build all examples by adding the flag ``compile_examples=TRUE``.
+    Build the file in the current directory in `release` mode, either to be used in the OpenDiHu main directory to build the core library or in any example directory. You can optionally add the flags ``no_examples=TRUE`` and/or ``no_tests=TRUE``.
   * ``scons BUILD_TYPE=debug`` or ``scons BUILD_TYPE=d`` or ``sd``: Build `debug` target in current directory.
   * ``sdd``: To be used from within a `build_debug` directory. Go one directory up, build the example in `debug` target and go back to the original directory. This alias is equivalent to ``cd ..; scons BUILD_TYPE=debug; cd -``.
   * ``srr``: To be used from within a `build_release` directory. Go one directory up, build the example in `release` target and go back to the original directory. This alias is equivalent to ``cd ..; scons BUILD_TYPE=release; cd -``.
