@@ -1,0 +1,17 @@
+#! /bin/bash
+# Call this script to format every c[pp] & h[pp] file
+# in the parent directory using clang-format
+
+# Format C/C++
+
+find core -iname *.h -o -iname *.cpp -o -iname *.tpp | xargs clang-format -i
+echo -e "\n Done formatting core files"
+
+find examples -iname *.h -o -iname *.cpp -o -iname *.tpp | xargs clang-format -i
+echo -e "\n Done formatting examples files"
+
+find testing -iname *.h -o -iname *.cpp -o -iname *.tpp | xargs clang-format -i
+echo -e "\n Done formatting testing files"
+
+find scripts -iname *.h -o -iname *.cpp -o -iname *.tpp | xargs clang-format -i
+echo -e "\n Done formatting scripts files"
