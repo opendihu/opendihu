@@ -477,8 +477,8 @@ SolverStructureVisualizer::DiagramGenerator::generateFinalDiagram() {
 
   std::map<int, int>
       internalConnectionLineColumns; //< key = index into
-                                     //internalConnectionLinesAll_, value =
-                                     //columnNo of that line
+                                     // internalConnectionLinesAll_, value =
+                                     // columnNo of that line
   for (int currentLineNo = 0; currentLineNo < nLinesDiagram; currentLineNo++) {
     // determine active connection lines
     std::set<int> activeLinesIndices;

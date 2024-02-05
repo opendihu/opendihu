@@ -74,9 +74,9 @@ protected:
   bool initialized_; //< if initialize() was already called
   std::string name_; //< the name given to this time stepping scheme
   double prefactor_; //< a factor with which the result is multiplied when the
-                     //data is used in a splitting scheme
+                     // data is used in a splitting scheme
   bool checkForNanInf_; //< if the solution should be checked for nan and inf
-                        //values
+                        // values
 };
 
 } // namespace TimeSteppingScheme

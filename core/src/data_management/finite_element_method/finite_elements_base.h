@@ -122,32 +122,33 @@ private:
 
   std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>>
       stiffnessMatrixWithoutBc_; //< the standard stiffness matrix of the finite
-                                 //element formulation, without Dirichlet
-                                 //boundary conditions applied
+                                 // element formulation, without Dirichlet
+                                 // boundary conditions applied
   std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>>
       stiffnessMatrix_; //< the standard stiffness matrix of the finite element
-                        //formulation, dofs with Dirichlet BCs will get the
-                        //columns and rows cleared and diagonal set to 1.
+                        // formulation, dofs with Dirichlet BCs will get the
+                        // columns and rows cleared and diagonal set to 1.
   std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>>
       massMatrix_; //< the standard mass matrix, which is a matrix that, applied
-                   //to a rhs vector f, gives the rhs vector in weak formulation
+                   // to a rhs vector f, gives the rhs vector in weak
+                   // formulation
   std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>>
       inverseLumpedMassMatrix_; //< the inverse lumped mass matrix that has only
-                                //entries on the diagonal, they are the
-                                //reciprocal of the row sums of the mass matrix
+                                // entries on the diagonal, they are the
+                                // reciprocal of the row sums of the mass matrix
 
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, nComponents>>
       rhs_; //< the rhs vector in weak formulation
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, nComponents>>
       negativeRhsNeumannBoundaryConditions_; //< the rhs vector in weak
-                                             //formulation, only contribution
-                                             //from neumann boundary conditions
+                                             // formulation, only contribution
+                                             // from neumann boundary conditions
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, nComponents>>
       solution_; //< the vector of the quantity of interest, e.g. displacement
 
   std::shared_ptr<SlotConnectorDataType>
       slotConnectorData_; //< the object that holds all slot connector
-                          //components of field variables
+                          // components of field variables
 };
 
 } // namespace Data

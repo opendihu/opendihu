@@ -37,11 +37,11 @@ protected:
       snesMaxFunctionEvaluations_;   //< maximum number of function evaluations
   int snesRebuildJacobianFrequency_; //< how often the jacobian will be rebuild,
                                      //-1 indicates NEVER rebuild, 1 means
-                                     //rebuild every time the Jacobian is
-                                     //computed within a single nonlinear solve,
-                                     //2 means every second time the Jacobian is
-                                     //built etc. -2 means rebuild at next
-                                     //chance but then never again
+                                     // rebuild every time the Jacobian is
+                                     // computed within a single nonlinear
+                                     // solve, 2 means every second time the
+                                     // Jacobian is built etc. -2 means rebuild
+                                     // at next chance but then never again
   std::string snesLineSearchType_;   //< linesearch type of the snes object
                                      //(SNESLineSearchType)
 };

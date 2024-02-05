@@ -42,25 +42,25 @@ private:
       direction_; //< direction of the diffusion tensor
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 1>>
       spatiallyVaryingPrefactor_; //< spatially varying factor with which
-                                  //diffusion tensor will be multiplied
+                                  // diffusion tensor will be multiplied
   int multidomainNCompartments_;  //< if the diffusion tensor should be set as
                                   //(sigma_i + sigma_e) where sigma_i is
-                                  //multidomainNCompartments_*normal diffusion
-                                  //tensor from directions and sigma_e is in z
-                                  //direction
+                                  // multidomainNCompartments_*normal diffusion
+                                  // tensor from directions and sigma_e is in z
+                                  // direction
 
   SpatialParameter<
       FunctionSpaceType,
       MathUtility::Matrix<FunctionSpaceType::dim(), FunctionSpaceType::dim()>>
       diffusionTensor_; //< the diffusion/conductivity tensor, such that (1,0,0)
-                        //is the fiber direction
+                        // is the fiber direction
   SpatialParameter<
       FunctionSpaceType,
       MathUtility::Matrix<FunctionSpaceType::dim(), FunctionSpaceType::dim()>>
       additionalDiffusionTensor_; //< an additional diffusion tensor, in fiber
-                                  //direction
+                                  // direction
   bool useAdditionalDiffusionTensor_; //< if the additionalDiffusionTensor_
-                                      //should be added to diffusion tensor
+                                      // should be added to diffusion tensor
 };
 
 } // namespace Data

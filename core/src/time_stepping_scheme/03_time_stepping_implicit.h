@@ -68,20 +68,20 @@ protected:
       typename DiscretizableInTimeType::FunctionSpace,
       DiscretizableInTimeType::nComponents()>>
       dataImplicit_; //< a pointer to the data_ object but of type
-                     //Data::TimeSteppingImplicit
+                     // Data::TimeSteppingImplicit
   std::shared_ptr<Solver::Linear>
       linearSolver_;         //< the linear solver used for solving the system
   std::shared_ptr<KSP> ksp_; //< the ksp object of the linear solver
 
   double initializedTimeStepWidth_ =
       -1.0; //< the time step width that was used for the initialization, or
-            //negative if the step width has not been initialized
+            // negative if the step width has not been initialized
   double timeStepWidthRelativeTolerance_;  //< tolerance for the time step width
-                                           //to rebuild the system matrix and
-                                           //integrationMatrixRHS
+                                           // to rebuild the system matrix and
+                                           // integrationMatrixRHS
   std::string durationInitTimeStepLogKey_; //< log key for the duration of the
                                            //(re)initialization of the system
-                                           //matrix and integrationMatrixRHS
+                                           // matrix and integrationMatrixRHS
 };
 
 } // namespace TimeSteppingScheme

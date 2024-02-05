@@ -66,8 +66,8 @@ private:
 
   std::shared_ptr<FieldVariableType>
       boundaryConditionsRightHandSideSummand_; //< what needs to be added to rhs
-                                               //when dirichlet boundary
-                                               //conditions are applied
+                                               // when dirichlet boundary
+                                               // conditions are applied
   std::shared_ptr<FieldVariableType>
       systemRightHandSide_; //< the rhs vector of the implicit system
 
@@ -75,8 +75,8 @@ private:
       systemMatrix_; //< the system matrix for implicit time stepping
   std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>>
       integrationMatrixRightHandSide_; //< the integration matrix for the right
-                                       //hand side if required by the implicit
-                                       //time stepping
+                                       // hand side if required by the implicit
+                                       // time stepping
 };
 
 } // namespace Data

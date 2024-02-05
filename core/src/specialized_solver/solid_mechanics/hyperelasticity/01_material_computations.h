@@ -70,10 +70,10 @@ public:
       VecD<3, double_v_t> fiberDirection, //< [in] a0, direction of fibers
       Tensor2<3, double_v_t>
           &fictitiousPK2Stress, //< [in] Sbar, the fictitious 2nd
-                                //Piola-Kirchhoff stress tensor
+                                // Piola-Kirchhoff stress tensor
       Tensor2<3, double_v_t>
           &pk2StressIsochoric //< [in] S_iso, the isochoric part of the 2nd
-                              //Piola-Kirchhoff stress tensor
+                              // Piola-Kirchhoff stress tensor
   );
 
   //! compute δWint from given displacements, this is a wrapper to
@@ -205,14 +205,14 @@ protected:
       const double_v_t deformationGradientDeterminant, //< [in] J = det(F)
       VecD<3, double_v_t> fiberDirection, //< [in] a0, direction of fibers
       dof_no_v_t elementNoLocalv, //< [in] the current element nos (simd vector)
-                                  //with unused entries set to -1, needed only
-                                  //as mask which entries to discard
+                                  // with unused entries set to -1, needed only
+                                  // as mask which entries to discard
       Tensor2<3, double_v_t>
           &fictitiousPK2Stress, //< [out] Sbar, the fictitious 2nd
-                                //Piola-Kirchhoff stress tensor
+                                // Piola-Kirchhoff stress tensor
       Tensor2<3, double_v_t>
           &pk2StressIsochoric //< [out] S_iso, the isochoric part of the 2nd
-                              //Piola-Kirchhoff stress tensor
+                              // Piola-Kirchhoff stress tensor
   );
 
   //! compute the PK2 stress and the deformation gradient at every node and set
@@ -258,46 +258,47 @@ protected:
   // use variables from the base class, this avoids writing "this->" in front of
   // those members
   using Parent::displacementsFunctionSpace_; //< the function space with
-                                             //quadratic Lagrange basis
-                                             //functions, used for
-                                             //discretization of displacements
+                                             // quadratic Lagrange basis
+                                             // functions, used for
+                                             // discretization of displacements
   using Parent::pressureFunctionSpace_;      //< the function space with linear
-                                        //Lagrange basis functions, used for
-                                        //discretization of pressure
+                                        // Lagrange basis functions, used for
+                                        // discretization of pressure
 
   using Parent::solverVariableResidual_; //< PETSc Vec to store the residual,
-                                         //equal to
-                                         //combinedVecResidual_->valuesGlobal()
+                                         // equal to
+                                         // combinedVecResidual_->valuesGlobal()
   using Parent::solverVariableSolution_; //< PETSc Vec to store the solution,
-                                         //equal to
-                                         //combinedVecSolution_->valuesGlobal()
+                                         // equal to
+                                         // combinedVecSolution_->valuesGlobal()
 
   using Parent::
       combinedMatrixAdditionalNumericJacobian_; //< only used when both analytic
-                                                //and numeric jacobians are
-                                                //computed, then this holds the
-                                                //numeric jacobian
+                                                // and numeric jacobians are
+                                                // computed, then this holds the
+                                                // numeric jacobian
   using Parent::combinedMatrixJacobian_;        //< single jacobian matrix
   using Parent::combinedVecExternalVirtualWorkDead_; //< the Vec for the
-                                                     //external virtual work
-                                                     //part that does not change
-                                                     //with u, δW_ext,dead
+                                                     // external virtual work
+                                                     // part that does not
+                                                     // change with u,
+                                                     // δW_ext,dead
   using Parent::combinedVecResidual_; //< the Vec for the residual and result of
-                                      //the nonlinear function
+                                      // the nonlinear function
   using Parent::combinedVecSolution_; //< the Vec for the solution, combined
-                                      //means that ux,uy,uz and p components are
-                                      //combined in one vector
+                                      // means that ux,uy,uz and p components
+                                      // are combined in one vector
 
   using Parent::externalVirtualWorkDead_; //< the external virtual work
-                                          //resulting from the traction, this is
-                                          //a dead load, i.e. it does not change
-                                          //during deformation
+                                          // resulting from the traction, this
+                                          // is a dead load, i.e. it does not
+                                          // change during deformation
   using Parent::getString; //< function to get a string representation of the
-                           //values for debugging output
+                           // values for debugging output
   using Parent::setUVP;    //< function to copy the values of the vector x which
-                           //contains (u and p) or (u,v and p) values to
-                        //this->data_.displacements(), this->data_.velocities()
-                        //and this->data_.pressure();
+                           // contains (u and p) or (u,v and p) values to
+  // this->data_.displacements(), this->data_.velocities()
+  // and this->data_.pressure();
 };
 
 } // namespace SpatialDiscretization

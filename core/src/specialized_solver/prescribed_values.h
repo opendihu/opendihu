@@ -62,18 +62,18 @@ protected:
   void callCallbacks(int timeStepNo, double currentTime);
 
   Data data_; //< the data object that stores at least all field variables that
-              //should be output by output writers.
+              // should be output by output writers.
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writers
 
   std::vector<PyObject *> callbackFunctions1_; //< callback functions that set
-                                               //the values of field variable 1
+                                               // the values of field variable 1
   std::vector<PyObject *> callbackFunctions2_; //< callback functions that set
-                                               //the values of field variable 2
+                                               // the values of field variable 2
 
   PyObject
       *pyCallbackAdditionalParameter_; //< the last argument to the callback
-                                       //functions which is given by the
+                                       // functions which is given by the
                                        //"additionalArgument" setting
   PyObject *pyGlobalNaturalDofsList_;  //< python list of global dof nos
 };

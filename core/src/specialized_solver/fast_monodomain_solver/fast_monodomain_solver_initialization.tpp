@@ -56,9 +56,10 @@ void FastMonodomainSolverBase<nStates, nAlgebraics,
   // add this solver to the solvers diagram, which is an ASCII art
   // representation that will be created at the end of the simulation.
   DihuContext::solverStructureVisualizer()->addSolver(
-      "FastMonodomainSolver", true); // hasInternalConnectionToFirstNestedSolver=true
-                                     // (the last argument) means slot connector
-                                     // data is shared with the first subsolver
+      "FastMonodomainSolver",
+      true); // hasInternalConnectionToFirstNestedSolver=true
+             // (the last argument) means slot connector
+             // data is shared with the first subsolver
 
   // indicate in solverStructureVisualizer that now a child solver will be
   // initialized
@@ -498,8 +499,8 @@ void FastMonodomainSolverBase<
   double *parameterValues =
       cellmlAdapter.data()
           .parameterValues(); //< contains nAlgebraics parameters for all
-                              //instances, in struct of array ordering (p0inst0,
-                              //p0inst1, p0inst2,...)
+                              // instances, in struct of array ordering
+                              // (p0inst0, p0inst1, p0inst2,...)
 
   int nVcVectors =
       (nInstancesToCompute_ + Vc::double_v::size() - 1) / Vc::double_v::size();

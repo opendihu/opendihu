@@ -37,10 +37,10 @@ void HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
         VecD<3, double_v_t> fiberDirection, //< [in] a0, direction of fibers
         Tensor2<3, double_v_t>
             &fictitiousPK2Stress, //< [in] Sbar, the fictitious 2nd
-                                  //Piola-Kirchhoff stress tensor
+                                  // Piola-Kirchhoff stress tensor
         Tensor2<3, double_v_t>
             &pk2StressIsochoric //< [in] S_iso, the isochoric part of the 2nd
-                                //Piola-Kirchhoff stress tensor
+                                // Piola-Kirchhoff stress tensor
     ) {
   // note, this is implemented for double_v_t == double
 

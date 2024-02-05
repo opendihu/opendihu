@@ -56,14 +56,14 @@ protected:
   virtual void createPetscObjects() = 0;
 
   DihuContext context_; //< the context object with python config of the class
-                        //that uses this data object
+                        // that uses this data object
   std::shared_ptr<FunctionSpaceType>
       functionSpace_; //< the mesh/function space on which the data in this
-                      //object is defined
+                      // object is defined
 
   std::shared_ptr<Partition::RankSubset>
       rankSubset_; //< a subset of MPI ranks that will operate on the data of
-                   //this object
+                   // this object
 
   bool initialized_ = false;
 };

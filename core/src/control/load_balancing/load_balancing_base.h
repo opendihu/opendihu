@@ -58,7 +58,7 @@ protected:
   virtual void rebalance() = 0;
 
   TimeStepping timeSteppingScheme_; //< the underlying timestepping method that
-                                    //is controlled by this class, e.g. Heun
+                                    // is controlled by this class, e.g. Heun
 };
 
 } // namespace Control

@@ -122,12 +122,12 @@ void CellmlAdapterBase<nStates_, nAlgebraics_,
   // add explicitely defined parameters that replace algebraics and constants
   std::vector<int>
       parametersUsedAsAlgebraic; //< explicitely defined parameters that will be
-                                 //copied to algebraics, this vector contains
-                                 //the indices of the algebraic array
+                                 // copied to algebraics, this vector contains
+                                 // the indices of the algebraic array
   std::vector<int>
       parametersUsedAsConstant; //< explicitely defined parameters that will be
-                                //copied to constants, this vector contains the
-                                //indices of the constants
+                                // copied to constants, this vector contains the
+                                // indices of the constants
 
   std::vector<int> &statesForTransfer = data_.statesForTransfer();
   std::vector<int> &algebraicsForTransfer = data_.algebraicsForTransfer();

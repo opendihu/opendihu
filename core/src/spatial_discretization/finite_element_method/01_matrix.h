@@ -161,7 +161,7 @@ public:
 
 extern bool
     outputAssemble3DStiffnessMatrix_; //< if the message about assembly of the
-                                      //3D stiffness matrix was printed
+                                      // 3D stiffness matrix was printed
 
 } // namespace SpatialDiscretization
 

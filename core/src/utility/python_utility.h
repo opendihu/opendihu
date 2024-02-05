@@ -222,11 +222,11 @@ public:
 private:
   static PyObject
       *itemList; //< list of items (key,value) for dictionary,  to use for
-                 //getOptionDictBegin, getOptionDictEnd, getOptionDictNext
+                 // getOptionDictBegin, getOptionDictEnd, getOptionDictNext
   static int itemListIndex; //< current index of itemList
 
   static PyObject *list; //< python list to use for getOptionListBegin,
-                         //getOptionListEnd, getOptionListNext
+                         // getOptionListEnd, getOptionListNext
   static int listIndex;  //< current index for list
 };
 

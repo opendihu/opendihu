@@ -133,18 +133,18 @@ private:
   std::shared_ptr<VectorFieldVariableType> velocities_; //< v, the velocities
   std::shared_ptr<StressFieldVariableType>
       activePK2Stress_; //< the symmetric PK2 stress tensor of the active
-                        //contribution in Voigt notation
+                        // contribution in Voigt notation
   std::shared_ptr<StressFieldVariableType>
       pK2Stress_; //< the symmetric PK2 stress tensor in Voigt notation
   std::shared_ptr<VectorFieldVariableType>
       fiberDirection_; //< direction of fibers at current point
   std::shared_ptr<VectorFieldVariableType>
       materialTraction_; //< traction in reference configuration for top and
-                         //bottom faces (z-, z+)
+                         // bottom faces (z-, z+)
 
   std::shared_ptr<SlotConnectorDataType>
       slotConnectorData_; //< the object that stores all components of field
-                          //variables that will be transferred to other solvers
+                          // variables that will be transferred to other solvers
 
   // define all needed field variables or other data
 };

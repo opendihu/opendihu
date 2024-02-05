@@ -63,9 +63,10 @@ public:
           FieldVariable::FieldVariable<FunctionSpaceType, 1>>, // solution
       std::shared_ptr<
           FieldVariable::FieldVariable<FunctionSpaceType, 1>>, // rhs
-      std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 1>>, // rhs
-                                                                           // neumann
-                                                                           // bc
+      std::shared_ptr<
+          FieldVariable::FieldVariable<FunctionSpaceType, 1>>, // rhs
+                                                               // neumann
+                                                               // bc
       std::shared_ptr<
           FieldVariable::FieldVariable<FunctionSpaceType, 3>>, // gradient field
       std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType,
@@ -86,10 +87,10 @@ protected:
       gradient_; //< the gradient field of the Laplace flow solution
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 1>>
       dirichletValues_; //< values of dirichlet BC or -1, where no dirichlet BC
-                        //is prescribed
+                        // is prescribed
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 1>>
       jacobianConditionNumber_; //< condition number of the jacobian at each
-                                //point
+                                // point
 
   std::shared_ptr<FiniteElementMethodType>
       problem_; //< the DiscretizableInTime object that is used for FE solution

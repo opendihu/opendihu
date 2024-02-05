@@ -11,13 +11,13 @@
 struct Material : Equation::SolidMechanics::HyperelasticityBase {
   static constexpr bool isIncompressible =
       false; //< if the formulation is incompressible, then,
-             //strainEnergyDensityFunctionVolumetric will not be considered
+             // strainEnergyDensityFunctionVolumetric will not be considered
   static constexpr bool usesFiberDirection =
       false; //< if the decoupled form uses the 4th or 5th invariants, Ibar4,
-             //Ibar5, this means it is an anisotropic material
+             // Ibar5, this means it is an anisotropic material
   static constexpr bool usesActiveStress =
       false; //< if the value of an active stress term will be added to the
-             //stress, this is only possible with MuscleContractionSolver
+             // stress, this is only possible with MuscleContractionSolver
 
   // material parameters that will be set by the python settings,
   // these constants can be used in all the strain energy functions below
@@ -27,7 +27,7 @@ struct Material : Equation::SolidMechanics::HyperelasticityBase {
 
   static constexpr int nMaterialParameters =
       3; //< number of material parameters, this has to match the number of
-         //defined material parameters
+         // defined material parameters
 
   //! The isochoric part of the decoupled strain energy function,
   //! Ψ_iso(Ibar1,Ibar2,Ibar4,Ibar5), in terms of the reduced invariants.

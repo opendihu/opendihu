@@ -173,7 +173,7 @@ void MultidomainWithFatSolver<
 
   std::vector<std::vector<global_no_t>> sharedNodesFatOnRanks(
       nRanks); //< for every rank the shared nodes in the fat mesh global petsc
-               //numbering
+               // numbering
   std::vector<std::vector<PetscInt>> sharedDofsGlobalOnRanks(nRanks);
 
   // store mapping between fat and muscle boundary dof nos for own rank

@@ -73,31 +73,31 @@ protected:
   TimeStepping2 timeStepping2_; //< the object to be discretized
 
   Data data_; //< data object that stores the slotConnectorData_ object which is
-              //a tuple of both slotConnectorData objects of the timestepping
-              //schemes
+              // a tuple of both slotConnectorData objects of the timestepping
+              // schemes
 
   int timeStepOutputInterval_; //< time step number and time is output every
-                               //timeStepOutputInterval_ time steps
+                               // timeStepOutputInterval_ time steps
   std::string schemeName_;     //< the key as in the contig, i.e. "Strang" or
                            //"Godunov" or "Coupling", only for debugging outputs
   std::string description_; //< a description that will be printed in debugging
-                            //output and in the solver structure visualization
+                            // output and in the solver structure visualization
   std::string
       logKeyTimeStepping1AdvanceTimeSpan_; //< key for logging of the duration
-                                           //of the advanceTimeSpan() call of
-                                           //timeStepping1
+                                           // of the advanceTimeSpan() call of
+                                           // timeStepping1
   std::string
       logKeyTimeStepping2AdvanceTimeSpan_; //< key for logging of the duration
-                                           //of the advanceTimeSpan() call of
-                                           //timeStepping2
+                                           // of the advanceTimeSpan() call of
+                                           // timeStepping2
   std::string logKeyTransfer12_; //< key for logging of the duration of data
-                                 //transfer from timestepping 1 to 2
+                                 // transfer from timestepping 1 to 2
   std::string logKeyTransfer21_; //< key for logging of the duration of data
-                                 //transfer from timestepping 2 to 1
+                                 // transfer from timestepping 2 to 1
 
   std::shared_ptr<SlotsConnection>
       slotsConnection_; //< information regarding the mapping between the data
-                        //slots of the two terms
+                        // slots of the two terms
 
   bool initialized_; //< if initialize() was already called
 };

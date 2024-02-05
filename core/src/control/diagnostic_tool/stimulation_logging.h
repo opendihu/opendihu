@@ -26,7 +26,7 @@ public:
   struct StimulationLogEntry {
     double time;     //< time when stimulation starts
     int motorUnitNo; //< motor unit number that is stimulated, set to -1 if not
-                     //set
+                     // set
     int fiberNo;     //< fiber number , set to -1 if not set
   };
 
@@ -35,7 +35,7 @@ private:
 
   static std::vector<StimulationLogEntry>
       logEntries_; //< all entries that will be written from the current MPI
-                   //rank to the log file
+                   // rank to the log file
 };
 
 //! output operator for StimulationLogEntry

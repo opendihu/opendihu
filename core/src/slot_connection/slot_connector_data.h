@@ -13,10 +13,10 @@ template <typename FunctionSpaceType, int nComponents>
 struct ComponentOfFieldVariable {
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, nComponents>>
       values; //< a field variable containing the payload data that is to be
-              //exchangend to another solver
+              // exchangend to another solver
   int componentNo; //< the component of values that is relevant, only this
-                   //component out of the potentially multi-component field
-                   //variable in values will be transferred.
+                   // component out of the potentially multi-component field
+                   // variable in values will be transferred.
 
   //! constructor
   ComponentOfFieldVariable(
@@ -53,17 +53,17 @@ template <typename FunctionSpaceType, int nComponents1, int nComponents2 = 1>
 struct SlotConnectorData {
   std::vector<ComponentOfFieldVariable<FunctionSpaceType, nComponents1>>
       variable1; //< vector of indications of components of field variables, the
-                 //field variables have all the same number of components
+                 // field variables have all the same number of components
   std::vector<ComponentOfFieldVariable<FunctionSpaceType, nComponents2>>
       variable2; //< second vector with different number of components for the
-                 //field variables
+                 // field variables
 
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
       geometryField = nullptr; //< geometry field to be transferred if set
 
   std::vector<std::string>
       slotNames; //< names for all slots of variable1 and variable2, used for
-                 //connecting slots by their name, not number
+                 // connecting slots by their name, not number
 
   //! define types of the two possible field variables
   typedef FieldVariable::FieldVariable<FunctionSpaceType, nComponents1>

@@ -60,7 +60,7 @@ protected:
   std::shared_ptr<SpatialDiscretization::DirichletBoundaryConditions<
       FunctionSpace, DiscretizableInTimeType::nComponents()>>
       dirichletBoundaryConditions_; //< object that stores Dirichlet boundary
-                                    //condition values
+                                    // condition values
 };
 
 template <typename DiscretizableInTimeType>

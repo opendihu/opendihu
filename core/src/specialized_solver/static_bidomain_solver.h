@@ -75,31 +75,31 @@ protected:
   void debugDumpData();
 
   DihuContext context_; //< object that contains the python config for the
-                        //current context and the global singletons meshManager
-                        //and solverManager
+                        // current context and the global singletons meshManager
+                        // and solverManager
   Data data_; //< the data object of the multidomain solver which stores all
-              //field variables and matrices
+              // field variables and matrices
 
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writer
 
   FiniteElementMethodPotentialFlow
       finiteElementMethodPotentialFlow_; //< the finite element object that is
-                                         //used for the Laplace problem of the
-                                         //potential flow, needed for the fiber
-                                         //directions
+                                         // used for the Laplace problem of the
+                                         // potential flow, needed for the fiber
+                                         // directions
   FiniteElementMethodDiffusion
       finiteElementMethodDiffusionTransmembrane_; //< the finite element object
-                                                  //that is used for the
-                                                  //diffusion with diffusion
-                                                  //tensor sigma
+                                                  // that is used for the
+                                                  // diffusion with diffusion
+                                                  // tensor sigma
   FiniteElementMethodDiffusion
       finiteElementMethodDiffusionExtracellular_; //< the finite element object
-                                                  //that is used for the
-                                                  //diffusion with diffusion
-                                                  //tensor (sigma_i + sigma_e),
-                                                  //bottom right block of system
-                                                  //matrix
+                                                  // that is used for the
+                                                  // diffusion with diffusion
+                                                  // tensor (sigma_i + sigma_e),
+                                                  // bottom right block of
+                                                  // system matrix
 
   std::shared_ptr<Solver::Linear>
       linearSolver_; //< the linear solver used for solving the system
@@ -107,14 +107,14 @@ protected:
       rankSubset_; //< the rankSubset for all involved ranks
 
   std::string durationLogKey_; //< key with with the duration of the computation
-                               //is written to the performance measurement log
+                               // is written to the performance measurement log
 
   bool initialized_;              //< if this object was already initialized
   PythonConfig specificSettings_; //< python object containing the value of the
-                                  //python config dict with corresponding key
+                                  // python config dict with corresponding key
   double endTime_;                //< end time of current time step
   bool initialGuessNonzero_; //< if the initial guess for the linear solver is
-                             //set to the previous solution
+                             // set to the previous solution
 };
 
 } // namespace TimeSteppingScheme

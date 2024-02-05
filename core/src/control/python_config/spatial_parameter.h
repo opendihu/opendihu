@@ -51,12 +51,12 @@ public:
 
 protected:
   std::vector<int> valueIndices_; //< for each elementNoLocal the index into
-                                  //values of the parameter
+                                  // values of the parameter
   std::vector<ValueType> values_; //< all stored parameter values, to which
-                                  //element they belong is given by valueNo
+                                  // element they belong is given by valueNo
 
   bool inputMeshIsGlobal_; //< if the input is given for all global element
-                           //numbers
+                           // numbers
 };
 
 /* actual class*/

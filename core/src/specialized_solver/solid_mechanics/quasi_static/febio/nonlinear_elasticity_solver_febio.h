@@ -88,15 +88,15 @@ protected:
   void communicateNodeValues(std::vector<double> &nodePositionValuesGlobal);
 
   DihuContext context_; //< object that contains the python config for the
-                        //current context and the global singletons meshManager
-                        //and solverManager
+                        // current context and the global singletons meshManager
+                        // and solverManager
 
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writer
   Data data_;               //< data object
 
   std::string durationLogKey_; //< key with with the duration of the computation
-                               //is written to the performance measurement log
+                               // is written to the performance measurement log
   std::string solverName_;     //< the name of the config, i.e.
                                //"NonlinearElasticitySolverFebio" or
                                //"QuasiStaticNonlinearElasticitySolverFebio"
@@ -107,10 +107,10 @@ protected:
   std::vector<element_no_t>
       tractionElementNos_;        //< elements on which to apply traction
   PythonConfig specificSettings_; //< python object containing the value of the
-                                  //python config dict with corresponding key
+                                  // python config dict with corresponding key
   double activationFactor_;       //< factor with which to multiply activation
   std::vector<double> materialParameters_; //< the material parameters c0, c1
-                                           //and k for Mooney-Rivlin material
+                                           // and k for Mooney-Rivlin material
 
   double endTime_;   //< end time of current time step
   bool initialized_; //< if initialize() was already called

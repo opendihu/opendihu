@@ -82,7 +82,7 @@ protected:
     enum { variableName, tree, otherCode, commented_out } type;
 
     std::string code; //< if type=variableName, code can be STATES, RATES or
-                      //ALGEBRAIC, if type=code it is normal code
+                      // ALGEBRAIC, if type=code it is normal code
     int arrayIndex;   //< the array index of the state or rate or algebraic
 
     std::vector<code_expression_t>
@@ -131,55 +131,55 @@ protected:
   void generateSingleInstanceCode();
 
   int nInstances_; //< number of instances of the CellML problem. Usually it is
-                   //the number of mesh nodes when a mesh is used. When running
-                   //in parallel this is the local number of instances without
-                   //ghosts.
+                   // the number of mesh nodes when a mesh is used. When running
+                   // in parallel this is the local number of instances without
+                   // ghosts.
   int nParameters_ = 0; //< number of parameters (=CellML name "known") in one
-                        //instance of the CellML problem
+                        // instance of the CellML problem
 
   unsigned int nConstants_ = 0; //< number of entries in the "CONSTANTS" array
   unsigned int nStates_;        //< number of states as given in initialize
   unsigned int nAlgebraics_;    //< number of algebraics as given in initialize
   unsigned int nAlgebraicsInSource_ =
       0; //< number of algebraic values (=CellML name "wanted") in one instance
-         //of the CellML problem, as detected from the source file
+         // of the CellML problem, as detected from the source file
 
   std::string compilerCommand_; //< compiler command that should be used to
-                                //compile the created source file
+                                // compile the created source file
   std::string
       additionalCompileFlags_;   //< additional compile flags that depend on the
-                                 //optimizationType, e.g. -fopenmp for "openmp"
+                                 // optimizationType, e.g. -fopenmp for "openmp"
   std::string sourceFileSuffix_; //< suffix to use for the source file, e.g.
                                  //".c" or ".cpp"
 
   std::vector<int>
       parametersUsedAsAlgebraic_; //< explicitely defined parameters that will
-                                  //be copied to algebraics, this vector
-                                  //contains the indices of the algebraic array
+                                  // be copied to algebraics, this vector
+                                  // contains the indices of the algebraic array
   std::vector<int>
       parametersUsedAsConstant_; //< explicitely defined parameters that will be
-                                 //copied to constants, this vector contains the
-                                 //indices of the constants
+                                 // copied to constants, this vector contains
+                                 // the indices of the constants
 
   std::vector<std::string> stateNames_; //< the names for the states as given in
-                                        //the input source file
+                                        // the input source file
   std::vector<std::string> algebraicNames_; //< the names for the algebraics as
-                                            //given in the input source file
+                                            // given in the input source file
   std::vector<std::string> constantNames_;  //< the names of the constants
 
   std::string sourceFilename_; //< file name of provided CellML source file
   std::string
       singleInstanceCode_; //< c++ code that computes the rhs for a single
-                           //instance, as in the original source file. This is
-                           //needed to compute the equilibrium of states.
+                           // instance, as in the original source file. This is
+                           // needed to compute the equilibrium of states.
 
   std::vector<double>
       statesInitialValues_; //< initial values of the states for one instance,
-                            //as parsed from source file
+                            // as parsed from source file
 
   std::vector<std::string>
       constantAssignments_; //< source code lines where constant variables are
-                            //assigned
+                            // assigned
 
   // contains all the essential parts of the parsed cellml source code
   struct CellMLCode {

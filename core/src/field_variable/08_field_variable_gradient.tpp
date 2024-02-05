@@ -5,7 +5,7 @@
 namespace FieldVariable {
 
 //#define USE_APPROXIMATE_GRADIENT    // if the method of approximating the
-//gradient by difference quotients between neighouring nodes should be used
+// gradient by difference quotients between neighouring nodes should be used
 //(this is not so good in general)
 // the alternative is to compute the gradient from the ansatz functions (this is
 // more accurate but bad for badly conditioned elements)

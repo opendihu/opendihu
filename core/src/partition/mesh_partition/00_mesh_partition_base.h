@@ -101,14 +101,14 @@ public:
 protected:
   std::shared_ptr<RankSubset>
       rankSubset_; //< the set of ranks that compute something where this
-                   //partition is a part of, also holds the MPI communciator
+                   // partition is a part of, also holds the MPI communciator
 
   std::vector<dof_no_t> dofNosLocal_; //< vector of all local nos of non-ghost
-                                      //dofs followed by the ghost dofs
+                                      // dofs followed by the ghost dofs
   IS dofNosLocalIS_; //< index set (IS) with the indices of the local dof nos
                      //(including ghosts)
   IS dofNosLocalNonGhostIS_; //< index set (IS) with the indices of the local
-                             //dof nos (without ghosts)
+                             // dof nos (without ghosts)
 };
 
 } // namespace Partition

@@ -116,11 +116,11 @@ protected:
 
   std::shared_ptr<Partition::MeshPartition<PressureFunctionSpaceType>>
       meshPartitionPressure_; //< the mesh partition for the pressure function
-                              //space, which has a lower degree of ansatz
-                              //function than the displacement function space
+                              // space, which has a lower degree of ansatz
+                              // function than the displacement function space
   int componentNoPressure_ =
       nComponents; //< which of the component is dedicated for the pressure,
-                   //this is the last component
+                   // this is the last component
 };
 
 /** Partition specialization for compressible formulation, without the (p)
@@ -190,8 +190,8 @@ public:
 protected:
   std::shared_ptr<Partition::MeshPartition<PressureFunctionSpaceType>>
       meshPartitionPressure_; //< the mesh partition for the pressure function
-                              //space, which has a lower degree of ansatz
-                              //function than the displacement function space
+                              // space, which has a lower degree of ansatz
+                              // function than the displacement function space
 };
 
 template <typename DisplacementsFunctionSpaceType,

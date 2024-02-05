@@ -109,43 +109,43 @@ protected:
   void copySolutionToPhiB();
 
   DataFat dataFat_; //< the data object of the multidomain solver with fat,
-                    //which stores all field variables and matrices
+                    // which stores all field variables and matrices
   FiniteElementMethodDiffusionFat
       finiteElementMethodFat_; //< the finite element object that is used for
-                               //the Laplace problem of the potential flow,
-                               //needed for the fiber directions
+                               // the Laplace problem of the potential flow,
+                               // needed for the fiber directions
 
   std::map<node_no_t, node_no_t>
       sharedNodes_; //< the node nos that are shared between the muscle mesh
                     //(key) and the fat mesh (value)
   std::set<dof_no_t> boundaryDofsFat_; //< all local dofs without ghosts with
-                                       //no. in the fat mesh on the boundary ΓM
+                                       // no. in the fat mesh on the boundary ΓM
   std::set<PetscInt> boundaryDofsGlobalFat_; //< same as boundaryDofsFat_ but
-                                             //for all global dofs
+                                             // for all global dofs
   std::map<PetscInt, PetscInt>
       fatDofToMuscleDofGlobal_; //< the dof nos that are shared between the
-                                //muscle mesh (key) and the fat mesh (value)
+                                // muscle mesh (key) and the fat mesh (value)
   std::map<PetscInt, PetscInt>
       muscleDofToFatDofGlobal_; //< the dof nos that are shared between the
-                                //muscle mesh (key) and the fat mesh (value)
+                                // muscle mesh (key) and the fat mesh (value)
 
   PetscInt nSharedDofsLocal_; //< number of shared dofs between fat and muscle
-                              //mesh on the local domain
+                              // mesh on the local domain
   std::vector<Mat> b1_; //< b1^k = ((θ-1)*1/(Am^k*Cm^k)*K_sigmai^k - 1/dt*M),
-                        //first factor matrix for rhs entry b, for compartment
-                        //k, total: b = b1_ * Vm^(i) + b2_ * phi_e^(i)
+                        // first factor matrix for rhs entry b, for compartment
+                        // k, total: b = b1_ * Vm^(i) + b2_ * phi_e^(i)
   std::vector<Mat>
       b2_; //< b2^k = (θ-1)*K_sigmai^k, second factor matrix for rhs entry b,
-           //for compartment k, total: b = b1_ * Vm^(i) + b2_ * phi_e^(i)
+           // for compartment k, total: b = b1_ * Vm^(i) + b2_ * phi_e^(i)
   Vec temporary_; //< temporary vector that can be multiplied right by b1_
 
   double theta_;              //< θ value for Crank-Nicolson scheme
   bool useLumpedMassMatrix_;  //< if the formulation with lumped mass matrix
-                              //should be used
+                              // should be used
   bool enableFatComputation_; //< if the computation of the fat layer should be
-                              //enabled, if not the values are set to 0
+                              // enabled, if not the values are set to 0
   bool isFirstTimestep_; //< if the current call to solveLinearSystem is in the
-                         //first timestep
+                         // first timestep
 };
 
 } // namespace TimeSteppingScheme

@@ -253,7 +253,7 @@ protected:
   std::string getStringSharedNodesInformation();
 
   int nSubMeshes_; //< number of sub function spaces, =
-                   //subFunctionSpaces_.size()
+                   // subFunctionSpaces_.size()
   const std::vector<std::shared_ptr<FunctionSpace::FunctionSpace<
       Mesh::StructuredDeformableOfDimension<D>, BasisFunctionType>>>
       &subFunctionSpaces_;
@@ -261,9 +261,9 @@ protected:
   std::vector<std::map<node_no_t, std::pair<int, node_no_t>>>
       removedSharedNodes_; //< removedSharedNodes_[meshNo][nodeNo] =
                            //<sameAsInMeshNo,nodeNoOfThatMesh> nodes that are
-                           //shared between function spaces, they appear only
-                           //once in the second function space and are removed
-                           //there (not included in the composite mapping)
+                           // shared between function spaces, they appear only
+                           // once in the second function space and are removed
+                           // there (not included in the composite mapping)
 
   element_no_t
       nElementsLocal_; //< local number of elements of all meshes combined
@@ -274,29 +274,30 @@ protected:
 
   node_no_t
       nNodesSharedLocal_; //< number of non-ghost nodes that are shared/removed,
-                          //the number of distinct nodes is the total number of
-                          //all subFunctionSpaces minus this value
+                          // the number of distinct nodes is the total number of
+                          // all subFunctionSpaces minus this value
   node_no_t
       nGhostNodesSharedLocal_; //< number of ghost nodes that are shared/removed
 
   // -------------- everything below is initialized by initializeGhostNodeNos()
   std::vector<int> nRemovedNodesNonGhost_; //< for every mesh the number of
-                                           //duplicate (non-ghost) nodes that
-                                           //are thus not included in the mesh
+                                           // duplicate (non-ghost) nodes that
+                                           // are thus not included in the mesh
   std::vector<int>
       nNonDuplicateNodesWithoutGhosts_; //< the local without ghosts number of
-                                        //nodes in each submesh
+                                        // nodes in each submesh
   std::vector<int>
       nNonDuplicateGhostNodes_; //< the local number of ghost nodes in each
-                                //submesh that are not removed
+                                // submesh that are not removed
   node_no_t
       nNodesLocalWithoutGhosts_; //< number of local nodes without ghosts in the
-                                 //total mesh in the duplicate-free numbering
-  node_no_t nNodesLocalWithGhosts_; //< number of local nodes with ghosts in the
-                                    //total mesh in the duplicate-free numbering
-  global_no_t nNodesGlobal_; //< the global number of nodes on all submeshes
+                                 // total mesh in the duplicate-free numbering
+  node_no_t
+      nNodesLocalWithGhosts_; //< number of local nodes with ghosts in the
+                              // total mesh in the duplicate-free numbering
+  global_no_t nNodesGlobal_;  //< the global number of nodes on all submeshes
   global_no_t nonDuplicateNodeNoGlobalBegin_; //< the first no in the
-                                              //duplicate-free global numbering
+                                              // duplicate-free global numbering
 
   struct NodesRequest {
     std::vector<global_no_t> nodeNosGlobalPetsc; //< global node no
@@ -305,46 +306,46 @@ protected:
 
   std::map<int, std::vector<NodesRequest>>
       requestNodesFromRanks_; //<
-                              //requestNodesFromRanks_[rankNo][subMeshNo].nodeNosGlobalPetsc,
-                              //for some other ranks which nodes are requested
-                              //from them, for each submesh
+                              // requestNodesFromRanks_[rankNo][subMeshNo].nodeNosGlobalPetsc,
+                              // for some other ranks which nodes are requested
+                              // from them, for each submesh
 
   // mappings from local numbering in every submesh to the composite numbering
   std::vector<std::vector<node_no_t>>
       meshAndNodeNoLocalToNodeNoNonDuplicateGlobal_; //< mapping from submesh no
-                                                     //and local node no to the
-                                                     //composite numbering used
-                                                     //for the whole mesh, for
-                                                     //local nodes with ghosts,
+                                                     // and local node no to the
+                                                     // composite numbering used
+                                                     // for the whole mesh, for
+                                                     // local nodes with ghosts,
                                                      //-1 for removed nodes
   std::vector<std::vector<node_no_t>>
       meshAndNodeNoLocalToNodeNoNonDuplicateLocal_; //< mapping from submesh no
-                                                    //and local node no to the
-                                                    //local number of the
-                                                    //composite node numbering,
-                                                    //also for ghost nodes
+                                                    // and local node no to the
+                                                    // local number of the
+                                                    // composite node numbering,
+                                                    // also for ghost nodes
   std::vector<std::vector<bool>>
       isDuplicate_; //< for every local node no, if the node has a prescribed
-                    //Dirichlet BC value
+                    // Dirichlet BC value
   std::vector<std::pair<int, node_no_t>>
       nodeNoNonDuplicateLocalToMeshAndDuplicateLocal_; //< mapping from
-                                                       //non-duplicate local
-                                                       //number to submesh no
-                                                       //and local node no on
-                                                       //the submesh
+                                                       // non-duplicate local
+                                                       // number to submesh no
+                                                       // and local node no on
+                                                       // the submesh
 
   std::vector<PetscInt>
       nonDuplicateGhostNodeNosGlobal_; //< duplicate-free ghost nodes in
-                                       //duplicate-free global indexing, needed
-                                       //to create Petsc Vecs
+                                       // duplicate-free global indexing, needed
+                                       // to create Petsc Vecs
 
   // ------------- everything below is initialized in createLocalDofOrderings()
   std::vector<node_no_t>
       onlyNodalDofLocalNos_; //< vector of local dofs of the nodes, not
-                             //including derivatives for Hermite
+                             // including derivatives for Hermite
   std::vector<PetscInt>
       ghostDofNosGlobalPetsc_; //< vector of global/petsc dof nos of the ghost
-                               //nodes which are stored on the local partition
+                               // nodes which are stored on the local partition
 
   ISLocalToGlobalMapping
       localToGlobalPetscMappingDofs_; //< local to global mapping for nodes

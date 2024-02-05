@@ -381,7 +381,7 @@ void ManagerImplementation::finalizeMappingLowToHigh(
           << "), no values for target dof "
           << targetDofNoLocal
           //<< ", coordinates global: " <<
-          //fieldVariableTarget->functionSpace()->meshPartition()->getCoordinatesGlobal(nodeNoLocal)
+          // fieldVariableTarget->functionSpace()->meshPartition()->getCoordinatesGlobal(nodeNoLocal)
           //<< " of (" << s.str() << ")! "
           << ". Assuming 0.0.";
 #endif
@@ -481,7 +481,7 @@ void ManagerImplementation::finalizeMappingLowToHigh(
           << "), no values for target dof "
           << targetDofNoLocal
           //<< ", coordinates global: " <<
-          //fieldVariableTarget->functionSpace()->meshPartition()->getCoordinatesGlobal(nodeNoLocal)
+          // fieldVariableTarget->functionSpace()->meshPartition()->getCoordinatesGlobal(nodeNoLocal)
           //<< " of (" << s.str() << ")! Assuming 0.0.";
           << ". Assuming 0.0.";
 #endif

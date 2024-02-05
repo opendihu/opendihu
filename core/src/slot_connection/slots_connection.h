@@ -115,66 +115,66 @@ private:
 
   std::vector<Connector>
       connectorTerm1To2_; //< the connector information which variables to map
-                          //to which for mapping from term 1 to term 2, this
-                          //differs from connectorForVisualizerTerm1To2_ in that
-                          //it respects the offsets
+                          // to which for mapping from term 1 to term 2, this
+                          // differs from connectorForVisualizerTerm1To2_ in
+                          // that it respects the offsets
   std::vector<Connector> connectorTerm2To1_; //< the connector information for
-                                             //mapping from term 2 to term 1
+                                             // mapping from term 2 to term 1
 
   std::vector<Connector>
       connectorForVisualizerTerm1To2_; //< the connector information which
-                                       //variables to map to which for mapping
-                                       //from term 1 to term 2, without
-                                       //considering the offset. This is used by
-                                       //the solverStructureVisualizer to know
-                                       //which slots are connected. It cannot be
-                                       //used for the actual mapping.
+                                       // variables to map to which for mapping
+                                       // from term 1 to term 2, without
+                                       // considering the offset. This is used
+                                       // by the solverStructureVisualizer to
+                                       // know which slots are connected. It
+                                       // cannot be used for the actual mapping.
   std::vector<Connector>
       connectorForVisualizerTerm2To1_; //< the connector information for mapping
-                                       //from term 2 to term 1. This is used by
-                                       //the solverStructureVisualizer to know
-                                       //which slots are connected. It cannot be
-                                       //used for the actual mapping.
+                                       // from term 2 to term 1. This is used by
+                                       // the solverStructureVisualizer to know
+                                       // which slots are connected. It cannot
+                                       // be used for the actual mapping.
 
   std::vector<std::string>
       fieldVariableNamesTerm1Vector1_; //< only for debugging the field variable
-                                       //names and components nos of term 1
-                                       //variable1
+                                       // names and components nos of term 1
+                                       // variable1
   std::vector<std::string>
       fieldVariableNamesTerm1Vector2_; //< only for debugging the field variable
-                                       //names and components nos of term 1
-                                       //variable2
+                                       // names and components nos of term 1
+                                       // variable2
   std::vector<std::string>
       fieldVariableNamesTerm2Vector1_; //< only for debugging the field variable
-                                       //names and components nos of term 2
-                                       //variable1
+                                       // names and components nos of term 2
+                                       // variable1
   std::vector<std::string>
       fieldVariableNamesTerm2Vector2_; //< only for debugging the field variable
-                                       //names and components nos of term 2
-                                       //variable2
+                                       // names and components nos of term 2
+                                       // variable2
   bool fieldVariableNamesInitialized_; //< if the fieldVAriableNamesTerm*
-                                       //variables were initialized yet by
-                                       //initialize
+                                       // variables were initialized yet by
+                                       // initialize
 
   int nFieldVariablesTerm1Vector1_; //< the number of slots of term 1 in vector
-                                    //1
+                                    // 1
   int nFieldVariablesTerm1Vector2_; //< the number of slots of term 1 in vector
-                                    //2
+                                    // 2
   int nFieldVariablesTerm2Vector1_; //< the number of slots of term 2 in vector
-                                    //1
+                                    // 1
   int nFieldVariablesTerm2Vector2_; //< the number of slots of term 2 in vector
-                                    //2
+                                    // 2
   bool
       transferDirectionTerm1To2_; //< if the current mapping is from term 1 to 2
 
   int offsetSlotNoData1_; //< an offset value for the slot no on term1 (this is
-                          //for transferableSolutionData1 if 1->2 and for
-                          //transferableSolutionData2 if 2->1), i.e. different
-                          //than the argument `offsetSlotNoData1` to initialize
+                          // for transferableSolutionData1 if 1->2 and for
+                          // transferableSolutionData2 if 2->1), i.e. different
+                          // than the argument `offsetSlotNoData1` to initialize
   int offsetSlotNoData2_; //< an offset value for the slot no on term2 (this is
-                          //for transferableSolutionData2 if 1->2 and for
-                          //transferableSolutionData1 if 2->1), i.e. different
-                          //than the argument `offsetSlotNoData2` to initialize
+                          // for transferableSolutionData2 if 1->2 and for
+                          // transferableSolutionData1 if 2->1), i.e. different
+                          // than the argument `offsetSlotNoData2` to initialize
 
   struct Result {
     int toVectorNo;
@@ -186,7 +186,7 @@ private:
   std::array<std::array<std::vector<Result>, 2>, 2>
       slotInformation_; //<
                         //[transferDirectionTerm1To2_][fromVectorNo][fromVectorIndex],
-                        //look-up table of getSlotInformation
+                        // look-up table of getSlotInformation
   bool slotInformationInitialized_; //< if slotInformation has been initialized
 
   PythonConfig settings_; //< the settings object

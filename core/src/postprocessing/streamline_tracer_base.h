@@ -22,7 +22,7 @@ public:
 protected:
   std::shared_ptr<FunctionSpace>
       functionSpace_; //< function space of the solution field in which the
-                      //tracing is performed
+                      // tracing is performed
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpace, 1>>
       solution_; //< solution field in which the tracing is performed
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpace, 3>>
@@ -32,26 +32,26 @@ protected:
   std::array<std::shared_ptr<FieldVariable::FieldVariable<FunctionSpace, 3>>,
              10>
       ghostMeshGradient_; //< [Mesh::face_or_edge_t faceOrEdge] gradient field
-                          //in ghost meshes, ghost meshes are surrounding the
-                          //regular subdomain by one layer of elements
+                          // in ghost meshes, ghost meshes are surrounding the
+                          // regular subdomain by one layer of elements
   std::array<std::shared_ptr<FieldVariable::FieldVariable<FunctionSpace, 1>>,
              10>
       ghostMeshSolution_; //< [Mesh::face_or_edge_t faceOrEdge] solution field
-                          //in ghost meshes, ghost meshes are surrounding the
-                          //regular subdomain by one layer of elements
+                          // in ghost meshes, ghost meshes are surrounding the
+                          // regular subdomain by one layer of elements
 
   double lineStepWidth_; //< the line step width used for integrating the
-                         //streamlines
+                         // streamlines
 
   int maxNIterations_;    //< the maximum number of iterations to trace for a
-                          //streamline
+                          // streamline
   bool useGradientField_; //< There are 2 implementations of streamline tracing.
-                          //The first one (useGradientField_) uses a precomputed
-                          //gradient field that is interpolated linearly and the
-                          //second uses the gradient directly from the Laplace
-                          //solution field. // The first one seems more stable,
-                          //because the gradient is zero and the position of the
-                          //boundary conditions.
+                          // The first one (useGradientField_) uses a
+                          // precomputed gradient field that is interpolated
+                          // linearly and the second uses the gradient directly
+                          // from the Laplace solution field. // The first one
+                          // seems more stable, because the gradient is zero and
+                          // the position of the boundary conditions.
 };
 
 } // namespace Postprocessing

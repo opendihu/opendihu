@@ -53,10 +53,10 @@ public:
 private:
   std::shared_ptr<LowOrderFunctionSpaceType>
       lowOrderFunctionSpace_; //< the FunctionSpace object for the low order
-                              //basis
+                              // basis
   std::shared_ptr<HighOrderFunctionSpaceType>
       highOrderFunctionSpace_; //< the FunctionSpace object for the high order
-                               //basis
+                               // basis
 };
 
 } // namespace FunctionSpace

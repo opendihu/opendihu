@@ -106,11 +106,11 @@ private:
       greenLagrangeStrain_; //< field variable of the Green-Lagrange strain, E
   std::shared_ptr<FieldVariableType>
       relativeVolume_; //< field variable of the relative volume (determinant of
-                       //deformation gradient)
+                       // deformation gradient)
 
   std::shared_ptr<SlotConnectorDataType>
       slotConnectorData_; //< the object that stores all components of field
-                          //variables that will be transferred to other solvers
+                          // variables that will be transferred to other solvers
 };
 
 } // namespace Data

@@ -57,7 +57,7 @@ void CellmlSourceCodeGeneratorSimd::generateSourceFileSimd(
           << "#endif"
           << std::endl
           //<< "#pragma GCC ivdep  // this disables alias checking for the
-          //compiler (GCC only)" << std::endl   // does not work on hazelhen
+          // compiler (GCC only)" << std::endl   // does not work on hazelhen
           << "  for (int i = 0; i < " << this->nInstances_ << "; i++)"
           << std::endl
           << "  {" << std::endl

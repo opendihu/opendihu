@@ -29,12 +29,13 @@ int main(int argc, char *argv[]) {
                   9, 19, // nStates,nAlgebraics: 57,1 = Shorten, 4,9 = Hodgkin
                          // Huxley
                   FunctionSpace::FunctionSpace<
-                      MeshType, BasisFunction::LagrangeOfOrder<1>> // same
-                                                                   // function
-                                                                   // space as
-                                                                   // for
-                                                                   // anisotropic
-                                                                   // diffusion
+                      MeshType,
+                      BasisFunction::LagrangeOfOrder<1>> // same
+                                                         // function
+                                                         // space as
+                                                         // for
+                                                         // anisotropic
+                                                         // diffusion
                   >>>,
               OutputWriter::OutputSurface<
                   TimeSteppingScheme::MultidomainWithFatSolver<   // multidomain

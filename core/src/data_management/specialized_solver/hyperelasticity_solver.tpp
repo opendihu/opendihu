@@ -97,12 +97,12 @@ void QuasiStaticHyperelasticityBase<PressureFunctionSpace,
   pK2Stress_ =
       this->displacementsFunctionSpace_->template createFieldVariable<6>(
           "PK2-Stress (Voigt)", componentNamesS); //<  the symmetric PK2 stress
-                                                  //tensor in Voigt notation
+                                                  // tensor in Voigt notation
   activePK2Stress_ =
       this->displacementsFunctionSpace_->template createFieldVariable<6>(
           "active PK2-Stress (Voigt)",
           componentNamesS); //<  the symmetric active PK2 stress tensor in Voigt
-                            //notation
+                            // notation
 
   std::vector<std::string> componentNamesF{
       "F_11", "F_12", "F_13", "F_21", "F_22", "F_23", "F_31", "F_32", "F_33"};

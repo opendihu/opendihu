@@ -153,49 +153,49 @@ protected:
   void initializePetscCallbackFunctions();
 
   using Parent::bestSolution_; //< a temporary variable to hold the best
-                               //solution so, the one with the lowest residual
-                               //norm
+                               // solution so, the one with the lowest residual
+                               // norm
   using Parent::lastSolution_; //< a temporary variable to hold the previous
-                               //solution in the nonlinear solver, to be used to
-                               //reset the nonlinear scheme if it diverged
+                               // solution in the nonlinear solver, to be used
+                               // to reset the nonlinear scheme if it diverged
 
   using Parent::loadFactors_; //< vector of load factors, 1.0 means normal
-                              //computation, any lower value reduces the right
-                              //hand side (scales body and traction forces)
+                              // computation, any lower value reduces the right
+                              // hand side (scales body and traction forces)
 
   using Parent::bestResidualNorm_; //< best residual norm for load factor 1.0
-                                   //achieved so far
+                                   // achieved so far
   using Parent::
       currentLoadFactor_;  //< current value of the load factor, this value is
-                           //passed to materialComputeResidual(), 1.0 means
-                           //normal computation, any lower value reduces the
-                           //right hand side (scales body and traction forces)
+                           // passed to materialComputeResidual(), 1.0 means
+                           // normal computation, any lower value reduces the
+                           // right hand side (scales body and traction forces)
   using Parent::lastNorm_; //< residual norm of the last iteration in the
-                           //nonlinear solver
+                           // nonlinear solver
   using Parent::lastSolveSucceeded_; //< if the last computation of the residual
-                                     //or jacobian succeeded, if this is false,
-                                     //it indicates that there was a negative
-                                     //jacobian
+                                     // or jacobian succeeded, if this is false,
+                                     // it indicates that there was a negative
+                                     // jacobian
   using Parent::loadFactorGiveUpThreshold_; //< a threshold for the load factor,
-                                            //if it is below, the solve is
-                                            //aborted
+                                            // if it is below, the solve is
+                                            // aborted
   using Parent::previousLoadFactor_; //< previous value of the load factor
   using Parent::secondLastNorm_; //< residual norm of the second last iteration
-                                 //in the nonlinear solver
+                                 // in the nonlinear solver
 
   using Parent::combinedVecResidual_; //< the Vec for the residual and result of
-                                      //the nonlinear function
+                                      // the nonlinear function
   using Parent::combinedVecSolution_; //< the Vec for the solution, combined
-                                      //means that ux,uy,uz and p components are
-                                      //combined in one vector
+                                      // means that ux,uy,uz and p components
+                                      // are combined in one vector
   using Parent::endTime_;             //< end time of the simulation
 
   using Parent::solverVariableResidual_; //< PETSc Vec to store the residual,
-                                         //equal to
-                                         //combinedVecResidual_->valuesGlobal()
+                                         // equal to
+                                         // combinedVecResidual_->valuesGlobal()
   using Parent::solverVariableSolution_; //< PETSc Vec to store the solution,
-                                         //equal to
-                                         //combinedVecSolution_->valuesGlobal()
+                                         // equal to
+                                         // combinedVecSolution_->valuesGlobal()
 };
 
 } // namespace SpatialDiscretization

@@ -131,45 +131,45 @@ protected:
       std::array<double, nStates_> &statesInitialValues) = 0;
 
   DihuContext context_; //< object that contains the python config for the
-                        //current context and the global singletons meshManager
-                        //and solverManager
+                        // current context and the global singletons meshManager
+                        // and solverManager
   PythonConfig specificSettings_; //< python object containing the value of the
-                                  //python config dict with corresponding key
+                                  // python config dict with corresponding key
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writer
 
   std::shared_ptr<FunctionSpaceType>
       functionSpace_; //< a mesh, there are as many instances of the same CellML
-                      //problem as there are nodes in the mesh
+                      // problem as there are nodes in the mesh
   Data data_; //< the data object that stores all variables, i.e. algebraics and
-              //states
+              // states
   static std::array<double, nStates_>
       statesInitialValues_; //< the initial values for the states, see
-                            //setInitialValues
+                            // setInitialValues
   static bool statesInitialValuesInitialized_; //< if the statesInitialValues_
-                                               //variables has been initialized
+                                               // variables has been initialized
   bool createOwnRhsRoutine_; //< if this instances should invoke the
-                             //source-to-source compiler to create a library of
-                             //the rhs and load the library. This is disabled,
-                             //if the fast monodomain solver is used.
+                             // source-to-source compiler to create a library of
+                             // the rhs and load the library. This is disabled,
+                             // if the fast monodomain solver is used.
 
   int nInstances_; //< number of instances of the CellML problem. Usually it is
-                   //the number of mesh nodes when a mesh is used. When running
-                   //in parallel this is the local number of instances without
-                   //ghosts.
+                   // the number of mesh nodes when a mesh is used. When running
+                   // in parallel this is the local number of instances without
+                   // ghosts.
   int internalTimeStepNo_ =
       0; //< the counter how often the right hand side was called
 
-  bool
-      initializeStatesToEquilibrium_; //< if the initial states should be
-                                      //computed until they reach an equilibrium
+  bool initializeStatesToEquilibrium_; //< if the initial states should be
+                                       // computed until they reach an
+                                       // equilibrium
   double initializeStatesToEquilibriumTimestepWidth_; //< timestep width for
-                                                      //computation of
-                                                      //equilibrium states
+                                                      // computation of
+                                                      // equilibrium states
 
   CellmlSourceCodeGenerator
       cellmlSourceCodeGenerator_; //< object that holds all source code related
-                                  //to the model
+                                  // to the model
   bool initialized_;              //< if initialize has been called
 };
 

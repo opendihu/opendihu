@@ -95,31 +95,31 @@ private:
       fiberDirection_; //< the direction of fibers
   std::shared_ptr<FieldVariableType>
       transmembraneFlow_; //< the Vm for the next timestep, this holds the
-                          //solution in the linear solver which must be
-                          //different from the rhs vector
+                          // solution in the linear solver which must be
+                          // different from the rhs vector
   std::shared_ptr<FieldVariableType>
       transmembranePotential_; //< the Vm value (transmembrane potential)
   std::shared_ptr<FieldVariableType>
       extraCellularPotential_; //< the phi_e value which is the extra-cellular
-                               //potential
+                               // potential
   std::shared_ptr<FieldVariableType>
       zero_; //< a field variable with constant value of zero, needed for the
-             //nested rhs vector
+             // nested rhs vector
   std::shared_ptr<FieldVariableType>
       jacobianConditionNumber_; //< field variable to store the estimated
-                                //condition number of the jacobian matrix of the
-                                //element coordinates to world mapping
+                                // condition number of the jacobian matrix of
+                                // the element coordinates to world mapping
   std::shared_ptr<SlotConnectorDataType>
       slotConnectorData_; //< the field variables that will be transferred to
-                          //other solvers for the slot connector
+                          // other solvers for the slot connector
 
   std::vector<std::string> componentNames_; //< names of the components of the
-                                            //solution and increment variables
+                                            // solution and increment variables
   std::vector<std::shared_ptr<FieldVariableType>>
       additionalFieldVariables_; //< additional field variables that are not
-                                 //used for computation but can be passed from
-                                 //the discretizableInTime_ object to the
-                                 //enclosing solvers
+                                 // used for computation but can be passed from
+                                 // the discretizableInTime_ object to the
+                                 // enclosing solvers
 };
 
 } // namespace Data

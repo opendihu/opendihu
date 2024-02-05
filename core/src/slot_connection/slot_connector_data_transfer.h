@@ -51,7 +51,7 @@ template <typename FunctionSpaceType1, int nComponents1a, int nComponents1b,
 class SlotConnectorDataTransfer<
     Data::SlotConnectorData<FunctionSpaceType1, nComponents1a,
                             nComponents1b>, //< algebraics and states from
-                                            //cellmlAdapter
+                                            // cellmlAdapter
     Data::SlotConnectorData<FunctionSpaceType2, nComponents2a, nComponents2b>> {
 public:
   //! transfer the data from transferableSolutionData1 to

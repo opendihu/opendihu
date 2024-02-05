@@ -23,7 +23,7 @@ void StreamlineTracerBase<FunctionSpace>::traceStreamline(
   std::array<double, (unsigned long int)3> xi;
   std::shared_ptr<FunctionSpace> functionSpace =
       functionSpace_; //< the function space to use, this can be set to one of
-                      //the ghost meshes
+                      // the ghost meshes
 
   // There are 2 implementations of streamline tracing.
   // The first one (useGradientField_) uses a precomputed gradient field that is

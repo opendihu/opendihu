@@ -34,16 +34,16 @@ void NeumannBoundaryConditionsBase<
 
   struct ConfigWithGlobalElementNo {
     PythonConfig pythonConfig;   //< python config of the elementWithFaces,
-                                 //containing all settings
+                                 // containing all settings
     global_no_t elementNoGlobal; //< global element no, as parsed from config
     element_no_t elementNoLocal; //< local element no, to be determined
     Mesh::face_t face; //< face on which the Neumann BC is applied, this is
-                       //needed here for sorting only
+                       // needed here for sorting only
   };
 
   std::vector<ConfigWithGlobalElementNo>
       configsWithGlobalElementNo; //< auxiliary data structure that is used when
-                                  //inputMeshIsGlobal
+                                  // inputMeshIsGlobal
 
   // if boundary conditions are present in config
   if (!specificSettings.hasKey(boundaryConditionsConfigKey)) {

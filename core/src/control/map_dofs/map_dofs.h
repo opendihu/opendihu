@@ -73,28 +73,28 @@ protected:
    */
   struct DofsMappingType {
     int connectorSlotNoFrom; //< slot no, i.e. a field variable from which to
-                             //get the dofs
+                             // get the dofs
     std::vector<int> connectorSlotNosTo; //< slots nos, i.e. field variables to
-                                         //which to write the dofs to
+                                         // which to write the dofs to
     bool dofNoIsGlobalFrom; //< if the keys in dofsMapping specify global nos
     bool dofNoIsGlobalTo;   //< if the values in dofsMapping specify global nos
     int slotConnectorArrayIndexFrom; //< array index if the connector slot
-                                     //consists of a vector of multiple layers,
-                                     //e.g. Multidomain with multiple
-                                     //compartments or fibers with even two
-                                     //nested MultipleInstances
+                                     // consists of a vector of multiple layers,
+                                     // e.g. Multidomain with multiple
+                                     // compartments or fibers with even two
+                                     // nested MultipleInstances
     int slotConnectorArrayIndexTo;   //< array index if the connector slot
-                                     //consists of a vector of multiple layers,
-                                   //e.g. Multidomain with multiple compartments
-                                   //or fibers with even two nested
-                                   //MultipleInstances
+                                     // consists of a vector of multiple layers,
+    // e.g. Multidomain with multiple compartments
+    // or fibers with even two nested
+    // MultipleInstances
 
     double thresholdValue; //< if mode is "localSetIfAboveThreshold", this is
-                           //the threshold, if the value is above it, set the
-                           //value `valueToSet`
+                           // the threshold, if the value is above it, set the
+                           // value `valueToSet`
     double valueToSet; //< if mode is "localSetIfAboveThreshold", this is the
-                       //value to set the target dof to, if the source dof is
-                       //above thresholdValue.
+                       // value to set the target dof to, if the source dof is
+                       // above thresholdValue.
 
     enum {
       modeCopyLocal,
@@ -111,22 +111,23 @@ protected:
         valueCommunicator; //< the object that performs the MPI communication
     std::map<int, std::vector<dof_no_t>>
         dofNosLocalOfValuesToSendToRanks; //< Only for modeCommunicate. For
-                                          //every rank the local dof nos of the
-                                          //values that will be sent to the rank
+                                          // every rank the local dof nos of the
+                                          // values that will be sent to the
+                                          // rank
     std::vector<dof_no_t>
         allDofNosToSetLocal; //< For all modes except modeCallback. For the
-                             //received values the local dof nos where to store
-                             //the values in the field variable
+                             // received values the local dof nos where to store
+                             // the values in the field variable
     std::vector<dof_no_t>
         dofNosToSetLocal; //< For all modes except modeCallback. Temporary
-                          //variable, the local dofs where to set the values
-                          //that were retrieved from the dofs.
+                          // variable, the local dofs where to set the values
+                          // that were retrieved from the dofs.
 
     std::vector<dof_no_t>
         inputDofs; //< Only for modeCallback. The input dofs for the callback.
     std::vector<std::vector<dof_no_t>>
         outputDofs; //< Only for modeCallback. outputDofs[slotIndex], the output
-                    //dofs for the callback.
+                    // dofs for the callback.
 
     PyObject *callback; //< python callback to manipulate the input data
     PyObject *
@@ -171,20 +172,20 @@ protected:
   void slotSetRepresentationGlobal(int slotNo, int arrayIndex);
 
   DihuContext context_; //< context object that gives access to global singleton
-                        //and has python settings
+                        // and has python settings
   PythonConfig specificSettings_; //< the python settings for this object
   NestedSolverType nestedSolver_; //< the nested solver that will be called in
-                                  //advanceTimeSpan
+                                  // advanceTimeSpan
 
   Data data_; //< the data object that stores the additional field variables
   std::vector<std::string> slotNames_; //< names of all slots
 
   std::vector<DofsMappingType>
       mappingsBeforeComputation_; //< settings for all mappings that should be
-                                  //done before the computation
+                                  // done before the computation
   std::vector<DofsMappingType>
       mappingsAfterComputation_; //< settings for all mappings that should be
-                                 //done after the computation
+                                 // done after the computation
 };
 
 } // namespace Control

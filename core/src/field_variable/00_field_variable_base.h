@@ -148,11 +148,11 @@ public:
 
 protected:
   bool isGeometryField_; //< if the type of this FieldVariable is a coordinate,
-                         //i.e. geometric information
+                         // i.e. geometric information
 
   std::shared_ptr<FunctionSpaceType>
       functionSpace_; //< the mesh/function_space for which the field variable
-                      //is defined
+                      // is defined
   std::string name_;  //< name of the field variable
 };
 

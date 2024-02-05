@@ -153,9 +153,9 @@ public:
 
 protected:
   global_no_t nElements_; //< the global size, i.e. number of elements of the
-                          //whole problem
+                          // whole problem
   global_no_t nNodes_;    //< the global size, i.e. the number of nodes of the
-                          //whole problem
+                          // whole problem
   global_no_t nDofs_;     //< the number of dofs
 };
 

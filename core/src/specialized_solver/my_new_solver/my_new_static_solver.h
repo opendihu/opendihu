@@ -58,18 +58,18 @@ protected:
   void executeMyHelperMethod();
 
   DihuContext context_; //< object that contains the python config for the
-                        //current context and the global singletons meshManager
-                        //and solverManager
+                        // current context and the global singletons meshManager
+                        // and solverManager
   OutputWriter::Manager
       outputWriterManager_;       //< manager object holding all output writers
   PythonConfig specificSettings_; //< python object containing the value of the
-                                  //python config dict with corresponding key
+                                  // python config dict with corresponding key
 
   NestedSolver
       nestedSolver_; //< the nested solver that is controlled by this class
 
   Data data_; //< the data object that stores at least all field variables that
-              //should be output by output writers.
+              // should be output by output writers.
 
   bool initialized_; //< if initialize() was already called
 };

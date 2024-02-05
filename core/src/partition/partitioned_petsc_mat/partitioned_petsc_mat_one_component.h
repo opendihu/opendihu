@@ -144,10 +144,10 @@ protected:
   void createLocalMatrix();
 
   Mat globalMatrix_; //< the global Petsc matrix, access using
-                     //MatSetValuesLocal() with local indices (not used here) or
-                     //via the localMatrix (this one is used)
+                     // MatSetValuesLocal() with local indices (not used here)
+                     // or via the localMatrix (this one is used)
   Mat localMatrix_;  //< a local submatrix that holds all rows and columns for
-                     //the local dofs with ghosts
+                     // the local dofs with ghosts
 };
 
 /** Partial specialization for unstructured meshes. This is completely serial,

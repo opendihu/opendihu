@@ -1141,8 +1141,8 @@ void MeshPartition<FunctionSpace::FunctionSpace<Mesh::CompositeOfDimension<D>,
   // receive which nodes are requested
   std::vector<std::vector<int>>
       requestedNodesGlobalPetsc; //< indexing same as in
-                                 //nNodesRequestedFromRanks_, the requested
-                                 //nodes from that rank
+                                 // nNodesRequestedFromRanks_, the requested
+                                 // nodes from that rank
   requestedNodesGlobalPetsc.resize(nNodesRequestedFromRanks.size());
   std::vector<MPI_Request> receiveRequests;
 
@@ -1428,9 +1428,9 @@ void MeshPartition<FunctionSpace::FunctionSpace<Mesh::CompositeOfDimension<D>,
                   "program from debug target, there will be a more"
                << " useful error message that says which nodes are wrong.";
     //<< "Received " << nNodesLocalWithGhosts-nNodesLocalWithoutGhosts_ << "
-    //ghost nodes from neighboring ranks. "
+    // ghost nodes from neighboring ranks. "
     //<< "Locally, " << nNodesSharedLocal_ << " nodes are non-ghosts and " <<
-    //nGhostNodesSharedLocal_ << " are shared, therefore "
+    // nGhostNodesSharedLocal_ << " are shared, therefore "
     //<< nNodesLocalWithGhosts_ - nNodesLocalWithoutGhosts_ << " nodes of all ("
     //<< nNodesLocalWithGhosts_ << ") should be ghosts.";
   }

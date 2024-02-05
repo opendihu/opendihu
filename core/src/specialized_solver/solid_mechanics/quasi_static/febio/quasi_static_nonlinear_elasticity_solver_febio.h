@@ -26,7 +26,7 @@ protected:
   virtual void createFebioInputFile() override;
 
   double force_; //< factor of force that is applied in axial direction of the
-                 //muscle
+                 // muscle
 };
 
 } // namespace TimeSteppingScheme

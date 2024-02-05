@@ -97,34 +97,34 @@ protected:
 
   std::shared_ptr<SlotConnectorDataType>
       slotConnectorData_; //< the slotConnectorData as vector of references o f
-                          //teh slotConnectorData's of the instances
+                          // teh slotConnectorData's of the instances
 
   int nInstances_; //< number of instances that are given by config
   int nInstancesComputedGlobally_; //< number of instances that any process will
-                                   //compute
+                                   // compute
   int nInstancesLocal_; //< the number of local instances, i.e. the size of the
-                        //instancesLocal_ vector
+                        // instancesLocal_ vector
 
   std::vector<TimeSteppingScheme>
       instancesLocal_; //< the instances of the problem that are computed on the
-                       //local rank
+                       // local rank
   std::vector<std::shared_ptr<Partition::RankSubset>>
       rankSubsetsLocal_; //< the rankSubset corresponding to the instances in
-                         //instancesLocal_
+                         // instancesLocal_
 
   std::shared_ptr<Partition::RankSubset>
       rankSubsetAllComputedInstances_; //< the rank nos of all computed
-                                       //instances of this MultipleInstances
-                                       //object
+                                       // instances of this MultipleInstances
+                                       // object
   std::string logKey_; //< the key under which the duration of all instances
-                       //together is saved in the log
+                       // together is saved in the log
 
   bool outputInitializeThisInstance_; //< if this instance displays progress of
-                                      //initialization
+                                      // initialization
 };
 
 extern bool outputInitialize_; //< if the message about initialization was
-                               //already printed
+                               // already printed
 
 } // namespace Control
 

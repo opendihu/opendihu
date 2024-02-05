@@ -72,10 +72,10 @@ protected:
   void computeMeshWidth();
 
   std::array<double, D> physicalExtent_; //< geometrical "size" of the mesh,
-                                         //i.e. length x width x height
+                                         // i.e. length x width x height
   double meshWidth_; //< uniform mesh width, i.e. distance between nodes (not
-                     //elements for quadratic element), this is a copy of the
-                     //value which is stored in this->geometryField_
+                     // elements for quadratic element), this is a copy of the
+                     // value which is stored in this->geometryField_
 };
 
 /** Partial specialization for StructuredDeformable mesh
@@ -139,7 +139,7 @@ protected:
 
   std::vector<double>
       localNodePositions_; //< Node positions to be inserted into geometry
-                           //field, for local domain
+                           // field, for local domain
 };
 
 /** Partial specialization for UnstructuredDeformable mesh

@@ -23,7 +23,7 @@ public:
     element_no_t elementNoLocal; //< local element no
     std::map<int, ValueType>
         elementalDofIndex; //< the element-local dof index and the value of the
-                           //boundary condition on this dof
+                           // boundary condition on this dof
   };
 
   struct BoundaryConditionsForComponent {
@@ -96,33 +96,34 @@ protected:
   void writeOutput();
 
   PythonConfig specificSettings_; //< the python config that contains the
-                                  //boundary conditions
+                                  // boundary conditions
   std::shared_ptr<FunctionSpaceType>
       functionSpace_; //< function space for which boundary conditions are
-                      //specified
+                      // specified
   OutputWriter::OutputPoints
       outputPoints_; //< output writer that writes points of the Dirichlet BCs
 
   std::vector<ElementWithNodes>
       boundaryConditionElements_; //< nodes grouped by elements on which
-                                  //boundary conditions are specified, this
-                                  //includes ghost nodes
+                                  // boundary conditions are specified, this
+                                  // includes ghost nodes
   std::vector<dof_no_t>
       boundaryConditionNonGhostDofLocalNos_; //< vector of all local (non-ghost)
-                                             //boundary condition dofs, sorted
+                                             // boundary condition dofs, sorted
   std::vector<ValueType>
       boundaryConditionValues_; //< vector of the local (non-ghost) prescribed
-                                //values, related to
-                                //boundaryConditionNonGhostDofLocalNos_
+                                // values, related to
+                                // boundaryConditionNonGhostDofLocalNos_
 
   std::array<BoundaryConditionsForComponent, nComponents>
       boundaryConditionsByComponent_; //< the local boundary condition data
-                                      //organized by component, entries are
-                                      //sorted by dofNoLocal, without ghost dofs
+                                      // organized by component, entries are
+                                      // sorted by dofNoLocal, without ghost
+                                      // dofs
 
   std::string
       filenameOutput_; //< output filename for the vtk file that will contain
-                       //all Dirichlet boundary conditions for visualization
+                       // all Dirichlet boundary conditions for visualization
 };
 
 template <typename FunctionSpaceType, int nComponents>

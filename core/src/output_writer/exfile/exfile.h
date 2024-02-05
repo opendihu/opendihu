@@ -35,8 +35,8 @@ private:
 
   std::map<double, std::vector<FilenameWithElementAndNodeCount>>
       filenamesWithElementAndNodeCount_; //< for a given simulation time the
-                                         //filenames without suffix of all
-                                         //previously output exelem files
+                                         // filenames without suffix of all
+                                         // previously output exelem files
 };
 
 } // namespace OutputWriter

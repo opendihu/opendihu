@@ -86,10 +86,10 @@ private:
 
   std::shared_ptr<RankSubset>
       nextRankSubset_; //< rank subset that will be used for the next
-                       //partitioning that will be created
+                       // partitioning that will be created
   std::shared_ptr<RankSubset>
       rankSubsetForCollectiveOperations_; //< the ranks which should be used for
-                                          //collective MPI operations
+                                          // collective MPI operations
 };
 
 } // namespace Partition

@@ -57,12 +57,12 @@ protected:
   std::string filenameBase_; //< beginning of the file name for output file
   std::string filename_;     //< file name with time step number
   std::string formatString_; //< the format option, the string as given in
-                             //config, e.g. "Paraview"
+                             // config, e.g. "Paraview"
   enum {
     fileNumberingIncremental,
     fileNumberingByTimeStepIndex
   } fileNumbering_;        //< how the number suffix for each file schould be
-                           //generated.
+                           // generated.
   int writeCallCount_ = 0; //< counter of calls to write
   int outputFileNo_ =
       0; //< counter of calls to write when actually a file was written
@@ -76,7 +76,7 @@ protected:
   double currentTime_; //< the current simulation time
 
   PythonConfig specificSettings_; //< the python dict containing settings
-                                  //relevant to this object
+                                  // relevant to this object
 };
 
 } // namespace OutputWriter

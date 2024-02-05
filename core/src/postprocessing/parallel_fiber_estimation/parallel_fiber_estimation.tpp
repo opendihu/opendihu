@@ -22,7 +22,7 @@
 //#define STL_OUTPUT_VERBOSE     // output more stl files
 
 //#define FILE_COMMUNICATION        // when sending boundary points between
-//ranks, do not use MPI but file I/O instead
+// ranks, do not use MPI but file I/O instead
 
 // include files that implement various methods of this class, these make use
 // the previous defines

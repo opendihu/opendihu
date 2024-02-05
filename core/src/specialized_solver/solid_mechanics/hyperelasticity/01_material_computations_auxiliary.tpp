@@ -51,8 +51,9 @@ HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
         double_v_t dphi_dxil =
             DisplacementsFunctionSpace::dphi_dxi(dofIndex, l, xi);
         double_v_t dxil_dX =
-            inverseJacobianMaterial[dimensionColumn][l]; // inverseJacobianMaterial[j][l]
-                                                         // = J_lj = dxi_l/dX_j
+            inverseJacobianMaterial[dimensionColumn]
+                                   [l]; // inverseJacobianMaterial[j][l]
+                                        // = J_lj = dxi_l/dX_j
 
         VLOG(3) << "     dphi_dxil = " << dphi_dxil
                 << ", dxil_dX = " << dxil_dX;
@@ -121,8 +122,9 @@ HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
         double_v_t dphi_dxil =
             DisplacementsFunctionSpace::dphi_dxi(dofIndex, l, xi);
         double_v_t dxil_dX =
-            inverseJacobianMaterial[dimensionColumn][l]; // inverseJacobianMaterial[j][l]
-                                                         // = J_lj = dxi_l/dX_j
+            inverseJacobianMaterial[dimensionColumn]
+                                   [l]; // inverseJacobianMaterial[j][l]
+                                        // = J_lj = dxi_l/dX_j
 
         VLOG(3) << "     dphi_dxil = " << dphi_dxil
                 << ", dxil_dX = " << dxil_dX;

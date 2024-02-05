@@ -175,8 +175,8 @@ protected:
   std::shared_ptr<SpatialDiscretization::DirichletBoundaryConditions<
       FunctionSpaceType, nComponentsDirichletBc>>
       dirichletBoundaryConditions_; //< the dirichlet boundary conditions object
-                                    //that contains dofs and values of Dirichlet
-                                    //BCs
+                                    // that contains dofs and values of
+                                    // Dirichlet BCs
 
   /** The local vector contains the nodal/dof values for the local portion of
    * the current rank. This includes ghost nodes. The global vector manages the
@@ -191,40 +191,41 @@ protected:
    * (VecGhostRestoreLocalForm, VecGhostUpdateBegin, VecGhostUpdateEnd).
    */
   Vec vectorCombinedWithoutDirichletDofsGlobal_; //< the values of all
-                                                 //components in "struct of
-                                                 //array" ordering, Dirichlet BC
-                                                 //dofs are left out. This is
-                                                 //accessed using global
-                                                 //ordering.
+                                                 // components in "struct of
+                                                 // array" ordering, Dirichlet
+                                                 // BC dofs are left out. This
+                                                 // is accessed using global
+                                                 // ordering.
   Vec vectorCombinedWithoutDirichletDofsLocal_; //< the values of all components
-                                                //in "struct of array" ordering,
-                                                //Dirichlet BC dofs are left
-                                                //out. This is accessed using
-                                                //local ordering.
+                                                // in "struct of array"
+                                                // ordering, Dirichlet BC dofs
+                                                // are left out. This is
+                                                // accessed using local
+                                                // ordering.
 
   std::array<int, nComponents>
       nNonBcDofsWithoutGhosts_; //< the local without ghosts number of entries
-                                //in the vector, without the Dirichlet BC dofs
+                                // in the vector, without the Dirichlet BC dofs
   int nNonBcDofsGhosts_;        //< number of ghost values
   int nEntriesLocal_;  //< the local number of entries in the vector, without
-                       //Ghost dofs
+                       // Ghost dofs
   int nEntriesGlobal_; //< the global number of entries in the vector, without
-                       //the Dirichlet BC dofs
+                       // the Dirichlet BC dofs
   global_no_t
       nonBcDofNoGlobalBegin_; //< the first no in the non-bc global numbering
   int nDofsLocal_;            //< same as nEntriesLocal_ (needed for
-                              //PartitionedPetscVecForHyperelasticity)
+                              // PartitionedPetscVecForHyperelasticity)
 
   std::vector<PetscInt>
       nonBcGhostDofNosGlobal_; //< non-bc ghost dofs in non-bc global indexing
 
   std::vector<std::pair<int, int>>
       nDofRequestedFromRanks_; //< (foreignRank,nDofs), number of dofs requested
-                               //by and to be send to foreignRank
+                               // by and to be send to foreignRank
   std::vector<std::vector<int>>
       requestedDofsGlobalPetsc_; //< indexing same as in
-                                 //nDofRequestedFromRanks_, the requested dofs
-                                 //from that rank
+                                 // nDofRequestedFromRanks_, the requested dofs
+                                 // from that rank
 
   struct DofsRequest {
     std::vector<global_no_t> dofNosGlobalPetsc; //< global dof no
@@ -233,22 +234,23 @@ protected:
 
   std::map<int, DofsRequest>
       requestDofsFromRanks_; //< for some other ranks which dofs are requested
-                             //from them
+                             // from them
 
   std::array<std::vector<dof_no_t>, nComponents>
       dofNoLocalToDofNoNonBcGlobal_; //< mapping from component no and local dof
-                                     //no to the numbering used for the combined
-                                     //vector, for local dofs with ghosts
+                                     // no to the numbering used for the
+                                     // combined vector, for local dofs with
+                                     // ghosts
   std::array<std::vector<dof_no_t>, nComponents>
       dofNoLocalToDofNoNonBcLocal_; //< mapping from component no and local dof
-                                    //no to the local number of the non-bc dof
-                                    //numbering
+                                    // no to the local number of the non-bc dof
+                                    // numbering
   std::array<std::vector<double>, nComponents>
       boundaryConditionValues_; //< prescribed boundary condition values for
-                                //local dof nos (normal local dof numbering)
+                                // local dof nos (normal local dof numbering)
   std::array<std::vector<bool>, nComponents>
       isPrescribed_; //< for every local dof no, if the dof has a prescribed
-                     //Dirichlet BC value
+                     // Dirichlet BC value
 };
 
 template <typename FunctionSpaceType, int nComponents>

@@ -40,9 +40,10 @@ void MyNewStaticSolver<NestedSolver>::initialize() {
   // add this solver to the solvers diagram, which is an ASCII art
   // representation that will be created at the end of the simulation.
   DihuContext::solverStructureVisualizer()->addSolver(
-      "MyNewStaticSolver", true); // hasInternalConnectionToFirstNestedSolver=true
-                                  // (the last argument) means slot connector
-                                  // data is shared with the first subsolver
+      "MyNewStaticSolver",
+      true); // hasInternalConnectionToFirstNestedSolver=true
+             // (the last argument) means slot connector
+             // data is shared with the first subsolver
   // if you have your own slot connector data rather than the one of the
   // subsolver, call "addSolver" with false as second argument
 

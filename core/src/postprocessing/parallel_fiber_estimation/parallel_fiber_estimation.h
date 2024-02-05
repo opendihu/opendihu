@@ -305,8 +305,8 @@ protected:
   printRanksInNeighbourhood(const std::array<bool, 4> &subdomainIsAtBoundary);
 
   const DihuContext context_; //< object that contains the python config for the
-                              //current context and the global singletons
-                              //meshManager and solverManager
+                              // current context and the global singletons
+                              // meshManager and solverManager
   std::shared_ptr<FiniteElementMethodType>
       problem_; //< the DiscretizableInTime object that is managed by this class
 
@@ -329,38 +329,38 @@ protected:
   int nBoundaryPointsX_;          //< number of subdivisions of the line
   int nBoundaryPointsZ_;          //< number of subdivisions in z direction
   int maxLevel_; //< the maximum level up to which the domain will be
-                 //subdivided, number of final domains is 8^maxLevel_ (octree
-                 //structure)
+                 // subdivided, number of final domains is 8^maxLevel_ (octree
+                 // structure)
   int nBoundaryPointsXNew_; //< the value of nBoundaryPointsX_ in the next
-                            //subdomain
+                            // subdomain
   int nBoundaryPointsZNew_; //< the value of nBoundaryPointsZ_ in the next
-                            //subdomain
+                            // subdomain
   int nFineGridFibers_; //< the number of additional fibers between "key" fibers
-                        //in one coordinate direction
+                        // in one coordinate direction
   int nNodesPerFiber_;  //< the number of nodes of the final fiber, this is
-                        //assured at the end, then the fibers get resampled to
-                        //the required number of nodes per fiber
+                        // assured at the end, then the fibers get resampled to
+                        // the required number of nodes per fiber
   bool improveMesh_; //< if the improveMesh_ flag should be set to the algorithm
-                     //that creates the 3D mesh. This make the mesh smoother but
-                     //it takes more time
+                     // that creates the 3D mesh. This make the mesh smoother
+                     // but it takes more time
   int level_; //< current level of the recursion, 0=1 process, 1=8 processes,
-              //2=64 processes
+              // 2=64 processes
   bool useNeumannBoundaryConditions_; //< if neumann instead of dirichlet
-                                      //boundary conditions should be used
+                                      // boundary conditions should be used
   int laplacianSmoothingNIterations_; //< number of iterations of Laplacian
-                                      //smoothing that is applied prior to
-                                      //tracing the fine grid fibers
+                                      // smoothing that is applied prior to
+                                      // tracing the fine grid fibers
   int ghostLayerWidth_; //< width of the ghost layer in elements that is created
-                        //in parallel execution
+                        // in parallel execution
   double maxAreaFactor_; //< factor only for triangulation_type 1, approximately
-                         //the minimum number of triangles that will be created
-                         //because of a maximum triangle area constraint
+                         // the minimum number of triangles that will be created
+                         // because of a maximum triangle area constraint
   std::map<int, int> nFibersFixed_; //< [recursionLevel] number of fibers that
-                                    //was fixed on each recursion level
+                                    // was fixed on each recursion level
 
   std::array<int, 3> refinementFactors_; //< factors by which the mesh should be
-                                         //refined prior to solving the Laplace
-                                         //problem and tracing the streamlines
+                                         // refined prior to solving the Laplace
+                                         // problem and tracing the streamlines
 
   PyObject *moduleStlCreateMesh_;  //< python module, file "stl_create_mesh.py"
   PyObject *moduleStlCreateRings_; //< python module, file "stl_create_rings.py"
@@ -368,32 +368,32 @@ protected:
   PyObject *functionCreateRingSection_; //< python function create_ring_section
   PyObject
       *functionCreateBoundaryPoints_; //< function that creates the initial
-                                      //boundary points of the mesh as loops
+                                      // boundary points of the mesh as loops
   PyObject *functionOutputPoints_;    //< output_points
   PyObject *functionOutputBoundaryPoints_; //< output_boundary_points
   PyObject *functionOutputGhostElements_;  //< output_ghots_elements
   PyObject *
       functionCreate3dMeshFromBoundaryPointsFaces_; //<
-                                                    //create_3d_mesh_from_boundary_points_faces
+                                                    // create_3d_mesh_from_boundary_points_faces
   PyObject *functionOutputStreamline_;  //< function to output connected points
-                                        //as streamline
+                                        // as streamline
   PyObject *functionOutputStreamlines_; //< function to output boundary points
-                                        //as connected streamlines
+                                        // as connected streamlines
   PyObject *functionOutputRings_; //< function to output boundary point rings as
-                                  //connected and closed lines
+                                  // connected and closed lines
 
   std::shared_ptr<Partition::RankSubset>
       currentRankSubset_; //< the rank subset of the ranks that are used at the
-                          //current stage of the algorithm
+                          // current stage of the algorithm
   std::array<int, 3>
       nRanksPerCoordinateDirection_; //< the numbers of ranks in each coordinate
-                                     //direction at the current stage of the
-                                     //algorithm
+                                     // direction at the current stage of the
+                                     // algorithm
   std::shared_ptr<Partition::MeshPartition<FunctionSpace::FunctionSpace<
       Mesh::StructuredDeformableOfDimension<3>, BasisFunctionType>>>
       meshPartition_; //< the mesh partition of this subdomain which contains
-                      //information about the neighbouring ranks and the own
-                      //index in the ranks grid
+                      // information about the neighbouring ranks and the own
+                      // index in the ranks grid
 
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writer

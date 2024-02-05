@@ -75,21 +75,21 @@ private:
 
   std::vector<std::shared_ptr<FieldVariable1Type>>
       fieldVariables1_; //< the first list of field variables, with nComponents1
-                        //components
+                        // components
   std::vector<std::shared_ptr<FieldVariable2Type>>
       fieldVariables2_; //< the second list of field variables, with
-                        //nComponents2 components
+                        // nComponents2 components
 
   std::shared_ptr<SlotConnectorDataType>
       slotConnectorData_; //< the object that stores all components of field
-                          //variables that will be transferred to other solvers
+                          // variables that will be transferred to other solvers
 
   std::vector<std::string>
       fieldVariable1Names_; //< names of the field variables with `nComponents1`
-                            //components
+                            // components
   std::vector<std::string>
       fieldVariable2Names_; //< names of the field variables with `nComponents1`
-                            //components
+                            // components
 };
 
 } // namespace Data

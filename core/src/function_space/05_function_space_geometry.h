@@ -25,7 +25,7 @@ public:
   typedef FieldVariable::FieldVariableBaseFunctionSpace<
       FunctionSpace<MeshType, BasisFunctionType>>
       FieldVariableBaseFunctionSpaceType; //< the class typename of a field
-                                          //variable
+                                          // variable
   typedef FieldVariable::FieldVariable<
       FunctionSpace<MeshType, BasisFunctionType>, 3>
       GeometryFieldType; //< the class typename of the geometry field variable
@@ -42,8 +42,8 @@ protected:
       nullptr; //< the geometry field variable
   bool noGeometryField_ =
       false; //< This is set if there is no geometry field stored. This is only
-             //needed for solid mechanics mixed formulation where the lower
-             //order basisOnMesh does not need its own geometry information.
+             // needed for solid mechanics mixed formulation where the lower
+             // order basisOnMesh does not need its own geometry information.
 };
 
 /** partial specialization for unstructured mesh, unstructured mesh already has
@@ -61,7 +61,7 @@ public:
   typedef FieldVariable::FieldVariableBaseFunctionSpace<FunctionSpace<
       Mesh::UnstructuredDeformableOfDimension<D>, BasisFunctionType>>
       FieldVariableBaseFunctionSpaceType; //< the class typename of the a field
-                                          //variable
+                                          // variable
 
   //! return a field variable with given name, returns field variables that were
   //! present in parsed exfiles

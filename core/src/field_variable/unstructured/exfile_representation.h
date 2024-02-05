@@ -45,7 +45,7 @@ private:
 
   std::vector<std::shared_ptr<ExfileElementRepresentation>>
       representation_; //< for every element the exfile representation, i.e. the
-                       //indices to interpret value blocks in exelem files
+                       // indices to interpret value blocks in exelem files
 };
 
 // output operator

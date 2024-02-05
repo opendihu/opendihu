@@ -5,11 +5,11 @@
 namespace MappingBetweenMeshes {
 
 std::string ManagerLog::logFilename_; //< filename of a log file that contains
-                                      //information about which mappings were
-                                      //created and used
+                                      // information about which mappings were
+                                      // created and used
 std::vector<ManagerLog::mappingLogEntry_t>
     ManagerLog::logEntries_; //< all entries that will be written to the log
-                             //file
+                             // file
 
 ManagerLog::ManagerLog(PythonConfig specificSettings)
     : specificSettings_(specificSettings) {

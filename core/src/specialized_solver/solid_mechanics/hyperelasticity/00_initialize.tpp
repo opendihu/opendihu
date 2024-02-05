@@ -514,7 +514,7 @@ HyperelasticityInitialize<
   int nNonZerosDiagonal = (int)nNonZerosJacobian_;
 
   //::Data::FiniteElementsBase<DisplacementsFunctionSpace,1>::getPetscMemoryParameters(nNonZerosDiagonal,
-  //:nNonZerosOffdiagonal);
+  //: nNonZerosOffdiagonal);
 
   // nNonZerosDiagonal = 100*MathUtility::sqr(nNonZerosDiagonal);
   // nNonZerosOffdiagonal = 5*MathUtility::sqr(nNonZerosOffdiagonal);

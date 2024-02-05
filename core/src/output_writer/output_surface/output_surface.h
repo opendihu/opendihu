@@ -59,22 +59,22 @@ protected:
   void writeFoundAndNotFoundPointGeometry();
 
   DihuContext context_; //< object that contains the python config for the
-                        //current context and the global singletons meshManager
-                        //and solverManager
+                        // current context and the global singletons meshManager
+                        // and solverManager
   Solver solver_;       //< the contained solver object
 
   bool initialized_ = false;     //< if this object is initialized
   DataSurface data_;             //< data object
   bool ownRankInvolvedInOutput_; //< if the own rank should call the output
-                                 //writer, because surface meshes are output, it
-                                 //can be that the surface is only contained on
-                                 //a subset of ranks
+                                 // writer, because surface meshes are output,
+                                 // it can be that the surface is only contained
+                                 // on a subset of ranks
   std::shared_ptr<Partition::RankSubset>
       rankSubset_;     //< the ranks that are involved in computing the surface
   int timeStepNo_;     //< time step no for output writer
   double currentTime_; //< current simulation time for output writer
   double xiTolerance_; //< tolerance for the xi coordinate used when finding the
-                       //samplingPoints in the elements of the mesh
+                       // samplingPoints in the elements of the mesh
   int writeCallCount_ = 0; //< a counter that increases with the output files
 
   std::vector<std::shared_ptr<
@@ -92,50 +92,50 @@ protected:
         elementNoLocal; //< element no in the function space that has the point
     Vec2 xi;            //< xi value within the element where the point is
     double score; //< the residual of the point finding algorithm, lower is a
-                  //better score
+                  // better score
   };
 
   std::map<int, FoundSampledPoint>
       foundSampledPoints_; //< all sampled points that have been found locally,
-                           //key is the samplingPointNo
+                           // key is the samplingPointNo
 
   std::vector<Vec3>
       sampledPointsRequestedPositions_; //< the requested sampling points, as
-                                        //given by the "samplingPoints" option
+                                        // given by the "samplingPoints" option
   std::vector<double>
       sampledPointsPositionGlobal_;  //< on rank 0, buffer for all geometry of
-                                     //all sampled points
+                                     // all sampled points
   std::vector<double> valuesGlobal_; //< on rank 0, buffer for all values
   std::vector<int>
       partitioningGlobal_; //< on rank 0, buffer for the partitioning values
 
   std::string filename_; //< filename of the file to write the sampled points to
   bool updatePointPositions_; //< if the positions of the sampled points should
-                              //be updated in every call, this leads to
-                              //approximately the same global point positions
-                              //even if the geometry changes
+                              // be updated in every call, this leads to
+                              // approximately the same global point positions
+                              // even if the geometry changes
   bool enableCsvFile_;        //< if the csv file should be written
   bool enableVtpFile_;        //< if the vtp file should be written
   bool
       enableGeometryInCsvFile_; //< if the csv file should contain geometry data
   bool enableGeometryFiles_; //< if the found and not found electrodes should be
-                             //written
+                             // written
 
   SeriesWriter seriesWriter_; //< the series writer object that collects all VTK
-                              //filenames and creates a collection file that can
-                              //be loaded by ParaView, for the files that have
-                              //the EMG values
+                              // filenames and creates a collection file that
+                              // can be loaded by ParaView, for the files that
+                              // have the EMG values
   SeriesWriter
       seriesWriterFoundPoints_; //< the series writer object that collects all
-                                //VTK filenames and creates a collection file
-                                //that can be loaded by ParaView, for the files
-                                //that have the found electrode points
+                                // VTK filenames and creates a collection file
+                                // that can be loaded by ParaView, for the files
+                                // that have the found electrode points
   SeriesWriter
       seriesWriterNotFoundPoints_; //< the series writer object that collects
-                                   //all VTK filenames and creates a collection
-                                   //file that can be loaded by ParaView, for
-                                   //the files that have the not found electrode
-                                   //points
+                                   // all VTK filenames and creates a collection
+                                   // file that can be loaded by ParaView, for
+                                   // the files that have the not found
+                                   // electrode points
 
   Manager outputWriterManager_; //< manager object holding all output writers
 };

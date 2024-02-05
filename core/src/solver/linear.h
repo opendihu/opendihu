@@ -58,15 +58,15 @@ protected:
   std::shared_ptr<KSP> ksp_; //< the PETSc KSP (Krylov subspace) object
   double
       relativeTolerance_; //< relative solver tolerance of the residuum norm
-                          //relative to the initial value of the residual norm
+                          // relative to the initial value of the residual norm
   double absoluteTolerance_; //< absolute solver tolerance of the residuum norm
   long int maxIterations_;   //< maximum number of iterations
   int lastNumberOfIterations_; //< the number of iterations of the previous
-                               //solve
+                               // solve
 
   std::string dumpFormat_;   //< format to use for dumping matrices and vectors
   std::string dumpFilename_; //< filename used for dumping matrices and vectors,
-                             //empty for no dump
+                             // empty for no dump
 
   KSPType kspType_;          //< the solver type
   PCType pcType_;            //< the preconditioner type
@@ -74,23 +74,23 @@ protected:
 
   std::shared_ptr<Vec>
       temporaryVectorLeft_; //< temporary vector for computation of residual for
-                            //direct solvers
+                            // direct solvers
   std::shared_ptr<Vec>
       temporaryVectorRight_; //< temporary vector for computation of residual
-                             //for direct solvers
+                             // for direct solvers
   std::shared_ptr<Vec> residual_; //< residual vector for direct solvers
 
   std::string nIterationsLogKey_;  //< the keyword for the log with which the
-                                   //number of iterations will be stored
+                                   // number of iterations will be stored
   std::string residualNormLogKey_; //< the keyword for the log with which the
-                                   //residual norm gets stored
+                                   // residual norm gets stored
   std::string
       nIterationsTotalLogKey_; //< the keyword for the log with which the total
-                               //number of iterations gets stored
+                               // number of iterations gets stored
 
   std::string solverType_; //< the type of the solver as given in the settings
   std::string preconditionerType_; //< the type of the preconditioner, as given
-                                   //in the settings
+                                   // in the settings
 };
 
 } // namespace Solver

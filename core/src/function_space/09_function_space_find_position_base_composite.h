@@ -51,8 +51,9 @@ public:
   int subMeshNoWherePointWasFound();
 
 protected:
-  int subMeshNoWherePointWasFound_ = 0; //< findPositions sets this to the
-                                        //subMeshNo in which the point was found
+  int subMeshNoWherePointWasFound_ =
+      0; //< findPositions sets this to the
+         // subMeshNo in which the point was found
 };
 
 } // namespace FunctionSpace

@@ -159,20 +159,20 @@ void ParallelFiberEstimation<BasisFunctionType>::exchangeGhostValues(
   struct GhostValues {
     std::vector<double>
         nodePositionValues; //< the values of the node positions of the ghost
-                            //elements, in sequential order like [x,x,x,x, ...
-                            //y,y,y,y ... z,z,z,...]
+                            // elements, in sequential order like [x,x,x,x, ...
+                            // y,y,y,y ... z,z,z,...]
     std::vector<double> solutionValues; //< values of solution field variable
-                                        //inside the ghost elements
+                                        // inside the ghost elements
     std::vector<double>
         gradientValues; //< values of the gradient field variable, consecutive
-                        //like nodePositionValues
+                        // like nodePositionValues
     std::array<element_no_t, 3>
         nElementsPerCoordinateDirection; //< size of the ghost mesh
   };
   std::array<GhostValues, 8>
       ghostValuesBuffer; //< [faceIndex], data for meshes containing ghost
-                         //elements for the sides, face0Minus, face0Plus,
-                         //face1Minus, face1Plus
+                         // elements for the sides, face0Minus, face0Plus,
+                         // face1Minus, face1Plus
   std::array<GhostValues, 8> boundaryValues; //< [faceIndex], data to be send
 
   std::vector<MPI_Request> receiveRequests;

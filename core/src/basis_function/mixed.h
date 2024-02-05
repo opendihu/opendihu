@@ -16,7 +16,7 @@ public:
   typedef HighOrderBasisFunctionType HighOrderBasisFunction;
   static const bool isMixed =
       true; //< if this is a mixed formulation comprising a higher order and a
-            //lower order basis function
+            // lower order basis function
 };
 
 template <typename BasisFunctionType>

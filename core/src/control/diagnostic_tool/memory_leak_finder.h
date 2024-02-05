@@ -22,7 +22,7 @@ public:
 private:
   static long long int
       currentMemoryConsumption_; //< the current number of bytes allocated in
-                                 //residual set memory
+                                 // residual set memory
 };
 
 } // namespace Control

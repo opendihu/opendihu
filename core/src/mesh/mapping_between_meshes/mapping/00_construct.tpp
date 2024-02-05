@@ -85,7 +85,7 @@ MappingBetweenMeshesConstruct<FunctionSpaceSourceType,
 
     std::vector<bool> targetDofIsMappedTo(
         nDofsLocalTarget, false); //< for every target dof if it will get a
-                                  //value from any source dof
+                                  // value from any source dof
 
     if (VLOG_IS_ON(1)) {
       VLOG(1) << "create mapping " << functionSpaceSource->meshName() << " -> "

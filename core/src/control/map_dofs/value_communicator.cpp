@@ -142,7 +142,7 @@ void ValueCommunicator::initialize(
   // receive the local dofs nos
   std::vector<std::vector<int>>
       dofNosFromRanks; //< indexing same as in nDofsToReceiveFromRanks_, the
-                       //dofNos given from that rank
+                       // dofNos given from that rank
   dofNosFromRanks.resize(nDofsToReceiveFromRanks_.size());
   std::vector<MPI_Request> receiveRequests;
   nValuesToReceive_ = 0;

@@ -43,5 +43,5 @@ protected:
   bool preprocessingDone_ =
       false; //< if preprocessing of the code tree has been done already
   std::string helperFunctionsCode_; //< code with all helper functions like pow,
-                                    //exponential
+                                    // exponential
 };

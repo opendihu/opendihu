@@ -62,30 +62,30 @@ public:
 
 protected:
   DihuContext context_; //< object that contains the python config for the
-                        //current context and the global singletons meshManager
-                        //and solverManager
+                        // current context and the global singletons meshManager
+                        // and solverManager
 
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writer
   Data data_;               //< data object
 
   std::string durationLogKey_; //< key with with the duration of the computation
-                               //is written to the performance measurement log
+                               // is written to the performance measurement log
   std::shared_ptr<FunctionSpaceType>
       functionSpace_; //< the function space with quadratic Lagrange basis
-                      //functions, as created in the opendihu code. This will be
-                      //passed on to chaste.
+                      // functions, as created in the opendihu code. This will
+                      // be passed on to chaste.
 
   bool initialized_;              //< if this object was already initialized
   PythonConfig specificSettings_; //< python object containing the value of the
-                                  //python config dict with corresponding key
+                                  // python config dict with corresponding key
   double endTime_;                //< end time of current time step
   double maximumActiveStress_; //< parameter value of the maximum active stress,
-                               //this is the scaling factor of the activation
-                               //value to get the active stress tensor
+                               // this is the scaling factor of the activation
+                               // value to get the active stress tensor
   double
       strainScalingCurveWidth_; //< width of a parabola that scales the stress
-                                //dependend on the relative sarcomere length
+                                // dependend on the relative sarcomere length
 };
 
 } // namespace TimeSteppingScheme

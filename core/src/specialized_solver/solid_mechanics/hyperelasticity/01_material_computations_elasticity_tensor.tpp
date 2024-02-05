@@ -24,17 +24,17 @@ void HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
             invariants, //< [in] the invariants I1, ..., I5
         std::array<double_v_t, 5>
             reducedInvariants, //< [in] the reduced invariants Ibar_1, ...,
-                               //Ibar_5
+                               // Ibar_5
         const Tensor2<3, double_v_t>
             &fictitiousPK2Stress, //< [in] Sbar, the fictitious 2nd
-                                  //Piola-Kirchhoff stress tensor
+                                  // Piola-Kirchhoff stress tensor
         const Tensor2<3, double_v_t>
             &pk2StressIsochoric, //< [in] S_iso, the isochoric part of the 2nd
-                                 //Piola-Kirchhoff stress tensor
+                                 // Piola-Kirchhoff stress tensor
         VecD<3, double_v_t> fiberDirection, //< [in] a0, direction of fibers
         Tensor4<3, double_v_t>
             &fictitiousElasticityTensor, //< [out] fictitious Elasticity tensor
-                                         //CCbar_{ABCD}
+                                         // CCbar_{ABCD}
         Tensor4<3, double_v_t> &elasticityTensorIso, //< [out] CCiso_{ABCD}
         Tensor4<3, double_v_t>
             &elasticityTensor //< [out] elasticity tensor CC_{ABCD}

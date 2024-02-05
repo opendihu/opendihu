@@ -115,15 +115,16 @@ private:
       algebraics_; //< algebraics field variable
   std::shared_ptr<FieldVariableStates>
       states_; //< states field variable, this is a shared pointer with the
-               //timestepping scheme, which own the actual variable (creates it)
+               // timestepping scheme, which own the actual variable (creates
+               // it)
   std::shared_ptr<FieldVariableAlgebraics>
       parameters_; //< parameters field variable, the number of components is
-                   //equal or less than the number of algebraics in order to not
-                   //have to specify the number of parameters at compile time.
-                   //This possibly creates a vector that is too large which is
-                   //not harmful.
+                   // equal or less than the number of algebraics in order to
+                   // not have to specify the number of parameters at compile
+                   // time. This possibly creates a vector that is too large
+                   // which is not harmful.
   double *parameterValues_; //< a pointer to the data of the parameters_ Petsc
-                            //Vec of the field variable
+                            // Vec of the field variable
   std::vector<std::string>
       algebraicNames_; //< component names of the algebraics field variable
   std::vector<std::string>
@@ -133,21 +134,21 @@ private:
 
   std::shared_ptr<SlotConnectorData<FunctionSpaceType, nStates>>
       slotConnectorDataTimestepping_; //< slotConnectorData = the object that
-                                      //holds all components of field variables
-                                      //that will be transferred to other
-                                      //solvers, this is a copy of the slot
-                                      //connector data object of the
-                                      //timestepping scheme
+                                      // holds all components of field variables
+                                      // that will be transferred to other
+                                      // solvers, this is a copy of the slot
+                                      // connector data object of the
+                                      // timestepping scheme
   PythonConfig specificSettings_;     //< the settings object
 
   std::vector<int> statesForTransfer_; //< state no.s to transfer to other
-                                       //solvers within slot connector data
+                                       // solvers within slot connector data
   std::vector<int>
       algebraicsForTransfer_; //< algebraic no.s to transfer to other solvers
-                              //within slot connector data
+                              // within slot connector data
   std::vector<int>
       parametersForTransfer_; //< parameter no.s to transfer to other solvers
-                              //within slot connector data
+                              // within slot connector data
 };
 
 } // namespace Data

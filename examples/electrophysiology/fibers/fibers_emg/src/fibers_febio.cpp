@@ -20,15 +20,17 @@ int main(int argc, char *argv[]) {
                                       // multidomain
           Control::MultipleInstances< // fibers
               OperatorSplitting::Strang<
-                  Control::MultipleInstances<TimeSteppingScheme::Heun< // fiber
-                                                                       // reaction
-                                                                       // term
-                      CellmlAdapter<
-                          57, 71, // nStates,nAlgebraics: 57,1 = Shorten, 57,71
-                                  // = Shorten slow_TK, 4,9 = Hodgkin Huxley
-                          FunctionSpace::FunctionSpace<
-                              Mesh::StructuredDeformableOfDimension<1>,
-                              BasisFunction::LagrangeOfOrder<1>>>>>,
+                  Control::MultipleInstances<
+                      TimeSteppingScheme::Heun< // fiber
+                                                // reaction
+                                                // term
+                          CellmlAdapter<
+                              57, 71, // nStates,nAlgebraics: 57,1 = Shorten,
+                                      // 57,71 = Shorten slow_TK, 4,9 = Hodgkin
+                                      // Huxley
+                              FunctionSpace::FunctionSpace<
+                                  Mesh::StructuredDeformableOfDimension<1>,
+                                  BasisFunction::LagrangeOfOrder<1>>>>>,
                   Control::MultipleInstances<
                       TimeSteppingScheme::ImplicitEuler< // fiber diffusion
                           SpatialDiscretization::FiniteElementMethod<

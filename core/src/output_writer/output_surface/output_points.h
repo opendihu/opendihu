@@ -54,18 +54,18 @@ protected:
   std::vector<double> valuesLocal_;     //< buffer for local value
   std::vector<double> valuesGlobal_;    //< buffer for global values
   std::vector<int> sizesOnRanksValues_; //< field needed for MPI_Gatherv, the
-                                        //number of values on every rank
+                                        // number of values on every rank
   std::vector<int> offsetsValues_; //< field needed for MPI_Gatherv, offsets of
-                                   //the arrays on every rank
+                                   // the arrays on every rank
 
   std::vector<double>
       geometryValuesLocal_; //< buffer for local values of geometry
   std::vector<double>
       geometryValuesGlobal_; //< buffer for global values of geometry
   std::vector<int> sizesOnRanksGeometry_; //< field needed for MPI_Gatherv, the
-                                          //number of values on every rank
+                                          // number of values on every rank
   std::vector<int> offsetsGeometry_; //< field needed for MPI_Gatherv, offsets
-                                     //of the arrays on every rank
+                                     // of the arrays on every rank
 
   std::vector<int>
       partitioningLocal_; //<  buffer for local values of partition no
@@ -73,9 +73,9 @@ protected:
       partitioningGlobal_; //<  buffer for global values of partition no
   std::vector<int>
       sizesOnRanksPartitioning_; //< field needed for MPI_Gatherv, the number of
-                                 //values on every rank
+                                 // values on every rank
   std::vector<int> offsetsPartitioning_; //< field needed for MPI_Gatherv,
-                                         //offsets of the arrays on every rank
+                                         // offsets of the arrays on every rank
 };
 
 } // namespace OutputWriter

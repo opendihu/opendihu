@@ -52,13 +52,13 @@ protected:
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType,
                                                nComponents * nComponents>>
       activeStress_; //< active stress field variable, this is a DxD tensor,
-                     //stored row-major
+                     // stored row-major
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, nComponents>>
       rightHandSideActive_; //< debugging field variable that contains the rhs
-                            //contribution from the active stress, the actual
-                            //object is created in
-                            //quasi_static_linear_elasticity and passed to this
-                            //variable by setRightHandSideActive
+                            // contribution from the active stress, the actual
+                            // object is created in
+                            // quasi_static_linear_elasticity and passed to this
+                            // variable by setRightHandSideActive
 };
 
 } // namespace Data

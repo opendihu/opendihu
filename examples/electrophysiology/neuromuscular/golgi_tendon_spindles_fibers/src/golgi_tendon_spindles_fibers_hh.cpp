@@ -79,10 +79,11 @@ int main(int argc, char *argv[]) {
                                                                         // reaction
                                                                         // term
                                                   CellmlAdapter<
-                                                      9, 19, // nStates,nAlgebraics:
-                                                             // 57,71 = Shorten,
-                                                             // 4,9 = Hodgkin
-                                                             // Huxley
+                                                      9,
+                                                      19, // nStates,nAlgebraics:
+                                                          // 57,71 = Shorten,
+                                                          // 4,9 = Hodgkin
+                                                          // Huxley
                                                       FunctionSpace::FunctionSpace<
                                                           Mesh::
                                                               StructuredDeformableOfDimension<

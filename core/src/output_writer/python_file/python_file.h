@@ -31,8 +31,8 @@ private:
   void outputPyObject(PyObject *file, PyObject *pyData);
 
   bool onlyNodalValues_; //< if only nodal values should be output, this omits
-                         //the derivative values for Hermite ansatz functions,
-                         //for Lagrange functions it has no effect
+                         // the derivative values for Hermite ansatz functions,
+                         // for Lagrange functions it has no effect
 };
 
 } // namespace OutputWriter

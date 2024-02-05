@@ -40,9 +40,9 @@ private:
       rhs_; //< the rhs vector contribution from Neumann BC
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 9>>
       deformationGradient_; //< the deformation gradient in the field, which is
-                            //needed to transform traction bc in current
-                            //configuration to traction bc in reference
-                            //configuration
+                            // needed to transform traction bc in current
+                            // configuration to traction bc in reference
+                            // configuration
 };
 } // namespace Data
 

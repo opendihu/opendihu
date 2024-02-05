@@ -106,7 +106,7 @@ private:
 
   HyperelasticitySolverType
       hyperelasticitySolver_; //< hyperelasticity solver that solver the static
-                              //problem
+                              // problem
   Data data_;
 
   double density_; //< density rho, used for inertia
@@ -114,63 +114,63 @@ private:
   std::shared_ptr<VecHyperelasticity>
       uvp_;                 //< combined vector of u,v and p values
   Vec internalVirtualWork_; //< internal virtual work, computed by the
-                            //hyperelasticity solver
+                            // hyperelasticity solver
   Vec accelerationTerm_;    //< contribution to virtual work from acceleration,
-                            //computed by the hyperelasticity solver
+                            // computed by the hyperelasticity solver
   Vec externalVirtualWorkDead_; //< external virtual work, computed by the
-                                //hyperelasticity solver, dead load i.e.
-                                //constant over time
+                                // hyperelasticity solver, dead load i.e.
+                                // constant over time
 
   bool inputMeshIsGlobal_; //< value of the setting "inputMeshIsGlobal", if the
-                           //new dirichletBC values are given in global or local
-                           //numbering
+                           // new dirichletBC values are given in global or
+                           // local numbering
 
   PyObject
       *pythonUpdateDirichletBoundaryConditionsFunction_; //< the callback
-                                                         //function that updates
-                                                         //dirichlet boundary
-                                                         //conditions
+                                                         // function that
+                                                         // updates dirichlet
+                                                         // boundary conditions
   int updateDirichletBoundaryConditionsFunctionCallInterval_; //< the interval
-                                                              //with which the
-                                                              //function will be
-                                                              //called
+                                                              // with which the
+                                                              // function will
+                                                              // be called
   int updateDirichletBoundaryConditionsFunctionCallCount_ =
       0; //< the counter of number of calls to the
-         //updateDirichletBoundaryConditionsFunction
+         // updateDirichletBoundaryConditionsFunction
 
   PyObject
       *pythonUpdateNeumannBoundaryConditionsFunction_; //< the callback function
-                                                       //that updates neumann
-                                                       //boundary conditions
+                                                       // that updates neumann
+                                                       // boundary conditions
   int updateNeumannBoundaryConditionsFunctionCallInterval_; //< the interval
-                                                            //with which the
-                                                            //function will be
-                                                            //called
+                                                            // with which the
+                                                            // function will be
+                                                            // called
   int updateNeumannBoundaryConditionsFunctionCallCount_ =
       0; //< the counter of number of calls to the
-         //updateNeumannBoundaryConditionsFunction
+         // updateNeumannBoundaryConditionsFunction
 
   PyObject *pythonTotalForceFunction_; //< the callback function that gets the
-                                       //total bearing forces and moments
+                                       // total bearing forces and moments
   int pythonTotalForceFunctionCallInterval_; //< the interval with which the
-                                             //function will be called
+                                             // function will be called
   int pythonTotalForceFunctionCallCount_ =
       0; //< the counter of number of calls to the pythonTotalForceFunction_
 
   std::vector<std::tuple<element_no_t, bool>>
       bottomTopElements_; //< (elementNoLocal,isAtTopOfDomain) elements that are
-                          //used to integrate total forces and moments
+                          // used to integrate total forces and moments
   std::string
       totalForceLogFilename_; //< filename of the log file that will contain the
-                              //total bearing forces at top and bottom elements
+                              // total bearing forces at top and bottom elements
   bool isTractionInCurrentConfiguration_; //< if traction is given in current
-                                          //configuration, then it has to be
-                                          //transformed to reference
-                                          //configuration in every timestep
+                                          // configuration, then it has to be
+                                          // transformed to reference
+                                          // configuration in every timestep
   bool
       isReferenceGeometryInitialized_; //< if the copy of the reference geometry
-                                       //in the hyperelasticitySolver_ has
-                                       //already been set in the first timestep
+                                       // in the hyperelasticitySolver_ has
+                                       // already been set in the first timestep
 };
 
 } // namespace TimeSteppingScheme

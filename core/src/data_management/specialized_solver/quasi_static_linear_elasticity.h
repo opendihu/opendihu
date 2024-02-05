@@ -96,7 +96,7 @@ private:
       strain_; //< field variable of the strain in the muscle
   std::shared_ptr<VectorFieldVariableType>
       rightHandSideActive_; //< field variable of the active stress part of rhs,
-                            //f_active
+                            // f_active
   std::shared_ptr<FieldVariableType>
       flowPotential_; //< solution of the laplace flow
   std::shared_ptr<VectorFieldVariableType>
@@ -104,7 +104,7 @@ private:
 
   std::shared_ptr<SlotConnectorDataType>
       slotConnectorData_; //< the field variables that are used for transfer to
-                          //other solvers
+                          // other solvers
 };
 
 } // namespace Data

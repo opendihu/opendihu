@@ -35,7 +35,7 @@ protected:
 
   std::vector<std::pair<int, int>>
       nDofsToReceiveFromRanks_; //< (foreignRank,nNodes), number of nodes
-                                //requested by and to be send to foreignRank
+                                // requested by and to be send to foreignRank
   int nValuesToReceive_; //< total number of values to receive on own rank
 };
 

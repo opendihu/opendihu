@@ -91,11 +91,11 @@ private:
   double currentTimeHeun_;
 
   std::string timeStepWidthsLogFilename_; //< filename of log file that will
-                                          //contain timestep widths
+                                          // contain timestep widths
 
   std::vector<double> times_;          //< time points that are visited
   std::vector<double> timeStepWidths_; //< a vector of all used timestep widths,
-                                       //to be written to a log at the end
+                                       // to be written to a log at the end
 };
 
 } // namespace TimeSteppingScheme

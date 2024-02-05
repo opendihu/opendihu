@@ -647,8 +647,8 @@ void CellmlSourceCodeGeneratorVc::generateSourceFileVc(
     bool useAoVSMemoryLayout) {
   std::set<std::string>
       helperFunctions; //< functions found in the CellML code that need to be
-                       //provided, usually the pow2, pow3, etc. helper functions
-                       //for pow(..., 2), pow(...,3) etc.
+                       // provided, usually the pow2, pow3, etc. helper
+                       // functions for pow(..., 2), pow(...,3) etc.
 
   // replace pow and ?: functions
   preprocessCode(helperFunctions);
@@ -709,8 +709,8 @@ void CellmlSourceCodeGeneratorVc::generateSourceFileVc(
   sourceCode << std::endl;
   std::vector<int>
       parametersUsedAsConstant_; //< explicitely defined parameters that will be
-                                 //copied to constants, this vector contains the
-                                 //indices of the constants
+                                 // copied to constants, this vector contains
+                                 // the indices of the constants
 
   sourceCode
       << "#ifdef __cplusplus\n"
@@ -957,8 +957,8 @@ void CellmlSourceCodeGeneratorVc::generateSourceFileFastMonodomain(
     std::string outputFilename, bool approximateExponentialFunction) {
   std::set<std::string>
       helperFunctions; //< functions found in the CellML code that need to be
-                       //provided, usually the pow2, pow3, etc. helper functions
-                       //for pow(..., 2), pow(...,3) etc.
+                       // provided, usually the pow2, pow3, etc. helper
+                       // functions for pow(..., 2), pow(...,3) etc.
 
   // replace pow and ?: functions
   preprocessCode(helperFunctions);

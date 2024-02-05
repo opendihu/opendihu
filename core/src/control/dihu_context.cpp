@@ -50,7 +50,7 @@
 
 bool GLOBAL_DEBUG =
     false; //< use this variable to hack in debugging output that should only be
-           //visible in certain conditions. Do not commit these hacks!
+           // visible in certain conditions. Do not commit these hacks!
 
 // global singleton objects
 std::shared_ptr<MappingBetweenMeshes::Manager>
@@ -81,7 +81,7 @@ std::shared_ptr<adios2::ADIOS> DihuContext::adios_ =
 #endif
 bool DihuContext::initialized_ = false;
 int DihuContext::nObjects_ = 0; //< number of objects of DihuContext, if the
-                                //last object gets destroyed, call MPI_Finalize
+                                // last object gets destroyed, call MPI_Finalize
 int DihuContext::nRanksCommWorld_ = 0; //< number of MPI ranks in MPI_COMM_WORLD
 int DihuContext::ownRankNoCommWorld_ = 0; //< own MPI rank no in MPI_COMM_WORLD
 

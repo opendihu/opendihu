@@ -337,56 +337,57 @@ protected:
 
   std::shared_ptr<DM>
       dmElements_; //< PETSc DMDA object (data management for distributed
-                   //arrays) that stores topology information and everything
-                   //needed for communication of ghost values. This particular
-                   //object is created to get partitioning information on the
-                   //element level.
+                   // arrays) that stores topology information and everything
+                   // needed for communication of ghost values. This particular
+                   // object is created to get partitioning information on the
+                   // element level.
 
   std::array<global_no_t, MeshType::dim()>
       beginElementGlobal_; //< global element no.s of the lower left front
-                           //corner of the domain
+                           // corner of the domain
   std::array<node_no_t, MeshType::dim()>
       nElementsLocal_; //< local size, i.e. number of nodes in the coordinate
-                       //directions of the local portion
+                       // directions of the local portion
   std::array<global_no_t, MeshType::dim()>
       nElementsGlobal_; //< global number of elements in the coodinate
-                        //directions
+                        // directions
   std::array<int, MeshType::dim()>
       nRanks_; //<  number of ranks in each coordinate direction that decompose
-               //the total domain
+               // the total domain
   std::array<int, MeshType::dim()>
       ownRankPartitioningIndex_; //< the index in terms of partitions of the own
-                                 //partition
+                                 // partition
   bool isDegenerate_; //< if the mesh has 0 elements and 0 dofs, this happens
-                      //when an MPI_Comm is split and some ranks do not take
-                      //part in further computations
+                      // when an MPI_Comm is split and some ranks do not take
+                      // part in further computations
 
   std::array<std::vector<element_no_t>, MeshType::dim()>
       localSizesOnPartitions_; //< the sizes of different partitions in each
-                               //coordinate direction, i.e.
-                               //localSizesOnPartitions_[0] is (width partition
+                               // coordinate direction, i.e.
+                               // localSizesOnPartitions_[0] is (width partition
                                //#0, width partition #1, ...)
 
   std::array<bool, MeshType::dim()>
       hasFullNumberOfNodes_; //< if the own local partition has nodes on both
-                             //sides of the 1D projection at the boundary. This
-                             //is only true at the right/top/back-most
-                             //partition.
+                             // sides of the 1D projection at the boundary. This
+                             // is only true at the right/top/back-most
+                             // partition.
 
   std::vector<dof_no_t>
       onlyNodalDofLocalNos_; //< vector of local nos of the dofs, not including
-                             //derivatives for Hermite
+                             // derivatives for Hermite
   std::vector<dof_no_t>
       ghostDofNosGlobalPetsc_; //< vector of global/petsc dof nos of the ghost
-                               //dofs which are stored on the local partition
+                               // dofs which are stored on the local partition
 
   std::vector<dof_no_t>
-      dofNosLocalNaturalOrdering_;   //< for every local natural number, i.e.
-                                     //local numbering according to coordinates,
-                                     //the local dof no
-  dof_no_t nDofsLocalWithoutGhosts_; //< number of local dofs without ghosts,
-                                     //cached value, the actual value is derived
-                                     //from nElementslocal_ and mesh type
+      dofNosLocalNaturalOrdering_; //< for every local natural number, i.e.
+                                   // local numbering according to coordinates,
+                                   // the local dof no
+  dof_no_t
+      nDofsLocalWithoutGhosts_; //< number of local dofs without ghosts,
+                                // cached value, the actual value is derived
+                                // from nElementslocal_ and mesh type
 
   ISLocalToGlobalMapping
       localToGlobalPetscMappingDofs_; //< local to global mapping for dofs

@@ -125,44 +125,44 @@ public:
     std::vector<double> vmValues;       //< values of Vm
     std::vector<double>
         furtherStatesAndAlgebraicsValues; //< all data to be transferred back to
-                                          //the fibers, apart from vmValues,
-                                          //corresponding to
-                                          //statesForTransferIndices_ and
-                                          //algebraicsForTransferIndices_ (array
-                                          //of struct memory layout)
+                                          // the fibers, apart from vmValues,
+                                          // corresponding to
+                                          // statesForTransferIndices_ and
+                                          // algebraicsForTransferIndices_
+                                          // (array of struct memory layout)
     int valuesLength;                     //< number of vmValues
     global_no_t
         valuesOffset; //< number of vmValues in previous entries in fiberData_
 
     int fiberNoGlobal;              //< fiberNo as given in settings (value of
-                                    //additionalArgument)
+                                    // additionalArgument)
     int motorUnitNo;                //< motor unit no.
     int fiberStimulationPointIndex; //< index of the point on the fiber where to
-                                    //stimulate, i.e. position of the
-                                    //neuromuscular junction, if at center, it
-                                    //is equal to
+                                    // stimulate, i.e. position of the
+                                    // neuromuscular junction, if at center, it
+                                    // is equal to
                                     //(int)(fiberData_[fiberDataNo].valuesLength
                                     /// 2)
 
     double lastStimulationCheckTime; //< last time the fiber was checked for
-                                     //stimulation
+                                     // stimulation
     double setSpecificStatesCallFrequency; //< value of option with the same
-                                           //name in the python settings
+                                           // name in the python settings
     std::vector<double>
         setSpecificStatesFrequencyJitter; //< value of option with the same name
-                                          //in the python settings
+                                          // in the python settings
     double
         setSpecificStatesRepeatAfterFirstCall; //< how long in ms the prescribed
-                                               //value should be set
+                                               // value should be set
     double setSpecificStatesCallEnableBegin;   //< value of option with the same
-                                               //name in the python settings
+                                               // name in the python settings
 
     double currentJitter; //< current absolute value of jitter to add to
-                          //setSpecificStatesCallFrequency
+                          // setSpecificStatesCallFrequency
     int jitterIndex; //< index of the vector in setSpecificStatesFrequencyJitter
-                     //which is the current value to use
+                     // which is the current value to use
     bool currentlyStimulating; //< if a stimulation is in progress at the
-                               //current time
+                               // current time
   };
 
 protected:
@@ -249,32 +249,32 @@ protected:
   PythonConfig specificSettings_; //< config for this object
 
   NestedSolversType nestedSolvers_; //< the nested solvers object that would
-                                    //normally solve the problem
+                                    // normally solve the problem
 
   std::vector<FiberPointBuffers<nStates>>
       fiberPointBuffers_; //< computation buffers for the 0D problem, the states
-                          //vector used when optimizationType == "vc"
+                          // vector used when optimizationType == "vc"
   std::vector<FiberPointBuffers<nStates>>
       fiberPointBuffersLastCheckpoint_; //< copy of fiberPointBuffers_ that was
-                                        //stored at the last checkpoint, needed
-                                        //for implicit coupling with precice,
-                                        //where a previous state needs to be
-                                        //restored
+                                        // stored at the last checkpoint, needed
+                                        // for implicit coupling with precice,
+                                        // where a previous state needs to be
+                                        // restored
 
   std::string
       fiberDistributionFilename_; //< filename of the fiberDistributionFile,
-                                  //which contains motor unit numbers for fiber
-                                  //numbers
+                                  // which contains motor unit numbers for fiber
+                                  // numbers
   std::string
       firingTimesFilename_; //< filename of the firingTimesFile, which contains
-                            //points in time of stimulation for each motor unit
+                            // points in time of stimulation for each motor unit
 
   std::vector<std::vector<bool>>
       firingEvents_; //< if a motor unit fires,
-                     //firingEvents_[timeStepNo][motorUnitNo]
+                     // firingEvents_[timeStepNo][motorUnitNo]
 
   std::vector<int> motorUnitNo_; //< number of motor unit for given fiber no
-                                 //motorUnitNo_[fiberNo]
+                                 // motorUnitNo_[fiberNo]
   std::string durationLogKey0D_; //< duration log key for the 0D problem
   std::string durationLogKey1D_; //< duration log key for the 1D problem
 
@@ -283,158 +283,161 @@ protected:
 
   std::vector<FiberData>
       fiberData_; //< vector of fibers, the number of entries is the number of
-                  //fibers to be computed by the own rank (nFibersToCompute_)
+                  // fibers to be computed by the own rank (nFibersToCompute_)
 
   int nFibersToCompute_;    //< number of fibers where own rank is involved (>=
-                            //n.fibers that are computed by own rank)
+                            // n.fibers that are computed by own rank)
   int nInstancesToCompute_; //< number of instances of the Hodgkin-Huxley (or
-                            //other CellML) problem to compute on this rank
+                            // other CellML) problem to compute on this rank
   int nInstancesToComputePerFiber_; //< number of instances to compute per
-                                    //fiber, i.e., global number of instances of
-                                    //a fiber
+                                    // fiber, i.e., global number of instances
+                                    // of a fiber
   int nParametersPerInstance_;      //< number of parameters per instance
   double currentTime_;      //< the current time used for the output writer
   int nTimeStepsSplitting_; //< number of times to repeat the Strang splitting
-                            //for one advanceTimeSpan() call of
-                            //FastMonodomainSolver
+                            // for one advanceTimeSpan() call of
+                            // FastMonodomainSolver
 
   bool onlyComputeIfHasBeenStimulated_; //< option if fiber should only be
-                                        //computed after it has been stimulated
-                                        //for the first time
+                                        // computed after it has been stimulated
+                                        // for the first time
   std::vector<bool>
       fiberHasBeenStimulated_; //< for every fiber if it has been stimulated
 
   bool disableComputationWhenStatesAreCloseToEquilibrium_; //< option to avoid
-                                                           //computation when
-                                                           //the states won't
-                                                           //change much
+                                                           // computation when
+                                                           // the states won't
+                                                           // change much
   enum state_t {
     inactive, //< the state values at the own point did not change in the last
-              //computation (according to a tolerance). This means the current
-              //point does not need to be computed.
+              // computation (according to a tolerance). This means the current
+              // point does not need to be computed.
     neighbor_is_active, //< the state values did not change, so the state is
-                        //inactive, but at a neighbouring point the value
-                        //changed. This means the own value has to be computed
-                        //because it can change due to diffusion.
+                        // inactive, but at a neighbouring point the value
+                        // changed. This means the own value has to be computed
+                        // because it can change due to diffusion.
     active //< the state values at the own point change and have to be computed
   };       //< type for fiberPointBuffersStatesAreCloseToEquilibrium_
   std::vector<state_t> fiberPointBuffersStatesAreCloseToEquilibrium_;
 
   int nFiberPointBufferStatesCloseToEquilibrium_; //< number of "inactive"
-                                                  //entries in
-                                                  //fiberPointBuffersStatesAreCloseToEquilibrium_
-  bool setComputeStateInformation_; //< whether the information in
-                                    //fiberPointBuffersStatesAreCloseToEquilibrium_
-                                    //should be added to the algebraics to
-                                    //transfer in a variable named
-                                    //"computeStateInformation"
+                                                  // entries in
+                                                  // fiberPointBuffersStatesAreCloseToEquilibrium_
+  bool
+      setComputeStateInformation_; //< whether the information in
+                                   // fiberPointBuffersStatesAreCloseToEquilibrium_
+                                   // should be added to the algebraics to
+                                   // transfer in a variable named
+                                   //"computeStateInformation"
 
   std::vector<int>
       statesForTransferIndices_; //< state no.s to transfer to other solvers
-                                 //within slot connector data
+                                 // within slot connector data
   std::vector<int>
       algebraicsForTransferIndices_; //< which algebraics should be transferred
-                                     //to other solvers as part of slot
-                                     //connector data
+                                     // to other solvers as part of slot
+                                     // connector data
   double valueForStimulatedPoint_;   //< value to which the first state will be
-                                     //set if stimulated
+                                     // set if stimulated
   double neuromuscularJunctionRelativeSize_; //< relative size of the range
-                                             //where the neuromuscular junction
-                                             //is located
+                                             // where the neuromuscular junction
+                                             // is located
 
   std::vector<std::vector<Vc::double_v>>
       fiberPointBuffersParameters_; //< constant parameter values, changing
-                                    //parameters is not implemented
+                                    // parameters is not implemented
   std::vector<std::vector<Vc::double_v>>
       fiberPointBuffersAlgebraicsForTransfer_; //<
                                                //[fiberPointNo][algebraicToTransferNo],
-                                               //algebraic values to use for
-                                               //slot connector data
+                                               // algebraic values to use for
+                                               // slot connector data
 
   std::vector<float>
       gpuParameters_; //< for "gpu": constant parameter values, in struct of
-                      //array memory layout:
-                      //gpuParameters_[parameterNo*nInstances + instanceNo]
+                      // array memory layout:
+                      // gpuParameters_[parameterNo*nInstances + instanceNo]
   std::vector<double>
       gpuAlgebraicsForTransfer_; //< for "gpu": algebraic values to use for slot
-                                 //connector data, in struct of array memory
-                                 //layout:
-                                 //gpuAlgebraicsForTransfer_[algebraicNo*nInstances
+                                 // connector data, in struct of array memory
+                                 // layout:
+                                 // gpuAlgebraicsForTransfer_[algebraicNo*nInstances
                                  //+ instanceNo]
   std::vector<double>
       gpuStatesForTransfer_; //< for "gpu": state values to use for slot
-                             //connector data, in struct of array memory layout:
-                             //gpuStatesForTransfer_[stateInThisListIndex*nInstances
+                             // connector data, in struct of array memory
+                             // layout:
+                             // gpuStatesForTransfer_[stateInThisListIndex*nInstances
                              //+ instanceNo]
   std::vector<float>
       gpuElementLengths_; //< for "gpu": the lengths of the 1D elements, in
-                          //struct of array memory layout:
-                          //gpuElementLengths_[fiberDataNo*nElementsOnFiber +
-                          //elementNo]
-  std::vector<char>
-      gpuFiringEvents_; //< for "gpu": if a motor unit fires at a specified
-                        //time, 1=yes, 0=no,
-                        //gpuFiringEvents_[timeStepNo*nMotorUnits + motorUnitNo]
+                          // struct of array memory layout:
+                          // gpuElementLengths_[fiberDataNo*nElementsOnFiber +
+                          // elementNo]
+  std::vector<char> gpuFiringEvents_; //< for "gpu": if a motor unit fires at a
+                                      // specified time, 1=yes, 0=no,
+                                      // gpuFiringEvents_[timeStepNo*nMotorUnits
+                                      // + motorUnitNo]
   std::vector<double>
       gpuSetSpecificStatesFrequencyJitter_; //< for "gpu", value of option with
-                                            //the same name in the python
-                                            //settings:
-                                            //gpuSetSpecificStatesFrequencyJitter_[fiberNo*nColumns
+                                            // the same name in the python
+                                            // settings:
+                                            // gpuSetSpecificStatesFrequencyJitter_[fiberNo*nColumns
                                             //+ columnNo]
   int gpuFiringEventsNRows_; //< for "gpu": number of rows in the firing events
-                             //file
+                             // file
   int gpuFiringEventsNColumns_; //< for "gpu": number of columns in the firing
-                                //events file
+                                // events file
   int gpuFrequencyJitterNColumns_; //< for "gpu": number of columns in the
-                                   //gpuSetSpecificStatesFrequencyJitter_ array
+                                   // gpuSetSpecificStatesFrequencyJitter_ array
   std::vector<char>
       gpuFiberIsCurrentlyStimulated_; //< for "gpu": the value of
-                                      //fiberData_[].currentlyStimulating
+                                      // fiberData_[].currentlyStimulating
   std::vector<int> gpuMotorUnitNo_;   //< motor unit no.
   std::vector<int>
       gpuFiberStimulationPointIndex_; //< index of the point on the fiber where
-                                      //to stimulate, i.e. position of the
-                                      //neuromuscular junction, if at center, it
-                                      //is equal to
+                                      // to stimulate, i.e. position of the
+                                      // neuromuscular junction, if at center,
+                                      // it is equal to
                                       //(int)(fiberData_[fiberDataNo].valuesLength
                                       /// 2)
   std::vector<double> gpuLastStimulationCheckTime_; //< last time the fiber was
-                                                    //checked for stimulation
+                                                    // checked for stimulation
   std::vector<double>
       gpuSetSpecificStatesCallFrequency_; //< value of option with the same name
-                                          //in the python settings
+                                          // in the python settings
   std::vector<double>
       gpuSetSpecificStatesRepeatAfterFirstCall_; //< how long in ms the
-                                                 //prescribed value should be
-                                                 //set
+                                                 // prescribed value should be
+                                                 // set
   std::vector<double>
       gpuSetSpecificStatesCallEnableBegin_; //< value of option with the same
-                                            //name in the python settings
-  std::vector<double> gpuCurrentJitter_; //< current absolute value of jitter to
-                                         //add to setSpecificStatesCallFrequency
-  std::vector<int> gpuJitterIndex_;      //< index of the vector in
-                                    //setSpecificStatesFrequencyJitter which is
-                                    //the current value to use
+                                            // name in the python settings
+  std::vector<double>
+      gpuCurrentJitter_;            //< current absolute value of jitter to
+                                    // add to setSpecificStatesCallFrequency
+  std::vector<int> gpuJitterIndex_; //< index of the vector in
+                                    // setSpecificStatesFrequencyJitter which is
+                                    // the current value to use
   std::vector<double> gpuVmValues_; //< for "gpu": values of the first state,
-                                    //gpuVmValues_[instanceToComputeNo]
+                                    // gpuVmValues_[instanceToComputeNo]
 
   bool
       generateGpuSource_; //< if the GPU source code should be generated, if not
-                          //it reuses the existing file, this is for debugging
+                          // it reuses the existing file, this is for debugging
 
   void (*compute0DInstance_)(Vc::double_v[], std::vector<Vc::double_v> &,
                              double, double, bool, bool,
                              std::vector<Vc::double_v> &,
                              const std::vector<int> &,
                              double); //< runtime-created and loaded function to
-                                      //compute one Heun step of the 0D problem
+                                      // compute one Heun step of the 0D problem
   void (*computeMonodomain_)(
       const float *parameters, double *algebraicsForTransfer,
       double *statesForTransfer, const float *elementLengths, double startTime,
       double timeStepWidthSplitting, int nTimeStepsSplitting, double dt0D,
       int nTimeSteps0D, double dt1D, int nTimeSteps1D, double prefactor,
       double valueForStimulatedPoint); //< runtime-created and loaded function
-                                       //to compute monodomain equation
+                                       // to compute monodomain equation
   void (*initializeArrays_)(
       const double *statesOneInstance,
       const int *algebraicsForTransferIndicesParameter,
@@ -446,18 +449,18 @@ protected:
       const double *lastStimulationCheckTimeParameter,
       const double *setSpecificStatesCallFrequencyParameter,
       const double *setSpecificStatesRepeatAfterFirstCallParameter,
-      const double
-          *setSpecificStatesCallEnableBeginParameter); //< function that
-                                                       //initializes all data on
-                                                       //the target device (GPU)
+      const double *
+          setSpecificStatesCallEnableBeginParameter); //< function that
+                                                      // initializes all data on
+                                                      // the target device (GPU)
   void (*initializeStates_)(
       Vc::double_v states[]); //< runtime-created and loaded function to set all
-                              //initial values for the states
+                              // initial values for the states
 
   bool useVc_; //< if the Vc library is used, if not, code for the GPU or OpenMP
-               //is generated
+               // is generated
   std::string optimizationType_; //< the optimization type as given in the
-                                 //settings, one of "vc", "openmp", "gpu"
+                                 // settings, one of "vc", "openmp", "gpu"
   bool initialized_;             //< if initialize was already called
 };
 

@@ -60,9 +60,9 @@ protected:
       targetFunctionSpace_; //< the target function space of the mapping
 
   element_no_t targetElementForYChange_; //< target element that will be used
-                                         //when the source y coordinate changes
+                                         // when the source y coordinate changes
   element_no_t targetElementForZChange_; //< target element that will be used
-                                         //when the source z coordinate changes
+                                         // when the source z coordinate changes
 };
 
 /** This is the partial specialization for two 3D structured meshes. It computes
@@ -99,9 +99,9 @@ protected:
       targetFunctionSpace_; //< the target function space of the mapping
 
   element_no_t targetElementForYChange_; //< target element that will be used
-                                         //when the source y coordinate changes
+                                         // when the source y coordinate changes
   element_no_t targetElementForZChange_; //< target element that will be used
-                                         //when the source z coordinate changes
+                                         // when the source z coordinate changes
 };
 
 } // namespace MappingBetweenMeshes

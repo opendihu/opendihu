@@ -178,7 +178,7 @@ MuscleContractionSolver<FunctionSpaceType>::getFieldVariablesForOutputWriter() {
       this->displacements_,   //< u, the displacements
       this->velocities_,      //< v, the velocities
       this->activePK2Stress_, //< the symmetric PK2 stress tensor of the active
-                              //contribution in Voigt notation
+                              // contribution in Voigt notation
       this->pK2Stress_, //< the symmetric PK2 stress tensor in Voigt notation
       this->fiberDirection_,  //< direction of fibers at current point
       this->materialTraction_ //< material traction

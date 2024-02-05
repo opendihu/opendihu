@@ -317,10 +317,10 @@ bool Linear::solve(Vec rightHandSide, Vec solution, std::string message) {
     if (!residual_) {
       temporaryVectorLeft_ =
           std::make_shared<Vec>(); //< temporary vector for computation of
-                                   //residual for direct solvers
+                                   // residual for direct solvers
       temporaryVectorRight_ =
           std::make_shared<Vec>(); //< temporary vector for computation of
-                                   //residual for direct solvers
+                                   // residual for direct solvers
       residual_ =
           std::make_shared<Vec>(); //< residual vector for direct solvers
 

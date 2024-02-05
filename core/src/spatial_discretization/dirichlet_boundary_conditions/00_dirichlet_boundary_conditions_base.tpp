@@ -225,13 +225,13 @@ void DirichletBoundaryConditionsBase<FunctionSpaceType, nComponents>::
   element_no_t lastBoundaryConditionElement = -1;
   std::set<dof_no_t>
       boundaryConditionNonGhostDofLocalNosSet; //< same data as in
-                                               //boundaryConditionNonGhostDofLocalNos_,
-                                               //but as set
+                                               // boundaryConditionNonGhostDofLocalNos_,
+                                               // but as set
 
   std::vector<std::pair<int, ValueType>>
       boundaryConditionsNonGhost; //< boundary condition dof nos and values for
-                                  //non-ghost dofs, used to collect values and
-                                  //sort them afterwards
+                                  // non-ghost dofs, used to collect values and
+                                  // sort them afterwards
 
   // loop over all local elements
   for (element_no_t elementNoLocal = 0;
@@ -540,12 +540,12 @@ void DirichletBoundaryConditionsBase<FunctionSpaceType, nComponents>::
 
   std::set<dof_no_t>
       boundaryConditionNonGhostDofLocalNosSet; //< same data as in
-                                               //boundaryConditionNonGhostDofLocalNos_,
-                                               //but as set
+                                               // boundaryConditionNonGhostDofLocalNos_,
+                                               // but as set
   std::vector<std::pair<int, ValueType>>
       boundaryConditionsNonGhost; //< boundary condition dof nos and values for
-                                  //non-ghost dofs, used to collect values and
-                                  //sort them afterwards
+                                  // non-ghost dofs, used to collect values and
+                                  // sort them afterwards
 
   // create boundaryConditionNonGhostDofLocalNos_ and boundaryConditionValues_
   // from boundaryConditionValues_ loop over existing boundaryConditionElements_

@@ -188,8 +188,8 @@ protected:
   Mat matNest_; //< nested matrix of MatNest type that contains the submatrices
 
   int nComponents_; //< number of components of the field variable that can be
-                    //right-multiplied with this matrix, number of submatrices
-                    //is nComponents_^2
+                    // right-multiplied with this matrix, number of submatrices
+                    // is nComponents_^2
 };
 
 template <typename FunctionSpaceType>

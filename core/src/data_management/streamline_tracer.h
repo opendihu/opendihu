@@ -73,7 +73,7 @@ protected:
 
   std::shared_ptr<BaseDataType>
       baseData_; //< the data object that holds the field frorm which stream
-                 //lines are generated
+                 // lines are generated
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
       gradient_; //< the gradient field of the solution field variable
 

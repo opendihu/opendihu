@@ -47,13 +47,13 @@ protected:
   int nAdditionalFieldVariables_; //< number of additional field variables
   std::shared_ptr<SlotConnectorDataType>
       slotConnectorData_; //< the object that holds all components of field
-                          //variables that will be transferred to other solvers
+                          // variables that will be transferred to other solvers
   std::shared_ptr<NestedSolverType>
       nestedSolver_; //< a pointer to the nested solver
 
   std::vector<std::shared_ptr<FieldVariableType>>
       additionalFieldVariables_; //< the additional field variables that are
-                                 //created by MapDofs
+                                 // created by MapDofs
 };
 
 } // namespace Data

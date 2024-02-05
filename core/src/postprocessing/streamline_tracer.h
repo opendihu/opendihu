@@ -38,8 +38,8 @@ protected:
   void postprocessStreamlines(std::vector<std::vector<Vec3>> &nodePositions);
 
   const DihuContext context_; //< object that contains the python config for the
-                              //current context and the global singletons
-                              //meshManager and solverManager
+                              // current context and the global singletons
+                              // meshManager and solverManager
   DiscretizableInTimeType
       problem_; //< the DiscretizableInTime object that is managed by this class
 
@@ -55,21 +55,21 @@ protected:
       outputWriterManager_; //< manager object holding all output writer
 
   double targetElementLength_; //< the final length of each element of the
-                               //traced streamlines. After the streamlines were
-                               //traced using the fine lineStepWidth_, it gets
-                               //resampled with this width.
+                               // traced streamlines. After the streamlines were
+                               // traced using the fine lineStepWidth_, it gets
+                               // resampled with this width.
   double targetLength_; //< the final length of the longest streamline, 0 means
-                        //disabled
+                        // disabled
   double discardRelativeLength_; //< a relative length (in [0,1]), at the end
-                                 //streamlines are dropped that are smaller than
-                                 //this relative length times the median fiber
-                                 //length
+                                 // streamlines are dropped that are smaller
+                                 // than this relative length times the median
+                                 // fiber length
   std::string
       csvFilename_; //< a csv output filename to write the node positions of the
-                    //streamlines to (after postprocessing)
+                    // streamlines to (after postprocessing)
   std::string
       csvFilenameBeforePostprocessing_; //< a csv output filename to write the
-                                        //node positions of the streamlines to
+                                        // node positions of the streamlines to
                                         //(before postprocessing)
 };
 

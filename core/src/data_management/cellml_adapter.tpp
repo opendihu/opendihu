@@ -32,22 +32,23 @@ CellmlAdapter<nStates, nAlgebraics, FunctionSpaceType>::CellmlAdapter(
   parameterNames_ =
       rhs.parameterNames_; //< component names of the parameter field variable
   slotNames_ = rhs.slotNames_; //< names of the data slots that are used for
-                               //slot connectors
+                               // slot connectors
 
   slotConnectorDataTimestepping_ =
       rhs.slotConnectorDataTimestepping_; //< the object that holds all
-                                          //components of field variables that
-                                          //will be transferred to other solvers
+                                          // components of field variables that
+                                          // will be transferred to other
+                                          // solvers
 
   statesForTransfer_ =
       rhs.statesForTransfer_; //< state no.s to transfer to other solvers within
-                              //slot connector data
+                              // slot connector data
   algebraicsForTransfer_ =
       rhs.algebraicsForTransfer_; //< algebraic no.s to transfer to other
-                                  //solvers within slot connector data
+                                  // solvers within slot connector data
   parametersForTransfer_ =
       rhs.parametersForTransfer_; //< parameter no.s to transfer to other
-                                  //solvers within slot connector data
+                                  // solvers within slot connector data
 }
 
 template <int nStates, int nAlgebraics, typename FunctionSpaceType>

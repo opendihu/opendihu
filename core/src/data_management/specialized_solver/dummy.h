@@ -30,7 +30,7 @@ private:
 
   std::shared_ptr<SlotConnectorDataType>
       slotConnectorData_; //< the object that stores all components of field
-                          //variables that will be transferred to other solvers
+                          // variables that will be transferred to other solvers
 };
 
 } // namespace Data

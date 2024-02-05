@@ -47,7 +47,7 @@ protected:
 
   PythonConfig
       specificSettingsMOR_; //< python object containing the value of the python
-                            //config dict with corresponding key
+                            // config dict with corresponding key
   bool initialized_;
 };
 

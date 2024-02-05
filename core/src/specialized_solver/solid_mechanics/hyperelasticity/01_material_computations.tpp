@@ -1628,19 +1628,17 @@ bool HyperelasticityMaterialComputations<
 
                     // compute dphiL/dXB from dphiL/dxik and dxik/dXB
                     const double dphiL_dxik = gradPhi[aDof][k]; // dphi_L/dxik
-                    const double_v_t dxik_dXB =
-                        inverseJacobianMaterial[bInternal]
-                                               [k]; // inverseJacobianMaterial[B][k]
-                                                    // = J^{-1}_kB = dxi_k/dX_B
+                    const double_v_t dxik_dXB = inverseJacobianMaterial
+                        [bInternal][k]; // inverseJacobianMaterial[B][k]
+                                        // = J^{-1}_kB = dxi_k/dX_B
 
                     dphiL_dXB += dphiL_dxik * dxik_dXB;
 
                     // compute dphiM/dXD from dphiM/dxik and dxik/dXD
                     const double dphiM_dxik = gradPhi[bDof][k]; // dphi_M/dxik
-                    const double_v_t dxik_dXD =
-                        inverseJacobianMaterial[dInternal]
-                                               [k]; // inverseJacobianMaterial[D][k]
-                                                    // = J^{-1}_kD = dxi_k/dX_D
+                    const double_v_t dxik_dXD = inverseJacobianMaterial
+                        [dInternal][k]; // inverseJacobianMaterial[D][k]
+                                        // = J^{-1}_kD = dxi_k/dX_D
 
                     dphiM_dXD += dphiM_dxik * dxik_dXD;
                   } // k
@@ -1719,10 +1717,9 @@ bool HyperelasticityMaterialComputations<
 
                   // compute dphiM/dXB from dphiM/dxik and dxik/dXB
                   const double dphiM_dxik = gradPhi[aDof][k]; // dphi_M/dxik
-                  const double_v_t dxik_dXB =
-                      inverseJacobianMaterial[bInternal]
-                                             [k]; // inverseJacobianMaterial[B][k]
-                                                  // = J^{-1}_kB = dxi_k/dX_B
+                  const double_v_t dxik_dXB = inverseJacobianMaterial
+                      [bInternal][k]; // inverseJacobianMaterial[B][k]
+                                      // = J^{-1}_kB = dxi_k/dX_B
 
                   dphiM_dXB += dphiM_dxik * dxik_dXB;
                 } // k

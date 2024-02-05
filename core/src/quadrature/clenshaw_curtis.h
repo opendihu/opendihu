@@ -18,7 +18,7 @@ class ClenshawCurtis : public Quadrature {
 public:
   typedef ClenshawCurtis<NumberIntegrationPoints>
       HighOrderQuadrature; //< this defines the own class, to be able to
-                           //generalize code to mixed quadrature
+                           // generalize code to mixed quadrature
 
   //! return the number of evaluations that are needed for a 1D quadrature
   static constexpr int numberEvaluations();

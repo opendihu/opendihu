@@ -352,7 +352,7 @@ void MeshPartition<FunctionSpace::FunctionSpace<MeshType, BasisFunctionType>,
         localSizesOnPartitions_[2].assign(lzData, lzData + nRanks_[2]);
 
 #if 0 // a suggestion from a HLRS course, not needed
-        // create cartesian communciator using MPI_Cart_Create
+      // create cartesian communciator using MPI_Cart_Create
         std::array<int,3> meshIsPeriodicInDimension({false,false,false});
         MPI_Comm cartesianCommunicator;
         MPIUtility::handleReturnValue(

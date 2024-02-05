@@ -136,51 +136,51 @@ protected:
 
   std::shared_ptr<PressureFunctionSpace>
       pressureFunctionSpace_; //< function space object that discretizes the
-                              //pressure field variable
+                              // pressure field variable
   std::shared_ptr<DisplacementsFunctionSpace>
       displacementsFunctionSpace_; //< function space object that discretizes
-                                   //the displacements field variable
+                                   // the displacements field variable
 
   std::shared_ptr<DisplacementsFieldVariableType>
       geometryReference_; //< the reference configuration geometry
   std::shared_ptr<DisplacementsLinearFieldVariableType>
       geometryReferenceLinearMesh_; //< the reference configuration geometry in
-                                    //the pressure function space (linear mesh)
+                                    // the pressure function space (linear mesh)
 
   std::shared_ptr<DisplacementsFieldVariableType>
       displacements_; //< u^(n+1) or u, the displacements
   std::shared_ptr<DisplacementsFieldVariableType>
       displacementsPreviousTimestep_; //< u^(n), the displacements of the
-                                      //previous timestep in the dynamic case
+                                      // previous timestep in the dynamic case
   std::shared_ptr<DisplacementsFieldVariableType>
       velocities_; //< v^(n+1) or v, the velocities
   std::shared_ptr<DisplacementsFieldVariableType>
       velocitiesPreviousTimestep_; //< v^(n), the velocities of the previous
-                                   //timestep in the dynamic case
+                                   // timestep in the dynamic case
   std::shared_ptr<PressureFieldVariableType>
       pressure_; //< p^(n+1) for dynamic case or p for static case, the pressure
-                 //variable
+                 // variable
   std::shared_ptr<PressureFieldVariableType>
       pressurePreviousTimestep_; //< p^(n), the pressure variable
   std::shared_ptr<StressFieldVariableType>
       pK2Stress_; //< the symmetric PK2 stress tensor in Voigt notation
   std::shared_ptr<StressFieldVariableType>
       activePK2Stress_; //< the symmetric PK2 stress tensor of the active
-                        //contribution in Voigt notation
+                        // contribution in Voigt notation
   std::shared_ptr<DeformationGradientFieldVariableType>
       deformationGradient_; //< the deformation gradient, F, all 9 values in
-                            //row-major ordering
+                            // row-major ordering
   std::shared_ptr<DeformationGradientFieldVariableType>
       deformationGradientTimeDerivative_; //< the time derivative of the
-                                          //deformation gradient, \dot{F}, all 9
-                                          //values in row-major ordering
+                                          // deformation gradient, \dot{F}, all
+                                          // 9 values in row-major ordering
   std::shared_ptr<DisplacementsLinearFieldVariableType>
       displacementsLinearMesh_; //< the displacements u, but on the linear mesh,
-                                //not the quadratic. This is an internal helper
-                                //field
+                                // not the quadratic. This is an internal helper
+                                // field
   std::shared_ptr<DisplacementsLinearFieldVariableType>
       velocitiesLinearMesh_; //< the velocities v, but on the linear mesh, not
-                             //the quadratic. This is an internal helper field
+                             // the quadratic. This is an internal helper field
   std::shared_ptr<DisplacementsFieldVariableType>
       fiberDirection_; //< interpolated direction of fibers
   std::shared_ptr<DisplacementsFieldVariableType>
@@ -189,17 +189,17 @@ protected:
       materialTraction_; //< T, the traction in reference configuration
   std::shared_ptr<DeformationGradientFieldVariableType>
       pK1Stress_; //< the unsymmetric PK1 stress tensor P=FS, this variable is
-                  //only used internally for the output files
+                  // only used internally for the output files
   std::shared_ptr<DeformationGradientFieldVariableType>
       cauchyStress_; //< the unsymmetric Cauchy stress tensor σ=J^-1 P F^T, this
-                     //variable is only used internally for the output files
+                     // variable is only used internally for the output files
   std::shared_ptr<FieldVariable::FieldVariable<DisplacementsFunctionSpace, 1>>
       deformationGradientDeterminant_; //< the determinant of the deformation
-                                       //gradient, J=det F
+                                       // gradient, J=det F
 
   std::shared_ptr<SlotConnectorDataType>
       slotConnectorData_; //< the object that stores all components of field
-                          //variables that will be transferred to other solvers
+                          // variables that will be transferred to other solvers
 };
 
 /** Helper class that outputs the field variables for the output writer.
@@ -422,11 +422,11 @@ private:
       pressure_; //<  p, the pressure variable
   std::shared_ptr<DisplacementsLinearFieldVariableType>
       displacementsLinearMesh_; //<  the displacements u, but on the linear mesh
-                                //not the quadratic. This is an internal helper
-                                //field
+                                // not the quadratic. This is an internal helper
+                                // field
   std::shared_ptr<DisplacementsLinearFieldVariableType>
       velocitiesLinearMesh_; //<  the velocities v, but on the linear mesh not
-                             //the quadratic. This is an internal helper field
+                             // the quadratic. This is an internal helper field
 };
 
 } // namespace Data

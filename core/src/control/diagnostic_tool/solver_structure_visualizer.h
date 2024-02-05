@@ -27,33 +27,34 @@ public:
   struct solver_t {
     std::string name;        //< name (type) of the solver
     std::string description; //< additional string that will be included, e.g.
-                             //for type of subsolver
-    bool hasInternalConnectionToFirstNestedSolver;  //< if the solver has an
-                                                    //internal connection of all
-                                                    //connector slots of its
-                                                    //first subsolver. This is
-                                                    //the case e.g. for Coupling
-                                                    //and StrangSplitting.
-    bool hasInternalConnectionToSecondNestedSolver; //< if the solver has an
-                                                    //internal connection of all
-                                                    //connector slots of its
-                                                    //second subsolver. This is
-                                                    //the case e.g. for Coupling
-                                                    //and StrangSplitting.
+                             // for type of subsolver
+    bool hasInternalConnectionToFirstNestedSolver; //< if the solver has an
+                                                   // internal connection of all
+                                                   // connector slots of its
+                                                   // first subsolver. This is
+                                                   // the case e.g. for Coupling
+                                                   // and StrangSplitting.
+    bool
+        hasInternalConnectionToSecondNestedSolver; //< if the solver has an
+                                                   // internal connection of all
+                                                   // connector slots of its
+                                                   // second subsolver. This is
+                                                   // the case e.g. for Coupling
+                                                   // and StrangSplitting.
 
     /** Representation of a single output slot
      */
     struct OutputSlot {
       int variableNo; //< either 0 or 1, if the slot is internally stored in
-                      //variable1 or variable2 of SlotConnectorData
+                      // variable1 or variable2 of SlotConnectorData
       std::string fieldVariableName; //< the name of the field variable that
-                                     //will be written in the diagram
+                                     // will be written in the diagram
       std::string componentName;     //< the name of the component that will be
-                                     //written in the diagram
+                                     // written in the diagram
       int nComponents; //< number of components the field variable has in order
-                       //to distinguish scalar field variables
+                       // to distinguish scalar field variables
       std::string meshDescription; //< string information of the mesh, from
-                                   //FunctionSpace::getDescription()
+                                   // FunctionSpace::getDescription()
       std::string slotName;        //< slot name if given
     };
 
@@ -61,7 +62,7 @@ public:
 
     std::shared_ptr<SlotsConnection>
         slotsConnection; //< pointer to the actual slotsConnection object of the
-                         //operator splitting
+                         // operator splitting
 
     /** connection between two output slots of two children
      */
@@ -76,9 +77,9 @@ public:
         internalBeforeComputation,
         internalAfterComputation
       } type; //< ab=term1 -> term2, ba=term2 -> term1, bidirectional=shared
-              //between term1 and term2,
-              //internalBeforeComputation=MapDofs.beforeComputation,
-              //internalAfterComputation=MapDofs.afterComputation
+              // between term1 and term2,
+              // internalBeforeComputation=MapDofs.beforeComputation,
+              // internalAfterComputation=MapDofs.afterComputation
       bool involvesMapping;
     };
 
@@ -86,7 +87,7 @@ public:
         slotsConnections; //< connections between output slots
     std::vector<SlotsConnectionRepresentation>
         mappingsWithinSolver; //< "connections" within the same solver, this is
-                              //used for MapDofs
+                              // used for MapDofs
 
     std::vector<std::shared_ptr<solver_t>>
         children; //< the nested solvers inside the current solver
@@ -194,12 +195,12 @@ protected:
       int lineNoFrom; //< row where the line starts
       int lineNoTo;   //< row where the line ends
       int lineColumn; //< lineColumn is the horizontal position of the vertical
-                      //data connection line
+                      // data connection line
       int slotNoFrom; //< the slot no where the line starts, this is needed to
-                      //know the number of digits of the slot no and where to
-                      //put the '<' sign
+                      // know the number of digits of the slot no and where to
+                      // put the '<' sign
       int slotNoTo; //< the slot no where the line ends, this is needed to know
-                    //the number of digits of the slot no and where to put the
+                    // the number of digits of the slot no and where to put the
                     //'<' sign
       SolverStructureVisualizer::solver_t::SlotsConnectionRepresentation::
           slot_connection_t
@@ -208,17 +209,17 @@ protected:
     };
     std::vector<ExternalConnectionLine>
         externalConnectionLines_; //< connection lines contains the following
-                                  //information: <lineNoFrom, lineNoTo,
-                                  //lineColumn, lineType>
+                                  // information: <lineNoFrom, lineNoTo,
+                                  // lineColumn, lineType>
     std::vector<std::vector<int>>
         internalConnectionLinesAll_; //< list of line nos that are connected by
-                                     //internal connections
+                                     // internal connections
     std::vector<int>
         slotLineNosAll_; //< all slots in the diagram with their line no
     std::map<int, std::string>
         meshDescriptionsOfSlots_; //< for every line no of a slot, the mesh name
-                                  //of that slot, used to determine if a mapping
-                                  //takes place
+                                  // of that slot, used to determine if a
+                                  // mapping takes place
     std::vector<std::string> referencedMeshNames_; //< all occuring mesh names
   };
 
@@ -228,7 +229,7 @@ protected:
   std::shared_ptr<solver_t> solverRoot_; //< the whole nested solver structure
   std::shared_ptr<solver_t>
       currentSolver_; //< a pointer to the current solver for which call to
-                      //addSolver sets the name and data
+                      // addSolver sets the name and data
 
   bool enabled_;      //< if addSolver has an effect
   int nDisableCalls_; //< how often disable() has been called in sequence

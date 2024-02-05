@@ -30,31 +30,31 @@ protected:
     std::string meshNameFrom;
     int componentNoFrom;
     int dimensionalityFrom; //< dimensionality of the source mesh, i.e. 1D, 2D
-                            //or 3D
+                            // or 3D
 
     std::string fieldVariableNameTo;
     std::string meshNameTo;
     int componentNoTo;
     int dimensionalityTo; //< dimensionality of the target mesh, i.e. 1D, 2D or
-                          //3D
+                          // 3D
 
     int nMappedSourceMeshes; //< number of source meshes that were mapped to the
-                             //target mesh between calls to prepareMapping() and
-                             //finalizeMapping()
+                             // target mesh between calls to prepareMapping()
+                             // and finalizeMapping()
     int nRepetitions;        //< how often this action was repeated in sequence
     std::string
         message; //< if logEvent == eventMessage, the message to be shown
 
     enum logEvent_t {
       eventParseSettings, //< a mapping between "from" and "to" was read from
-                          //the settings
+                          // the settings
       eventCreateMapping, //< a mapping between "from" and "to" was created
       eventMapForward, //< mapping was performed between "from" and "to", using
-                       //the corresponding mapping
+                       // the corresponding mapping
       eventMapReverse, //< mapping was performed between "from" and "to", using
-                       //the reverse direction of the reverse mapping
+                       // the reverse direction of the reverse mapping
       eventMessage     //< additional message to be displayed at the current
-                       //location in the log
+                       // location in the log
     } logEvent;
   };
 
@@ -84,15 +84,15 @@ protected:
 
   PythonConfig
       specificSettings_; //< python object containing the value of the python
-                         //config dict with corresponding key, for meshManager
+                         // config dict with corresponding key, for meshManager
   static std::string
       logFilename_; //< filename of a log file that contains information about
-                    //which mappings were created and used
+                    // which mappings were created and used
   int mappedSourceMeshesCounter_; //< variable that will be reset in
-                                  //prepareMapping, incremented in map() for
-                                  //every mesh and read out in finalizeMapping()
-                                  //to set the value of nMappedSourceMeshes for
-                                  //the log
+                                  // prepareMapping, incremented in map() for
+                                  // every mesh and read out in
+                                  // finalizeMapping() to set the value of
+                                  // nMappedSourceMeshes for the log
 
   static std::vector<mappingLogEntry_t>
       logEntries_; //< all entries that will be written to the log file

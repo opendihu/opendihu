@@ -92,12 +92,12 @@ private:
       increment_; //< .. add a description of field variable B here!
   std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>>
       vMatrix_; //< the standard stiffness matrix of the finite element
-                //formulation, dofs with Dirichlet BCs will get the columns and
-                //rows cleared and diagonal set to 1.
+                // formulation, dofs with Dirichlet BCs will get the columns and
+                // rows cleared and diagonal set to 1.
 
   std::shared_ptr<SlotConnectorDataType>
       slotConnectorData_; //< the object that stores all components of field
-                          //variables that will be transferred to other solvers
+                          // variables that will be transferred to other solvers
 
   // define all needed field variables or other data
 };

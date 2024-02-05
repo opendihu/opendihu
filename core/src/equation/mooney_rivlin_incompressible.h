@@ -19,7 +19,7 @@ struct HyperelasticityBase {
   // reduced invariants, arguments of `strainEnergyDensityFunctionIsochoric`
   static constexpr auto Ibar1 =
       VAR(0); //< 1st reduced or modified strain invariant Ibar1 = tr(Cbar) =
-              //J^{-2/3}*I_1
+              // J^{-2/3}*I_1
   static constexpr auto Ibar2 =
       VAR(1); //< 2nd reduced or modified strain invariant Ibar2 = 1/2
               //(tr(Cbar)^2 - tr(Cbar^2)) = J^{-2/3}*I_2
@@ -36,7 +36,7 @@ struct HyperelasticityBase {
   // volume factor, argument of `strainEnergyDensityFunctionVolumetric` (only
   // for compressible material)
   static constexpr auto J = VAR(4); //< volume factor, J = det(F), only for
-                                    //compressible material (otherwise it is 1)
+                                    // compressible material (otherwise it is 1)
 
   // invariants, arguments of `strainEnergyDensityFunctionCoupled`
   static constexpr auto I1 = VAR(5); //< 1st strain invariant I1 = tr(C)
@@ -75,13 +75,13 @@ struct HyperelasticityBase {
 struct MooneyRivlinIncompressible3D : HyperelasticityBase {
   static constexpr bool isIncompressible =
       true; //< if the formulation is incompressible, then,
-            //strainEnergyDensityFunctionVolumetric will not be considered
+            // strainEnergyDensityFunctionVolumetric will not be considered
   static constexpr bool usesFiberDirection =
       false; //< if the decoupled form uses the 4th or 5th invariants, Ibar4,
-             //Ibar2, this means it is an anisotropic material
+             // Ibar2, this means it is an anisotropic material
   static constexpr bool usesActiveStress =
       false; //< if the value of an active stress term will be added to the
-             //stress
+             // stress
 
   // material parameters
   static constexpr auto c1 = PARAM(0); //< material parameter
@@ -118,13 +118,13 @@ struct MooneyRivlinIncompressible3D : HyperelasticityBase {
 struct TransverselyIsotropicMooneyRivlinIncompressible3D : HyperelasticityBase {
   static constexpr bool isIncompressible =
       true; //< if the formulation is incompressible, then,
-            //strainEnergyDensityFunctionVolumetric will not be considered
+            // strainEnergyDensityFunctionVolumetric will not be considered
   static constexpr bool usesFiberDirection =
       true; //< if the decoupled form uses the 4th or 5th invariants, Ibar4,
-            //Ibar2, this means it is an anisotropic material
+            // Ibar2, this means it is an anisotropic material
   static constexpr bool usesActiveStress =
       false; //< if the value of an active stress term will be added to the
-             //stress
+             // stress
 
   // material parameters
   static constexpr auto c1 = PARAM(0); //< material parameter
@@ -165,13 +165,13 @@ struct TransverselyIsotropicMooneyRivlinIncompressibleActive3D
     : HyperelasticityBase {
   static constexpr bool isIncompressible =
       true; //< if the formulation is incompressible, then,
-            //strainEnergyDensityFunctionVolumetric will not be considered
+            // strainEnergyDensityFunctionVolumetric will not be considered
   static constexpr bool usesFiberDirection =
       true; //< if the decoupled form uses the 4th or 5th invariants, Ibar4,
-            //Ibar2, this means it is an anisotropic material
+            // Ibar2, this means it is an anisotropic material
   static constexpr bool usesActiveStress =
       true; //< if the value of an active stress term will be added to the
-            //stress
+            // stress
 
   // material parameters
   static constexpr auto c1 = PARAM(0); //< material parameter
@@ -215,13 +215,13 @@ struct TransverselyIsotropicMooneyRivlinIncompressibleActive3D
 struct HyperelasticTendon : HyperelasticityBase {
   static constexpr bool isIncompressible =
       false; //< if the formulation is incompressible, then,
-             //strainEnergyDensityFunctionVolumetric will not be considered
+             // strainEnergyDensityFunctionVolumetric will not be considered
   static constexpr bool usesFiberDirection =
       true; //< if the decoupled form uses the 4th or 5th invariants, Ibar4,
-            //Ibar2, this means it is an anisotropic material
+            // Ibar2, this means it is an anisotropic material
   static constexpr bool usesActiveStress =
       false; //< if the value of an active stress term will be added to the
-             //stress
+             // stress
 
   // material parameters that will be set by the python settings
   static constexpr auto c = PARAM(0);   //< material parameter
@@ -242,7 +242,7 @@ struct HyperelasticTendon : HyperelasticityBase {
 
   static constexpr auto E11 =
       INT(1) / INT(2) * ln(C11); //< components of the logarithmic strain
-                                 //measure, E_(0) = ln(U) = 1/2*ln(C)
+                                 // measure, E_(0) = ln(U) = 1/2*ln(C)
   static constexpr auto E12 = INT(1) / INT(2) * ln(C12);
   static constexpr auto E13 = INT(1) / INT(2) * ln(C13);
   static constexpr auto E22 = INT(1) / INT(2) * ln(C22);
@@ -252,7 +252,7 @@ struct HyperelasticTendon : HyperelasticityBase {
       ca * E11 * E11 + ct * E22 * E22 + ct * E33 * E33 +
       cat * E11 * E22 * INT(2) + cat * E11 * E33 * INT(2) +
       ctt * E22 * E33 * INT(2); //< exponent, Q = E:A:E with A (2nd order
-                                //tensor) given by ca,ct,cat,ctt
+                                // tensor) given by ca,ct,cat,ctt
   static constexpr auto psi_Fung =
       c / INT(2) *
       (exp(Q) - INT(1)); //< coupled orthotropic model of Fung at al. (1979)

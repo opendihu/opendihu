@@ -94,10 +94,10 @@ protected:
       DisplacementsFunctionSpaceType, PressureFunctionSpaceType, Term,
       nDisplacementComponents>>
       partitionedPetscVecForHyperelasticity_; //< one instance of the
-                                              //corresponding
-                                              //PartitionedPetscVecForHyperelasticity
-                                              //class, which handles all
-                                              //numbering
+                                              // corresponding
+                                              // PartitionedPetscVecForHyperelasticity
+                                              // class, which handles all
+                                              // numbering
 };
 
 /** Class that adds possibility to dump matrix

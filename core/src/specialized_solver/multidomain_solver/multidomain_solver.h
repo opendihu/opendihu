@@ -107,103 +107,104 @@ protected:
   virtual void initializeLinearSolver();
 
   Data dataMultidomain_; //< the data object of the multidomain solver which
-                         //stores all field variables and matrices
+                         // stores all field variables and matrices
 
   FiniteElementMethodPotentialFlow
       finiteElementMethodPotentialFlow_; //< the finite element object that is
-                                         //used for the Laplace problem of the
-                                         //potential flow, needed for the fiber
-                                         //directions
+                                         // used for the Laplace problem of the
+                                         // potential flow, needed for the fiber
+                                         // directions
   std::vector<FiniteElementMethodDiffusion>
       finiteElementMethodDiffusionCompartment_; //< the finite element object
-                                                //that is used for the diffusion
-                                                //of the compartments, with
-                                                //prefactor f_r
+                                                // that is used for the
+                                                // diffusion of the
+                                                // compartments, with prefactor
+                                                // f_r
   FiniteElementMethodDiffusion
       finiteElementMethodDiffusion_; //< the finite element object that is used
-                                     //for the diffusion with diffusion tensor
-                                     //sigma_i, without prefactor
+                                     // for the diffusion with diffusion tensor
+                                     // sigma_i, without prefactor
   FiniteElementMethodDiffusion
       finiteElementMethodDiffusionTotal_; //< the finite element object that is
-                                          //used for the diffusion with
-                                          //diffusion tensor (sigma_i +
-                                          //sigma_e), bottom right block of
-                                          //system matrix
+                                          // used for the diffusion with
+                                          // diffusion tensor (sigma_i +
+                                          // sigma_e), bottom right block of
+                                          // system matrix
 
   std::shared_ptr<Solver::Linear>
       linearSolver_; //< the linear solver used for solving the system
   std::shared_ptr<Solver::Linear>
       alternativeLinearSolver_; //< the linear solver used when the first solver
-                                //diverges
+                                // diverges
   std::shared_ptr<Partition::RankSubset>
       rankSubset_; //< the rankSubset for all involved ranks
 
   int nCompartments_; //< the number of instances of the diffusion problem, or
-                      //the number of motor units
+                      // the number of motor units
   Mat nestedSystemMatrix_;  //< nested Petsc Mat, the system matrix which has
-                            //more components than dofs, later this should be
-                            //placed inside the data object
+                            // more components than dofs, later this should be
+                            // placed inside the data object
   Vec nestedSolution_;      //< nested Petsc Vec, solution vector
   Vec nestedRightHandSide_; //< nested Petsc Vec, rhs
   Mat singleSystemMatrix_;  //< non-nested Petsc Mat that contains all entries,
-                            //the system matrix
+                            // the system matrix
   Mat singlePreconditionerMatrix_; //< non-nested Petsc Mat that contains the
-                                   //preconditioner matrix
+                                   // preconditioner matrix
   Vec singleSolution_;             //< non-nested Petsc Vec, solution vector
   Vec singleRightHandSide_;        //< non-nested Petsc Vec, distributed rhs
 
   std::vector<Vec>
       subvectorsRightHandSide_; //< the sub vectors that are used in the nested
-                                //vector nestedRightHandSide_
+                                // vector nestedRightHandSide_
   std::vector<Vec> subvectorsSolution_; //< the sub vectors that are used in the
-                                        //nested vector nestedSolution_
+                                        // nested vector nestedSolution_
   std::vector<Mat>
       submatricesSystemMatrix_; //< the sub matrices of the whole system matrix
   std::vector<Mat>
       submatricesPreconditionerMatrix_; //< the sub matrices of the matrix used
-                                        //as preconditioner
+                                        // as preconditioner
   int nColumnSubmatricesSystemMatrix_;  //< number of rows of nested submatrices
-                                        //in the system matrix
+                                        // in the system matrix
 
   std::vector<double> am_,
       cm_; //< the Am and Cm prefactors for the compartments, Am =
-           //surface-volume ratio, Cm = capacitance
+           // surface-volume ratio, Cm = capacitance
   bool initialGuessNonzero_; //< if the initial guess should be set to the last
-                             //solution
+                             // solution
   bool showLinearSolverOutput_; //< if convergence information of the linear
-                                //solver in every timestep should be printed
+                                // solver in every timestep should be printed
   int lastNumberOfIterations_; //< the number of iterations that were needed the
-                               //last time to solve the linear system
+                               // last time to solve the linear system
   double timeStepWidthOfSystemMatrix_; //< the timestep width that was used to
-                                       //setup the system matrix
+                                       // setup the system matrix
   bool useSymmetricPreconditionerMatrix_; //< if the symmetric preconditioner
-                                          //matrix should be set up
+                                          // matrix should be set up
   bool updateSystemMatrixEveryTimestep_;  //< if the system matrix will be
-                                          //rebuild every first time step, this
-                                          //is needed if the geometry changes
+                                          // rebuild every first time step, this
+                                          // is needed if the geometry changes
   int updateSystemMatrixInterval_; //< interval when the system matrix should be
-                                   //rebuild, counting only calls to
-                                   //advanceTimeStep
+                                   // rebuild, counting only calls to
+                                   // advanceTimeStep
   int recreateLinearSolverInterval_; //< interval when linearSolver_ object gets
-                                     //deleted and recreated, to remedy memory
-                                     //leaks of the PETSc implementation of some
-                                     //solvers
+                                     // deleted and recreated, to remedy memory
+                                     // leaks of the PETSc implementation of
+                                     // some solvers
   bool rescaleRelativeFactors_; //< if all relative factors should be rescaled
-                                //such that max Σf_r = 1
+                                // such that max Σf_r = 1
   bool setDirichletBoundaryConditionPhiB_; //< if the last dof of the fat layer
                                            //(MultidomainWithFatSolver) or the
-                                           //extracellular space
+                                           // extracellular space
                                            //(MultidomainSolver) should have a 0
-                                           //Dirichlet boundary condition
+                                           // Dirichlet boundary condition
   bool setDirichletBoundaryConditionPhiE_; //< if the last dof of the
-                                           //extracellular space should have a 0
-                                           //Dirichlet boundary condition
+                                           // extracellular space should have a
+                                           // 0 Dirichlet boundary condition
   bool resetToAverageZeroPhiB_; //< if a constant should be added to the phi_b
-                                //part of the solution vector after every solve,
-                                //such that the average is zero
+                                // part of the solution vector after every
+                                // solve, such that the average is zero
   bool resetToAverageZeroPhiE_; //< if a constant should be added to the phi_e
-                                //part of the solution vector after every solve,
-                                //such that the average is zero
+                                // part of the solution vector after every
+                                // solve, such that the average is zero
 };
 
 } // namespace TimeSteppingScheme

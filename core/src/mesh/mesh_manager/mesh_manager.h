@@ -107,7 +107,7 @@ private:
     std::string filename; //< filename of the file to read
     std::vector<std::pair<MPI_Offset, int>>
         chunks; //< pairs of (offset, number of values), where each value
-                //corresponds to 3 double values (position x,y,z) in data
+                // corresponds to 3 double values (position x,y,z) in data
     std::vector<double> data; //< the values of the node positions
   };
 
@@ -122,17 +122,17 @@ private:
   PythonConfig specificSettings_; //< the top level python settings
 
   int numberAnonymousMeshes_; //< how many meshes without a given name in the
-                              //python config are contained in meshes_. These
-                              //have a key "anonymous<no>"
+                              // python config are contained in meshes_. These
+                              // have a key "anonymous<no>"
 
   std::map<std::string, PythonConfig>
       meshConfiguration_; //< the python dicts for the meshes that were defined
-                          //under "Meshes"
+                          // under "Meshes"
   std::map<std::string, std::shared_ptr<Mesh>>
       functionSpaces_; //< the managed function spaces with their string key
   std::map<std::string, NodePositionsFromFile>
       nodePositionsFromFile_; //< filename, offset, length, data of nodePosition
-                              //data specified in a binary file
+                              // data specified in a binary file
 };
 
 /** Helper class to create the composite meshes

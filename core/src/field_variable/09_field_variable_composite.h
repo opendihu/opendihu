@@ -83,7 +83,7 @@ public:
 protected:
   std::vector<std::shared_ptr<FieldVariable<SubFunctionSpaceType, nComponents>>>
       subFieldVariables_; //< field variables that have the values of this field
-                          //variable on the submeshes
+                          // variable on the submeshes
   std::vector<VecD<nComponents>> subFieldVariableValues_; //< temporary buffer
 };
 

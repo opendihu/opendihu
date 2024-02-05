@@ -44,7 +44,7 @@ public:
 protected:
   std::shared_ptr<SlotConnectorDataType>
       slotConnectorData_; //< the object that holds slot connector data that
-                          //will be transferred between solvers
+                          // will be transferred between solvers
   std::shared_ptr<TimeStepping1>
       timeStepping1_; //< pointer to the object of type TimeStepping1
   std::shared_ptr<TimeStepping2>

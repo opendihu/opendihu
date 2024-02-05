@@ -29,11 +29,12 @@ int main(int argc, char *argv[]) {
               Mesh::StructuredRegularFixedOfDimension<1>,
               BasisFunction::LagrangeOfOrder<1>>,
           OperatorSplitting::Strang<
-              TimeSteppingScheme::Heun<CellmlAdapter<4, 9> // nStates,nAlgebraics:
-                                                           // 57,1 = Shorten,
-                                                           // 4,9 = Hodgkin
-                                                           // Huxley
-                                       >,
+              TimeSteppingScheme::Heun<
+                  CellmlAdapter<4, 9> // nStates,nAlgebraics:
+                                      // 57,1 = Shorten,
+                                      // 4,9 = Hodgkin
+                                      // Huxley
+                  >,
               TimeSteppingScheme::CrankNicolson<
                   SpatialDiscretization::FiniteElementMethod<
                       Mesh::StructuredRegularFixedOfDimension<1>,

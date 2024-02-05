@@ -203,74 +203,75 @@ protected:
   virtual void materialComputeExternalVirtualWorkDead() = 0;
 
   DihuContext context_; //< object that contains the python config for the
-                        //current context and the global singletons meshManager
-                        //and solverManager
+                        // current context and the global singletons meshManager
+                        // and solverManager
 
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writer for
-                            //displacements based variables
+                            // displacements based variables
   OutputWriter::Manager
       outputWriterManagerPressure_; //< manager object holding all output writer
-                                    //for pressure based variables
+                                    // for pressure based variables
   OutputWriter::Manager
       outputWriterManagerLoadIncrements_; //< manager object holding all output
-                                          //writer that write during computation
-                                          //of several load increments
+                                          // writer that write during
+                                          // computation of several load
+                                          // increments
   Data data_;                             //< data object
   PressureDataCopy pressureDataCopy_; //< a helper object that is used to write
-                                      //the pressure function space based
-                                      //variables with the output writers
+                                      // the pressure function space based
+                                      // variables with the output writers
   std::shared_ptr<Solver::Nonlinear>
       nonlinearSolver_; //< the nonlinear solver object that will provide the
-                        //PETSc SNES context
+                        // PETSc SNES context
 
   std::string durationLogKey_; //< key with with the duration of the computation
-                               //is written to the performance measurement log
+                               // is written to the performance measurement log
   std::shared_ptr<DisplacementsFunctionSpace>
       displacementsFunctionSpace_; //< the function space with quadratic
-                                   //Lagrange basis functions, used for
-                                   //discretization of displacements
+                                   // Lagrange basis functions, used for
+                                   // discretization of displacements
   std::shared_ptr<PressureFunctionSpace>
       pressureFunctionSpace_; //< the function space with linear Lagrange basis
-                              //functions, used for discretization of pressure
+                              // functions, used for discretization of pressure
 
   Mat solverMatrixJacobian_; //< the jacobian matrix for the Newton solver,
-                             //which in case of nonlinear elasticity is the
-                             //tangent stiffness matrix
+                             // which in case of nonlinear elasticity is the
+                             // tangent stiffness matrix
   Mat solverMatrixAdditionalNumericJacobian_; //< only used when both analytic
-                                              //and numeric jacobians are
-                                              //computed, then this holds the
-                                              //numeric jacobian
+                                              // and numeric jacobians are
+                                              // computed, then this holds the
+                                              // numeric jacobian
   Vec solverVariableResidual_; //< PETSc Vec to store the residual, equal to
-                               //combinedVecResidual_->valuesGlobal()
+                               // combinedVecResidual_->valuesGlobal()
   Vec solverVariableSolution_; //< PETSc Vec to store the solution, equal to
-                               //combinedVecSolution_->valuesGlobal()
+                               // combinedVecSolution_->valuesGlobal()
   Vec zeros_; //< a solver that contains all zeros, needed to zero the diagonal
-              //of the jacobian matrix
+              // of the jacobian matrix
   Vec lastSolution_; //< a temporary variable to hold the previous solution in
-                     //the nonlinear solver, to be used to reset the nonlinear
-                     //scheme if it diverged
+                     // the nonlinear solver, to be used to reset the nonlinear
+                     // scheme if it diverged
   Vec bestSolution_; //< a temporary variable to hold the best solution so, the
-                     //one with the lowest residual norm
+                     // one with the lowest residual norm
 
   std::shared_ptr<VecHyperelasticity>
       combinedVecResidual_; //< the Vec for the residual and result of the
-                            //nonlinear function
+                            // nonlinear function
   std::shared_ptr<VecHyperelasticity>
       combinedVecSolution_; //< the Vec for the solution, combined means that
-                            //ux,uy,uz and p components are combined in one
-                            //vector
+                            // ux,uy,uz and p components are combined in one
+                            // vector
   std::shared_ptr<VecHyperelasticity>
       combinedVecExternalVirtualWorkDead_; //< the Vec for the external virtual
-                                           //work part that does not change with
-                                           //u, δW_ext,dead
+                                           // work part that does not change
+                                           // with u, δW_ext,dead
   std::shared_ptr<MatHyperelasticity>
       combinedMatrixJacobian_; //< single jacobian matrix
   std::shared_ptr<MatHyperelasticity>
       combinedMatrixAdditionalNumericJacobian_; //< only used when both analytic
-                                                //and numeric jacobians are
-                                                //computed, then this holds the
-                                                //numeric jacobian
+                                                // and numeric jacobians are
+                                                // computed, then this holds the
+                                                // numeric jacobian
 
   Vec externalVirtualWorkDead_; // the external virtual work resulting from the
                                 // traction, this is a dead load, i.e. it does
@@ -279,29 +280,29 @@ protected:
   // settings variables
   bool initialized_;              //< if this object was already initialized
   PythonConfig specificSettings_; //< python object containing the value of the
-                                  //python config dict with corresponding key
+                                  // python config dict with corresponding key
   double endTime_;                //< end time of current time step
   std::shared_ptr<std::ofstream>
       residualNormLogFile_; //< ofstream of a log file that will contain the
-                            //residual norm for each iteration
+                            // residual norm for each iteration
 
   std::shared_ptr<DirichletBoundaryConditions<DisplacementsFunctionSpace,
                                               nDisplacementComponents>>
       dirichletBoundaryConditions_ =
           nullptr; //< object that parses Dirichlet boundary conditions and
-                   //applies them to rhs
+                   // applies them to rhs
   std::shared_ptr<NeumannBoundaryConditions<DisplacementsFunctionSpace,
                                             Quadrature::Gauss<3>, 3>>
       neumannBoundaryConditions_ =
           nullptr; //< object that parses Neumann boundary conditions and
-                   //applies them to the rhs
+                   // applies them to the rhs
 
   std::vector<double>
       materialParameters_; //< material parameters, e.g. c1,c2 for Mooney-Rivlin
   double displacementsScalingFactor_; //< factor with which to scale the
-                                      //displacements
+                                      // displacements
   bool dumpDenseMatlabVariables_; //< the current vector x, the residual, r and
-                                  //the jacobian, jac should be written
+                                  // the jacobian, jac should be written
   Vec3 constantBodyForce_; //< the constant body force, if given or [0,0,0]
   double timeStepWidth_;   //< timeStepWidth, only need for the dynamic problem
   double density_;         //< density, only needed for the dynamic problem
@@ -309,44 +310,45 @@ protected:
   double
       lastNorm_; //< residual norm of the last iteration in the nonlinear solver
   double secondLastNorm_; //< residual norm of the second last iteration in the
-                          //nonlinear solver
-  double bestResidualNorm_;  //< best residual norm for load factor 1.0 achieved
-                             //so far
-  double currentLoadFactor_; //< current value of the load factor, this value is
-                             //passed to materialComputeResidual(), 1.0 means
-                             //normal computation, any lower value reduces the
-                             //right hand side (scales body and traction forces)
+                          // nonlinear solver
+  double bestResidualNorm_; //< best residual norm for load factor 1.0 achieved
+                            // so far
+  double
+      currentLoadFactor_; //< current value of the load factor, this value is
+                          // passed to materialComputeResidual(), 1.0 means
+                          // normal computation, any lower value reduces the
+                          // right hand side (scales body and traction forces)
   double previousLoadFactor_; //< previous value of the load factor
   int nNonlinearSolveCalls_;  //< how often the nonlinear solve should be called
-                              //in sequence
+                              // in sequence
   bool lastSolveSucceeded_;   //< if the last computation of the residual or
-                            //jacobian succeeded, if this is false, it indicates
-                            //that there was a negative jacobian
+                              // jacobian succeeded, if this is false, it
+                              // indicates that there was a negative jacobian
   double loadFactorGiveUpThreshold_; //< a threshold for the load factor, if it
-                                     //is below, the solve is aborted
+                                     // is below, the solve is aborted
   unsigned int nNonZerosJacobian_; //< number of nonzero entries in the material
-                                   //jacobian on the local domain, used for
-                                   //preallocation of the matrix
+                                   // jacobian on the local domain, used for
+                                   // preallocation of the matrix
 
   std::vector<double>
       loadFactors_; //< vector of load factors, 1.0 means normal computation,
-                    //any lower value reduces the right hand side (scales body
-                    //and traction forces)
+                    // any lower value reduces the right hand side (scales body
+                    // and traction forces)
   std::vector<double>
       norms_; //< vector that collects the norms in every iteration, it will be
-              //cleared for every new load factor
+              // cleared for every new load factor
 
   bool useAnalyticJacobian_; //< if the analytically computed Jacobian of the
-                             //Newton scheme should be used. Theoretically if it
-                             //is correct, this is the fastest option.
+                             // Newton scheme should be used. Theoretically if
+                             // it is correct, this is the fastest option.
   bool useNumericJacobian_;  //< if a numerically computed Jacobian should be
-                             //used, approximated by finite differences
+                             // used, approximated by finite differences
   bool extrapolateInitialGuess_; //< if the initial values for the dynamic
-                                 //nonlinear problem should be computed by
-                                 //extrapolating the previous displacements and
-                                 //velocities
+                                 // nonlinear problem should be computed by
+                                 // extrapolating the previous displacements and
+                                 // velocities
   bool scaleInitialGuess_; //< when load stepping is used, scale initial guess
-                           //between load steps a and b by sqrt(a*b)/a
+                           // between load steps a and b by sqrt(a*b)/a
 };
 
 } // namespace SpatialDiscretization

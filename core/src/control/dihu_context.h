@@ -141,8 +141,8 @@ public:
   std::shared_ptr<zmq::socket_t> zmqSocket() const;
   static std::shared_ptr<SolverStructureVisualizer>
       solverStructureVisualizer_; //< object that collects information about all
-                                  //nested solvers and produces a diagram, also
-                                  //with data connections
+                                  // nested solvers and produces a diagram, also
+                                  // with data connections
 
 #endif
 
@@ -176,38 +176,38 @@ private:
 
   PythonConfig
       pythonConfig_; //< the top level python config dictionary of the current
-                     //context (i.e. may be a sub-dict of the global config)
+                     // context (i.e. may be a sub-dict of the global config)
   std::shared_ptr<Partition::RankSubset>
       rankSubset_; //< the ranks that collectively run the code where this
-                   //context is valid
+                   // context is valid
 
   // global singletons
   static std::shared_ptr<Mesh::Manager>
       meshManager_; //< object that saves all meshes that are used
   static std::shared_ptr<MappingBetweenMeshes::Manager>
       mappingBetweenMeshesManager_; //< object that store all mappings between
-                                    //meshes
+                                    // meshes
   static std::shared_ptr<Solver::Manager>
       solverManager_; //< object that saves all solver configurations that are
-                      //used
+                      // used
   static std::shared_ptr<Partition::Manager>
       partitionManager_; //< partition manager object that creates and manages
-                         //partitionings
+                         // partitionings
   static std::shared_ptr<GlobalConnectionsBySlotName>
       globalConnectionsBySlotName_; //< object that collects the connector slots
-                                    //connections given under setting
+                                    // connections given under setting
                                     //"connectedSlots"
 
   static int nRanksCommWorld_;    //< number of ranks in MPI_COMM_WORLD
   static int ownRankNoCommWorld_; //< the own rank no in MPI_COMM_WORLD, using
-                                  //MPI_COMM_WORLD should be avoided in the
-                                  //program, instead use this global variable
+                                  // MPI_COMM_WORLD should be avoided in the
+                                  // program, instead use this global variable
   static bool
       initialized_; //< if MPI, Petsc and easyloggingPP is already initialized.
-                    //This needs to be done only once in the program.
+                    // This needs to be done only once in the program.
   static int nObjects_; //< number of objects of DihuContext, if the last object
-                        //gets destroyed, call MPI_Finalize or MPI_Barrier,
-                        //depending on doNotFinalizeMpi
+                        // gets destroyed, call MPI_Finalize or MPI_Barrier,
+                        // depending on doNotFinalizeMpi
   static std::string pythonScriptText_; //< the text of the python config script
   static std::shared_ptr<std::thread>
       megamolThread_; //< thread that runs megamol
@@ -217,17 +217,17 @@ private:
       megamolArguments_; //< the string data of the megamol arguments
   static std::shared_ptr<SolverStructureVisualizer>
       solverStructureVisualizer_; //< object that collects information about all
-                                  //nested solvers and produces a diagram, also
-                                  //with data connections
+                                  // nested solvers and produces a diagram, also
+                                  // with data connections
   static std::string
       solverStructureDiagramFile_; //< filename of a file produced by
-                                   //solverStructureVisualizer_
+                                   // solverStructureVisualizer_
   static logFormat_t logFormat_;   //< format in which lines in log file will be
-                                   //written, either csv or json
+                                   // written, either csv or json
   bool doNotFinalizeMpi_; //< when the last object gets destroyed, either
-                          //MPI_Finalize() is called (should be used) or
-                          //MPI_Barrier (only needed in testcases where MPI
-                          //context needs to be used for the next test cases)
+                          // MPI_Finalize() is called (should be used) or
+                          // MPI_Barrier (only needed in testcases where MPI
+                          // context needs to be used for the next test cases)
 
 #ifdef HAVE_ADIOS
   static std::shared_ptr<adios2::ADIOS> adios_; //< adios context option

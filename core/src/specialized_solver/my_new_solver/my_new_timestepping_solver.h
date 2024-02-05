@@ -72,10 +72,10 @@ protected:
   void executeMyHelperMethod();
 
   TimeStepping timeSteppingScheme_; //< the underlying timestepping method that
-                                    //is controlled by this class, e.g. Heun
+                                    // is controlled by this class, e.g. Heun
 
   Data data_; //< the data object that stores at least all field variables that
-              //should be output by output writers.
+              // should be output by output writers.
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writers
 };

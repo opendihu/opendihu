@@ -312,9 +312,10 @@ void MultipleInstances<TimeSteppingScheme>::initialize() {
 
   // add this solver to the solvers diagram
   DihuContext::solverStructureVisualizer()->addSolver(
-      "MultipleInstances", true); // hasInternalConnectionToFirstNestedSolver=true
-                                  // (the last argument) means slot connector
-                                  // data is shared with the first subsolver
+      "MultipleInstances",
+      true); // hasInternalConnectionToFirstNestedSolver=true
+             // (the last argument) means slot connector
+             // data is shared with the first subsolver
   DihuContext::solverStructureVisualizer()->beginChild();
 
   double progress = 0;

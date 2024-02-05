@@ -85,50 +85,51 @@ CellmlAdapter<nStates_, nAlgebraics_, FunctionSpaceType>::CellmlAdapter(
   // members in 02_callback_handler.h
   this->setSpecificParametersCallInterval_ =
       rhs.setSpecificParametersCallInterval_; //< setSpecificParameters_ will be
-                                              //called every callInterval_ time
-                                              //steps
+                                              // called every callInterval_ time
+                                              // steps
   this->setSpecificStatesCallInterval_ =
       rhs.setSpecificStatesCallInterval_; //< setSpecificStates_ will be called
-                                          //every callInterval_ time steps
+                                          // every callInterval_ time steps
   this->handleResultCallInterval_ =
       rhs.handleResultCallInterval_; //< handleResult will be called every
-                                     //callInterval_ time steps
+                                     // callInterval_ time steps
 
   this->setSpecificStatesCallFrequency_ =
       rhs.setSpecificStatesCallFrequency_; //< frequency, after which the
-                                           //setSpecificStates callback function
-                                           //will be called, either this
-                                           //condition or the condition with
-                                           //setSpecificStatesCallInterval_ is
-                                           //used
+                                           // setSpecificStates callback
+                                           // function will be called, either
+                                           // this condition or the condition
+                                           // with
+                                           // setSpecificStatesCallInterval_ is
+                                           // used
   this->setSpecificStatesFrequencyJitter_ =
       rhs.setSpecificStatesFrequencyJitter_; //< relative jitter values: factors
-                                             //of
-                                             //setSpecificStatesCallFrequency_,
-                                             //random jitter to add or substract
-                                             //from frequency
+                                             // of
+                                             // setSpecificStatesCallFrequency_,
+                                             // random jitter to add or
+                                             // substract from frequency
   this->currentJitter_ =
       rhs.currentJitter_; //< the absolute value of the current jitter
   this->jitterIndex_ =
       rhs.jitterIndex_; //< which of the stored jitter values in
-                        //setSpecificStatesFrequencyJitter_ to use
+                        // setSpecificStatesFrequencyJitter_ to use
   this->fiberNoGlobal_ =
       rhs.fiberNoGlobal_; //< the additionalArgument converted to an integer,
-                          //interpreted as the global fiber no and used in the
-                          //stimulation log
+                          // interpreted as the global fiber no and used in the
+                          // stimulation log
 
   this->lastCallSpecificStatesTime_ =
       rhs.lastCallSpecificStatesTime_; //< last time the setSpecificStates_
-                                       //method was called
+                                       // method was called
   this->setSpecificStatesRepeatAfterFirstCall_ =
       rhs.setSpecificStatesRepeatAfterFirstCall_; //< duration of continuation
-                                                  //of calling the
-                                                  //setSpecificStates callback
-                                                  //after it was triggered
+                                                  // of calling the
+                                                  // setSpecificStates callback
+                                                  // after it was triggered
   this->setSpecificStatesCallEnableBegin_ =
       rhs.setSpecificStatesCallEnableBegin_; //< first time when
-                                             //setSpecificStates should be
-                                             //called
+                                             // setSpecificStates should be
+                                             // called
 
   // this->pythonSetSpecificParametersFunction_ =
   // rhs.pythonSetSpecificParametersFunction_; //< Python function handle that

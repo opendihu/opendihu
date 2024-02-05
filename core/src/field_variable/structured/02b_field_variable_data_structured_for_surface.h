@@ -79,7 +79,7 @@ protected:
                          std::vector<node_no_t> &surfaceNumbers);
 
   std::vector<dof_no_t> surfaceDofs_; //< local dof nos of the 3D field variable
-                                      //that specify the surface
+                                      // that specify the surface
 };
 
 } // namespace FieldVariable
