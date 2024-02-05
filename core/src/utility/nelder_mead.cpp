@@ -5,11 +5,9 @@
 #include "utility/nelder_mead.h"
 #include "utility/math_utility.h"
 
-namespace MathUtility
-{
+namespace MathUtility {
 
-namespace NelderMead
-{
+namespace NelderMead {
 
 const double RHO = 1.0;
 const double CHI = 2.0;
@@ -28,8 +26,7 @@ const double SIGMA = 0.5;
 
 void optimize(int n, const point_t *start, point_t *solution,
               fun_t cost_function, const void *args,
-              const optimset_t *optimset)
-{
+              const optimset_t *optimset) {
   // internal points
   point_t point_r;
   point_t point_e;
@@ -49,11 +46,9 @@ void optimize(int n, const point_t *start, point_t *solution,
   simplex_t simplex;
   simplex.n = n;
   simplex.p = (point_t *)malloc((n + 1) * sizeof(point_t));
-  for (int i = 0; i < n + 1; i++)
-  {
+  for (int i = 0; i < n + 1; i++) {
     simplex.p[i].x = (double *)malloc(n * sizeof(double));
-    for (int j = 0; j < n; j++)
-    {
+    for (int j = 0; j < n; j++) {
       simplex.p[i].x[j] =
           (i - 1 == j) ? (start->x[j] != 0.0 ? 1.05 * start->x[j] : 0.00025)
                        : start->x[j];
@@ -69,12 +64,10 @@ void optimize(int n, const point_t *start, point_t *solution,
   iter_count++;
 
   // continue minimization until stop conditions are met
-  while (continueMinimization(&simplex, eval_count, iter_count, optimset))
-  {
+  while (continueMinimization(&simplex, eval_count, iter_count, optimset)) {
     int shrink = 0;
 
-    if (optimset->verbose)
-    {
+    if (optimset->verbose) {
       LOG(INFO) << "Iteration " << iter_count << "     ";
     }
     updatePoint(&simplex, &centroid, RHO, &point_r);
@@ -84,81 +77,57 @@ void optimize(int n, const point_t *start, point_t *solution,
       updatePoint(&simplex, &centroid, RHO * CHI, &point_e);
       cost_function(n, &point_e, args);
       eval_count++;
-      if (point_e.fx < point_r.fx)
-      {
+      if (point_e.fx < point_r.fx) {
         // expand
-        if (optimset->verbose)
-        {
+        if (optimset->verbose) {
           LOG(INFO) << "expand          ";
         }
         copyPoint(n, &point_e, simplex.p + n);
-      }
-      else
-      {
+      } else {
         // reflect
-        if (optimset->verbose)
-        {
+        if (optimset->verbose) {
           LOG(INFO) << "reflect         ";
         }
         copyPoint(n, &point_r, simplex.p + n);
       }
-    }
-    else
-    {
-      if (point_r.fx < simplex.p[n - 1].fx)
-      {
+    } else {
+      if (point_r.fx < simplex.p[n - 1].fx) {
         // reflect
-        if (optimset->verbose)
-        {
+        if (optimset->verbose) {
           LOG(INFO) << "reflect         ";
         }
         copyPoint(n, &point_r, simplex.p + n);
-      }
-      else
-      {
-        if (point_r.fx < simplex.p[n].fx)
-        {
+      } else {
+        if (point_r.fx < simplex.p[n].fx) {
           updatePoint(&simplex, &centroid, RHO * GAMMA, &point_c);
           cost_function(n, &point_c, args);
           eval_count++;
-          if (point_c.fx <= point_r.fx)
-          {
+          if (point_c.fx <= point_r.fx) {
             // contract outside
-            if (optimset->verbose)
-            {
+            if (optimset->verbose) {
               LOG(INFO) << "contract out    ";
             }
             copyPoint(n, &point_c, simplex.p + n);
-          }
-          else
-          {
+          } else {
             // shrink
-            if (optimset->verbose)
-            {
+            if (optimset->verbose) {
               LOG(INFO) << "shrink         ";
             }
             shrink = 1;
           }
-        }
-        else
-        {
+        } else {
           updatePoint(&simplex, &centroid, -GAMMA, &point_c);
           cost_function(n, &point_c, args);
           eval_count++;
-          if (point_c.fx <= simplex.p[n].fx)
-          {
+          if (point_c.fx <= simplex.p[n].fx) {
             // contract inside
-            if (optimset->verbose)
-            {
+            if (optimset->verbose) {
               LOG(INFO) << "contract in     ";
             }
             copyPoint(n, &point_c, simplex.p + n);
-          }
-          else
-          {
+          } else {
             // shrink
-            if (optimset->verbose)
-            {
+            if (optimset->verbose) {
               LOG(INFO) << "shrink         ";
             }
             shrink = 1;
@@ -166,12 +135,9 @@ void optimize(int n, const point_t *start, point_t *solution,
         }
       }
     }
-    if (shrink)
-    {
-      for (int i = 1; i < n + 1; i++)
-      {
-        for (int j = 0; j < n; j++)
-        {
+    if (shrink) {
+      for (int i = 1; i < n + 1; i++) {
+        for (int j = 0; j < n; j++) {
           simplex.p[i].x[j] = simplex.p[0].x[j] +
                               SIGMA * (simplex.p[i].x[j] - simplex.p[0].x[j]);
         }
@@ -179,23 +145,19 @@ void optimize(int n, const point_t *start, point_t *solution,
         eval_count++;
       }
       simplexSort(&simplex);
-    }
-    else
-    {
-      for (int i = n - 1; i >= 0 && simplex.p[i + 1].fx < simplex.p[i].fx; i--)
-      {
+    } else {
+      for (int i = n - 1; i >= 0 && simplex.p[i + 1].fx < simplex.p[i].fx;
+           i--) {
         swapPoints(n, simplex.p + (i + 1), simplex.p + i);
       }
     }
     getCentroid(&simplex, &centroid);
     iter_count++;
-    if (optimset->verbose)
-    {
+    if (optimset->verbose) {
       // print current minimum
       std::stringstream message;
       message << "[ ";
-      for (int i = 0; i < n; i++)
-      {
+      for (int i = 0; i < n; i++) {
         message << simplex.p[0].x[i] << " ";
       }
       message << "]    " << simplex.p[0].fx << " \n";
@@ -211,8 +173,7 @@ void optimize(int n, const point_t *start, point_t *solution,
   free(point_r.x);
   free(point_e.x);
   free(point_c.x);
-  for (int i = 0; i < n + 1; i++)
-  {
+  for (int i = 0; i < n + 1; i++) {
     free(simplex.p[i].x);
   }
   free(simplex.p);
@@ -222,23 +183,18 @@ void optimize(int n, const point_t *start, point_t *solution,
 // Simplex sorting
 //-----------------------------------------------------------------------------
 
-int compare(const void *arg1, const void *arg2)
-{
+int compare(const void *arg1, const void *arg2) {
   const double fx1 = (((point_t *)arg1)->fx);
   const double fx2 = (((point_t *)arg2)->fx);
 
-  if (fx1 == fx2)
-  {
+  if (fx1 == fx2) {
     return 0;
-  }
-  else
-  {
+  } else {
     return (fx1 < fx2) ? -1 : 1;
   }
 }
 
-void simplexSort(simplex_t *simplex)
-{
+void simplexSort(simplex_t *simplex) {
   qsort((void *)(simplex->p), simplex->n + 1, sizeof(point_t), compare);
 }
 
@@ -246,13 +202,10 @@ void simplexSort(simplex_t *simplex)
 // Get centroid (average position) of simplex
 //-----------------------------------------------------------------------------
 
-void getCentroid(const simplex_t *simplex, point_t *centroid)
-{
-  for (int j = 0; j < simplex->n; j++)
-  {
+void getCentroid(const simplex_t *simplex, point_t *centroid) {
+  for (int j = 0; j < simplex->n; j++) {
     centroid->x[j] = 0;
-    for (int i = 0; i < simplex->n; i++)
-    {
+    for (int i = 0; i < simplex->n; i++) {
       centroid->x[j] += simplex->p[i].x[j];
     }
     centroid->x[j] /= simplex->n;
@@ -264,30 +217,23 @@ void getCentroid(const simplex_t *simplex, point_t *centroid)
 //-----------------------------------------------------------------------------
 
 int continueMinimization(const simplex_t *simplex, int eval_count,
-                         int iter_count, const optimset_t *optimset)
-{
-  if (eval_count > optimset->max_eval || iter_count > optimset->max_iter)
-  {
+                         int iter_count, const optimset_t *optimset) {
+  if (eval_count > optimset->max_eval || iter_count > optimset->max_iter) {
     // stop if #evals or #iters are greater than the max allowed
     return 0;
   }
   double condx = -1.0;
   double condf = -1.0;
-  for (int i = 1; i < simplex->n + 1; i++)
-  {
+  for (int i = 1; i < simplex->n + 1; i++) {
     const double temp = fabs(simplex->p[0].fx - simplex->p[i].fx);
-    if (condf < temp)
-    {
+    if (condf < temp) {
       condf = temp;
     }
   }
-  for (int i = 1; i < simplex->n + 1; i++)
-  {
-    for (int j = 0; j < simplex->n; j++)
-    {
+  for (int i = 1; i < simplex->n + 1; i++) {
+    for (int j = 0; j < simplex->n; j++) {
       const double temp = fabs(simplex->p[0].x[j] - simplex->p[i].x[j]);
-      if (condx < temp)
-      {
+      if (condx < temp) {
         condx = temp;
       }
     }
@@ -301,11 +247,9 @@ int continueMinimization(const simplex_t *simplex, int eval_count,
 //-----------------------------------------------------------------------------
 
 void updatePoint(const simplex_t *simplex, const point_t *centroid,
-                 double lambda, point_t *point)
-{
+                 double lambda, point_t *point) {
   const int n = simplex->n;
-  for (int j = 0; j < n; j++)
-  {
+  for (int j = 0; j < n; j++) {
     point->x[j] = (1.0 + lambda) * centroid->x[j] - lambda * simplex->p[n].x[j];
   }
 }
@@ -314,20 +258,16 @@ void updatePoint(const simplex_t *simplex, const point_t *centroid,
 // Simple point_t manipulation utlities
 //-----------------------------------------------------------------------------
 
-void copyPoint(int n, const point_t *src, point_t *dst)
-{
-  for (int j = 0; j < n; j++)
-  {
+void copyPoint(int n, const point_t *src, point_t *dst) {
+  for (int j = 0; j < n; j++) {
     dst->x[j] = src->x[j];
   }
   dst->fx = src->fx;
 }
 
-void swapPoints(int n, point_t *p1, point_t *p2)
-{
+void swapPoints(int n, point_t *p1, point_t *p2) {
   double temp;
-  for (int j = 0; j < n; j++)
-  {
+  for (int j = 0; j < n; j++) {
     temp = p1->x[j];
     p1->x[j] = p2->x[j];
     p2->x[j] = temp;
@@ -337,5 +277,5 @@ void swapPoints(int n, point_t *p1, point_t *p2)
   p2->fx = temp;
 }
 
-}  // namespace NelderMead
-}  // namespace MathUtility
+} // namespace NelderMead
+} // namespace MathUtility

@@ -1,6 +1,5 @@
 #include "control/python_config/settings_file_name.h"
 
-namespace Control
-{
+namespace Control {
 std::string settingsFileName = "";
-}  // namespace
+} // namespace Control

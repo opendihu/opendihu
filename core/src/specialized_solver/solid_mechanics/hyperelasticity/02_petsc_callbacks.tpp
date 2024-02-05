@@ -1,35 +1,32 @@
 #include "specialized_solver/solid_mechanics/hyperelasticity/02_petsc_callbacks.h"
 
-#include <Python.h>  // has to be the first included header
+#include <Python.h> // has to be the first included header
 #include <easylogging++.h>
 
 #include "utility/petsc_utility.h"
 
 /**
- * Nonlinear function F that gets solved by PETSc, solve for x such that F(x) = 0
- *  Input Parameters:
- *  snes - the SNES context
- *  x    - input vector
- *  context  - optional user-defined context
+ * Nonlinear function F that gets solved by PETSc, solve for x such that F(x) =
+ * 0 Input Parameters: snes - the SNES context x    - input vector context  -
+ * optional user-defined context
  *
  *  Output Parameter:
  *  f - function vector
  */
-template<typename T>
-PetscErrorCode nonlinearFunction(SNES snes, Vec x, Vec f, void *context)
-{
-  T* object = static_cast<T*>(context);
+template <typename T>
+PetscErrorCode nonlinearFunction(SNES snes, Vec x, Vec f, void *context) {
+  T *object = static_cast<T *>(context);
 
   VLOG(1) << "in nonlinearFunction";
   VLOG(1) << "pointer value x: " << x;
   VLOG(1) << "pointer value f: " << f;
 
-  // compute the lhs which is the virtual work and the incompressibility constraint
+  // compute the lhs which is the virtual work and the incompressibility
+  // constraint
   object->evaluateNonlinearFunction(x, f);
 
   // compute and output function norm
-  if (VLOG_IS_ON(1))
-  {
+  if (VLOG_IS_ON(1)) {
     PetscReal functionNorm;
     VecNorm(f, NORM_2, &functionNorm);
     VLOG(1) << "function norm: " << functionNorm;
@@ -49,10 +46,10 @@ PetscErrorCode nonlinearFunction(SNES snes, Vec x, Vec f, void *context)
  *  jac - Jacobian matrix
  *  b   - optionally different preconditioning matrix
  */
-template<typename T>
-PetscErrorCode jacobianFunctionAnalytic(SNES snes, Vec x, Mat jac, Mat b, void *context)
-{
-  T* object = static_cast<T*>(context);
+template <typename T>
+PetscErrorCode jacobianFunctionAnalytic(SNES snes, Vec x, Mat jac, Mat b,
+                                        void *context) {
+  T *object = static_cast<T *>(context);
 
   VLOG(1) << "in jacobianFunctionAnalytic";
   VLOG(1) << "pointer value x:   " << x;
@@ -65,16 +62,18 @@ PetscErrorCode jacobianFunctionAnalytic(SNES snes, Vec x, Mat jac, Mat b, void *
   // output the jacobian matrix for debugging
   object->dumpJacobianMatrix(jac);
 
-  VLOG(2) << "-- computed tangent stiffness matrix analytically: " << PetscUtility::getStringMatrix(jac);
-  VLOG(2) << "-- non-zeros pattern: " << std::endl << PetscUtility::getStringSparsityPattern(jac);
+  VLOG(2) << "-- computed tangent stiffness matrix analytically: "
+          << PetscUtility::getStringMatrix(jac);
+  VLOG(2) << "-- non-zeros pattern: " << std::endl
+          << PetscUtility::getStringSparsityPattern(jac);
 
   return 0;
 }
 
-template<typename T>
-PetscErrorCode jacobianFunctionFiniteDifferences(SNES snes, Vec x, Mat jac, Mat b, void *context)
-{
-  T* object = static_cast<T*>(context);
+template <typename T>
+PetscErrorCode jacobianFunctionFiniteDifferences(SNES snes, Vec x, Mat jac,
+                                                 Mat b, void *context) {
+  T *object = static_cast<T *>(context);
 
   VLOG(1) << "in jacobianFunctionFiniteDifferences";
   VLOG(1) << "pointer value x:   " << x;
@@ -82,25 +81,28 @@ PetscErrorCode jacobianFunctionFiniteDifferences(SNES snes, Vec x, Mat jac, Mat 
   VLOG(1) << "pointer value b:   " << b << " (should be numeric slot)";
 
   LOG(DEBUG) << "in jacobianFunctionFiniteDifferences, "
-    << "solution: " << object->combinedVecSolution()->getString() << ", residual: " << object->combinedVecResidual()->getString();
+             << "solution: " << object->combinedVecSolution()->getString()
+             << ", residual: " << object->combinedVecResidual()->getString();
 
-  // compute jacobian by finite differences, in b (but this is the same pointer as jac)
+  // compute jacobian by finite differences, in b (but this is the same pointer
+  // as jac)
   SNESComputeJacobianDefault(snes, x, jac, b, context);
 
   // output the jacobian matrix for debugging
   object->dumpJacobianMatrix(jac);
 
-  VLOG(2) << "-- computed tangent stiffness matrix by finite differences: " << PetscUtility::getStringMatrix(jac);
-  VLOG(2) << "-- non-zeros pattern: " << std::endl << PetscUtility::getStringSparsityPattern(jac);
+  VLOG(2) << "-- computed tangent stiffness matrix by finite differences: "
+          << PetscUtility::getStringMatrix(jac);
+  VLOG(2) << "-- non-zeros pattern: " << std::endl
+          << PetscUtility::getStringSparsityPattern(jac);
 
   return 0;
 }
 
-
-template<typename T>
-PetscErrorCode jacobianFunctionCombined(SNES snes, Vec x, Mat jac, Mat b, void *context)
-{
-  T* object = static_cast<T*>(context);
+template <typename T>
+PetscErrorCode jacobianFunctionCombined(SNES snes, Vec x, Mat jac, Mat b,
+                                        void *context) {
+  T *object = static_cast<T *>(context);
 
   VLOG(1) << "in jacobianFunctionCombined";
   VLOG(1) << "pointer value x:   " << x;
@@ -119,7 +121,7 @@ PetscErrorCode jacobianFunctionCombined(SNES snes, Vec x, Mat jac, Mat b, void *
   // output the jacobian matrix for debugging
   object->dumpJacobianMatrix(b);
 
-  //LOG_AFTER_N(2,FATAL) << "terminate in jacobianFunctionCombined";
+  // LOG_AFTER_N(2,FATAL) << "terminate in jacobianFunctionCombined";
   return 0;
 }
 
@@ -132,10 +134,10 @@ PetscErrorCode jacobianFunctionCombined(SNES snes, Vec x, Mat jac, Mat b, void *
  *   norm  - 2-norm function value (may be estimated)
  *   mctx  - [optional] monitoring context
  */
-template<typename T>
-PetscErrorCode monitorFunction(SNES snes, PetscInt its, PetscReal norm, void *mctx)
-{
-  T* object = static_cast<T*>(mctx);
+template <typename T>
+PetscErrorCode monitorFunction(SNES snes, PetscInt its, PetscReal norm,
+                               void *mctx) {
+  T *object = static_cast<T *>(mctx);
   object->monitorSolvingIteration(snes, its, norm);
 
   return 0;

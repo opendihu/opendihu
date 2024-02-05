@@ -1,12 +1,9 @@
 #include "control/precice/volume_coupling/precice_adapter_volume_coupling.h"
 
-namespace Control
-{
+namespace Control {
 
-template<typename NestedSolver>
-void PreciceAdapterVolumeCoupling<NestedSolver>::
-run()
-{
+template <typename NestedSolver>
+void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
 #ifdef HAVE_PRECICE
 
   // initialize everything
@@ -14,21 +11,28 @@ run()
 
   double currentTime = 0;
 
-  // if precice coupling is disabled in settings, run the timestep of the nested solver until endTimeIfCouplingDisabled_ is reached
-  if (!this->couplingEnabled_)
-  {
-    const int nTimeSteps = this->endTimeIfCouplingDisabled_ / this->timeStepWidth_;
-    for (int timeStepNo = 0; timeStepNo < nTimeSteps; timeStepNo++)
-    {
-      if (timeStepNo % this->timeStepOutputInterval_ == 0 && (this->timeStepOutputInterval_ <= 10 || timeStepNo > 0))  // show first timestep only if timeStepOutputInterval is <= 10
+  // if precice coupling is disabled in settings, run the timestep of the nested
+  // solver until endTimeIfCouplingDisabled_ is reached
+  if (!this->couplingEnabled_) {
+    const int nTimeSteps =
+        this->endTimeIfCouplingDisabled_ / this->timeStepWidth_;
+    for (int timeStepNo = 0; timeStepNo < nTimeSteps; timeStepNo++) {
+      if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
+          (this->timeStepOutputInterval_ <= 10 ||
+           timeStepNo > 0)) // show first timestep only if
+                            // timeStepOutputInterval is <= 10
       {
-        LOG(INFO) << "PreCICE volume coupling (disabled for debugging), timestep " << timeStepNo << "/" << nTimeSteps << ", t=" << currentTime;
+        LOG(INFO)
+            << "PreCICE volume coupling (disabled for debugging), timestep "
+            << timeStepNo << "/" << nTimeSteps << ", t=" << currentTime;
       }
 
       // set time span in nested solver
-      this->nestedSolver_.setTimeSpan(currentTime, currentTime + this->timeStepWidth_);
+      this->nestedSolver_.setTimeSpan(currentTime,
+                                      currentTime + this->timeStepWidth_);
 
-      // call the nested solver to proceed with the simulation for the assigned time span
+      // call the nested solver to proceed with the simulation for the assigned
+      // time span
       this->nestedSolver_.advanceTimeSpan();
 
       // increase current simulation time
@@ -41,12 +45,13 @@ run()
   assert(this->preciceSolverInterface_);
 
   // perform initial data transfer, if required
-  if (this->preciceSolverInterface_->isActionRequired(precice::constants::actionWriteInitialData()))
-  {
+  if (this->preciceSolverInterface_->isActionRequired(
+          precice::constants::actionWriteInitialData())) {
     // writeData for this participant
     this->preciceWriteData();
 
-    this->preciceSolverInterface_->markActionFulfilled(precice::constants::actionWriteInitialData());
+    this->preciceSolverInterface_->markActionFulfilled(
+        precice::constants::actionWriteInitialData());
 
     // initialize data in precice
     this->preciceSolverInterface_->initializeData();
@@ -54,11 +59,15 @@ run()
 
   // perform the computation of this solver
   // main simulation loop of adapter
-  for (int timeStepNo = 0; this->preciceSolverInterface_->isCouplingOngoing(); timeStepNo++)
-  {
-    if (timeStepNo % this->timeStepOutputInterval_ == 0 && (this->timeStepOutputInterval_ <= 10 || timeStepNo > 0))  // show first timestep only if timeStepOutputInterval is <= 10
+  for (int timeStepNo = 0; this->preciceSolverInterface_->isCouplingOngoing();
+       timeStepNo++) {
+    if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
+        (this->timeStepOutputInterval_ <= 10 ||
+         timeStepNo >
+             0)) // show first timestep only if timeStepOutputInterval is <= 10
     {
-      LOG(INFO) << "PreCICE volume coupling, timestep " << timeStepNo << ", t=" << currentTime;
+      LOG(INFO) << "PreCICE volume coupling, timestep " << timeStepNo
+                << ", t=" << currentTime;
     }
 
     // checkpointing is not implemented in the volume coupling adapter
@@ -75,14 +84,16 @@ run()
     // read incoming values
     this->preciceReadData();
 
-    // compute the time step width such that it fits in the remaining time in the current time window
-    double timeStepWidth = std::min(this->maximumPreciceTimestepSize_, this->timeStepWidth_);
+    // compute the time step width such that it fits in the remaining time in
+    // the current time window
+    double timeStepWidth =
+        std::min(this->maximumPreciceTimestepSize_, this->timeStepWidth_);
 
     // set time span in nested solver
-    this->nestedSolver_.setTimeSpan(currentTime, currentTime+timeStepWidth);
+    this->nestedSolver_.setTimeSpan(currentTime, currentTime + timeStepWidth);
 
-    // call the nested solver to proceed with the simulation for the assigned time span
-    // the parameter specifies whether the output writers are enabled
+    // call the nested solver to proceed with the simulation for the assigned
+    // time span the parameter specifies whether the output writers are enabled
     this->nestedSolver_.advanceTimeSpan(!this->outputOnlyConvergedTimeSteps_);
 
     // write outgoing data to precice
@@ -92,9 +103,12 @@ run()
     currentTime += timeStepWidth;
 
     // advance timestepping in precice
-    this->maximumPreciceTimestepSize_ = this->preciceSolverInterface_->advance(timeStepWidth);
+    this->maximumPreciceTimestepSize_ =
+        this->preciceSolverInterface_->advance(timeStepWidth);
 
-    LOG(INFO) << "precice::advance(" << timeStepWidth << "), maximumPreciceTimestepSize_: " << this->maximumPreciceTimestepSize_;
+    LOG(INFO) << "precice::advance(" << timeStepWidth
+              << "), maximumPreciceTimestepSize_: "
+              << this->maximumPreciceTimestepSize_;
 
     // if coupling did not converge, reset to previously stored checkpoint
     // checkpointing is not implemented in the volume coupling adapter
@@ -108,16 +122,14 @@ run()
 #endif
 
     // if the current time step did converge and subcycling is complete
-    if (this->preciceSolverInterface_->isTimeWindowComplete())
-    {
-      if (this->outputOnlyConvergedTimeSteps_)
-      {
+    if (this->preciceSolverInterface_->isTimeWindowComplete()) {
+      if (this->outputOnlyConvergedTimeSteps_) {
         // output all data in the nested solvers
         this->nestedSolver_.callOutputWriter(timeStepNo, currentTime);
       }
     }
 
-  }   // loop over time steps
+  } // loop over time steps
 
   // finalize precice interface
   this->preciceSolverInterface_->finalize();
@@ -127,22 +139,19 @@ run()
 #endif
 }
 
-template<typename NestedSolver>
-void PreciceAdapterVolumeCoupling<NestedSolver>::
-reset()
-{
+template <typename NestedSolver>
+void PreciceAdapterVolumeCoupling<NestedSolver>::reset() {
   this->nestedSolver_.reset();
 
   this->initialized_ = false;
   // "uninitialize" everything
 }
 
-template<typename NestedSolver>
-typename PreciceAdapterVolumeCoupling<NestedSolver>::Data &PreciceAdapterVolumeCoupling<NestedSolver>::
-data()
-{
+template <typename NestedSolver>
+typename PreciceAdapterVolumeCoupling<NestedSolver>::Data &
+PreciceAdapterVolumeCoupling<NestedSolver>::data() {
   // get a reference to the data object
   return this->nestedSolver_.data();
 }
 
-}  // namespace
+} // namespace Control

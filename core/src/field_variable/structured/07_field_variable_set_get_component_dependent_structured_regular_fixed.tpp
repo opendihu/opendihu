@@ -4,44 +4,44 @@
 #include "easylogging++.h"
 #include "utility/string_utility.h"
 
-namespace FieldVariable
-{
+namespace FieldVariable {
 
 //! get a single value from local dof no. for all components
-template<int D,typename BasisFunctionType,int nComponents>
-std::array<double,nComponents> FieldVariableSetGet<FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<D>,BasisFunctionType>,nComponents>::
-getValue(node_no_t dofLocalNo) const
-{
+template <int D, typename BasisFunctionType, int nComponents>
+std::array<double, nComponents> FieldVariableSetGet<
+    FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<D>,
+                                 BasisFunctionType>,
+    nComponents>::getValue(node_no_t dofLocalNo) const {
   // if this is not a geometry field get the stored values
-  if (!this->isGeometryField_)
-  {
-    std::array<double,nComponents> result;
+  if (!this->isGeometryField_) {
+    std::array<double, nComponents> result;
 
     // prepare lookup indices for PETSc vector values_
-    for (int componentNo = 0; componentNo < nComponents; componentNo++)
-    {
-      this->values_->getValues(componentNo, 1, &dofLocalNo, result.data()+componentNo);
+    for (int componentNo = 0; componentNo < nComponents; componentNo++) {
+      this->values_->getValues(componentNo, 1, &dofLocalNo,
+                               result.data() + componentNo);
     }
 
     return result;
   }
 
   // for geometry field compute the entries, this does not work for ghost dofs
-  const int nDofsPerNode = FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<D>,BasisFunctionType>::nDofsPerNode();
-  
+  const int nDofsPerNode =
+      FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<D>,
+                                   BasisFunctionType>::nDofsPerNode();
+
   int nodeNoLocal = int(dofLocalNo / nDofsPerNode);
   int nodeLocalDofIndex = int(dofLocalNo % nDofsPerNode);
-  std::array<global_no_t,D> coordinates = this->functionSpace_->meshPartition()->getCoordinatesGlobal(nodeNoLocal);
+  std::array<global_no_t, D> coordinates =
+      this->functionSpace_->meshPartition()->getCoordinatesGlobal(nodeNoLocal);
 
-  std::array<double,nComponents> value;
-  if (nodeLocalDofIndex > 0)   // if this is a derivative of Hermite, set to 0
+  std::array<double, nComponents> value;
+  if (nodeLocalDofIndex > 0) // if this is a derivative of Hermite, set to 0
   {
     value[0] = 0;
     value[1] = 0;
     value[2] = 0;
-  }
-  else
-  {
+  } else {
     // x direction
     value[0] = coordinates[0] * this->functionSpace_->meshWidth();
 
@@ -51,8 +51,8 @@ getValue(node_no_t dofLocalNo) const
     // z direction
     value[2] = coordinates[2] * this->functionSpace_->meshWidth();
   }
-  
+
   return value;
 }
 
-}  // namespace
+} // namespace FieldVariable

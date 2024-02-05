@@ -6,7 +6,7 @@
 #include "../utility.h"
 
 int argc;
-char** argv;
+char **argv;
 
 int main(int argc_, char **argv_) {
   ::testing::InitGoogleTest(&argc_, argv_);
@@ -18,22 +18,24 @@ int main(int argc_, char **argv_) {
     LOG(INFO) << "failed to rm SUCCESS2 file.";
 
   int ret = RUN_ALL_TESTS();
-  LOG(INFO) << "return value of RUN_ALL_TESTS: " << ret << ", number of failed tests: " << nFails;
+  LOG(INFO) << "return value of RUN_ALL_TESTS: " << ret
+            << ", number of failed tests: " << nFails;
 
   // gather the return value of RUN_ALL_TESTS to process with rank 0
   int result = 1;
   PetscErrorCode ierr;
-  ierr = MPI_Reduce(&ret, &result, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD); CHKERRQ(ierr);
+  ierr = MPI_Reduce(&ret, &result, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
+  CHKERRQ(ierr);
 
   // if all tests succeeded an all ranks, create file "SUCCESS2"
-  if (result == 0)
-  {
+  if (result == 0) {
     LOG(INFO) << "\x1b[32mAll tests passed on 2 ranks.\x1b[0m";
     std::ofstream outfile("SUCCESS2");
     outfile.close();
   }
 
-  ierr = MPI_Finalize(); CHKERRQ(ierr);
+  ierr = MPI_Finalize();
+  CHKERRQ(ierr);
 
   return nFails;
 }

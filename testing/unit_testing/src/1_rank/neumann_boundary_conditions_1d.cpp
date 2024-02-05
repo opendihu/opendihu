@@ -1,4 +1,4 @@
-#include <Python.h>  // this has to be the first included header
+#include <Python.h> // this has to be the first included header
 
 #include <iostream>
 #include <cstdlib>
@@ -10,11 +10,9 @@
 #include "stiffness_matrix_tester.h"
 #include "node_positions_tester.h"
 
-namespace SpatialDiscretization
-{
+namespace SpatialDiscretization {
 
-TEST(NeumannBoundaryConditionTest, NeumannBoundaryConditionIsCorrect1DLinear)
-{
+TEST(NeumannBoundaryConditionTest, NeumannBoundaryConditionIsCorrect1DLinear) {
   std::string pythonConfig = R"(
 # Laplace 1D
 n = 5
@@ -46,43 +44,37 @@ config = {
 
   // ---- linear -----
   // regular fixed
-  FiniteElementMethod<
-    Mesh::StructuredRegularFixedOfDimension<1>,
-    BasisFunction::LagrangeOfOrder<>,
-    Quadrature::Gauss<1>,
-    Equation::Static::Laplace
-  > equationDiscretized1(settings);
+  FiniteElementMethod<Mesh::StructuredRegularFixedOfDimension<1>,
+                      BasisFunction::LagrangeOfOrder<>, Quadrature::Gauss<1>,
+                      Equation::Static::Laplace>
+      equationDiscretized1(settings);
   equationDiscretized1.run();
 
   // structured deformable
-  FiniteElementMethod<
-    Mesh::StructuredDeformableOfDimension<1>,
-    BasisFunction::LagrangeOfOrder<>,
-    Quadrature::Gauss<1>,
-    Equation::Static::Laplace
-  > equationDiscretized2(settings);
+  FiniteElementMethod<Mesh::StructuredDeformableOfDimension<1>,
+                      BasisFunction::LagrangeOfOrder<>, Quadrature::Gauss<1>,
+                      Equation::Static::Laplace>
+      equationDiscretized2(settings);
   equationDiscretized2.run();
 
   // unstructured
-  FiniteElementMethod<
-    Mesh::UnstructuredDeformableOfDimension<1>,
-    BasisFunction::LagrangeOfOrder<>,
-    Quadrature::Gauss<1>,
-    Equation::Static::Laplace
-  > equationDiscretized3(settings);
+  FiniteElementMethod<Mesh::UnstructuredDeformableOfDimension<1>,
+                      BasisFunction::LagrangeOfOrder<>, Quadrature::Gauss<1>,
+                      Equation::Static::Laplace>
+      equationDiscretized3(settings);
   equationDiscretized3.run();
 
-  std::vector<double> referenceSolutionLinear = {
-    -0.2, 0, 0.2, 0.4, 0.6, 0.8
-  };
-  StiffnessMatrixTester::compareSolution(equationDiscretized1, referenceSolutionLinear);
-  StiffnessMatrixTester::compareSolution(equationDiscretized2, referenceSolutionLinear);
-  StiffnessMatrixTester::compareSolution(equationDiscretized3, referenceSolutionLinear);
+  std::vector<double> referenceSolutionLinear = {-0.2, 0, 0.2, 0.4, 0.6, 0.8};
+  StiffnessMatrixTester::compareSolution(equationDiscretized1,
+                                         referenceSolutionLinear);
+  StiffnessMatrixTester::compareSolution(equationDiscretized2,
+                                         referenceSolutionLinear);
+  StiffnessMatrixTester::compareSolution(equationDiscretized3,
+                                         referenceSolutionLinear);
 }
 
-
-TEST(NeumannBoundaryConditionTest, NeumannBoundaryConditionBackwardsIsCorrect1DLinear)
-{
+TEST(NeumannBoundaryConditionTest,
+     NeumannBoundaryConditionBackwardsIsCorrect1DLinear) {
   std::string pythonConfig = R"(
 # Laplace 1D
 n = 5
@@ -114,33 +106,27 @@ config = {
 
   // ---- linear -----
   // regular fixed
-  FiniteElementMethod<
-    Mesh::StructuredRegularFixedOfDimension<1>,
-    BasisFunction::LagrangeOfOrder<>,
-    Quadrature::Gauss<1>,
-    Equation::Static::Laplace
-  > equationDiscretized1(settings);
+  FiniteElementMethod<Mesh::StructuredRegularFixedOfDimension<1>,
+                      BasisFunction::LagrangeOfOrder<>, Quadrature::Gauss<1>,
+                      Equation::Static::Laplace>
+      equationDiscretized1(settings);
   equationDiscretized1.run();
 
   // structured deformable
-  FiniteElementMethod<
-    Mesh::StructuredDeformableOfDimension<1>,
-    BasisFunction::LagrangeOfOrder<>,
-    Quadrature::Gauss<1>,
-    Equation::Static::Laplace
-  > equationDiscretized2(settings);
+  FiniteElementMethod<Mesh::StructuredDeformableOfDimension<1>,
+                      BasisFunction::LagrangeOfOrder<>, Quadrature::Gauss<1>,
+                      Equation::Static::Laplace>
+      equationDiscretized2(settings);
   equationDiscretized2.run();
 
-  std::vector<double> referenceSolutionLinear = {
-    -0.2, 0, 0.2, 0.4, 0.6, 0.8
-  };
-  StiffnessMatrixTester::compareSolution(equationDiscretized1, referenceSolutionLinear);
-  StiffnessMatrixTester::compareSolution(equationDiscretized2, referenceSolutionLinear);
+  std::vector<double> referenceSolutionLinear = {-0.2, 0, 0.2, 0.4, 0.6, 0.8};
+  StiffnessMatrixTester::compareSolution(equationDiscretized1,
+                                         referenceSolutionLinear);
+  StiffnessMatrixTester::compareSolution(equationDiscretized2,
+                                         referenceSolutionLinear);
 }
 
-
-TEST(NeumannBoundaryConditionTest, NeumannBoundaryConditionIsCorrect1DHermite)
-{
+TEST(NeumannBoundaryConditionTest, NeumannBoundaryConditionIsCorrect1DHermite) {
   std::string pythonConfig = R"(
 # Laplace 1D
 n = 5
@@ -172,42 +158,38 @@ config = {
 
   // ---- Hermite -----
   // regular fixed
-  FiniteElementMethod<
-    Mesh::StructuredRegularFixedOfDimension<1>,
-    BasisFunction::Hermite,
-    Quadrature::Gauss<2>,
-    Equation::Static::Laplace
-  > equationDiscretized4(settings);
+  FiniteElementMethod<Mesh::StructuredRegularFixedOfDimension<1>,
+                      BasisFunction::Hermite, Quadrature::Gauss<2>,
+                      Equation::Static::Laplace>
+      equationDiscretized4(settings);
   equationDiscretized4.run();
 
   // structured deformable
-  FiniteElementMethod<
-    Mesh::StructuredDeformableOfDimension<1>,
-    BasisFunction::Hermite,
-    Quadrature::Gauss<2>,
-    Equation::Static::Laplace
-  > equationDiscretized5(settings);
+  FiniteElementMethod<Mesh::StructuredDeformableOfDimension<1>,
+                      BasisFunction::Hermite, Quadrature::Gauss<2>,
+                      Equation::Static::Laplace>
+      equationDiscretized5(settings);
   equationDiscretized5.run();
 
   // unstructured
-  FiniteElementMethod<
-    Mesh::UnstructuredDeformableOfDimension<1>,
-    BasisFunction::Hermite,
-    Quadrature::Gauss<2>,
-    Equation::Static::Laplace
-  > equationDiscretized6(settings);
+  FiniteElementMethod<Mesh::UnstructuredDeformableOfDimension<1>,
+                      BasisFunction::Hermite, Quadrature::Gauss<2>,
+                      Equation::Static::Laplace>
+      equationDiscretized6(settings);
   equationDiscretized6.run();
 
-  std::vector<double> referenceSolutionHermite = {
-     0,  0.2,  0.2,  0.2,  0.4,  0.2,  0.6,  0.2,  0.8,  0.2,  1,  0.2
-  };
-  StiffnessMatrixTester::compareSolution(equationDiscretized4, referenceSolutionHermite);
-  StiffnessMatrixTester::compareSolution(equationDiscretized5, referenceSolutionHermite);
-  StiffnessMatrixTester::compareSolution(equationDiscretized6, referenceSolutionHermite);
+  std::vector<double> referenceSolutionHermite = {0,   0.2, 0.2, 0.2, 0.4, 0.2,
+                                                  0.6, 0.2, 0.8, 0.2, 1,   0.2};
+  StiffnessMatrixTester::compareSolution(equationDiscretized4,
+                                         referenceSolutionHermite);
+  StiffnessMatrixTester::compareSolution(equationDiscretized5,
+                                         referenceSolutionHermite);
+  StiffnessMatrixTester::compareSolution(equationDiscretized6,
+                                         referenceSolutionHermite);
 }
 
-TEST(NeumannBoundaryConditionTest, NeumannBoundaryConditionIsCorrect1DQuadratic)
-{
+TEST(NeumannBoundaryConditionTest,
+     NeumannBoundaryConditionIsCorrect1DQuadratic) {
   std::string pythonConfig = R"(
 # Laplace 1D
 n = 5
@@ -239,39 +221,34 @@ config = {
 
   // ---- quadratic -----
   // regular fixed
-  FiniteElementMethod<
-    Mesh::StructuredRegularFixedOfDimension<1>,
-    BasisFunction::LagrangeOfOrder<2>,
-    Quadrature::Gauss<2>,
-    Equation::Static::Laplace
-  > equationDiscretized4(settings);
+  FiniteElementMethod<Mesh::StructuredRegularFixedOfDimension<1>,
+                      BasisFunction::LagrangeOfOrder<2>, Quadrature::Gauss<2>,
+                      Equation::Static::Laplace>
+      equationDiscretized4(settings);
   equationDiscretized4.run();
 
   // structured deformable
-  FiniteElementMethod<
-    Mesh::StructuredDeformableOfDimension<1>,
-    BasisFunction::LagrangeOfOrder<2>,
-    Quadrature::Gauss<2>,
-    Equation::Static::Laplace
-  > equationDiscretized5(settings);
+  FiniteElementMethod<Mesh::StructuredDeformableOfDimension<1>,
+                      BasisFunction::LagrangeOfOrder<2>, Quadrature::Gauss<2>,
+                      Equation::Static::Laplace>
+      equationDiscretized5(settings);
   equationDiscretized5.run();
 
   // structured deformable
-  FiniteElementMethod<
-    Mesh::UnstructuredDeformableOfDimension<1>,
-    BasisFunction::LagrangeOfOrder<2>,
-    Quadrature::Gauss<2>,
-    Equation::Static::Laplace
-  > equationDiscretized6(settings);
+  FiniteElementMethod<Mesh::UnstructuredDeformableOfDimension<1>,
+                      BasisFunction::LagrangeOfOrder<2>, Quadrature::Gauss<2>,
+                      Equation::Static::Laplace>
+      equationDiscretized6(settings);
   equationDiscretized6.run();
 
   std::vector<double> referenceSolutionQuadratic = {
-    -0.1, 0,  0.1,  0.2,  0.3,  0.4,  0.5,  0.6,  0.7,  0.8,  0.9
-  };
-  StiffnessMatrixTester::compareSolution(equationDiscretized4, referenceSolutionQuadratic, 1e-13);
-  StiffnessMatrixTester::compareSolution(equationDiscretized5, referenceSolutionQuadratic, 1e-13);
-  StiffnessMatrixTester::compareSolution(equationDiscretized6, referenceSolutionQuadratic, 1e-13);
+      -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
+  StiffnessMatrixTester::compareSolution(equationDiscretized4,
+                                         referenceSolutionQuadratic, 1e-13);
+  StiffnessMatrixTester::compareSolution(equationDiscretized5,
+                                         referenceSolutionQuadratic, 1e-13);
+  StiffnessMatrixTester::compareSolution(equationDiscretized6,
+                                         referenceSolutionQuadratic, 1e-13);
 }
 
-}  // namespace
-
+} // namespace SpatialDiscretization

@@ -1,22 +1,23 @@
 #include "control/dihu_context.h"
 
-#include <Python.h>  // this has to be the first included header
-#include <python_home.h>  // defines PYTHON_HOME_DIRECTORY
+#include <Python.h>      // this has to be the first included header
+#include <python_home.h> // defines PYTHON_HOME_DIRECTORY
 #include "control/diagnostic_tool/performance_measurement.h"
 #include "utility/python_capture_stderr.h"
 #include "control/initialization/python_opendihu_module.h"
 
-void DihuContext::initializePython(int argc, char *argv[], bool explicitConfigFileGiven)
-{
+void DihuContext::initializePython(int argc, char *argv[],
+                                   bool explicitConfigFileGiven) {
   LOG(TRACE) << "initialize python";
 
   // make program name of executable available in the script
   char const *programName = argv[0];
 
   wchar_t *programNameWChar = Py_DecodeLocale(programName, NULL);
-  Py_SetProgramName(programNameWChar);  /* optional but recommended */
+  Py_SetProgramName(programNameWChar); /* optional but recommended */
 
-  // pass information to "opendihu" module that can be accessed from within the settings script
+  // pass information to "opendihu" module that can be accessed from within the
+  // settings script
   PythonOpendihu::programName = std::string(programName);
   PythonOpendihu::metaText = metaText();
   PythonOpendihu::versionText = versionText();
@@ -24,11 +25,14 @@ void DihuContext::initializePython(int argc, char *argv[], bool explicitConfigFi
   // set python home and path, apparently this is not needed
   VLOG(1) << "python home directory: \"" << PYTHON_HOME_DIRECTORY << "\"";
   std::string pythonSearchPath = PYTHON_HOME_DIRECTORY;
-  //std::string pythonSearchPath = std::string("/store/software/opendihu/dependencies/python/install");
-  const wchar_t *pythonSearchPathWChar = Py_DecodeLocale(pythonSearchPath.c_str(), NULL);
+  // std::string pythonSearchPath =
+  // std::string("/store/software/opendihu/dependencies/python/install");
+  const wchar_t *pythonSearchPathWChar =
+      Py_DecodeLocale(pythonSearchPath.c_str(), NULL);
   Py_SetPythonHome((wchar_t *)pythonSearchPathWChar);
 
-  // add the emb module that captures stderr to the existing table of built-in modules
+  // add the emb module that captures stderr to the existing table of built-in
+  // modules
   PyImport_AppendInittab("emb", emb::PyInit_emb);
 
   // add the opendihu module that holds some constants
@@ -42,8 +46,8 @@ void DihuContext::initializePython(int argc, char *argv[], bool explicitConfigFi
   PyEval_InitThreads();
 #endif
 
-  //VLOG(4) << "PyEval_ReleaseLock()";
-  //PyEval_ReleaseLock();
+  // VLOG(4) << "PyEval_ReleaseLock()";
+  // PyEval_ReleaseLock();
 
   Py_SetStandardStreamEncoding(NULL, NULL);
 
@@ -57,39 +61,45 @@ void DihuContext::initializePython(int argc, char *argv[], bool explicitConfigFi
   VLOG(1) << "standard python path: " << standardPythonPath;
 
   // set python path
-  //std::stringstream pythonPath;
-  //pythonPath << ".:" << PYTHON_HOME_DIRECTORY << "/lib/python3.6:" << PYTHON_HOME_DIRECTORY << "/lib/python3.6/site-packages:"
-  //pythonPath << OPENDIHU_HOME << "/scripts:" << OPENDIHU_HOME << "/scripts/geometry_manipulation";
-  //VLOG(1) << "python path: " << pythonPath.str();
-  //const wchar_t *pythonPathWChar = Py_DecodeLocale(pythonPath.str().c_str(), NULL);
-  //Py_SetPath((wchar_t *)pythonPathWChar);
+  // std::stringstream pythonPath;
+  // pythonPath << ".:" << PYTHON_HOME_DIRECTORY << "/lib/python3.6:" <<
+  // PYTHON_HOME_DIRECTORY << "/lib/python3.6/site-packages:" pythonPath <<
+  // OPENDIHU_HOME << "/scripts:" << OPENDIHU_HOME <<
+  // "/scripts/geometry_manipulation"; VLOG(1) << "python path: " <<
+  // pythonPath.str(); const wchar_t *pythonPathWChar =
+  // Py_DecodeLocale(pythonPath.str().c_str(), NULL); Py_SetPath((wchar_t
+  // *)pythonPathWChar);
 
   // adjust PYTHONPATH
   std::stringstream codeForPythonPath;
   codeForPythonPath << "import sys" << std::endl
-    << "sys.path.append('" << OPENDIHU_HOME << "/scripts" << "')" << std::endl
-    << "sys.path.append('" << OPENDIHU_HOME << "/scripts/geometry_manipulation" << "')" << std::endl;
+                    << "sys.path.append('" << OPENDIHU_HOME << "/scripts"
+                    << "')" << std::endl
+                    << "sys.path.append('" << OPENDIHU_HOME
+                    << "/scripts/geometry_manipulation"
+                    << "')" << std::endl;
   PyRun_SimpleString(codeForPythonPath.str().c_str());
-
 
   // pass on command line arguments to python config script
 
-  // determine if the first argument (argv[1]) is *.py, then it is also discarded
-  // always remove the first argument, which is the name of the executable
-  int numberArgumentsToRemove = (explicitConfigFileGiven? 2: 1);
+  // determine if the first argument (argv[1]) is *.py, then it is also
+  // discarded always remove the first argument, which is the name of the
+  // executable
+  int numberArgumentsToRemove = (explicitConfigFileGiven ? 2 : 1);
 
-  // add the own rank no and the number of ranks at the end as command line arguments
+  // add the own rank no and the number of ranks at the end as command line
+  // arguments
 
   int nArgumentsToConfig = argc - numberArgumentsToRemove + 2;
-  VLOG(4) << "nArgumentsToConfig: " << nArgumentsToConfig << ", numberArgumentsToRemove: " << numberArgumentsToRemove;
+  VLOG(4) << "nArgumentsToConfig: " << nArgumentsToConfig
+          << ", numberArgumentsToRemove: " << numberArgumentsToRemove;
 
   char **argvReduced = new char *[nArgumentsToConfig];
   wchar_t **argumentToConfigWChar = new wchar_t *[nArgumentsToConfig];
 
   // set given command line arguments
-  for (int i=0; i<nArgumentsToConfig-2; i++)
-  {
-    argvReduced[i] = argv[i+numberArgumentsToRemove];
+  for (int i = 0; i < nArgumentsToConfig - 2; i++) {
+    argvReduced[i] = argv[i + numberArgumentsToRemove];
     argumentToConfigWChar[i] = Py_DecodeLocale(argvReduced[i], NULL);
   }
 
@@ -102,11 +112,12 @@ void DihuContext::initializePython(int argc, char *argv[], bool explicitConfigFi
   std::stringstream rankNoStr, nRanksStr;
   rankNoStr << ownRankNoCommWorld_;
   nRanksStr << nRanksCommWorld_;
-  argumentToConfigWChar[nArgumentsToConfig-2] = Py_DecodeLocale(rankNoStr.str().c_str(), NULL);
-  argumentToConfigWChar[nArgumentsToConfig-1] = Py_DecodeLocale(nRanksStr.str().c_str(), NULL);
+  argumentToConfigWChar[nArgumentsToConfig - 2] =
+      Py_DecodeLocale(rankNoStr.str().c_str(), NULL);
+  argumentToConfigWChar[nArgumentsToConfig - 1] =
+      Py_DecodeLocale(nRanksStr.str().c_str(), NULL);
 
-  if (VLOG_IS_ON(1) && pythonConfig_.pyObject())
-  {
+  if (VLOG_IS_ON(1) && pythonConfig_.pyObject()) {
     PythonUtility::printDict(pythonConfig_.pyObject());
   }
 
@@ -145,21 +156,16 @@ void DihuContext::initializePython(int argc, char *argv[], bool explicitConfigFi
 
   const char *buildInfo = Py_GetBuildInfo();
   VLOG(2) << "python buildInfo: " << buildInfo;
-
 }
 
-bool DihuContext::loadPythonScriptFromFile(std::string filename)
-{
+bool DihuContext::loadPythonScriptFromFile(std::string filename) {
   // initialize python interpreter
 
   std::ifstream file(filename);
-  if (!file.is_open())
-  {
-    LOG(WARNING) << "Could not open settings file \"" <<filename << "\".";
+  if (!file.is_open()) {
+    LOG(WARNING) << "Could not open settings file \"" << filename << "\".";
     return false;
-  }
-  else
-  {
+  } else {
     // reserve memory of size of file
     file.seekg(0, std::ios::end);
     size_t fileSize = file.tellg();
@@ -171,25 +177,23 @@ bool DihuContext::loadPythonScriptFromFile(std::string filename)
     // read in file contents
     file.read(&fileContents[0], fileSize);
 
-    LOG(INFO) << "File \"" <<filename << "\" loaded.";
+    LOG(INFO) << "File \"" << filename << "\" loaded.";
 
     std::string pythonScriptFilePath;
 
     // get current working directory
-    char currentWorkingDirectory[PATH_MAX+1];
-    if (getcwd(currentWorkingDirectory, sizeof(currentWorkingDirectory)))
-    {
+    char currentWorkingDirectory[PATH_MAX + 1];
+    if (getcwd(currentWorkingDirectory, sizeof(currentWorkingDirectory))) {
 
-      // set a command that assigns the absolute path to the current settings file to the __file__ attribute
+      // set a command that assigns the absolute path to the current settings
+      // file to the __file__ attribute
       std::stringstream commandToSetFile;
       // if filename of settings is an absolute path, starting with '/'
-      if (filename[0] == '/')
-      {
-        commandToSetFile << "__file__ = '" << filename << "' "<< std::endl;
-      }
-      else
-      {
-        commandToSetFile << "__file__ = '" << currentWorkingDirectory << "/" << filename << "' "<< std::endl;
+      if (filename[0] == '/') {
+        commandToSetFile << "__file__ = '" << filename << "' " << std::endl;
+      } else {
+        commandToSetFile << "__file__ = '" << currentWorkingDirectory << "/"
+                         << filename << "' " << std::endl;
       }
       LOG(DEBUG) << "run " << commandToSetFile.str();
 
@@ -197,13 +201,10 @@ bool DihuContext::loadPythonScriptFromFile(std::string filename)
       PythonUtility::checkForError();
 
       // if there was an error in the python code
-      if (ret != 0)
-      {
+      if (ret != 0) {
         PyErr_Print();
       }
-    }
-    else
-    {
+    } else {
       LOG(WARNING) << "Could not set __file__ constant.";
     }
 
@@ -212,22 +213,23 @@ bool DihuContext::loadPythonScriptFromFile(std::string filename)
   return true;
 }
 
-void DihuContext::loadPythonScript(std::string text)
-{
+void DihuContext::loadPythonScript(std::string text) {
   pythonScriptText_ = text;
-  LOG(TRACE) << "loadPythonScript(" << pythonScriptText_.substr(0,std::min(std::size_t(80),pythonScriptText_.length())) << ")";
+  LOG(TRACE) << "loadPythonScript("
+             << pythonScriptText_.substr(
+                    0, std::min(std::size_t(80), pythonScriptText_.length()))
+             << ")";
 
   // execute python code
   int ret = 0;
   std::string errorBuffer;
   std::string stdoutBuffer;
-  LOG(INFO) << std::string(40, '-') << " begin python output " << std::string(40, '-');
-  try
-  {
+  LOG(INFO) << std::string(40, '-') << " begin python output "
+            << std::string(40, '-');
+  try {
     // check if numpy module could be loaded
     PyObject *numpyModule = PyImport_ImportModule("numpy");
-    if (numpyModule == NULL)
-    {
+    if (numpyModule == NULL) {
       // get standard python path
       wchar_t *standardPythonPathWChar = Py_GetPath();
       std::wstring standardPythonPath(standardPythonPathWChar);
@@ -239,28 +241,35 @@ void DihuContext::loadPythonScript(std::string text)
       char *path = Py_EncodeLocale(pathWChar, NULL);
 
       const char *version = Py_GetVersion();
-      LOG(ERROR) << "Failed to import numpy. \n" 
-        << " - Python home directory: \"" << PYTHON_HOME_DIRECTORY << "\",\n"
-        << " - Standard python path: " << standardPythonPath << "\n"
-        << " - Python home: " << home << "\n"
-        << " - Python path: " << path << "\n"
-        << " - Python version: " << version << "\n\n"
-        << "The python packages were obviously not installed properly.\n"
-        << "Try the following:\n"
-        << "  scons PYTHONPACKAGES_REBUILD=True\n"
-        << "\n"
-        << "If this fails, try the commands by hand or do the following:\n"
-        << "  cd " << PYTHON_HOME_DIRECTORY << "\n"
-        << "  python3 -m pip install numpy matplotlib scipy numpy-stl svg.path triangle geomdl vtk\n"
-        << "Try to omit all packages that fail.";
+      LOG(ERROR)
+          << "Failed to import numpy. \n"
+          << " - Python home directory: \"" << PYTHON_HOME_DIRECTORY << "\",\n"
+          << " - Standard python path: " << standardPythonPath << "\n"
+          << " - Python home: " << home << "\n"
+          << " - Python path: " << path << "\n"
+          << " - Python version: " << version << "\n\n"
+          << "The python packages were obviously not installed properly.\n"
+          << "Try the following:\n"
+          << "  scons PYTHONPACKAGES_REBUILD=True\n"
+          << "\n"
+          << "If this fails, try the commands by hand or do the following:\n"
+          << "  cd " << PYTHON_HOME_DIRECTORY << "\n"
+          << "  python3 -m pip install numpy matplotlib scipy numpy-stl "
+             "svg.path triangle geomdl vtk\n"
+          << "Try to omit all packages that fail.";
     }
 
     // add callback function to capture stderr buffer
-    emb::stderr_write_type stderrWrite = [&errorBuffer] (std::string s) {errorBuffer += s; };
+    emb::stderr_write_type stderrWrite = [&errorBuffer](std::string s) {
+      errorBuffer += s;
+    };
     emb::set_stderr(stderrWrite);
 
     // add callback function to capture stdout buffer
-    emb::stdout_write_type stdoutWrite = [&stdoutBuffer] (std::string s) {std::cout << s; stdoutBuffer += s; };
+    emb::stdout_write_type stdoutWrite = [&stdoutBuffer](std::string s) {
+      std::cout << s;
+      stdoutBuffer += s;
+    };
     emb::set_stdout(stdoutWrite);
 
     // execute config script
@@ -272,17 +281,14 @@ void DihuContext::loadPythonScript(std::string text)
     LOG(DEBUG) << stdoutBuffer;
 
     PythonUtility::checkForError();
+  } catch (...) {
   }
-  catch(...)
-  {
-  }
-  LOG(INFO) << std::string(40, '-') << "- end python output -" << std::string(40, '-');
+  LOG(INFO) << std::string(40, '-') << "- end python output -"
+            << std::string(40, '-');
 
   // if there was an error in the python code
-  if (ret != 0)
-  {
-    if (PyErr_Occurred())
-    {
+  if (ret != 0) {
+    if (PyErr_Occurred()) {
       // print error message and exit
       PyErr_Print();
       LOG(FATAL) << "An error occured in the python config.\n" << errorBuffer;
@@ -290,13 +296,13 @@ void DihuContext::loadPythonScript(std::string text)
 
     PyErr_Print();
     LOG(FATAL) << "An error occured in the python config.\n" << errorBuffer;
-  }
-  else if (!errorBuffer.empty())
-  {
+  } else if (!errorBuffer.empty()) {
     LOG(WARNING) << "The python config wrote to stderr.\n";
-    LOG(INFO) << std::string(37, '-') << " begin python error output " << std::string(37, '-');
+    LOG(INFO) << std::string(37, '-') << " begin python error output "
+              << std::string(37, '-');
     LOG(INFO) << errorBuffer;
-    LOG(INFO) << std::string(37, '-') << "- end python error output -" << std::string(37, '-');
+    LOG(INFO) << std::string(37, '-') << "- end python error output -"
+              << std::string(37, '-');
   }
 
   // load main module and extract config
@@ -304,11 +310,10 @@ void DihuContext::loadPythonScript(std::string text)
   PyObject *config = PyObject_GetAttrString(mainModule, "config");
   VLOG(4) << "create pythonConfig_ (initialize ref to 1)";
 
-
   // check if type is valid
-  if (config == NULL || !PyDict_Check(config))
-  {
-    LOG(FATAL) << "Python config file does not contain a dict named \"config\".";
+  if (config == NULL || !PyDict_Check(config)) {
+    LOG(FATAL)
+        << "Python config file does not contain a dict named \"config\".";
   }
 
   pythonConfig_.setPyObject(config);
@@ -316,42 +321,37 @@ void DihuContext::loadPythonScript(std::string text)
   parseGlobalParameters();
 }
 
-void DihuContext::parseGlobalParameters()
-{
+void DihuContext::parseGlobalParameters() {
   // parse scenario name
   std::string scenarioName = pythonConfig_.getOptionString("scenarioName", "");
   Control::PerformanceMeasurement::setParameter("scenarioName", scenarioName);
 
   // parse desired log file format
   std::string logFormat = pythonConfig_.getOptionString("logFormat", "csv");
-  if (logFormat == "csv")
-  {
+  if (logFormat == "csv") {
     setLogFormat(logFormatCsv);
-  }
-  else if (logFormat == "json")
-  {
+  } else if (logFormat == "json") {
     setLogFormat(logFormatJson);
-  }
-  else
-  {
-    LOG(ERROR) << "Unknown option for \"logFormat\": \"" << logFormat << "\". Use one of \"csv\" or \"json\". Falling back to \"csv\".";
+  } else {
+    LOG(ERROR)
+        << "Unknown option for \"logFormat\": \"" << logFormat
+        << "\". Use one of \"csv\" or \"json\". Falling back to \"csv\".";
     setLogFormat(logFormatCsv);
   }
 
   // parse all keys under meta and add forward them directly to the log file
   // These parameters are not used by opendihu but can hold information that the
   // user wants to have in the log file.
-  if (pythonConfig_.hasKey("meta"))
-  {
+  if (pythonConfig_.hasKey("meta")) {
 
     // loop over entries of python dict "meta"
     std::string keyString("meta");
-    std::pair<std::string,std::string> dictItem
-      = pythonConfig_.getOptionDictBegin<std::string,std::string>(keyString);
+    std::pair<std::string, std::string> dictItem =
+        pythonConfig_.getOptionDictBegin<std::string, std::string>(keyString);
 
     for (; !pythonConfig_.getOptionDictEnd(keyString);
-        pythonConfig_.getOptionDictNext<std::string,std::string>(keyString, dictItem))
-    {
+         pythonConfig_.getOptionDictNext<std::string, std::string>(keyString,
+                                                                   dictItem)) {
       // the key is the name of the field
       std::string key = dictItem.first;
 
@@ -366,7 +366,8 @@ void DihuContext::parseGlobalParameters()
   }
 
   // filename for solver structure diagram
-  solverStructureDiagramFile_ = pythonConfig_.getOptionString("solverStructureDiagramFile", "solver_structure.txt");
+  solverStructureDiagramFile_ = pythonConfig_.getOptionString(
+      "solverStructureDiagramFile", "solver_structure.txt");
   if (solverStructureDiagramFile_ == "None")
     solverStructureDiagramFile_ = "";
 }

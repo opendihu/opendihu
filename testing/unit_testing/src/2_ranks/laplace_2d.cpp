@@ -1,4 +1,4 @@
-#include <Python.h>  // this has to be the first included header
+#include <Python.h> // this has to be the first included header
 
 #include <iostream>
 #include <cstdlib>
@@ -9,8 +9,7 @@
 #include "opendihu.h"
 #include "../utility.h"
 
-TEST(LaplaceTest, Structured2DLinear)
-{
+TEST(LaplaceTest, Structured2DLinear) {
   std::string pythonConfig = R"(
 # Laplace 2D, 3 x 2 (=6) elements, 4 x 3 (=12) nodes
 
@@ -51,19 +50,49 @@ config = {
   DihuContext settings(argc, argv, pythonConfig);
 
   SpatialDiscretization::FiniteElementMethod<
-    Mesh::StructuredDeformableOfDimension<2>,
-    BasisFunction::LagrangeOfOrder<1>,
-    Quadrature::Gauss<2>,
-    Equation::Static::Laplace
-  > problem(settings);
+      Mesh::StructuredDeformableOfDimension<2>,
+      BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+      Equation::Static::Laplace>
+      problem(settings);
 
   problem.run();
 
-  std::string referenceOutput0 = "{\"meshType\": \"StructuredDeformable\", \"dimension\": 2, \"nElementsGlobal\": [3, 2], \"nElementsLocal\": [2, 2], \"beginNodeGlobalNatural\": [0, 0], \"hasFullNumberOfNodes\": [false, true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, \"onlyNodalValues\": true, \"nRanks\": 2, \"ownRankNo\": 0, \"data\": [{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", \"values\": [0.0, 2.0, 0.0, 2.0, 0.0, 2.0]}, {\"name\": \"y\", \"values\": [0.0, 0.0, 2.0, 2.0, 4.0, 4.0]}, {\"name\": \"z\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", \"components\": [{\"name\": \"0\", \"values\": [0.0, 1.0000000000000002, 4.242857142857144, 5.971428571428574, 0.0, 10.000000000000005]}]}, {\"name\": \"rightHandSide\", \"components\": [{\"name\": \"0\", \"values\": [0.0, 1.0, -3.666666666666667, -11.000000000000002, 0.0, 10.0]}]}, {\"name\": \"-rhsNeumannBC\", \"components\": [{\"name\": \"0\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}], \"timeStepNo\": -1, \"currentTime\": 0.0}";
-  std::string referenceOutput1 = "{\"meshType\": \"StructuredDeformable\", \"dimension\": 2, \"nElementsGlobal\": [3, 2], \"nElementsLocal\": [1, 2], \"beginNodeGlobalNatural\": [2, 0], \"hasFullNumberOfNodes\": [true, true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, \"onlyNodalValues\": true, \"nRanks\": 2, \"ownRankNo\": 1, \"data\": [{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", \"values\": [4.0, 6.0, 4.0, 6.0, 4.0, 6.0]}, {\"name\": \"y\", \"values\": [0.0, 0.0, 2.0, 2.0, 4.0, 4.0]}, {\"name\": \"z\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", \"components\": [{\"name\": \"0\", \"values\": [2.0000000000000004, 3.0000000000000018, 10.528571428571434, 12.257142857142862, 20.00000000000001, 30.000000000000007]}]}, {\"name\": \"rightHandSide\", \"components\": [{\"name\": \"0\", \"values\": [2.0, 3.0, -22.0, -12.833333333333332, 20.0, 30.0]}]}, {\"name\": \"-rhsNeumannBC\", \"components\": [{\"name\": \"0\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}], \"timeStepNo\": -1, \"currentTime\": 0.0}";
+  std::string referenceOutput0 =
+      "{\"meshType\": \"StructuredDeformable\", \"dimension\": 2, "
+      "\"nElementsGlobal\": [3, 2], \"nElementsLocal\": [2, 2], "
+      "\"beginNodeGlobalNatural\": [0, 0], \"hasFullNumberOfNodes\": [false, "
+      "true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, "
+      "\"onlyNodalValues\": true, \"nRanks\": 2, \"ownRankNo\": 0, \"data\": "
+      "[{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", "
+      "\"values\": [0.0, 2.0, 0.0, 2.0, 0.0, 2.0]}, {\"name\": \"y\", "
+      "\"values\": [0.0, 0.0, 2.0, 2.0, 4.0, 4.0]}, {\"name\": \"z\", "
+      "\"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", "
+      "\"components\": [{\"name\": \"0\", \"values\": [0.0, "
+      "1.0000000000000002, 4.242857142857144, 5.971428571428574, 0.0, "
+      "10.000000000000005]}]}, {\"name\": \"rightHandSide\", \"components\": "
+      "[{\"name\": \"0\", \"values\": [0.0, 1.0, -3.666666666666667, "
+      "-11.000000000000002, 0.0, 10.0]}]}, {\"name\": \"-rhsNeumannBC\", "
+      "\"components\": [{\"name\": \"0\", \"values\": [0.0, 0.0, 0.0, 0.0, "
+      "0.0, 0.0]}]}], \"timeStepNo\": -1, \"currentTime\": 0.0}";
+  std::string referenceOutput1 =
+      "{\"meshType\": \"StructuredDeformable\", \"dimension\": 2, "
+      "\"nElementsGlobal\": [3, 2], \"nElementsLocal\": [1, 2], "
+      "\"beginNodeGlobalNatural\": [2, 0], \"hasFullNumberOfNodes\": [true, "
+      "true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, "
+      "\"onlyNodalValues\": true, \"nRanks\": 2, \"ownRankNo\": 1, \"data\": "
+      "[{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", "
+      "\"values\": [4.0, 6.0, 4.0, 6.0, 4.0, 6.0]}, {\"name\": \"y\", "
+      "\"values\": [0.0, 0.0, 2.0, 2.0, 4.0, 4.0]}, {\"name\": \"z\", "
+      "\"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", "
+      "\"components\": [{\"name\": \"0\", \"values\": [2.0000000000000004, "
+      "3.0000000000000018, 10.528571428571434, 12.257142857142862, "
+      "20.00000000000001, 30.000000000000007]}]}, {\"name\": "
+      "\"rightHandSide\", \"components\": [{\"name\": \"0\", \"values\": [2.0, "
+      "3.0, -22.0, -12.833333333333332, 20.0, 30.0]}]}, {\"name\": "
+      "\"-rhsNeumannBC\", \"components\": [{\"name\": \"0\", \"values\": [0.0, "
+      "0.0, 0.0, 0.0, 0.0, 0.0]}]}], \"timeStepNo\": -1, \"currentTime\": 0.0}";
 
-  if (settings.ownRankNo() == 0)
-  {
+  if (settings.ownRankNo() == 0) {
     assertFileMatchesContent("out2d_p2.0.py", referenceOutput0);
     assertFileMatchesContent("out2d_p2.1.py", referenceOutput1);
   }
@@ -71,8 +100,7 @@ config = {
   nFails += ::testing::Test::HasFailure();
 }
 
-TEST(LaplaceTest, Structured2DLinearSerial)
-{
+TEST(LaplaceTest, Structured2DLinearSerial) {
   std::string pythonConfig = R"(
 # Laplace 2D, 3 x 2 (=6) elements, 4 x 3 (=12) nodes
 
@@ -118,21 +146,36 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+  Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredDeformableOfDimension<2>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > problem(settings);
+      BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+      Equation::Static::Laplace>>
+      problem(settings);
 
   problem.run();
 
-  std::string referenceOutput0 = "{\"meshType\": \"StructuredDeformable\", \"dimension\": 2, \"nElementsGlobal\": [3, 2], \"nElementsLocal\": [3, 2], \"beginNodeGlobalNatural\": [0, 0], \"hasFullNumberOfNodes\": [true, true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, \"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": [{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", \"values\": [0.0, 2.0, 4.0, 6.0, 0.0, 2.0, 4.0, 6.0, 0.0, 2.0, 4.0, 6.0]}, {\"name\": \"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 2.0, 2.0, 2.0, 2.0, 4.0, 4.0, 4.0, 4.0]}, {\"name\": \"z\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", \"components\": [{\"name\": \"0\", \"values\": [0.0, 1.0, 2.0, 3.0, 4.242857142857142, 5.971428571428571, 10.52857142857143, 12.257142857142851, 0.0, 9.999999999999996, 19.999999999999993, 30.000000000000004]}]}, {\"name\": \"rightHandSide\", \"components\": [{\"name\": \"0\", \"values\": [0.0, 1.0, 2.0, 3.0, -3.666666666666667, -11.000000000000002, -22.0, -12.833333333333332, 0.0, 10.0, 20.0, 30.0]}]}, {\"name\": \"-rhsNeumannBC\", \"components\": [{\"name\": \"0\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}], \"timeStepNo\": -1, \"currentTime\": 0.0}";
+  std::string referenceOutput0 =
+      "{\"meshType\": \"StructuredDeformable\", \"dimension\": 2, "
+      "\"nElementsGlobal\": [3, 2], \"nElementsLocal\": [3, 2], "
+      "\"beginNodeGlobalNatural\": [0, 0], \"hasFullNumberOfNodes\": [true, "
+      "true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, "
+      "\"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": "
+      "[{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", "
+      "\"values\": [0.0, 2.0, 4.0, 6.0, 0.0, 2.0, 4.0, 6.0, 0.0, 2.0, 4.0, "
+      "6.0]}, {\"name\": \"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 2.0, 2.0, "
+      "2.0, 2.0, 4.0, 4.0, 4.0, 4.0]}, {\"name\": \"z\", \"values\": [0.0, "
+      "0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": "
+      "\"solution\", \"components\": [{\"name\": \"0\", \"values\": [0.0, 1.0, "
+      "2.0, 3.0, 4.242857142857142, 5.971428571428571, 10.52857142857143, "
+      "12.257142857142851, 0.0, 9.999999999999996, 19.999999999999993, "
+      "30.000000000000004]}]}, {\"name\": \"rightHandSide\", \"components\": "
+      "[{\"name\": \"0\", \"values\": [0.0, 1.0, 2.0, 3.0, -3.666666666666667, "
+      "-11.000000000000002, -22.0, -12.833333333333332, 0.0, 10.0, 20.0, "
+      "30.0]}]}, {\"name\": \"-rhsNeumannBC\", \"components\": [{\"name\": "
+      "\"0\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "
+      "0.0, 0.0]}]}], \"timeStepNo\": -1, \"currentTime\": 0.0}";
 
-  if (settings.ownRankNo() == 0)
-  {
+  if (settings.ownRankNo() == 0) {
     assertFileMatchesContent("out2d_p1.py", referenceOutput0);
   }
 
@@ -141,10 +184,10 @@ config = {
 
 // the following tests only fail on travis ci but succeed anywhere else
 #ifndef ON_TRAVIS_CI
-TEST(LaplaceTest, Structured2DLinearParallelWithMultipleInstances)
-{
+TEST(LaplaceTest, Structured2DLinearParallelWithMultipleInstances) {
   std::cout << "wait 1 s" << std::endl;
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));  // pause execution, such that output files can be closed
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      1000)); // pause execution, such that output files can be closed
 
   std::string pythonConfig = R"(
 # Laplace 2D, 3 x 2 (=6) elements, 4 x 3 (=12) nodes
@@ -191,27 +234,23 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+  Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredDeformableOfDimension<2>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > problem(settings);
+      BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+      Equation::Static::Laplace>>
+      problem(settings);
   LOG(INFO) << "problem created";
 
-  //problem.run();
+  // problem.run();
 
   nFails += ::testing::Test::HasFailure();
 }
 
-
 // 2D structured deformable
-TEST(LaplaceTest, SerialEqualsParallelRegular2DLinear)
-{
+TEST(LaplaceTest, SerialEqualsParallelRegular2DLinear) {
   LOG(INFO) << "wait 1 s";
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));  // pause execution, such that output files can be closed
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      1000)); // pause execution, such that output files can be closed
 
   // run serial problem
   std::string pythonConfig = R"(
@@ -260,14 +299,11 @@ config = {
 
   int ownRankNo = settings.ownRankNo();
 
-  Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+  Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredRegularFixedOfDimension<2>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > problemSerial(settings);
+      BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+      Equation::Static::Laplace>>
+      problemSerial(settings);
 
   problemSerial.run();
 
@@ -317,30 +353,27 @@ config = {
 
   DihuContext settings2(argc, argv, pythonConfig2);
 
-  Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+  Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredRegularFixedOfDimension<2>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > problemParallel(settings2);
+      BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+      Equation::Static::Laplace>>
+      problemParallel(settings2);
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out8.py", "out8.0.py", "out8.1.py"};
-  if (ownRankNo == 0)
-  {
+  std::vector<std::string> outputFilesToCheck = {"out8.py", "out8.0.py",
+                                                 "out8.1.py"};
+  if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
   }
 
   nFails += ::testing::Test::HasFailure();
 }
 
-TEST(LaplaceTest, SerialEqualsParallelRegular2DQuadratic)
-{
+TEST(LaplaceTest, SerialEqualsParallelRegular2DQuadratic) {
   LOG(INFO) << "wait 1 s";
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));  // pause execution, such that output files can be closed
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      1000)); // pause execution, such that output files can be closed
 
   // run serial problem
   std::string pythonConfig = R"(
@@ -385,14 +418,11 @@ config = {
 
   int ownRankNo = settings.ownRankNo();
 
-  typedef Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+  typedef Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredRegularFixedOfDimension<2>,
-      BasisFunction::LagrangeOfOrder<2>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > ProblemType;
+      BasisFunction::LagrangeOfOrder<2>, Quadrature::Gauss<2>,
+      Equation::Static::Laplace>>
+      ProblemType;
   ProblemType problemSerial(settings);
 
   problemSerial.run();
@@ -438,26 +468,25 @@ config = {
 }
 )";
 
-
   DihuContext settings2(argc, argv, pythonConfig2);
 
   ProblemType problemParallel(settings2);
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out9.py", "out9.0.py", "out9.1.py"};
-  if (ownRankNo == 0)
-  {
+  std::vector<std::string> outputFilesToCheck = {"out9.py", "out9.0.py",
+                                                 "out9.1.py"};
+  if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
   }
 
   nFails += ::testing::Test::HasFailure();
 }
 
-TEST(LaplaceTest, SerialEqualsParallelRegular2DHermite)
-{
+TEST(LaplaceTest, SerialEqualsParallelRegular2DHermite) {
   LOG(INFO) << "wait 1 s";
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));  // pause execution, such that output files can be closed
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      1000)); // pause execution, such that output files can be closed
 
   // run serial problem
   std::string pythonConfig = R"(
@@ -554,14 +583,10 @@ config = {
 
   int ownRankNo = settings.ownRankNo();
 
-  typedef Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
-      Mesh::StructuredRegularFixedOfDimension<2>,
-      BasisFunction::Hermite,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > ProblemType;
+  typedef Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
+      Mesh::StructuredRegularFixedOfDimension<2>, BasisFunction::Hermite,
+      Quadrature::Gauss<2>, Equation::Static::Laplace>>
+      ProblemType;
   ProblemType problemSerial(settings);
 
   problemSerial.run();
@@ -657,31 +682,29 @@ config = {
 }
 )";
 
-
   DihuContext settings2(argc, argv, pythonConfig2);
 
   ProblemType problemParallel(settings2);
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out10.py", "out10.0.py", "out10.1.py"};
-  if (ownRankNo == 0)
-  {
+  std::vector<std::string> outputFilesToCheck = {"out10.py", "out10.0.py",
+                                                 "out10.1.py"};
+  if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
-  }
-  else
-  {
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));  // pause execution, such that output files can be closed
+  } else {
+    std::this_thread::sleep_for(std::chrono::milliseconds(
+        200)); // pause execution, such that output files can be closed
   }
 
   nFails += ::testing::Test::HasFailure();
 }
 
 // 2D structured regular fixed
-TEST(LaplaceTest, SerialEqualsParallelDeformable2DLinear)
-{
+TEST(LaplaceTest, SerialEqualsParallelDeformable2DLinear) {
   LOG(INFO) << "wait 1 s";
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));  // pause execution, such that output files can be closed
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      1000)); // pause execution, such that output files can be closed
 
   // run serial problem
   std::string pythonConfig = R"(
@@ -730,18 +753,16 @@ config = {
 
   int ownRankNo = settings.ownRankNo();
 
-  Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+  Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredDeformableOfDimension<2>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > problemSerial(settings);
+      BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+      Equation::Static::Laplace>>
+      problemSerial(settings);
 
   problemSerial.run();
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));  // pause execution, such that output files can be closed
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      100)); // pause execution, such that output files can be closed
 
   // run parallel problem
   std::string pythonConfig2 = R"(
@@ -788,34 +809,30 @@ config = {
 
   DihuContext settings2(argc, argv, pythonConfig2);
 
-  Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+  Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredDeformableOfDimension<2>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > problemParallel(settings2);
+      BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+      Equation::Static::Laplace>>
+      problemParallel(settings2);
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out11.py", "out11.0.py", "out11.1.py"};
-  if (ownRankNo == 0)
-  {
+  std::vector<std::string> outputFilesToCheck = {"out11.py", "out11.0.py",
+                                                 "out11.1.py"};
+  if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
-  }
-  else
-  {
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));  // pause execution, such that output files can be closed
+  } else {
+    std::this_thread::sleep_for(std::chrono::milliseconds(
+        200)); // pause execution, such that output files can be closed
   }
 
   nFails += ::testing::Test::HasFailure();
 }
 
-TEST(LaplaceTest, SerialEqualsParallelDeformable2DQuadratic)
-{
+TEST(LaplaceTest, SerialEqualsParallelDeformable2DQuadratic) {
   LOG(INFO) << "wait 1 s";
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));  // pause execution, such that output files can be closed
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      1000)); // pause execution, such that output files can be closed
 
   // run serial problem
   std::string pythonConfig = R"(
@@ -859,18 +876,14 @@ config = {
 
   int ownRankNo = settings.ownRankNo();
 
-  typedef Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+  typedef Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredDeformableOfDimension<2>,
-      BasisFunction::LagrangeOfOrder<2>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > ProblemType;
+      BasisFunction::LagrangeOfOrder<2>, Quadrature::Gauss<2>,
+      Equation::Static::Laplace>>
+      ProblemType;
   ProblemType problemSerial(settings);
 
   problemSerial.run();
-
 
   LOG(INFO) << " =================== run parallel problem ================= ";
 
@@ -913,31 +926,28 @@ config = {
 }
 )";
 
-
   DihuContext settings2(argc, argv, pythonConfig2);
 
   ProblemType problemParallel(settings2);
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out12.py", "out12.0.py", "out12.1.py"};
-  if (ownRankNo == 0)
-  {
+  std::vector<std::string> outputFilesToCheck = {"out12.py", "out12.0.py",
+                                                 "out12.1.py"};
+  if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
-  }
-  else
-  {
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));  // pause execution, such that output files can be closed
+  } else {
+    std::this_thread::sleep_for(std::chrono::milliseconds(
+        200)); // pause execution, such that output files can be closed
   }
 
   nFails += ::testing::Test::HasFailure();
 }
 
-
-TEST(LaplaceTest, SerialEqualsParallelDeformable2DHermite)
-{
+TEST(LaplaceTest, SerialEqualsParallelDeformable2DHermite) {
   LOG(INFO) << "wait 1 s";
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));  // pause execution, such that output files can be closed
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      1000)); // pause execution, such that output files can be closed
 
   // run serial problem
   std::string pythonConfig = R"(
@@ -1034,20 +1044,16 @@ config = {
 
   int ownRankNo = settings.ownRankNo();
 
-  typedef Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
-      Mesh::StructuredDeformableOfDimension<2>,
-      BasisFunction::Hermite,
-      Quadrature::Gauss<3>,
-      Equation::Static::Laplace
-    >
-  > ProblemType;
+  typedef Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
+      Mesh::StructuredDeformableOfDimension<2>, BasisFunction::Hermite,
+      Quadrature::Gauss<3>, Equation::Static::Laplace>>
+      ProblemType;
   ProblemType problemSerial(settings);
 
   problemSerial.run();
 
-
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));  // pause execution, such that output files can be closed
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      100)); // pause execution, such that output files can be closed
 
   // run parallel problem
   std::string pythonConfig2 = R"(
@@ -1140,16 +1146,15 @@ config = {
 }
 )";
 
-
   DihuContext settings2(argc, argv, pythonConfig2);
 
   ProblemType problemParallel(settings2);
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out13.py", "out13.0.py", "out13.1.py"};
-  if (ownRankNo == 0)
-  {
+  std::vector<std::string> outputFilesToCheck = {"out13.py", "out13.0.py",
+                                                 "out13.1.py"};
+  if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
   }
 

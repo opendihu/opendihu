@@ -3,18 +3,21 @@
 #include "spatial_discretization/finite_element_method/00_base.h"
 #include "equation/type_traits.h"
 
-namespace SpatialDiscretization
-{
+namespace SpatialDiscretization {
 
 /** Set stiffness and mass matrices with normal integration
  */
-template<typename FunctionSpaceType,typename QuadratureType,int nComponents,typename Term,typename=typename FunctionSpaceType::Mesh,typename=Term,typename=typename FunctionSpaceType::BasisFunction>
-class FiniteElementMethodMatrix :
-  public FiniteElementMethodInitializeData<FunctionSpaceType,QuadratureType,nComponents,Term>
-{
+template <typename FunctionSpaceType, typename QuadratureType, int nComponents,
+          typename Term, typename = typename FunctionSpaceType::Mesh,
+          typename = Term, typename = typename FunctionSpaceType::BasisFunction>
+class FiniteElementMethodMatrix
+    : public FiniteElementMethodInitializeData<
+          FunctionSpaceType, QuadratureType, nComponents, Term> {
 public:
   // use constructor of base class
-  using FiniteElementMethodInitializeData<FunctionSpaceType,QuadratureType,nComponents,Term>::FiniteElementMethodInitializeData;
+  using FiniteElementMethodInitializeData<
+      FunctionSpaceType, QuadratureType, nComponents,
+      Term>::FiniteElementMethodInitializeData;
 
   //! set entries in stiffness matrix by normal integration
   void setStiffnessMatrix();
@@ -24,23 +27,26 @@ public:
 };
 
 /** stencils
- *  partial specialisation for linear Lagrange, RegularFixed mesh, dimension 1 (use precomputed stencils)
+ *  partial specialisation for linear Lagrange, RegularFixed mesh, dimension 1
+ * (use precomputed stencils)
  */
-template<typename QuadratureType,typename Term>
+template <typename QuadratureType, typename Term>
 class FiniteElementMethodMatrix<
-  FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<1ul>,BasisFunction::LagrangeOfOrder<1>>,
-  QuadratureType,
-  1,
-  Term,
-  Mesh::StructuredRegularFixedOfDimension<1ul>,
-  Equation::hasLaplaceOperator<Term>,
-  BasisFunction::LagrangeOfOrder<1>
-> :
-  public FiniteElementMethodInitializeData<FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<1ul>,BasisFunction::LagrangeOfOrder<1>>, QuadratureType, 1, Term>
-{
+    FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<1ul>,
+                                 BasisFunction::LagrangeOfOrder<1>>,
+    QuadratureType, 1, Term, Mesh::StructuredRegularFixedOfDimension<1ul>,
+    Equation::hasLaplaceOperator<Term>, BasisFunction::LagrangeOfOrder<1>>
+    : public FiniteElementMethodInitializeData<
+          FunctionSpace::FunctionSpace<
+              Mesh::StructuredRegularFixedOfDimension<1ul>,
+              BasisFunction::LagrangeOfOrder<1>>,
+          QuadratureType, 1, Term> {
 public:
   //! use constructor of base class
-  using FiniteElementMethodInitializeData<FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<1ul>,BasisFunction::LagrangeOfOrder<1>>, QuadratureType, 1, Term>::FiniteElementMethodInitializeData;
+  using FiniteElementMethodInitializeData<
+      FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<1ul>,
+                                   BasisFunction::LagrangeOfOrder<1>>,
+      QuadratureType, 1, Term>::FiniteElementMethodInitializeData;
 
   //! set entries in stiffness matrix by using stencils
   void setStiffnessMatrix();
@@ -49,23 +55,26 @@ public:
   void setMassMatrix();
 };
 
-/** partial specialisation for linear Lagrange, RegularFixed mesh, dimension 2 (use precomputed stencils)
+/** partial specialisation for linear Lagrange, RegularFixed mesh, dimension 2
+ * (use precomputed stencils)
  */
-template<typename QuadratureType,typename Term>
+template <typename QuadratureType, typename Term>
 class FiniteElementMethodMatrix<
-  FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<2ul>,BasisFunction::LagrangeOfOrder<1>>,
-  QuadratureType,
-  1,
-  Term,
-  Mesh::StructuredRegularFixedOfDimension<2ul>,
-  Equation::hasLaplaceOperator<Term>,
-  BasisFunction::LagrangeOfOrder<1>
-> :
-  public FiniteElementMethodInitializeData<FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<2ul>,BasisFunction::LagrangeOfOrder<1>>, QuadratureType, 1, Term>
-{
+    FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<2ul>,
+                                 BasisFunction::LagrangeOfOrder<1>>,
+    QuadratureType, 1, Term, Mesh::StructuredRegularFixedOfDimension<2ul>,
+    Equation::hasLaplaceOperator<Term>, BasisFunction::LagrangeOfOrder<1>>
+    : public FiniteElementMethodInitializeData<
+          FunctionSpace::FunctionSpace<
+              Mesh::StructuredRegularFixedOfDimension<2ul>,
+              BasisFunction::LagrangeOfOrder<1>>,
+          QuadratureType, 1, Term> {
 public:
   //! use constructor of base class
-  using FiniteElementMethodInitializeData<FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<2ul>,BasisFunction::LagrangeOfOrder<1>>, QuadratureType, 1, Term>::FiniteElementMethodInitializeData;
+  using FiniteElementMethodInitializeData<
+      FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<2ul>,
+                                   BasisFunction::LagrangeOfOrder<1>>,
+      QuadratureType, 1, Term>::FiniteElementMethodInitializeData;
 
   //! set entries in stiffness matrix by using stencils
   void setStiffnessMatrix();
@@ -74,23 +83,26 @@ public:
   void setMassMatrix();
 };
 
-/** partial specialisation for linear Lagrange, RegularFixed mesh, dimension 3 (use precomputed stencils)
+/** partial specialisation for linear Lagrange, RegularFixed mesh, dimension 3
+ * (use precomputed stencils)
  */
-template<typename QuadratureType, typename Term>
+template <typename QuadratureType, typename Term>
 class FiniteElementMethodMatrix<
-  FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<3ul>,BasisFunction::LagrangeOfOrder<1>>,
-  QuadratureType,
-  1,
-  Term,
-  Mesh::StructuredRegularFixedOfDimension<3ul>,
-  Equation::hasLaplaceOperator<Term>,
-  BasisFunction::LagrangeOfOrder<1>
-> :
-  public FiniteElementMethodInitializeData<FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<3ul>,BasisFunction::LagrangeOfOrder<1>>, QuadratureType, 1, Term>
-{
+    FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<3ul>,
+                                 BasisFunction::LagrangeOfOrder<1>>,
+    QuadratureType, 1, Term, Mesh::StructuredRegularFixedOfDimension<3ul>,
+    Equation::hasLaplaceOperator<Term>, BasisFunction::LagrangeOfOrder<1>>
+    : public FiniteElementMethodInitializeData<
+          FunctionSpace::FunctionSpace<
+              Mesh::StructuredRegularFixedOfDimension<3ul>,
+              BasisFunction::LagrangeOfOrder<1>>,
+          QuadratureType, 1, Term> {
 public:
   //! use constructor of base class
-  using FiniteElementMethodInitializeData<FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<3ul>,BasisFunction::LagrangeOfOrder<1>>, QuadratureType, 1, Term>::FiniteElementMethodInitializeData;
+  using FiniteElementMethodInitializeData<
+      FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<3ul>,
+                                   BasisFunction::LagrangeOfOrder<1>>,
+      QuadratureType, 1, Term>::FiniteElementMethodInitializeData;
 
   //! set entries in stiffness matrix by using stencils
   void setStiffnessMatrix();
@@ -99,25 +111,29 @@ public:
   void setMassMatrix();
 };
 
-/** specialisation for Deformable mesh of any dimension D (do proper integration)
+/** specialisation for Deformable mesh of any dimension D (do proper
+ * integration)
  *
- * Class that creates the stiffness matrix and mass matrix by integrating its integrand over the elements.
- * What to integrate is given by the class template Term.
+ * Class that creates the stiffness matrix and mass matrix by integrating its
+ * integrand over the elements. What to integrate is given by the class template
+ * Term.
  */
 /*template<typename FunctionSpaceType, typename QuadratureType, typename Term>
 class FiniteElementMethodMatrix<
   FunctionSpaceType,
   QuadratureType,
   Term,
-  Equation::doesNotUseStencilsNorSolidMechanics<typename FunctionSpaceType::BasisFunction,typename FunctionSpaceType::Mesh,Term>,
-  Term,
+  Equation::doesNotUseStencilsNorSolidMechanics<typename
+FunctionSpaceType::BasisFunction,typename FunctionSpaceType::Mesh,Term>, Term,
   typename FunctionSpaceType::BasisFunction
 > :
-  public FiniteElementMethodInitializeData<FunctionSpaceType, QuadratureType, Term>
+  public FiniteElementMethodInitializeData<FunctionSpaceType, QuadratureType,
+Term>
 {
 public:
   // use constructor of base class
-  using FiniteElementMethodInitializeData<FunctionSpaceType, QuadratureType, Term>::FiniteElementMethodInitializeData;
+  using FiniteElementMethodInitializeData<FunctionSpaceType, QuadratureType,
+Term>::FiniteElementMethodInitializeData;
 
 protected:
   //! set entries in mass matrix
@@ -127,25 +143,27 @@ protected:
   void setMassMatrix();
 };*/
 
-
 /** compute inverse lumped mass matrix
  */
-template<typename FunctionSpaceType,typename QuadratureType,int nComponents,typename Term>
-class FiniteElementMethodMatrixInverseLumpedMass :
-  public FiniteElementMethodMatrix<FunctionSpaceType,QuadratureType,nComponents,Term>
-{
+template <typename FunctionSpaceType, typename QuadratureType, int nComponents,
+          typename Term>
+class FiniteElementMethodMatrixInverseLumpedMass
+    : public FiniteElementMethodMatrix<FunctionSpaceType, QuadratureType,
+                                       nComponents, Term> {
 public:
   // use constructor of base class
-  using FiniteElementMethodMatrix<FunctionSpaceType,QuadratureType,nComponents,Term>::FiniteElementMethodMatrix;
+  using FiniteElementMethodMatrix<FunctionSpaceType, QuadratureType,
+                                  nComponents, Term>::FiniteElementMethodMatrix;
 
   //! set entries in the inverse lumped mass matrix, compute from mass matrix
   void setInverseLumpedMassMatrix();
 };
 
-extern bool outputAssemble3DStiffnessMatrix_;   //< if the message about assembly of the 3D stiffness matrix was printed
+extern bool
+    outputAssemble3DStiffnessMatrix_; //< if the message about assembly of the
+                                      //3D stiffness matrix was printed
 
-
-} // namespace
+} // namespace SpatialDiscretization
 
 #include "spatial_discretization/finite_element_method/01_stiffness_matrix_stencils.tpp"
 #include "spatial_discretization/finite_element_method/01_mass_matrix_stencils.tpp"

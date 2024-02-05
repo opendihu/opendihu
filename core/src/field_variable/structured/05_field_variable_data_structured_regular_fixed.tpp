@@ -4,6 +4,4 @@
 #include "easylogging++.h"
 #include "utility/string_utility.h"
 
-namespace FieldVariable
-{
-}
+namespace FieldVariable {}

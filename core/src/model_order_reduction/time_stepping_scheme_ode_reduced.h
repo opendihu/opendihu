@@ -8,62 +8,64 @@
 #include "data_management/time_stepping/time_stepping_reduced.h"
 #include "model_order_reduction/model_order_reduction.h"
 
-namespace ModelOrderReduction
-{
+namespace ModelOrderReduction {
 
-  template<typename TimeSteppingType>
-  class TimeSteppingSchemeOdeReduced :
-    public MORBase<typename TimeSteppingType::FunctionSpace>,
-    public ::TimeSteppingScheme::TimeSteppingSchemeOdeBase<::FunctionSpace::Generic,1>
-  {
-  public:
-    typedef FieldVariable::FieldVariable<::FunctionSpace::Generic,1> FieldVariableType;  
-    typedef ::FunctionSpace::Generic GenericFunctionSpace;
-    typedef TimeSteppingType FullTimeSteppingType;
-    typedef ::Data::SlotConnectorData<GenericFunctionSpace,1> SlotConnectorDataType;
+template <typename TimeSteppingType>
+class TimeSteppingSchemeOdeReduced
+    : public MORBase<typename TimeSteppingType::FunctionSpace>,
+      public ::TimeSteppingScheme::TimeSteppingSchemeOdeBase<
+          ::FunctionSpace::Generic, 1> {
+public:
+  typedef FieldVariable::FieldVariable<::FunctionSpace::Generic, 1>
+      FieldVariableType;
+  typedef ::FunctionSpace::Generic GenericFunctionSpace;
+  typedef TimeSteppingType FullTimeSteppingType;
+  typedef ::Data::SlotConnectorData<GenericFunctionSpace, 1>
+      SlotConnectorDataType;
 
-    //! constructor
-    TimeSteppingSchemeOdeReduced(DihuContext context,std::string name);
+  //! constructor
+  TimeSteppingSchemeOdeReduced(DihuContext context, std::string name);
 
-    //! destructor
-    virtual ~TimeSteppingSchemeOdeReduced(){};
-    
-    //! run simulation
-    virtual void run();
+  //! destructor
+  virtual ~TimeSteppingSchemeOdeReduced(){};
 
-    //! initialize timestepping member
-    virtual void initialize();
+  //! run simulation
+  virtual void run();
 
-    //! set the subset of ranks that will compute the work
-    void setRankSubset(Partition::RankSubset rankSubset);
+  //! initialize timestepping member
+  virtual void initialize();
 
-    //! reset state such that new initialization becomes necessary
-    //virtual void reset();
+  //! set the subset of ranks that will compute the work
+  void setRankSubset(Partition::RankSubset rankSubset);
 
-    //! full-order timestepping object
-    TimeSteppingType fullTimestepping();
+  //! reset state such that new initialization becomes necessary
+  // virtual void reset();
 
-    //! get the data that will be transferred in the operator splitting to the other term of the splitting
-    //! the transfer is done by the slot_connector_data_transfer class
-    std::shared_ptr<SlotConnectorDataType> getSlotConnectorData();
+  //! full-order timestepping object
+  TimeSteppingType fullTimestepping();
 
-  protected:
-    //! read initial values from settings and set field accordingly
-    void setInitialValues();
+  //! get the data that will be transferred in the operator splitting to the
+  //! other term of the splitting the transfer is done by the
+  //! slot_connector_data_transfer class
+  std::shared_ptr<SlotConnectorDataType> getSlotConnectorData();
 
-    //! prepare the discretizableInTime object for the following call to getSlotConnectorData()
-    virtual void prepareForGetSlotConnectorData() {}
+protected:
+  //! read initial values from settings and set field accordingly
+  void setInitialValues();
 
-    std::shared_ptr<GenericFunctionSpace> functionSpaceRed;
-    std::shared_ptr<GenericFunctionSpace> functionSpaceRowsSnapshots;
-    
-    TimeSteppingType fullTimestepping_;
-    std::shared_ptr<SlotConnectorDataType> slotConnectorData_;
+  //! prepare the discretizableInTime object for the following call to
+  //! getSlotConnectorData()
+  virtual void prepareForGetSlotConnectorData() {}
 
-    bool initialized_;     //< if initialize() was already called
+  std::shared_ptr<GenericFunctionSpace> functionSpaceRed;
+  std::shared_ptr<GenericFunctionSpace> functionSpaceRowsSnapshots;
 
-  };
-  
-} // namespace
+  TimeSteppingType fullTimestepping_;
+  std::shared_ptr<SlotConnectorDataType> slotConnectorData_;
+
+  bool initialized_; //< if initialize() was already called
+};
+
+} // namespace ModelOrderReduction
 
 #include "model_order_reduction/time_stepping_scheme_ode_reduced.tpp"

@@ -1,35 +1,33 @@
 #pragma once
 
-#include <Python.h>  // has to be the first included header
+#include <Python.h> // has to be the first included header
 
-namespace Control
-{
+namespace Control {
 
-/** Helper struct that defines nested coupling schemes from a given list of solvers:
- *  NestedCouplingSchemes<A,B,C,D>::type ->
- *  Coupling<A, Coupling<B, Coupling<C,D>>
+/** Helper struct that defines nested coupling schemes from a given list of
+ * solvers: NestedCouplingSchemes<A,B,C,D>::type -> Coupling<A, Coupling<B,
+ * Coupling<C,D>>
  */
-template<typename... NestedSolvers>
-struct NestedCouplingSchemes;
+template <typename... NestedSolvers> struct NestedCouplingSchemes;
 
-template<typename FirstNestedSolver, typename... MoreNestedSolvers>
-struct NestedCouplingSchemes<FirstNestedSolver, MoreNestedSolvers...>
-{
-  typedef Coupling<FirstNestedSolver,typename NestedCouplingSchemes<MoreNestedSolvers...>::type> type;
+template <typename FirstNestedSolver, typename... MoreNestedSolvers>
+struct NestedCouplingSchemes<FirstNestedSolver, MoreNestedSolvers...> {
+  typedef Coupling<FirstNestedSolver,
+                   typename NestedCouplingSchemes<MoreNestedSolvers...>::type>
+      type;
 
-  static type createScheme(DihuContext context, int termNo=1);
+  static type createScheme(DihuContext context, int termNo = 1);
 };
 
 /** Partial specialization for recursion end.
  */
-template<typename LastNestedSolver>
-struct NestedCouplingSchemes<LastNestedSolver>
-{
+template <typename LastNestedSolver>
+struct NestedCouplingSchemes<LastNestedSolver> {
   typedef LastNestedSolver type;
 
-  static type createScheme(DihuContext context, int termNo=1);
+  static type createScheme(DihuContext context, int termNo = 1);
 };
 
-}  // namespace
+} // namespace Control
 
 #include "control/coupling/nested_coupling_schemes.tpp"

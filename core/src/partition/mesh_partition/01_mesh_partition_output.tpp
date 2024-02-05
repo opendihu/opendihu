@@ -6,29 +6,29 @@
 #include "utility/mpi_utility.h"
 
 //! output mesh partition
-template<typename FunctionSpaceType>
-std::ostream &operator<<(std::ostream &stream, std::shared_ptr<Partition::MeshPartition<FunctionSpaceType>> meshPartition)
-{
+template <typename FunctionSpaceType>
+std::ostream &
+operator<<(std::ostream &stream,
+           std::shared_ptr<Partition::MeshPartition<FunctionSpaceType>>
+               meshPartition) {
   meshPartition->output(stream);
   return stream;
 }
 
-
 //! output mesh partition
-template<typename FunctionSpaceType>
-std::ostream &operator<<(std::ostream &stream, Partition::MeshPartition<FunctionSpaceType> meshPartition)
-{
+template <typename FunctionSpaceType>
+std::ostream &
+operator<<(std::ostream &stream,
+           Partition::MeshPartition<FunctionSpaceType> meshPartition) {
   meshPartition.output(stream);
   return stream;
 }
 
-namespace Partition
-{
+namespace Partition {
 
-template<typename MeshType,typename BasisFunctionType>
-void MeshPartition<FunctionSpace::FunctionSpace<MeshType,BasisFunctionType>,Mesh::isStructured<MeshType>>::
-output(std::ostream &stream)
-{
+template <typename MeshType, typename BasisFunctionType>
+void MeshPartition<FunctionSpace::FunctionSpace<MeshType, BasisFunctionType>,
+                   Mesh::isStructured<MeshType>>::output(std::ostream &stream) {
   stream << "MeshPartition<structured>, nElementsGlobal: ";
   for (int i = 0; i < MeshType::dim(); i++)
     stream << nElementsGlobal_[i] << ",";
@@ -45,13 +45,12 @@ output(std::ostream &stream)
   for (int i = 0; i < MeshType::dim(); i++)
     stream << beginElementGlobal_[i] << ",";
 
-  stream << " hasFullNumberOfNodes: " ;
+  stream << " hasFullNumberOfNodes: ";
   for (int i = 0; i < MeshType::dim(); i++)
     stream << hasFullNumberOfNodes_[i] << ",";
 
   stream << " localSizesOnPartitions: ";
-  for (int i = 0; i < MeshType::dim(); i++)
-  {
+  for (int i = 0; i < MeshType::dim(); i++) {
     stream << "(";
     for (int j = 0; j < localSizesOnPartitions_[i].size(); j++)
       stream << localSizesOnPartitions_[i][j] << ",";
@@ -71,33 +70,27 @@ output(std::ostream &stream)
   stream << " nNodesLocalWithoutGhosts: ";
   for (int i = 0; i < MeshType::dim(); i++)
     stream << nNodesLocalWithoutGhosts(i) << ",";
-  stream << "total " << nNodesLocalWithoutGhosts()
-    << ", dofNosLocal: [";
+  stream << "total " << nNodesLocalWithoutGhosts() << ", dofNosLocal: [";
 
   int dofNosLocalEnd = std::min(100, (int)this->dofNosLocal_.size());
-  if (VLOG_IS_ON(2))
-  {
+  if (VLOG_IS_ON(2)) {
     dofNosLocalEnd = this->dofNosLocal_.size();
   }
-  for (int i = 0; i < dofNosLocalEnd; i++)
-  {
+  for (int i = 0; i < dofNosLocalEnd; i++) {
     stream << this->dofNosLocal_[i] << " ";
   }
   if (dofNosLocalEnd < this->dofNosLocal_.size())
     stream << " ... ( " << this->dofNosLocal_.size() << " local dof nos)";
   stream << "], ghostDofNosGlobalPetsc: [";
 
-  for (int i = 0; i < std::min(100,(int)ghostDofNosGlobalPetsc_.size()); i++)
+  for (int i = 0; i < std::min(100, (int)ghostDofNosGlobalPetsc_.size()); i++)
     stream << ghostDofNosGlobalPetsc_[i] << " ";
   stream << "], localToGlobalPetscMappingDofs_: ";
-  if (localToGlobalPetscMappingDofs_)
-  {
+  if (localToGlobalPetscMappingDofs_) {
     stream << localToGlobalPetscMappingDofs_;
-  }
-  else
-  {
+  } else {
     stream << "(none)";
   }
 }
 
-} // namespace
+} // namespace Partition

@@ -1,4 +1,4 @@
-#include <Python.h>  // this has to be the first included header
+#include <Python.h> // this has to be the first included header
 
 #include <iostream>
 #include <cstdlib>
@@ -10,8 +10,7 @@
 #include "../utility.h"
 
 // 2D regular fixed
-TEST(DiffusionTest, SerialEqualsParallelRegular2DLinear)
-{
+TEST(DiffusionTest, SerialEqualsParallelRegular2DLinear) {
   // run serial problem
   std::string pythonConfig = R"(
 # Diffusion 2D
@@ -52,16 +51,12 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  typedef Control::MultipleInstances<
-    TimeSteppingScheme::ExplicitEuler<
+  typedef Control::MultipleInstances<TimeSteppingScheme::ExplicitEuler<
       SpatialDiscretization::FiniteElementMethod<
-        Mesh::StructuredRegularFixedOfDimension<2>,
-        BasisFunction::LagrangeOfOrder<1>,
-        Quadrature::Gauss<2>,
-        Equation::Dynamic::IsotropicDiffusion
-      >
-    >
-  > ProblemType;
+          Mesh::StructuredRegularFixedOfDimension<2>,
+          BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+          Equation::Dynamic::IsotropicDiffusion>>>
+      ProblemType;
 
   ProblemType problemSerial(settings);
   problemSerial.run();
@@ -109,15 +104,15 @@ config = {
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out2_0000010.py", "out2_0000010.0.py", "out2_0000010.1.py"};
+  std::vector<std::string> outputFilesToCheck = {
+      "out2_0000010.py", "out2_0000010.0.py", "out2_0000010.1.py"};
   assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
   nFails += ::testing::Test::HasFailure();
 }
 
 // 2D structured deformable
-TEST(DiffusionTest, SerialEqualsParallelDeformable2DLinear)
-{
+TEST(DiffusionTest, SerialEqualsParallelDeformable2DLinear) {
   // run serial problem
   std::string pythonConfig = R"(
 # Diffusion 2D
@@ -158,16 +153,12 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  typedef Control::MultipleInstances<
-    TimeSteppingScheme::ExplicitEuler<
+  typedef Control::MultipleInstances<TimeSteppingScheme::ExplicitEuler<
       SpatialDiscretization::FiniteElementMethod<
-        Mesh::StructuredDeformableOfDimension<2>,
-        BasisFunction::LagrangeOfOrder<1>,
-        Quadrature::Gauss<2>,
-        Equation::Dynamic::IsotropicDiffusion
-      >
-    >
-  > ProblemType;
+          Mesh::StructuredDeformableOfDimension<2>,
+          BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+          Equation::Dynamic::IsotropicDiffusion>>>
+      ProblemType;
 
   ProblemType problemSerial(settings);
   problemSerial.run();
@@ -215,7 +206,8 @@ config = {
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out3_0000010.py", "out3_0000010.0.py", "out3_0000010.1.py"};
+  std::vector<std::string> outputFilesToCheck = {
+      "out3_0000010.py", "out3_0000010.0.py", "out3_0000010.1.py"};
   assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
   nFails += ::testing::Test::HasFailure();

@@ -6,27 +6,34 @@
 
 #include "easylogging++.h"
 
-namespace FunctionSpace
-{
+namespace FunctionSpace {
 
-template<typename MeshType, typename BasisFunctionType>
-std::array<dof_no_t,FunctionSpaceFunction<MeshType,BasisFunctionType>::nNodesPerElement()> FunctionSpaceNodes<MeshType,BasisFunctionType>::
-getElementNodeNos(element_no_t elementNo) const
-{
-  std::array<dof_no_t,FunctionSpaceFunction<MeshType,BasisFunctionType>::nNodesPerElement()> nodes;
-  for (int nodeIndex = 0; nodeIndex < FunctionSpaceFunction<MeshType,BasisFunctionType>::nNodesPerElement(); nodeIndex++)
-  {
+template <typename MeshType, typename BasisFunctionType>
+std::array<dof_no_t, FunctionSpaceFunction<
+                         MeshType, BasisFunctionType>::nNodesPerElement()>
+FunctionSpaceNodes<MeshType, BasisFunctionType>::getElementNodeNos(
+    element_no_t elementNo) const {
+  std::array<dof_no_t, FunctionSpaceFunction<
+                           MeshType, BasisFunctionType>::nNodesPerElement()>
+      nodes;
+  for (int nodeIndex = 0;
+       nodeIndex <
+       FunctionSpaceFunction<MeshType, BasisFunctionType>::nNodesPerElement();
+       nodeIndex++) {
     nodes[nodeIndex] = this->getNodeNo(elementNo, nodeIndex);
   }
   return nodes;
 }
 
 //! get the face that is defined by the dofs in the element
-template<typename MeshType, typename BasisFunctionType>
-Mesh::face_t FunctionSpaceNodes<MeshType,BasisFunctionType>::
-getFaceFromElementalDofNos(std::array<int,FunctionSpaceBaseDim<MeshType::dim()-1,BasisFunctionType>::nDofsPerElement()> elementalDofNos)
-{
-  const int nDofsPerNode = FunctionSpaceBaseDim<MeshType::dim(),BasisFunctionType>::nDofsPerNode();
+template <typename MeshType, typename BasisFunctionType>
+Mesh::face_t
+FunctionSpaceNodes<MeshType, BasisFunctionType>::getFaceFromElementalDofNos(
+    std::array<int, FunctionSpaceBaseDim<MeshType::dim() - 1,
+                                         BasisFunctionType>::nDofsPerElement()>
+        elementalDofNos) {
+  const int nDofsPerNode =
+      FunctionSpaceBaseDim<MeshType::dim(), BasisFunctionType>::nDofsPerNode();
 
   int nNodes0Minus = 0;
   int nNodes0Plus = 0;
@@ -34,20 +41,20 @@ getFaceFromElementalDofNos(std::array<int,FunctionSpaceBaseDim<MeshType::dim()-1
   int nNodes1Plus = 0;
   int nNodes2Minus = 0;
   int nNodes2Plus = 0;
-  
+
   node_no_t nodeNo = 0;
   int coordinateZ = 0;
   int coordinateY = 0;
   int coordinateX = 0;
 
-  
-  switch(MeshType::dim())
-  {
+  switch (MeshType::dim()) {
   case 3:
     // 3D element
-    
-    for (int i = 0; i < FunctionSpaceBaseDim<MeshType::dim()-1,BasisFunctionType>::nDofsPerElement(); i++)
-    {
+
+    for (int i = 0;
+         i < FunctionSpaceBaseDim<MeshType::dim() - 1,
+                                  BasisFunctionType>::nDofsPerElement();
+         i++) {
       nodeNo = elementalDofNos[i] / nDofsPerNode;
       coordinateZ = nodeNo / 4;
       coordinateY = (nodeNo % 4) / 2;
@@ -66,7 +73,7 @@ getFaceFromElementalDofNos(std::array<int,FunctionSpaceBaseDim<MeshType::dim()-1
       if (coordinateZ == 1)
         nNodes2Plus++;
     }
-    
+
     if (nNodes0Minus == 4)
       return Mesh::face_t::face0Minus;
     else if (nNodes0Plus == 4)
@@ -85,9 +92,11 @@ getFaceFromElementalDofNos(std::array<int,FunctionSpaceBaseDim<MeshType::dim()-1
   case 2:
 
     // 2D element
-    
-    for (int i = 0; i < FunctionSpaceBaseDim<MeshType::dim()-1,BasisFunctionType>::nDofsPerElement(); i++)
-    {
+
+    for (int i = 0;
+         i < FunctionSpaceBaseDim<MeshType::dim() - 1,
+                                  BasisFunctionType>::nDofsPerElement();
+         i++) {
       nodeNo = elementalDofNos[i] / nDofsPerNode;
       coordinateY = nodeNo / 2;
       coordinateX = nodeNo % 2;
@@ -109,17 +118,16 @@ getFaceFromElementalDofNos(std::array<int,FunctionSpaceBaseDim<MeshType::dim()-1
       return Mesh::face_t::face1Minus;
     else if (nNodes1Plus == 2)
       return Mesh::face_t::face1Plus;
-    
+
     LOG(FATAL) << "Error in getFaceFromElementalDofNos";
 
   default:
     // 1D line
-    if (elementalDofNos[0] < nDofsPerNode)
-    {
+    if (elementalDofNos[0] < nDofsPerNode) {
       return Mesh::face_t::face0Minus;
     }
     return Mesh::face_t::face0Plus;
   }
 }
 
-} // namespace
+} // namespace FunctionSpace

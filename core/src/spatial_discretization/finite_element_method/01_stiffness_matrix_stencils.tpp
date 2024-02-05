@@ -22,55 +22,64 @@
 #include "mesh/mesh.h"
 #include "control/types.h"
 
-namespace SpatialDiscretization
-{
+namespace SpatialDiscretization {
 
 // 1D stiffness matrix
-template<typename QuadratureType,typename Term>
-void FiniteElementMethodMatrix<FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<1>,BasisFunction::LagrangeOfOrder<1>>,QuadratureType,1,Term,Mesh::StructuredRegularFixedOfDimension<1>,Equation::hasLaplaceOperator<Term>,BasisFunction::LagrangeOfOrder<1>>::
-setStiffnessMatrix()
-{
+template <typename QuadratureType, typename Term>
+void FiniteElementMethodMatrix<
+    FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<1>,
+                                 BasisFunction::LagrangeOfOrder<1>>,
+    QuadratureType, 1, Term, Mesh::StructuredRegularFixedOfDimension<1>,
+    Equation::hasLaplaceOperator<Term>,
+    BasisFunction::LagrangeOfOrder<1>>::setStiffnessMatrix() {
   LOG(TRACE) << "setStiffnessMatrix 1D for Mesh::RegularFixed using stencils";
 
-  typedef typename FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<1>, BasisFunction::LagrangeOfOrder<1>> FunctionSpaceType;
+  typedef typename FunctionSpace::FunctionSpace<
+      Mesh::StructuredRegularFixedOfDimension<1>,
+      BasisFunction::LagrangeOfOrder<1>>
+      FunctionSpaceType;
 
   // get settings values
-  std::shared_ptr<FunctionSpaceType> functionSpace = std::static_pointer_cast<FunctionSpaceType>(this->data_.functionSpace());
+  std::shared_ptr<FunctionSpaceType> functionSpace =
+      std::static_pointer_cast<FunctionSpaceType>(this->data_.functionSpace());
   element_no_t nElements = functionSpace->nElementsLocal();
   node_no_t nNodes0 = functionSpace->nNodesLocalWithGhosts(0);
   const double elementLength = functionSpace->meshWidth();
 
-  double integralFactor = 1./elementLength;
+  double integralFactor = 1. / elementLength;
   double prefactor;
-  this->prefactor_.getValue((element_no_t)0, prefactor);  // prefactor value is constant over the domain
+  this->prefactor_.getValue(
+      (element_no_t)0,
+      prefactor); // prefactor value is constant over the domain
 
-  integralFactor = prefactor*integralFactor;
+  integralFactor = prefactor * integralFactor;
 
-  LOG(DEBUG) << "  Use settings nElements=" <<nElements << ", elementLength=" << elementLength;
+  LOG(DEBUG) << "  Use settings nElements=" << nElements
+             << ", elementLength=" << elementLength;
 
   // fill stiffness matrix
   // M_ij = -int[0,1] dphi_i/dxi * dphi_j/dxi * (dxi/ds)^2 ds = l
-  std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>> stiffnessMatrix = this->data_.stiffnessMatrix();
+  std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>> stiffnessMatrix =
+      this->data_.stiffnessMatrix();
 
   // stencil values
   // stencil for -Δu in 1D: [1 _-2_ 1] (element contribution: [_-1_ 1])
   const int center = 1;
   const double stencilCenter[3] = {1.0, -2.0, 1.0};
-  const double stencilSide[2] = {1.0, -1.0};  // left side of stencil
-  
+  const double stencilSide[2] = {1.0, -1.0}; // left side of stencil
+
   double value;
   dof_no_t dofNo;
 
   // loop over all dofs and set values with stencilCenter
   // set entries for interior nodes
-  for (int x=1; x<nNodes0-1; x++)
-  {
+  for (int x = 1; x < nNodes0 - 1; x++) {
     dofNo = x;
-    for (int i=-1; i<=1; i++) // x
+    for (int i = -1; i <= 1; i++) // x
     {
-      value = stencilCenter[center+i]*integralFactor;
+      value = stencilCenter[center + i] * integralFactor;
       //                 matrix           row    column
-      stiffnessMatrix->setValue(dofNo, x+i, value, INSERT_VALUES);
+      stiffnessMatrix->setValue(dofNo, x + i, value, INSERT_VALUES);
     }
   }
 
@@ -82,58 +91,72 @@ setStiffnessMatrix()
   int x = 0;
   dofNo = x;
 
-  for (int i=-1; i<=0; i++) // -x
+  for (int i = -1; i <= 0; i++) // -x
   {
-    value = stencilSide[center+i]*integralFactor;
-    stiffnessMatrix->setValue(dofNo, x-i, value, ADD_VALUES);
+    value = stencilSide[center + i] * integralFactor;
+    stiffnessMatrix->setValue(dofNo, x - i, value, ADD_VALUES);
   }
 
   // right boundary (x=nNodes0-1)
-  x = nNodes0-1;
+  x = nNodes0 - 1;
   dofNo = x;
-  for (int i=-1; i<=0; i++) // x
+  for (int i = -1; i <= 0; i++) // x
   {
-    value = stencilSide[center+i]*integralFactor;
-    stiffnessMatrix->setValue(dofNo, x+i, value, ADD_VALUES);
+    value = stencilSide[center + i] * integralFactor;
+    stiffnessMatrix->setValue(dofNo, x + i, value, ADD_VALUES);
   }
-  
+
   // call MatAssemblyBegin, MatAssemblyEnd
   stiffnessMatrix->assembly(MAT_FINAL_ASSEMBLY);
 }
 
 // 2D stiffness matrix
-template<typename QuadratureType,typename Term>
-void FiniteElementMethodMatrix<FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<2>,BasisFunction::LagrangeOfOrder<1>>,QuadratureType,1,Term,Mesh::StructuredRegularFixedOfDimension<2>,Equation::hasLaplaceOperator<Term>,BasisFunction::LagrangeOfOrder<1>>::
-setStiffnessMatrix()
-{
+template <typename QuadratureType, typename Term>
+void FiniteElementMethodMatrix<
+    FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<2>,
+                                 BasisFunction::LagrangeOfOrder<1>>,
+    QuadratureType, 1, Term, Mesh::StructuredRegularFixedOfDimension<2>,
+    Equation::hasLaplaceOperator<Term>,
+    BasisFunction::LagrangeOfOrder<1>>::setStiffnessMatrix() {
   LOG(TRACE) << "setStiffnessMatrix 2D for Mesh::RegularFixed using stencils";
 
-  typedef FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<2>, BasisFunction::LagrangeOfOrder<1>> FunctionSpaceType;
+  typedef FunctionSpace::FunctionSpace<
+      Mesh::StructuredRegularFixedOfDimension<2>,
+      BasisFunction::LagrangeOfOrder<1>>
+      FunctionSpaceType;
 
   // get settings value
-  std::shared_ptr<FunctionSpaceType> functionSpace = std::static_pointer_cast<FunctionSpaceType>(this->data_.functionSpace());
-  element_no_t nElements0 = functionSpace->nElementsPerCoordinateDirectionLocal(0);
-  element_no_t nElements1 = functionSpace->nElementsPerCoordinateDirectionLocal(1);
+  std::shared_ptr<FunctionSpaceType> functionSpace =
+      std::static_pointer_cast<FunctionSpaceType>(this->data_.functionSpace());
+  element_no_t nElements0 =
+      functionSpace->nElementsPerCoordinateDirectionLocal(0);
+  element_no_t nElements1 =
+      functionSpace->nElementsPerCoordinateDirectionLocal(1);
   node_no_t nNodes0 = functionSpace->nNodesLocalWithGhosts(0);
   node_no_t nNodes1 = functionSpace->nNodesLocalWithGhosts(1);
   double elementLength0 = functionSpace->meshWidth();
   double elementLength1 = functionSpace->meshWidth();
-  if (fabs(elementLength0-elementLength1) > 1e-15)
-  {
-    LOG(ERROR) << "Mesh resolution of 2D regular fixed mesh is not uniform! " << std::endl
-      << "Mesh widths: x: " << elementLength0 << ", y: " << elementLength1 << std::endl
-      << "This means that the stiffness matrix will be wrong. Mesh::RegularFixed meshes use stencil notation "
-      << "and can only handle uniform meshes correctly. To use non-uniform meshes, consider using Mesh::Deformable!";
+  if (fabs(elementLength0 - elementLength1) > 1e-15) {
+    LOG(ERROR) << "Mesh resolution of 2D regular fixed mesh is not uniform! "
+               << std::endl
+               << "Mesh widths: x: " << elementLength0
+               << ", y: " << elementLength1 << std::endl
+               << "This means that the stiffness matrix will be wrong. "
+                  "Mesh::RegularFixed meshes use stencil notation "
+               << "and can only handle uniform meshes correctly. To use "
+                  "non-uniform meshes, consider using Mesh::Deformable!";
   }
 
   double integralFactor = 1.;
   double prefactor;
-  this->prefactor_.getValue(0, prefactor);  // prefactor value is constant over the domain
+  this->prefactor_.getValue(
+      0, prefactor); // prefactor value is constant over the domain
 
-  integralFactor = prefactor*integralFactor;
+  integralFactor = prefactor * integralFactor;
 
-  LOG(DEBUG) << "Use settings nElements=" <<nElements0<< "x" <<nElements1<< ", elementLength=" << elementLength0<< "x" << elementLength1;
-  LOG(DEBUG) << "integralFactor=" <<integralFactor;
+  LOG(DEBUG) << "Use settings nElements=" << nElements0 << "x" << nElements1
+             << ", elementLength=" << elementLength0 << "x" << elementLength1;
+  LOG(DEBUG) << "integralFactor=" << integralFactor;
 
   // fill stiffness matrix
   // M_ij = -int[0,1] dphi_i/dxi * dphi_j/dxi * (dxi/ds)^2 ds = l
@@ -142,44 +165,39 @@ setStiffnessMatrix()
   //                        1/3*[1 _-8_ 1]                        [_-2/3_ 1/6]
   //                            [1  1   1]
 
-  std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>> stiffnessMatrix = this->data_.stiffnessMatrix();
+  std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>> stiffnessMatrix =
+      this->data_.stiffnessMatrix();
 
   const int center = 1;
-  const double stencilCenter[3][3] = {
-    {1./3, 1./3, 1./3},
-    {1./3, -8./3, 1./3},
-    {1./3, 1./3, 1./3}};
+  const double stencilCenter[3][3] = {{1. / 3, 1. / 3, 1. / 3},
+                                      {1. / 3, -8. / 3, 1. / 3},
+                                      {1. / 3, 1. / 3, 1. / 3}};
 
-  const double stencilEdge[2][3] = {
-    {1./3, 1./3, 1./3},
-    {1./6, -4./3, 1./6}
-  };
+  const double stencilEdge[2][3] = {{1. / 3, 1. / 3, 1. / 3},
+                                    {1. / 6, -4. / 3, 1. / 6}};
 
-  const double stencilCorner[2][2] = {
-    {1./3, 1./6},
-    {1./6, -2./3}
-  };
+  const double stencilCorner[2][2] = {{1. / 3, 1. / 6}, {1. / 6, -2. / 3}};
 
-  std::function<node_no_t(int,int)> dofIndex = [&functionSpace](int x, int y) -> node_no_t
-  {
-    return functionSpace->meshPartition()->getNodeNoLocal(std::array<int,2>({x,y}));  // nDofsPerNode == 1
+  std::function<node_no_t(int, int)> dofIndex =
+      [&functionSpace](int x, int y) -> node_no_t {
+    return functionSpace->meshPartition()->getNodeNoLocal(
+        std::array<int, 2>({x, y})); // nDofsPerNode == 1
   };
   double value;
   dof_no_t dofNo;
 
   // loop over all dofs and set values with stencilCenter
   // set entries for interior nodes
-  for (int y=1; y<nNodes1-1; y++)
-  {
-    for (int x=1; x<nNodes0-1; x++)
-    {
+  for (int y = 1; y < nNodes1 - 1; y++) {
+    for (int x = 1; x < nNodes0 - 1; x++) {
       dofNo = dofIndex(x, y);
-      for (int i=-1; i<=1; i++) // x
+      for (int i = -1; i <= 1; i++) // x
       {
-        for (int j=-1; j<=1; j++) // y
+        for (int j = -1; j <= 1; j++) // y
         {
-          value = stencilCenter[center+i][center+j]*integralFactor;
-          stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j), value, INSERT_VALUES);
+          value = stencilCenter[center + i][center + j] * integralFactor;
+          stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j), value,
+                                    INSERT_VALUES);
         }
       }
     }
@@ -187,153 +205,167 @@ setStiffnessMatrix()
 
   // call MatAssemblyBegin, MatAssemblyEnd
   stiffnessMatrix->assembly(MAT_FLUSH_ASSEMBLY);
-  
+
   // set entries for boundary nodes on edges
   // left boundary (x=0)
-  for (int y=1; y<nNodes1-1; y++)
-  {
+  for (int y = 1; y < nNodes1 - 1; y++) {
     int x = 0;
-    dof_no_t dofNo = dofIndex(x,y);
+    dof_no_t dofNo = dofIndex(x, y);
 
-    for (int i=-1; i<=0; i++) // -x
+    for (int i = -1; i <= 0; i++) // -x
     {
-      for (int j=-1; j<=1; j++) // y
+      for (int j = -1; j <= 1; j++) // y
       {
-        value = stencilEdge[center+i][center+j]*integralFactor;
+        value = stencilEdge[center + i][center + j] * integralFactor;
         //                 matrix           row    column
-        stiffnessMatrix->setValue(dofNo, dofIndex(x-i, y+j), value, ADD_VALUES);
+        stiffnessMatrix->setValue(dofNo, dofIndex(x - i, y + j), value,
+                                  ADD_VALUES);
       }
     }
   }
 
   // right boundary (x=nNodes0-1)
-  for (int y=1; y<nNodes1-1; y++)
-  {
-    int x = nNodes0-1;
-    dof_no_t dofNo = dofIndex(x,y);
-    for (int i=-1; i<=0; i++) // x
+  for (int y = 1; y < nNodes1 - 1; y++) {
+    int x = nNodes0 - 1;
+    dof_no_t dofNo = dofIndex(x, y);
+    for (int i = -1; i <= 0; i++) // x
     {
-      for (int j=-1; j<=1; j++) // y
+      for (int j = -1; j <= 1; j++) // y
       {
-        value = stencilEdge[center+i][center+j]*integralFactor;
+        value = stencilEdge[center + i][center + j] * integralFactor;
         //                 matrix           row    column
-        stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j), value, ADD_VALUES);
+        stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j), value,
+                                  ADD_VALUES);
       }
     }
   }
 
   // bottom boundary (y=0)
-  for (int x=1; x<nNodes0-1; x++)
-  {
+  for (int x = 1; x < nNodes0 - 1; x++) {
     int y = 0;
-    dof_no_t dofNo = dofIndex(x,y);
-    for (int i=-1; i<=1; i++) // x
+    dof_no_t dofNo = dofIndex(x, y);
+    for (int i = -1; i <= 1; i++) // x
     {
-      for (int j=-1; j<=0; j++) // -y
+      for (int j = -1; j <= 0; j++) // -y
       {
-        value = stencilEdge[center+j][center+i]*integralFactor;
+        value = stencilEdge[center + j][center + i] * integralFactor;
         //                 matrix           row    column
-        stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y-j), value, ADD_VALUES);
+        stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y - j), value,
+                                  ADD_VALUES);
       }
     }
   }
 
   // top boundary (y=nNodes1-1)
-  for (int x=1; x<nNodes0-1; x++)
-  {
-    int y = nNodes1-1;
-    dof_no_t dofNo = dofIndex(x,y);
-    for (int i=-1; i<=1; i++) // x
+  for (int x = 1; x < nNodes0 - 1; x++) {
+    int y = nNodes1 - 1;
+    dof_no_t dofNo = dofIndex(x, y);
+    for (int i = -1; i <= 1; i++) // x
     {
-      for (int j=-1; j<=0; j++) // y
+      for (int j = -1; j <= 0; j++) // y
       {
-        value = stencilEdge[center+j][center+i]*integralFactor;
+        value = stencilEdge[center + j][center + i] * integralFactor;
         //                 matrix           row    column
-        stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j), value, ADD_VALUES);
+        stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j), value,
+                                  ADD_VALUES);
       }
     }
   }
 
   // corner nodes
-  int x,y;
+  int x, y;
 
   // bottom left (x=0, y=0)
   x = 0;
   y = 0;
-  dofNo = dofIndex(x,y);
+  dofNo = dofIndex(x, y);
 
-  for (int i=-1; i<=0; i++) // -x
+  for (int i = -1; i <= 0; i++) // -x
   {
-    for (int j=-1; j<=0; j++) // -y
+    for (int j = -1; j <= 0; j++) // -y
     {
-      value = stencilCorner[center+i][center+j]*integralFactor;
+      value = stencilCorner[center + i][center + j] * integralFactor;
       //                 matrix           row    column
-      stiffnessMatrix->setValue(dofNo, dofIndex(x-i, y-j), value, ADD_VALUES);
+      stiffnessMatrix->setValue(dofNo, dofIndex(x - i, y - j), value,
+                                ADD_VALUES);
     }
   }
 
   // bottom right (x=nNodes0-1, y=0)
-  x = nNodes0-1;
+  x = nNodes0 - 1;
   y = 0;
-  dofNo = dofIndex(x,y);
+  dofNo = dofIndex(x, y);
 
-  for (int i=-1; i<=0; i++) // x
+  for (int i = -1; i <= 0; i++) // x
   {
-    for (int j=-1; j<=0; j++) // -y
+    for (int j = -1; j <= 0; j++) // -y
     {
-      value = stencilCorner[center+i][center+j]*integralFactor;
+      value = stencilCorner[center + i][center + j] * integralFactor;
       //                 matrix           row    column
-      stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y-j), value, ADD_VALUES);
+      stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y - j), value,
+                                ADD_VALUES);
     }
   }
 
   // top left (x=0, y=nNodes1-1)
   x = 0;
-  y = nNodes1-1;
-  dofNo = dofIndex(x,y);
+  y = nNodes1 - 1;
+  dofNo = dofIndex(x, y);
 
-  for (int i=-1; i<=0; i++) // -x
+  for (int i = -1; i <= 0; i++) // -x
   {
-    for (int j=-1; j<=0; j++) // y
+    for (int j = -1; j <= 0; j++) // y
     {
-      value = stencilCorner[center+i][center+j]*integralFactor;
+      value = stencilCorner[center + i][center + j] * integralFactor;
       //                 matrix           row    column
-      stiffnessMatrix->setValue(dofNo, dofIndex(x-i, y+j), value, ADD_VALUES);
+      stiffnessMatrix->setValue(dofNo, dofIndex(x - i, y + j), value,
+                                ADD_VALUES);
     }
   }
 
   // top right (x=nNodes0-1, y=nNodes1-1)
-  x = nNodes0-1;
-  y = nNodes1-1;
-  dofNo = dofIndex(x,y);
+  x = nNodes0 - 1;
+  y = nNodes1 - 1;
+  dofNo = dofIndex(x, y);
 
-  for (int i=-1; i<=0; i++) // x
+  for (int i = -1; i <= 0; i++) // x
   {
-    for (int j=-1; j<=0; j++) // y
+    for (int j = -1; j <= 0; j++) // y
     {
-      value = stencilCorner[center+i][center+j]*integralFactor;
+      value = stencilCorner[center + i][center + j] * integralFactor;
       //                 matrix           row    column
-      stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j), value, ADD_VALUES);
+      stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j), value,
+                                ADD_VALUES);
     }
   }
-  
+
   stiffnessMatrix->assembly(MAT_FINAL_ASSEMBLY);
 }
 
 // 3D stiffness matrix
-template<typename QuadratureType,typename Term>
-void FiniteElementMethodMatrix<FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<3>,BasisFunction::LagrangeOfOrder<1>>,QuadratureType,1,Term,Mesh::StructuredRegularFixedOfDimension<3>,Equation::hasLaplaceOperator<Term>,BasisFunction::LagrangeOfOrder<1>>::
-setStiffnessMatrix()
-{
-  typedef FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<3>, BasisFunction::LagrangeOfOrder<1>> FunctionSpaceType;
+template <typename QuadratureType, typename Term>
+void FiniteElementMethodMatrix<
+    FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<3>,
+                                 BasisFunction::LagrangeOfOrder<1>>,
+    QuadratureType, 1, Term, Mesh::StructuredRegularFixedOfDimension<3>,
+    Equation::hasLaplaceOperator<Term>,
+    BasisFunction::LagrangeOfOrder<1>>::setStiffnessMatrix() {
+  typedef FunctionSpace::FunctionSpace<
+      Mesh::StructuredRegularFixedOfDimension<3>,
+      BasisFunction::LagrangeOfOrder<1>>
+      FunctionSpaceType;
 
   LOG(TRACE) << "setStiffnessMatrix 3D for Mesh::RegularFixed using stencils";
 
   // get settings values
-  std::shared_ptr<FunctionSpaceType> functionSpace = std::static_pointer_cast<FunctionSpaceType>(this->data_.functionSpace());
-  element_no_t nElements0 = functionSpace->nElementsPerCoordinateDirectionLocal(0);
-  element_no_t nElements1 = functionSpace->nElementsPerCoordinateDirectionLocal(1);
-  element_no_t nElements2 = functionSpace->nElementsPerCoordinateDirectionLocal(2);
+  std::shared_ptr<FunctionSpaceType> functionSpace =
+      std::static_pointer_cast<FunctionSpaceType>(this->data_.functionSpace());
+  element_no_t nElements0 =
+      functionSpace->nElementsPerCoordinateDirectionLocal(0);
+  element_no_t nElements1 =
+      functionSpace->nElementsPerCoordinateDirectionLocal(1);
+  element_no_t nElements2 =
+      functionSpace->nElementsPerCoordinateDirectionLocal(2);
   node_no_t nNodes0 = functionSpace->nNodesLocalWithGhosts(0);
   node_no_t nNodes1 = functionSpace->nNodesLocalWithGhosts(1);
   node_no_t nNodes2 = functionSpace->nNodesLocalWithGhosts(2);
@@ -341,32 +373,42 @@ setStiffnessMatrix()
   double elementLength1 = functionSpace->meshWidth();
   double elementLength2 = functionSpace->meshWidth();
 
-  if (fabs(elementLength0-elementLength1) > 1e-15 || fabs(elementLength0-elementLength2) > 1e-15)
-  {
-    LOG(ERROR) << "Mesh resolution of 3D regular fixed mesh is not uniform! " << std::endl
-      << "Mesh widths: x: " << elementLength0 << ", y: " << elementLength1 << ", z: " << elementLength2 << std::endl
-      << "This means that the stiffness matrix will be wrong. Mesh::RegularFixed meshes use stencil notation "
-      << "and can only handle uniform meshes correctly. To use non-uniform meshes, consider using Mesh::Deformable!";
+  if (fabs(elementLength0 - elementLength1) > 1e-15 ||
+      fabs(elementLength0 - elementLength2) > 1e-15) {
+    LOG(ERROR) << "Mesh resolution of 3D regular fixed mesh is not uniform! "
+               << std::endl
+               << "Mesh widths: x: " << elementLength0
+               << ", y: " << elementLength1 << ", z: " << elementLength2
+               << std::endl
+               << "This means that the stiffness matrix will be wrong. "
+                  "Mesh::RegularFixed meshes use stencil notation "
+               << "and can only handle uniform meshes correctly. To use "
+                  "non-uniform meshes, consider using Mesh::Deformable!";
   }
 
   double integralFactor = elementLength0;
   double prefactor;
-  this->prefactor_.getValue(0, prefactor);  // prefactor value is constant over the domain
+  this->prefactor_.getValue(
+      0, prefactor); // prefactor value is constant over the domain
 
-  integralFactor = prefactor*integralFactor;
+  integralFactor = prefactor * integralFactor;
 
-  LOG(DEBUG) << "Use settings nElements=" <<nElements0<< "x" <<nElements1<< "x" <<nElements2<<
-    ", elementLength=" << elementLength0<< "x" << elementLength1<< "x" << elementLength2;
-  LOG(DEBUG) << "integralFactor=" <<integralFactor;
+  LOG(DEBUG) << "Use settings nElements=" << nElements0 << "x" << nElements1
+             << "x" << nElements2 << ", elementLength=" << elementLength0 << "x"
+             << elementLength1 << "x" << elementLength2;
+  LOG(DEBUG) << "integralFactor=" << integralFactor;
 
   // fill stiffness matrix
   // M_ij = -int[0,1] dphi_i/dxi * dphi_j/dxi * (dxi/ds)^2 ds = l
 
-  // stencil for -Δu in 3D: bottom: [1  2  1]   (element contribution:  center: [    0  1/12]
-  //                           1/12*[2 _0_ 2]                                   [_-4/12_   0]
+  // stencil for -Δu in 3D: bottom: [1  2  1]   (element contribution:  center:
+  // [    0  1/12]
+  //                           1/12*[2 _0_ 2] [_-4/12_   0]
   //                                [1  2  1]
-  //                                                                     bottom:[ 1/12  1/12]
-  //                        center: [ 2    0  2]                                [    0  1/12] )
+  //                                                                     bottom:[
+  //                                                                     1/12
+  //                                                                     1/12]
+  //                        center: [ 2    0  2] [    0  1/12] )
   //                           1/12*[ 0 _-32_ 0]
   //                                [ 2    0  2]
   //
@@ -377,69 +419,65 @@ setStiffnessMatrix()
   // y axis: front -> back
   // z axis: bottom -> top
 
-
   const int center = 1;
   const double stencilCenter[3][3][3] = {
-    {{1./12, 2./12, 1./12},   //bottom
-    {2./12, 0./12, 2./12},
-    {1./12, 2./12, 1./12}},
-    {{2./12, 0./12, 2./12},   //center
-    {0./12, -32./12, 0./12},
-    {2./12, 0./12, 2./12}},
-    {{1./12, 2./12, 1./12},   //top
-    {2./12, 0./12, 2./12},
-    {1./12, 2./12, 1./12}},
+      {{1. / 12, 2. / 12, 1. / 12}, // bottom
+       {2. / 12, 0. / 12, 2. / 12},
+       {1. / 12, 2. / 12, 1. / 12}},
+      {{2. / 12, 0. / 12, 2. / 12}, // center
+       {0. / 12, -32. / 12, 0. / 12},
+       {2. / 12, 0. / 12, 2. / 12}},
+      {{1. / 12, 2. / 12, 1. / 12}, // top
+       {2. / 12, 0. / 12, 2. / 12},
+       {1. / 12, 2. / 12, 1. / 12}},
   };
 
   const double stencilBoundarySurface[2][3][3] = {
-    {{1./12, 2./12, 1./12},   //bottom
-    {2./12, 0./12, 2./12},
-    {1./12, 2./12, 1./12}},
-    {{1./12, 0./12, 1./12},   //center
-    {0./12, -16./12, 0./12},
-    {1./12, 0./12, 1./12}},
+      {{1. / 12, 2. / 12, 1. / 12}, // bottom
+       {2. / 12, 0. / 12, 2. / 12},
+       {1. / 12, 2. / 12, 1. / 12}},
+      {{1. / 12, 0. / 12, 1. / 12}, // center
+       {0. / 12, -16. / 12, 0. / 12},
+       {1. / 12, 0. / 12, 1. / 12}},
   };
   const double stencilBoundaryEdge[2][2][3] = {
-    {{1./12, 2./12, 1./12},   //bottom
-    {1./12, 0./12, 1./12}},
-    {{1./12, 0./12, 1./12},
-    {0./12, -8./12, 0./12}}    //center
+      {{1. / 12, 2. / 12, 1. / 12}, // bottom
+       {1. / 12, 0. / 12, 1. / 12}},
+      {{1. / 12, 0. / 12, 1. / 12}, {0. / 12, -8. / 12, 0. / 12}} // center
   };
 
   const double stencilCorner[2][2][2] = {
-    {{1./12, 1./12},
-    {1./12, 0./12}},    //bottom
-    {{1./12, 0./12},
-    {0./12, -4./12}},    //center
+      {{1. / 12, 1. / 12}, {1. / 12, 0. / 12}},  // bottom
+      {{1. / 12, 0. / 12}, {0. / 12, -4. / 12}}, // center
   };
 
-  std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>> stiffnessMatrix = this->data_.stiffnessMatrix();
+  std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>> stiffnessMatrix =
+      this->data_.stiffnessMatrix();
 
-  auto dofIndex = [&functionSpace](int x, int y, int z)
-  {
-    return functionSpace->meshPartition()->getNodeNoLocal(std::array<int,3>({x,y,z}));  // nDofsPerNode == 1
+  auto dofIndex = [&functionSpace](int x, int y, int z) {
+    return functionSpace->meshPartition()->getNodeNoLocal(
+        std::array<int, 3>({x, y, z})); // nDofsPerNode == 1
   };
   double value;
   dof_no_t dofNo;
 
   // loop over all dofs and set values with stencilCenter
   // set entries for interior nodes
-  for (int z=1; z<nNodes2-1; z++)
-  {
-    for (int y=1; y<nNodes1-1; y++)
-    {
-      for (int x=1; x<nNodes0-1; x++)
-      {
+  for (int z = 1; z < nNodes2 - 1; z++) {
+    for (int y = 1; y < nNodes1 - 1; y++) {
+      for (int x = 1; x < nNodes0 - 1; x++) {
         dofNo = dofIndex(x, y, z);
-        for (int i=-1; i<=1; i++) // x
+        for (int i = -1; i <= 1; i++) // x
         {
-          for (int j=-1; j<=1; j++) // y
+          for (int j = -1; j <= 1; j++) // y
           {
-            for (int k=-1; k<=1; k++) // z
+            for (int k = -1; k <= 1; k++) // z
             {
-              value = stencilCenter[center+i][center+j][center+k]*integralFactor;
+              value = stencilCenter[center + i][center + j][center + k] *
+                      integralFactor;
               //                 matrix           row    column
-              stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j, z+k), value, INSERT_VALUES);
+              stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j, z + k),
+                                        value, INSERT_VALUES);
             }
           }
         }
@@ -449,24 +487,24 @@ setStiffnessMatrix()
 
   // call MatAssemblyBegin, MatAssemblyEnd
   stiffnessMatrix->assembly(MAT_FLUSH_ASSEMBLY);
-  
+
   // set entries for boundary nodes on surface boundaries
   // left boundary (x = 0)
-  for (int z=1; z<nNodes2-1; z++)
-  {
-    for (int y=1; y<nNodes1-1; y++)
-    {
+  for (int z = 1; z < nNodes2 - 1; z++) {
+    for (int y = 1; y < nNodes1 - 1; y++) {
       int x = 0;
-      dof_no_t dofNo = dofIndex(x,y,z);
-      for (int i=-1; i<=0; i++)    // -x
+      dof_no_t dofNo = dofIndex(x, y, z);
+      for (int i = -1; i <= 0; i++) // -x
       {
-        for (int j=-1; j<=1; j++)   // y
+        for (int j = -1; j <= 1; j++) // y
         {
-          for (int k=-1; k<=1; k++)   // z
+          for (int k = -1; k <= 1; k++) // z
           {
-            value = stencilBoundarySurface[center+i][center+j][center+k]*integralFactor;
+            value = stencilBoundarySurface[center + i][center + j][center + k] *
+                    integralFactor;
             //                 matrix           row    column
-            stiffnessMatrix->setValue(dofNo, dofIndex(x-i, y+j, z+k), value, ADD_VALUES);
+            stiffnessMatrix->setValue(dofNo, dofIndex(x - i, y + j, z + k),
+                                      value, ADD_VALUES);
           }
         }
       }
@@ -474,21 +512,21 @@ setStiffnessMatrix()
   }
 
   // right boundary (x = nNodes0-1)
-  for (int z=1; z<nNodes2-1; z++)
-  {
-    for (int y=1; y<nNodes1-1; y++)
-    {
-      int x = nNodes0-1;
-      dof_no_t dofNo = dofIndex(x,y,z);
-      for (int i=-1; i<=0; i++)    // x
+  for (int z = 1; z < nNodes2 - 1; z++) {
+    for (int y = 1; y < nNodes1 - 1; y++) {
+      int x = nNodes0 - 1;
+      dof_no_t dofNo = dofIndex(x, y, z);
+      for (int i = -1; i <= 0; i++) // x
       {
-        for (int j=-1; j<=1; j++)   // y
+        for (int j = -1; j <= 1; j++) // y
         {
-          for (int k=-1; k<=1; k++)   // z
+          for (int k = -1; k <= 1; k++) // z
           {
-            value = stencilBoundarySurface[center+i][center+j][center+k]*integralFactor;
+            value = stencilBoundarySurface[center + i][center + j][center + k] *
+                    integralFactor;
             //                 matrix           row    column
-            stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j, z+k), value, ADD_VALUES);
+            stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j, z + k),
+                                      value, ADD_VALUES);
           }
         }
       }
@@ -496,21 +534,21 @@ setStiffnessMatrix()
   }
 
   // front boundary (y = 0)
-  for (int z=1; z<nNodes2-1; z++)
-  {
-    for (int x=1; x<nNodes0-1; x++)
-    {
+  for (int z = 1; z < nNodes2 - 1; z++) {
+    for (int x = 1; x < nNodes0 - 1; x++) {
       int y = 0;
-      dof_no_t dofNo = dofIndex(x,y,z);
-      for (int i=-1; i<=1; i++)    // x
+      dof_no_t dofNo = dofIndex(x, y, z);
+      for (int i = -1; i <= 1; i++) // x
       {
-        for (int j=-1; j<=0; j++)   // -y
+        for (int j = -1; j <= 0; j++) // -y
         {
-          for (int k=-1; k<=1; k++)   // z
+          for (int k = -1; k <= 1; k++) // z
           {
-            value = stencilBoundarySurface[center+j][center+i][center+k]*integralFactor;
+            value = stencilBoundarySurface[center + j][center + i][center + k] *
+                    integralFactor;
             //                 matrix           row    column
-            stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y-j, z+k), value, ADD_VALUES);
+            stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y - j, z + k),
+                                      value, ADD_VALUES);
           }
         }
       }
@@ -518,21 +556,21 @@ setStiffnessMatrix()
   }
 
   // back boundary (y = nNodes1-1)
-  for (int z=1; z<nNodes2-1; z++)
-  {
-    for (int x=1; x<nNodes0-1; x++)
-    {
-      int y = nNodes1-1;
-      dof_no_t dofNo = dofIndex(x,y,z);
-      for (int i=-1; i<=1; i++)    // x
+  for (int z = 1; z < nNodes2 - 1; z++) {
+    for (int x = 1; x < nNodes0 - 1; x++) {
+      int y = nNodes1 - 1;
+      dof_no_t dofNo = dofIndex(x, y, z);
+      for (int i = -1; i <= 1; i++) // x
       {
-        for (int j=-1; j<=0; j++)   // y
+        for (int j = -1; j <= 0; j++) // y
         {
-          for (int k=-1; k<=1; k++)   // z
+          for (int k = -1; k <= 1; k++) // z
           {
-            value = stencilBoundarySurface[center+j][center+i][center+k]*integralFactor;
+            value = stencilBoundarySurface[center + j][center + i][center + k] *
+                    integralFactor;
             //                 matrix           row    column
-            stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j, z+k), value, ADD_VALUES);
+            stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j, z + k),
+                                      value, ADD_VALUES);
           }
         }
       }
@@ -540,21 +578,21 @@ setStiffnessMatrix()
   }
 
   // bottom boundary (z = 0)
-  for (int y=1; y<nNodes1-1; y++)
-  {
-    for (int x=1; x<nNodes0-1; x++)
-    {
+  for (int y = 1; y < nNodes1 - 1; y++) {
+    for (int x = 1; x < nNodes0 - 1; x++) {
       int z = 0;
-      dof_no_t dofNo = dofIndex(x,y,z);
-      for (int i=-1; i<=1; i++)    // x
+      dof_no_t dofNo = dofIndex(x, y, z);
+      for (int i = -1; i <= 1; i++) // x
       {
-        for (int j=-1; j<=1; j++)   // y
+        for (int j = -1; j <= 1; j++) // y
         {
-          for (int k=-1; k<=0; k++)   // -z
+          for (int k = -1; k <= 0; k++) // -z
           {
-            value = stencilBoundarySurface[center+k][center+i][center+j]*integralFactor;
+            value = stencilBoundarySurface[center + k][center + i][center + j] *
+                    integralFactor;
             //                 matrix           row    column
-            stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j, z-k), value, ADD_VALUES);
+            stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j, z - k),
+                                      value, ADD_VALUES);
           }
         }
       }
@@ -562,21 +600,21 @@ setStiffnessMatrix()
   }
 
   // top boundary (z = nNodes2-1)
-  for (int y=1; y<nNodes1-1; y++)
-  {
-    for (int x=1; x<nNodes0-1; x++)
-    {
-      int z = nNodes2-1;
-      dof_no_t dofNo = dofIndex(x,y,z);
-      for (int i=-1; i<=1; i++)    // x
+  for (int y = 1; y < nNodes1 - 1; y++) {
+    for (int x = 1; x < nNodes0 - 1; x++) {
+      int z = nNodes2 - 1;
+      dof_no_t dofNo = dofIndex(x, y, z);
+      for (int i = -1; i <= 1; i++) // x
       {
-        for (int j=-1; j<=1; j++)   // y
+        for (int j = -1; j <= 1; j++) // y
         {
-          for (int k=-1; k<=0; k++)   // z
+          for (int k = -1; k <= 0; k++) // z
           {
-            value = stencilBoundarySurface[center+k][center+i][center+j]*integralFactor;
+            value = stencilBoundarySurface[center + k][center + i][center + j] *
+                    integralFactor;
             //                 matrix           row    column
-            stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j, z+k), value, ADD_VALUES);
+            stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j, z + k),
+                                      value, ADD_VALUES);
           }
         }
       }
@@ -585,322 +623,342 @@ setStiffnessMatrix()
 
   // set entries for boundary nodes on edge boundaries
   // bottom left (x=0,z=0)
-  for (int y=1; y<nNodes1-1; y++)
-  {
+  for (int y = 1; y < nNodes1 - 1; y++) {
     int x = 0;
     int z = 0;
-    dof_no_t dofNo = dofIndex(x,y,z);
-    for (int i=-1; i<=0; i++)    // -x
+    dof_no_t dofNo = dofIndex(x, y, z);
+    for (int i = -1; i <= 0; i++) // -x
     {
-      for (int j=-1; j<=1; j++)   // y
+      for (int j = -1; j <= 1; j++) // y
       {
-        for (int k=-1; k<=0; k++)   // -z
+        for (int k = -1; k <= 0; k++) // -z
         {
-          value = stencilBoundaryEdge[center+i][center+k][center+j]*integralFactor;
+          value = stencilBoundaryEdge[center + i][center + k][center + j] *
+                  integralFactor;
           //                 matrix           row    column
-          stiffnessMatrix->setValue(dofNo, dofIndex(x-i, y+j, z-k), value, ADD_VALUES);
+          stiffnessMatrix->setValue(dofNo, dofIndex(x - i, y + j, z - k), value,
+                                    ADD_VALUES);
         }
       }
     }
   }
 
   // bottom right (x=nNodes0-1,z=0)
-  for (int y=1; y<nNodes1-1; y++)
-  {
-    int x = nNodes0-1;
+  for (int y = 1; y < nNodes1 - 1; y++) {
+    int x = nNodes0 - 1;
     int z = 0;
-    dof_no_t dofNo = dofIndex(x,y,z);
-    for (int i=-1; i<=0; i++)    // x
+    dof_no_t dofNo = dofIndex(x, y, z);
+    for (int i = -1; i <= 0; i++) // x
     {
-      for (int j=-1; j<=1; j++)   // y
+      for (int j = -1; j <= 1; j++) // y
       {
-        for (int k=-1; k<=0; k++)   // -z
+        for (int k = -1; k <= 0; k++) // -z
         {
-          value = stencilBoundaryEdge[center+i][center+k][center+j]*integralFactor;
+          value = stencilBoundaryEdge[center + i][center + k][center + j] *
+                  integralFactor;
           //                 matrix           row    column
-          stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j, z-k), value, ADD_VALUES);
+          stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j, z - k), value,
+                                    ADD_VALUES);
         }
       }
     }
   }
 
   // top left (x=0,z=nNodes2-1)
-  for (int y=1; y<nNodes1-1; y++)
-  {
+  for (int y = 1; y < nNodes1 - 1; y++) {
     int x = 0;
-    int z = nNodes2-1;
-    dof_no_t dofNo = dofIndex(x,y,z);
-    for (int i=-1; i<=0; i++)    // -x
+    int z = nNodes2 - 1;
+    dof_no_t dofNo = dofIndex(x, y, z);
+    for (int i = -1; i <= 0; i++) // -x
     {
-      for (int j=-1; j<=1; j++)   // y
+      for (int j = -1; j <= 1; j++) // y
       {
-        for (int k=-1; k<=0; k++)   // z
+        for (int k = -1; k <= 0; k++) // z
         {
-          value = stencilBoundaryEdge[center+i][center+k][center+j]*integralFactor;
+          value = stencilBoundaryEdge[center + i][center + k][center + j] *
+                  integralFactor;
           //                 matrix           row    column
-          stiffnessMatrix->setValue(dofNo, dofIndex(x-i, y+j, z+k), value, ADD_VALUES);
+          stiffnessMatrix->setValue(dofNo, dofIndex(x - i, y + j, z + k), value,
+                                    ADD_VALUES);
         }
       }
     }
   }
 
   // top right (x=nNodes0-1,z=nNodes2-1)
-  for (int y=1; y<nNodes1-1; y++)
-  {
-    int x = nNodes0-1;
-    int z = nNodes2-1;
-    dof_no_t dofNo = dofIndex(x,y,z);
-    for (int i=-1; i<=0; i++)    // x
+  for (int y = 1; y < nNodes1 - 1; y++) {
+    int x = nNodes0 - 1;
+    int z = nNodes2 - 1;
+    dof_no_t dofNo = dofIndex(x, y, z);
+    for (int i = -1; i <= 0; i++) // x
     {
-      for (int j=-1; j<=1; j++)   // y
+      for (int j = -1; j <= 1; j++) // y
       {
-        for (int k=-1; k<=0; k++)   // z
+        for (int k = -1; k <= 0; k++) // z
         {
-          value = stencilBoundaryEdge[center+i][center+k][center+j]*integralFactor;
+          value = stencilBoundaryEdge[center + i][center + k][center + j] *
+                  integralFactor;
           //                 matrix           row    column
-          stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j, z+k), value, ADD_VALUES);
+          stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j, z + k), value,
+                                    ADD_VALUES);
         }
       }
     }
   }
 
   // bottom front (y=0,z=0)
-  for (int x=1; x<nNodes0-1; x++)
-  {
+  for (int x = 1; x < nNodes0 - 1; x++) {
     int y = 0;
     int z = 0;
-    dof_no_t dofNo = dofIndex(x,y,z);
+    dof_no_t dofNo = dofIndex(x, y, z);
 
     value = 0;
-    for (int i=-1; i<=1; i++)    // x
+    for (int i = -1; i <= 1; i++) // x
     {
-      for (int j=-1; j<=0; j++)   // -y
+      for (int j = -1; j <= 0; j++) // -y
       {
-        for (int k=-1; k<=0; k++)   // -z
+        for (int k = -1; k <= 0; k++) // -z
         {
-          value = stencilBoundaryEdge[center+j][center+k][center+i]*integralFactor;
+          value = stencilBoundaryEdge[center + j][center + k][center + i] *
+                  integralFactor;
           //                 matrix           row    column
-          stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y-j, z-k), value, ADD_VALUES);
+          stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y - j, z - k), value,
+                                    ADD_VALUES);
         }
       }
     }
   }
 
   // bottom back (y=nNodes1-1,z=0)
-  for (int x=1; x<nNodes0-1; x++)
-  {
-    int y = nNodes1-1;
+  for (int x = 1; x < nNodes0 - 1; x++) {
+    int y = nNodes1 - 1;
     int z = 0;
-    dof_no_t dofNo = dofIndex(x,y,z);
-    for (int i=-1; i<=1; i++)    // x
+    dof_no_t dofNo = dofIndex(x, y, z);
+    for (int i = -1; i <= 1; i++) // x
     {
-      for (int j=-1; j<=0; j++)   // y
+      for (int j = -1; j <= 0; j++) // y
       {
-        for (int k=-1; k<=0; k++)   // -z
+        for (int k = -1; k <= 0; k++) // -z
         {
-          value = stencilBoundaryEdge[center+j][center+k][center+i]*integralFactor;
+          value = stencilBoundaryEdge[center + j][center + k][center + i] *
+                  integralFactor;
           //                 matrix           row    column
-          stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j, z-k), value, ADD_VALUES);
+          stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j, z - k), value,
+                                    ADD_VALUES);
         }
       }
     }
   }
 
   // top front (y=0,z=nNodes2-1)
-  for (int x=1; x<nNodes0-1; x++)
-  {
+  for (int x = 1; x < nNodes0 - 1; x++) {
     int y = 0;
-    int z = nNodes2-1;
-    dof_no_t dofNo = dofIndex(x,y,z);
+    int z = nNodes2 - 1;
+    dof_no_t dofNo = dofIndex(x, y, z);
 
     value = 0;
-    for (int i=-1; i<=1; i++)    // x
+    for (int i = -1; i <= 1; i++) // x
     {
-      for (int j=-1; j<=0; j++)   // -y
+      for (int j = -1; j <= 0; j++) // -y
       {
-        for (int k=-1; k<=0; k++)   // z
+        for (int k = -1; k <= 0; k++) // z
         {
-          value = stencilBoundaryEdge[center+j][center+k][center+i]*integralFactor;
+          value = stencilBoundaryEdge[center + j][center + k][center + i] *
+                  integralFactor;
           //                 matrix           row    column
-          stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y-j, z+k), value, ADD_VALUES);
+          stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y - j, z + k), value,
+                                    ADD_VALUES);
         }
       }
     }
   }
 
   // top back (y=nNodes1-1,z=nNodes2-1)
-  for (int x=1; x<nNodes0-1; x++)
-  {
-    int y = nNodes1-1;
-    int z = nNodes2-1;
-    dof_no_t dofNo = dofIndex(x,y,z);
+  for (int x = 1; x < nNodes0 - 1; x++) {
+    int y = nNodes1 - 1;
+    int z = nNodes2 - 1;
+    dof_no_t dofNo = dofIndex(x, y, z);
 
     value = 0;
-    for (int i=-1; i<=1; i++)    // x
+    for (int i = -1; i <= 1; i++) // x
     {
-      for (int j=-1; j<=0; j++)   // y
+      for (int j = -1; j <= 0; j++) // y
       {
-        for (int k=-1; k<=0; k++)   // z
+        for (int k = -1; k <= 0; k++) // z
         {
-          value = stencilBoundaryEdge[center+j][center+k][center+i]*integralFactor;
+          value = stencilBoundaryEdge[center + j][center + k][center + i] *
+                  integralFactor;
           //                 matrix           row    column
-          stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j, z+k), value, ADD_VALUES);
+          stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j, z + k), value,
+                                    ADD_VALUES);
         }
       }
     }
   }
 
   // left front (x=0,y=0)
-  for (int z=1; z<nNodes2-1; z++)
-  {
+  for (int z = 1; z < nNodes2 - 1; z++) {
     int x = 0;
     int y = 0;
-    dof_no_t dofNo = dofIndex(x,y,z);
-    for (int i=-1; i<=0; i++)    // -x
+    dof_no_t dofNo = dofIndex(x, y, z);
+    for (int i = -1; i <= 0; i++) // -x
     {
-      for (int j=-1; j<=0; j++)   // -y
+      for (int j = -1; j <= 0; j++) // -y
       {
-        for (int k=-1; k<=1; k++)   // z
+        for (int k = -1; k <= 1; k++) // z
         {
-          value = stencilBoundaryEdge[center+i][center+j][center+k]*integralFactor;
+          value = stencilBoundaryEdge[center + i][center + j][center + k] *
+                  integralFactor;
           //                 matrix           row    column
-          stiffnessMatrix->setValue(dofNo, dofIndex(x-i, y-j, z+k), value, ADD_VALUES);
+          stiffnessMatrix->setValue(dofNo, dofIndex(x - i, y - j, z + k), value,
+                                    ADD_VALUES);
         }
       }
     }
   }
 
   // left back (x=0,y=nNodes1-1)
-  for (int z=1; z<nNodes2-1; z++)
-  {
+  for (int z = 1; z < nNodes2 - 1; z++) {
     int x = 0;
-    int y = nNodes1-1;
-    dof_no_t dofNo = dofIndex(x,y,z);
-    for (int i=-1; i<=0; i++)    // -x
+    int y = nNodes1 - 1;
+    dof_no_t dofNo = dofIndex(x, y, z);
+    for (int i = -1; i <= 0; i++) // -x
     {
-      for (int j=-1; j<=0; j++)   // y
+      for (int j = -1; j <= 0; j++) // y
       {
-        for (int k=-1; k<=1; k++)   // z
+        for (int k = -1; k <= 1; k++) // z
         {
-          value = stencilBoundaryEdge[center+i][center+j][center+k]*integralFactor;
+          value = stencilBoundaryEdge[center + i][center + j][center + k] *
+                  integralFactor;
           //                 matrix           row    column
-          stiffnessMatrix->setValue(dofNo, dofIndex(x-i, y+j, z+k), value, ADD_VALUES);
+          stiffnessMatrix->setValue(dofNo, dofIndex(x - i, y + j, z + k), value,
+                                    ADD_VALUES);
         }
       }
     }
   }
 
   // right front (x=nNodes0-1,y=0)
-  for (int z=1; z<nNodes2-1; z++)
-  {
-    int x = nNodes0-1;
+  for (int z = 1; z < nNodes2 - 1; z++) {
+    int x = nNodes0 - 1;
     int y = 0;
-    dof_no_t dofNo = dofIndex(x,y,z);
-    for (int i=-1; i<=0; i++)    // x
+    dof_no_t dofNo = dofIndex(x, y, z);
+    for (int i = -1; i <= 0; i++) // x
     {
-      for (int j=-1; j<=0; j++)   // -y
+      for (int j = -1; j <= 0; j++) // -y
       {
-        for (int k=-1; k<=1; k++)   // z
+        for (int k = -1; k <= 1; k++) // z
         {
-          value = stencilBoundaryEdge[center+i][center+j][center+k]*integralFactor;
+          value = stencilBoundaryEdge[center + i][center + j][center + k] *
+                  integralFactor;
           //                 matrix           row    column
-          stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y-j, z+k), value, ADD_VALUES);
+          stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y - j, z + k), value,
+                                    ADD_VALUES);
         }
       }
     }
   }
 
   // right back (x=nNodes0-1,y=nNodes1-1)
-  for (int z=1; z<nNodes2-1; z++)
-  {
-    int x = nNodes0-1;
-    int y = nNodes1-1;
-    dof_no_t dofNo = dofIndex(x,y,z);
-    for (int i=-1; i<=0; i++)    // x
+  for (int z = 1; z < nNodes2 - 1; z++) {
+    int x = nNodes0 - 1;
+    int y = nNodes1 - 1;
+    dof_no_t dofNo = dofIndex(x, y, z);
+    for (int i = -1; i <= 0; i++) // x
     {
-      for (int j=-1; j<=0; j++)   // y
+      for (int j = -1; j <= 0; j++) // y
       {
-        for (int k=-1; k<=1; k++)   // z
+        for (int k = -1; k <= 1; k++) // z
         {
-          value = stencilBoundaryEdge[center+i][center+j][center+k]*integralFactor;
+          value = stencilBoundaryEdge[center + i][center + j][center + k] *
+                  integralFactor;
           //                 matrix           row    column
-          stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j, z+k), value, ADD_VALUES);
+          stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j, z + k), value,
+                                    ADD_VALUES);
         }
       }
     }
   }
 
   // corner nodes
-  int x,y,z;
+  int x, y, z;
 
   // bottom front left (x=0,y=0,z=0)
   x = 0;
   y = 0;
   z = 0;
-  dofNo = dofIndex(x,y,z);
-  for (int i=-1; i<=0; i++)    // -x
+  dofNo = dofIndex(x, y, z);
+  for (int i = -1; i <= 0; i++) // -x
   {
-    for (int j=-1; j<=0; j++)   // -y
+    for (int j = -1; j <= 0; j++) // -y
     {
-      for (int k=-1; k<=0; k++)   // -z
+      for (int k = -1; k <= 0; k++) // -z
       {
-        value = stencilCorner[center+i][center+j][center+k]*integralFactor;
+        value =
+            stencilCorner[center + i][center + j][center + k] * integralFactor;
         //                 matrix           row    column
-        stiffnessMatrix->setValue(dofNo, dofIndex(x-i, y-j, z-k), value, ADD_VALUES);
+        stiffnessMatrix->setValue(dofNo, dofIndex(x - i, y - j, z - k), value,
+                                  ADD_VALUES);
       }
     }
   }
 
   // bottom front right (x=nNodes0-1,y=0,z=0)
-  x = nNodes0-1;
+  x = nNodes0 - 1;
   y = 0;
   z = 0;
-  dofNo = dofIndex(x,y,z);
-  for (int i=-1; i<=0; i++)    // x
+  dofNo = dofIndex(x, y, z);
+  for (int i = -1; i <= 0; i++) // x
   {
-    for (int j=-1; j<=0; j++)   // -y
+    for (int j = -1; j <= 0; j++) // -y
     {
-      for (int k=-1; k<=0; k++)   // -z
+      for (int k = -1; k <= 0; k++) // -z
       {
-        value = stencilCorner[center+i][center+j][center+k]*integralFactor;
+        value =
+            stencilCorner[center + i][center + j][center + k] * integralFactor;
         //                 matrix           row    column
-        stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y-j, z-k), value, ADD_VALUES);
+        stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y - j, z - k), value,
+                                  ADD_VALUES);
       }
     }
   }
 
   // bottom back left (x=0,y=nNodes1-1,z=0)
   x = 0;
-  y = nNodes1-1;
+  y = nNodes1 - 1;
   z = 0;
-  dofNo = dofIndex(x,y,z);
-  for (int i=-1; i<=0; i++)    // -x
+  dofNo = dofIndex(x, y, z);
+  for (int i = -1; i <= 0; i++) // -x
   {
-    for (int j=-1; j<=0; j++)   // y
+    for (int j = -1; j <= 0; j++) // y
     {
-      for (int k=-1; k<=0; k++)   // -z
+      for (int k = -1; k <= 0; k++) // -z
       {
-        value = stencilCorner[center+i][center+j][center+k]*integralFactor;
+        value =
+            stencilCorner[center + i][center + j][center + k] * integralFactor;
         //                 matrix           row    column
-        stiffnessMatrix->setValue(dofNo, dofIndex(x-i, y+j, z-k), value, ADD_VALUES);
+        stiffnessMatrix->setValue(dofNo, dofIndex(x - i, y + j, z - k), value,
+                                  ADD_VALUES);
       }
     }
   }
 
   // bottom back right (x=nNodes0-1,y=nNodes1-1,z=0)
-  x = nNodes0-1;
-  y = nNodes1-1;
+  x = nNodes0 - 1;
+  y = nNodes1 - 1;
   z = 0;
-  dofNo = dofIndex(x,y,z);
-  for (int i=-1; i<=0; i++)    // x
+  dofNo = dofIndex(x, y, z);
+  for (int i = -1; i <= 0; i++) // x
   {
-    for (int j=-1; j<=0; j++)   // y
+    for (int j = -1; j <= 0; j++) // y
     {
-      for (int k=-1; k<=0; k++)   // -z
+      for (int k = -1; k <= 0; k++) // -z
       {
-        value = stencilCorner[center+i][center+j][center+k]*integralFactor;
+        value =
+            stencilCorner[center + i][center + j][center + k] * integralFactor;
         //                 matrix           row    column
-        stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j, z-k), value, ADD_VALUES);
+        stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j, z - k), value,
+                                  ADD_VALUES);
       }
     }
   }
@@ -908,78 +966,84 @@ setStiffnessMatrix()
   // top front left (x=0,y=0,z=nNodes2-1)
   x = 0;
   y = 0;
-  z = nNodes2-1;
-  dofNo = dofIndex(x,y,z);
-  for (int i=-1; i<=0; i++)    // -x
+  z = nNodes2 - 1;
+  dofNo = dofIndex(x, y, z);
+  for (int i = -1; i <= 0; i++) // -x
   {
-    for (int j=-1; j<=0; j++)   // -y
+    for (int j = -1; j <= 0; j++) // -y
     {
-      for (int k=-1; k<=0; k++)   // z
+      for (int k = -1; k <= 0; k++) // z
       {
-        value = stencilCorner[center+i][center+j][center+k]*integralFactor;
+        value =
+            stencilCorner[center + i][center + j][center + k] * integralFactor;
         //                 matrix           row    column
-        stiffnessMatrix->setValue(dofNo, dofIndex(x-i, y-j, z+k), value, ADD_VALUES);
+        stiffnessMatrix->setValue(dofNo, dofIndex(x - i, y - j, z + k), value,
+                                  ADD_VALUES);
       }
     }
   }
 
   // top front right (x=nNodes0-1,y=0,z=nNodes2-1)
-  x = nNodes0-1;
+  x = nNodes0 - 1;
   y = 0;
-  z = nNodes2-1;
-  dofNo = dofIndex(x,y,z);
-  for (int i=-1; i<=0; i++)    // x
+  z = nNodes2 - 1;
+  dofNo = dofIndex(x, y, z);
+  for (int i = -1; i <= 0; i++) // x
   {
-    for (int j=-1; j<=0; j++)   // -y
+    for (int j = -1; j <= 0; j++) // -y
     {
-      for (int k=-1; k<=0; k++)   // z
+      for (int k = -1; k <= 0; k++) // z
       {
-        value = stencilCorner[center+i][center+j][center+k]*integralFactor;
+        value =
+            stencilCorner[center + i][center + j][center + k] * integralFactor;
         //                 matrix           row    column
-        stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y-j, z+k), value, ADD_VALUES);
+        stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y - j, z + k), value,
+                                  ADD_VALUES);
       }
     }
   }
 
   // top back left (x=0,y=nNodes1-1,z=nNodes2-1)
   x = 0;
-  y = nNodes1-1;
-  z = nNodes2-1;
-  dofNo = dofIndex(x,y,z);
-  for (int i=-1; i<=0; i++)    // -x
+  y = nNodes1 - 1;
+  z = nNodes2 - 1;
+  dofNo = dofIndex(x, y, z);
+  for (int i = -1; i <= 0; i++) // -x
   {
-    for (int j=-1; j<=0; j++)   // y
+    for (int j = -1; j <= 0; j++) // y
     {
-      for (int k=-1; k<=0; k++)   // z
+      for (int k = -1; k <= 0; k++) // z
       {
-        value = stencilCorner[center+i][center+j][center+k]*integralFactor;
+        value =
+            stencilCorner[center + i][center + j][center + k] * integralFactor;
         //                 matrix           row    column
-        stiffnessMatrix->setValue(dofNo, dofIndex(x-i, y+j, z+k), value, ADD_VALUES);
+        stiffnessMatrix->setValue(dofNo, dofIndex(x - i, y + j, z + k), value,
+                                  ADD_VALUES);
       }
     }
   }
 
   // top back right (x=nNodes0-1,y=nNodes1-1,z=nNodes2-1)
-  x = nNodes0-1;
-  y = nNodes1-1;
-  z = nNodes2-1;
-  dofNo = dofIndex(x,y,z);
-  for (int i=-1; i<=0; i++)    // x
+  x = nNodes0 - 1;
+  y = nNodes1 - 1;
+  z = nNodes2 - 1;
+  dofNo = dofIndex(x, y, z);
+  for (int i = -1; i <= 0; i++) // x
   {
-    for (int j=-1; j<=0; j++)   // y
+    for (int j = -1; j <= 0; j++) // y
     {
-      for (int k=-1; k<=0; k++)   // z
+      for (int k = -1; k <= 0; k++) // z
       {
-        value = stencilCorner[center+i][center+j][center+k]*integralFactor;
+        value =
+            stencilCorner[center + i][center + j][center + k] * integralFactor;
         //                 matrix           row    column
-        stiffnessMatrix->setValue(dofNo, dofIndex(x+i, y+j, z+k), value, ADD_VALUES);
+        stiffnessMatrix->setValue(dofNo, dofIndex(x + i, y + j, z + k), value,
+                                  ADD_VALUES);
       }
     }
   }
-  
+
   stiffnessMatrix->assembly(MAT_FINAL_ASSEMBLY);
 }
 
-
-
-}  // namespace
+} // namespace SpatialDiscretization

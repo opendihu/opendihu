@@ -1,45 +1,42 @@
 #include "postprocessing/parallel_fiber_estimation/parallel_fiber_estimation.h"
 
-namespace Postprocessing
-{
+namespace Postprocessing {
 
-template<typename BasisFunctionType>
-void ParallelFiberEstimation<BasisFunctionType>::
-createMesh(std::array<std::vector<std::vector<Vec3>>,4> &boundaryPoints, std::vector<Vec3> &nodePositions, std::array<int,3> &nElementsPerCoordinateDirectionLocal)
-{
+template <typename BasisFunctionType>
+void ParallelFiberEstimation<BasisFunctionType>::createMesh(
+    std::array<std::vector<std::vector<Vec3>>, 4> &boundaryPoints,
+    std::vector<Vec3> &nodePositions,
+    std::array<int, 3> &nElementsPerCoordinateDirectionLocal) {
   int subdomainNNodesX;
   int subdomainNNodesY;
   int subdomainNNodesZ;
 
   LOG(DEBUG) << "createMesh";
 
-#ifdef USE_CHECKPOINT_MESH  // load from file
+#ifdef USE_CHECKPOINT_MESH // load from file
   std::stringstream filename;
-  filename << "checkpoints/checkpoint_mesh_l" << level_ << "_" << currentRankSubset_->ownRankNo() << ".csv";
+  filename << "checkpoints/checkpoint_mesh_l" << level_ << "_"
+           << currentRankSubset_->ownRankNo() << ".csv";
   std::ifstream file(filename.str().c_str());
 
-  if (!file.is_open())
-  {
+  if (!file.is_open()) {
     LOG(FATAL) << "Could not open file \"" << filename.str() << "\".";
   }
 
   file >> subdomainNNodesX >> subdomainNNodesY >> subdomainNNodesZ;
-  nElementsPerCoordinateDirectionLocal[0] = subdomainNNodesX-1;
-  nElementsPerCoordinateDirectionLocal[1] = subdomainNNodesY-1;
-  nElementsPerCoordinateDirectionLocal[2] = subdomainNNodesZ-1;
+  nElementsPerCoordinateDirectionLocal[0] = subdomainNNodesX - 1;
+  nElementsPerCoordinateDirectionLocal[1] = subdomainNNodesY - 1;
+  nElementsPerCoordinateDirectionLocal[2] = subdomainNNodesZ - 1;
 
-  while(!file.eof())
-  {
+  while (!file.eof()) {
     Vec3 nodePosition;
     int i = 0;
-    for (i = 0; i < 3; i++)
-    {
+    for (i = 0; i < 3; i++) {
       file >> nodePosition[i];
       if (file.eof())
         break;
     }
-    if (i == 3)
-    {
+    if (i == 3) {
       nodePositions.push_back(nodePosition);
     }
   }
@@ -48,96 +45,114 @@ createMesh(std::array<std::vector<std::vector<Vec3>>,4> &boundaryPoints, std::ve
 
 #else
   // call stl_create_mesh.create_3d_mesh_from_boundary_points_faces
-  PyObject *boundaryPointsFacesPy = PythonUtility::convertToPython<std::array<std::vector<std::vector<Vec3>>,4>>::get(boundaryPoints);
+  PyObject *boundaryPointsFacesPy = PythonUtility::convertToPython<
+      std::array<std::vector<std::vector<Vec3>>, 4>>::get(boundaryPoints);
   PythonUtility::checkForError();
 
-  //LOG(DEBUG) << PythonUtility::getString(boundaryPointsFacesPy);
+  // LOG(DEBUG) << PythonUtility::getString(boundaryPointsFacesPy);
   LOG(DEBUG) << "call function create_3d_mesh_from_boundary_points_faces";
 
-  PyObject *meshData = PyObject_CallFunction(functionCreate3dMeshFromBoundaryPointsFaces_, "(O,O,d,i)", 
-                                             boundaryPointsFacesPy, (improveMesh_? Py_True : Py_False), maxAreaFactor_, level_);
+  PyObject *meshData = PyObject_CallFunction(
+      functionCreate3dMeshFromBoundaryPointsFaces_, "(O,O,d,i)",
+      boundaryPointsFacesPy, (improveMesh_ ? Py_True : Py_False),
+      maxAreaFactor_, level_);
   PythonUtility::checkForError();
 
-  if (meshData == Py_None)
-  {
-    LOG(FATAL) << "Python function create_3d_mesh_from_boundary_points_faces returned None!";
+  if (meshData == Py_None) {
+    LOG(FATAL) << "Python function create_3d_mesh_from_boundary_points_faces "
+                  "returned None!";
   }
 
-  //LOG(DEBUG) << PythonUtility::getString(meshData);
-  // return value:
-  //data = {
-  //  "node_positions": node_positions,
-  //  "linear_elements": linear_elements,
-  //  "quadratic_elements": quadratic_elements,
-  //  "seed_points": seed_points,
-  //  "bottom_nodes": bottom_node_indices,
-  //  "top_nodes": top_node_indices,
-  //  "n_linear_elements_per_coordinate_direction": n_linear_elements_per_coordinate_direction,
-  //  "n_quadratic_elements_per_coordinate_direction": n_quadratic_elements_per_coordinate_direction,
-  //}
+  // LOG(DEBUG) << PythonUtility::getString(meshData);
+  //  return value:
+  // data = {
+  //   "node_positions": node_positions,
+  //   "linear_elements": linear_elements,
+  //   "quadratic_elements": quadratic_elements,
+  //   "seed_points": seed_points,
+  //   "bottom_nodes": bottom_node_indices,
+  //   "top_nodes": top_node_indices,
+  //   "n_linear_elements_per_coordinate_direction":
+  //   n_linear_elements_per_coordinate_direction,
+  //   "n_quadratic_elements_per_coordinate_direction":
+  //   n_quadratic_elements_per_coordinate_direction,
+  // }
 
-  PyObject *object = PythonUtility::getOptionPyObject(meshData, "node_positions", "");
-  nodePositions = PythonUtility::convertFromPython<std::vector<Vec3>>::get(object);
+  PyObject *object =
+      PythonUtility::getOptionPyObject(meshData, "node_positions", "");
+  nodePositions =
+      PythonUtility::convertFromPython<std::vector<Vec3>>::get(object);
 
   // for linear elements
-  if (BasisFunctionType::getBasisOrder() == 1)
-  {
-    nElementsPerCoordinateDirectionLocal = PythonUtility::getOptionArray<int,3>(meshData, "n_linear_elements_per_coordinate_direction", "", std::array<int,3>({0,0,0}));
+  if (BasisFunctionType::getBasisOrder() == 1) {
+    nElementsPerCoordinateDirectionLocal =
+        PythonUtility::getOptionArray<int, 3>(
+            meshData, "n_linear_elements_per_coordinate_direction", "",
+            std::array<int, 3>({0, 0, 0}));
 
-    subdomainNNodesX = nElementsPerCoordinateDirectionLocal[0]+1;
-    subdomainNNodesY = nElementsPerCoordinateDirectionLocal[1]+1;
-    subdomainNNodesZ = nElementsPerCoordinateDirectionLocal[2]+1;
-  }
-  else if (BasisFunctionType::getBasisOrder() == 2)
-  {
+    subdomainNNodesX = nElementsPerCoordinateDirectionLocal[0] + 1;
+    subdomainNNodesY = nElementsPerCoordinateDirectionLocal[1] + 1;
+    subdomainNNodesZ = nElementsPerCoordinateDirectionLocal[2] + 1;
+  } else if (BasisFunctionType::getBasisOrder() == 2) {
     // for quadratic elements
-    nElementsPerCoordinateDirectionLocal = PythonUtility::getOptionArray<int,3>(meshData, "n_quadratic_elements_per_coordinate_direction", "", std::array<int,3>({0,0,0}));
+    nElementsPerCoordinateDirectionLocal =
+        PythonUtility::getOptionArray<int, 3>(
+            meshData, "n_quadratic_elements_per_coordinate_direction", "",
+            std::array<int, 3>({0, 0, 0}));
 
-    subdomainNNodesX = 2*nElementsPerCoordinateDirectionLocal[0]+1;
-    subdomainNNodesY = 2*nElementsPerCoordinateDirectionLocal[1]+1;
-    subdomainNNodesZ = 2*nElementsPerCoordinateDirectionLocal[2]+1;
+    subdomainNNodesX = 2 * nElementsPerCoordinateDirectionLocal[0] + 1;
+    subdomainNNodesY = 2 * nElementsPerCoordinateDirectionLocal[1] + 1;
+    subdomainNNodesZ = 2 * nElementsPerCoordinateDirectionLocal[2] + 1;
   }
 
+  LOG(DEBUG) << "subdomainNNodes: " << subdomainNNodesX << " x "
+             << subdomainNNodesY << " x " << subdomainNNodesZ;
 
-  LOG(DEBUG) << "subdomainNNodes: " << subdomainNNodesX << " x " << subdomainNNodesY << " x " << subdomainNNodesZ;
-
-  if (subdomainNNodesX != nBoundaryPointsXNew_ || subdomainNNodesY != nBoundaryPointsXNew_ || subdomainNNodesZ != nBoundaryPointsZ_)
-  {
-    PyObject_CallFunction(functionOutputBoundaryPoints_, "s i i O f", "xx_failed_boundary_points", currentRankSubset_->ownRankNo(), level_,
-                          PythonUtility::convertToPython<std::array<std::vector<std::vector<Vec3>>,4>>::get(boundaryPoints), 0.03);
+  if (subdomainNNodesX != nBoundaryPointsXNew_ ||
+      subdomainNNodesY != nBoundaryPointsXNew_ ||
+      subdomainNNodesZ != nBoundaryPointsZ_) {
+    PyObject_CallFunction(
+        functionOutputBoundaryPoints_, "s i i O f", "xx_failed_boundary_points",
+        currentRankSubset_->ownRankNo(), level_,
+        PythonUtility::convertToPython<
+            std::array<std::vector<std::vector<Vec3>>, 4>>::get(boundaryPoints),
+        0.03);
     PythonUtility::checkForError();
   }
   assert(subdomainNNodesX == nBoundaryPointsXNew_);
   assert(subdomainNNodesY == nBoundaryPointsXNew_);
   assert(subdomainNNodesZ == nBoundaryPointsZ_);
-/*
-  // revert order of node positions
-  std::vector<Vec3> nodePositions(nodePositionsOrderReversed.size());
-  for (int z = 0; z < subdomainNNodesZ; z++)
-  {
-    for (int y = 0; y < subdomainNNodesY; y++)
+  /*
+    // revert order of node positions
+    std::vector<Vec3> nodePositions(nodePositionsOrderReversed.size());
+    for (int z = 0; z < subdomainNNodesZ; z++)
     {
-      for (int x = 0; x < subdomainNNodesX; x++)
+      for (int y = 0; y < subdomainNNodesY; y++)
       {
-        nodePositions[z * subdomainNNodesX*subdomainNNodesY + y * subdomainNNodesY + x]
-          = nodePositionsOrderReversed[z * subdomainNNodesX*subdomainNNodesY + (subdomainNNodesY-1-y) * subdomainNNodesY + (subdomainNNodesX-1-x)];
+        for (int x = 0; x < subdomainNNodesX; x++)
+        {
+          nodePositions[z * subdomainNNodesX*subdomainNNodesY + y *
+    subdomainNNodesY + x] = nodePositionsOrderReversed[z *
+    subdomainNNodesX*subdomainNNodesY + (subdomainNNodesY-1-y) *
+    subdomainNNodesY + (subdomainNNodesX-1-x)];
+        }
       }
-    }
-  }*/
+    }*/
 
-  //std::vector<Vec3> &nodePositions = nodePositionsOrderReversed;
+  // std::vector<Vec3> &nodePositions = nodePositionsOrderReversed;
 
 #ifdef WRITE_CHECKPOINT_MESH
   std::stringstream filename;
-  filename << "checkpoints/checkpoint_mesh_l" << level_ << "_" << currentRankSubset_->ownRankNo() << ".csv";
+  filename << "checkpoints/checkpoint_mesh_l" << level_ << "_"
+           << currentRankSubset_->ownRankNo() << ".csv";
   std::ofstream file(filename.str().c_str(), std::ios::out | std::ios::trunc);
   assert(file.is_open());
 
-  file << subdomainNNodesX << " " << subdomainNNodesY << " " << subdomainNNodesZ << " " << std::endl;
-  for (std::vector<Vec3>::iterator iter = nodePositions.begin(); iter != nodePositions.end(); iter++)
-  {
-    for (int i = 0; i < 3; i++)
-    {
+  file << subdomainNNodesX << " " << subdomainNNodesY << " " << subdomainNNodesZ
+       << " " << std::endl;
+  for (std::vector<Vec3>::iterator iter = nodePositions.begin();
+       iter != nodePositions.end(); iter++) {
+    for (int i = 0; i < 3; i++) {
       file << (*iter)[i] << " ";
     }
   }
@@ -147,16 +162,20 @@ createMesh(std::array<std::vector<std::vector<Vec3>>,4> &boundaryPoints, std::ve
 #endif
 
 #endif
-  //LOG(DEBUG) << "nodePositions: " << nodePositions;
-  LOG(DEBUG) << "nElementsPerCoordinateDirectionLocal: " << nElementsPerCoordinateDirectionLocal;
+  // LOG(DEBUG) << "nodePositions: " << nodePositions;
+  LOG(DEBUG) << "nElementsPerCoordinateDirectionLocal: "
+             << nElementsPerCoordinateDirectionLocal;
 
 #ifndef NDEBUG
 #ifdef STL_OUTPUT
-  PyObject_CallFunction(functionOutputPoints_, "s i i O f", "03_mesh_points", currentRankSubset_->ownRankNo(), level_,
-                        PythonUtility::convertToPython<std::vector<Vec3>>::get(nodePositions), 0.05);
+  PyObject_CallFunction(
+      functionOutputPoints_, "s i i O f", "03_mesh_points",
+      currentRankSubset_->ownRankNo(), level_,
+      PythonUtility::convertToPython<std::vector<Vec3>>::get(nodePositions),
+      0.05);
   PythonUtility::checkForError();
 #endif
 #endif
 }
 
-} // namespace
+} // namespace Postprocessing

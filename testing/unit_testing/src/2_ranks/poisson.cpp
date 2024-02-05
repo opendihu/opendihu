@@ -1,4 +1,4 @@
-#include <Python.h>  // this has to be the first included header
+#include <Python.h> // this has to be the first included header
 
 #include <iostream>
 #include <cstdlib>
@@ -9,8 +9,7 @@
 #include "opendihu.h"
 #include "../utility.h"
 
-TEST(PoissonTest, SerialEqualsParallelGlobalInput)
-{
+TEST(PoissonTest, SerialEqualsParallelGlobalInput) {
   // run serial problem
   std::string pythonConfig = R"(
 # Poisson 2D,  3 x 4 = 12 nodes
@@ -54,14 +53,11 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  typedef Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+  typedef Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredDeformableOfDimension<2>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Poisson
-    >
-  > ProblemType;
+      BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+      Equation::Static::Poisson>>
+      ProblemType;
 
   ProblemType problemSerial(settings);
   problemSerial.run();
@@ -112,22 +108,19 @@ config = {
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out22.py", "out22.0.py", "out22.1.py"};
+  std::vector<std::string> outputFilesToCheck = {"out22.py", "out22.0.py",
+                                                 "out22.1.py"};
   assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
   nFails += ::testing::Test::HasFailure();
 }
 
-TEST(PoissonTest, SerialEqualsParallelLocalInput)
-{
-  typedef Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+TEST(PoissonTest, SerialEqualsParallelLocalInput) {
+  typedef Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredDeformableOfDimension<2>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Poisson
-    >
-  > ProblemType;
+      BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+      Equation::Static::Poisson>>
+      ProblemType;
 
   // run serial problem
   std::string pythonConfig = R"(
@@ -238,7 +231,8 @@ config = {
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out23.py", "out23.0.py", "out23.1.py"};
+  std::vector<std::string> outputFilesToCheck = {"out23.py", "out23.0.py",
+                                                 "out23.1.py"};
   assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
   nFails += ::testing::Test::HasFailure();

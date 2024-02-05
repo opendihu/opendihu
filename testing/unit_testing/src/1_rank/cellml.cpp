@@ -1,4 +1,4 @@
-#include <Python.h>  // this has to be the first included header
+#include <Python.h> // this has to be the first included header
 
 #include <iostream>
 #include <cstdlib>
@@ -11,11 +11,11 @@
 #include "equation/diffusion.h"
 #include "../utility.h"
 
-TEST(CellMLTest, HodgkinHuxleySimd)
-{
+TEST(CellMLTest, HodgkinHuxleySimd) {
   // delete so libraries from previous runs
   int ret = system("rm lib/*.so");
-  std::cout << "deleted old library files: " << (ret==0? "yes": "no there were none") << std::endl;
+  std::cout << "deleted old library files: "
+            << (ret == 0 ? "yes" : "no there were none") << std::endl;
 
   std::string pythonConfig = R"(
 
@@ -55,18 +55,29 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  TimeSteppingScheme::ExplicitEuler<
-    CellmlAdapter<4>
-  > problem(settings);
+  TimeSteppingScheme::ExplicitEuler<CellmlAdapter<4>> problem(settings);
 
   problem.run();
 
-  std::string referenceOutput = "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, \"nElementsGlobal\": [0], \"nElementsLocal\": [0], \"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, \"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": [{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", \"values\": [0.0]}, {\"name\": \"y\", \"values\": [0.0]}, {\"name\": \"z\", \"values\": [0.0]}]}, {\"name\": \"solution\", \"components\": [{\"name\": \"membrane/V\", \"values\": [36.18142823585638]}, {\"name\": \"sodium_channel_m_gate/m\", \"values\": [0.9987345768519429]}, {\"name\": \"sodium_channel_h_gate/h\", \"values\": [0.2446134695357078]}, {\"name\": \"potassium_channel_n_gate/n\", \"values\": [0.5789949501440312]}]}], \"timeStepNo\": 90001, \"currentTime\": 0.90001}";
+  std::string referenceOutput =
+      "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, "
+      "\"nElementsGlobal\": [0], \"nElementsLocal\": [0], "
+      "\"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], "
+      "\"basisFunction\": \"Lagrange\", \"basisOrder\": 1, "
+      "\"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": "
+      "[{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", "
+      "\"values\": [0.0]}, {\"name\": \"y\", \"values\": [0.0]}, {\"name\": "
+      "\"z\", \"values\": [0.0]}]}, {\"name\": \"solution\", \"components\": "
+      "[{\"name\": \"membrane/V\", \"values\": [36.18142823585638]}, "
+      "{\"name\": \"sodium_channel_m_gate/m\", \"values\": "
+      "[0.9987345768519429]}, {\"name\": \"sodium_channel_h_gate/h\", "
+      "\"values\": [0.2446134695357078]}, {\"name\": "
+      "\"potassium_channel_n_gate/n\", \"values\": [0.5789949501440312]}]}], "
+      "\"timeStepNo\": 90001, \"currentTime\": 0.90001}";
   assertFileMatchesContent("out_0000009.py", referenceOutput);
 }
 
-TEST(CellMLTest, HodgkinHuxleyVc)
-{
+TEST(CellMLTest, HodgkinHuxleyVc) {
   std::string pythonConfig = R"(
 
 # timing parameters
@@ -105,18 +116,29 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  TimeSteppingScheme::ExplicitEuler<
-    CellmlAdapter<4>
-  > problem(settings);
+  TimeSteppingScheme::ExplicitEuler<CellmlAdapter<4>> problem(settings);
 
   problem.run();
 
-  std::string referenceOutput = "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, \"nElementsGlobal\": [0], \"nElementsLocal\": [0], \"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, \"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": [{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", \"values\": [0.0]}, {\"name\": \"y\", \"values\": [0.0]}, {\"name\": \"z\", \"values\": [0.0]}]}, {\"name\": \"solution\", \"components\": [{\"name\": \"membrane/V\", \"values\": [36.18142823585638]}, {\"name\": \"sodium_channel_m_gate/m\", \"values\": [0.9987345768519429]}, {\"name\": \"sodium_channel_h_gate/h\", \"values\": [0.2446134695357078]}, {\"name\": \"potassium_channel_n_gate/n\", \"values\": [0.5789949501440312]}]}], \"timeStepNo\": 90001, \"currentTime\": 0.90001}";
+  std::string referenceOutput =
+      "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, "
+      "\"nElementsGlobal\": [0], \"nElementsLocal\": [0], "
+      "\"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], "
+      "\"basisFunction\": \"Lagrange\", \"basisOrder\": 1, "
+      "\"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": "
+      "[{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", "
+      "\"values\": [0.0]}, {\"name\": \"y\", \"values\": [0.0]}, {\"name\": "
+      "\"z\", \"values\": [0.0]}]}, {\"name\": \"solution\", \"components\": "
+      "[{\"name\": \"membrane/V\", \"values\": [36.18142823585638]}, "
+      "{\"name\": \"sodium_channel_m_gate/m\", \"values\": "
+      "[0.9987345768519429]}, {\"name\": \"sodium_channel_h_gate/h\", "
+      "\"values\": [0.2446134695357078]}, {\"name\": "
+      "\"potassium_channel_n_gate/n\", \"values\": [0.5789949501440312]}]}], "
+      "\"timeStepNo\": 90001, \"currentTime\": 0.90001}";
   assertFileMatchesContent("out_0000009.py", referenceOutput);
 }
 
-TEST(CellMLTest, HodgkinHuxleyOpenMp)
-{
+TEST(CellMLTest, HodgkinHuxleyOpenMp) {
   std::string pythonConfig = R"(
 
 # timing parameters
@@ -156,18 +178,29 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  TimeSteppingScheme::ExplicitEuler<
-    CellmlAdapter<4>
-  > problem(settings);
+  TimeSteppingScheme::ExplicitEuler<CellmlAdapter<4>> problem(settings);
 
   problem.run();
 
-  std::string referenceOutput = "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, \"nElementsGlobal\": [0], \"nElementsLocal\": [0], \"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, \"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": [{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", \"values\": [0.0]}, {\"name\": \"y\", \"values\": [0.0]}, {\"name\": \"z\", \"values\": [0.0]}]}, {\"name\": \"solution\", \"components\": [{\"name\": \"membrane/V\", \"values\": [36.18142823585638]}, {\"name\": \"sodium_channel_m_gate/m\", \"values\": [0.9987345768519429]}, {\"name\": \"sodium_channel_h_gate/h\", \"values\": [0.2446134695357078]}, {\"name\": \"potassium_channel_n_gate/n\", \"values\": [0.5789949501440312]}]}], \"timeStepNo\": 90001, \"currentTime\": 0.90001}";
+  std::string referenceOutput =
+      "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, "
+      "\"nElementsGlobal\": [0], \"nElementsLocal\": [0], "
+      "\"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], "
+      "\"basisFunction\": \"Lagrange\", \"basisOrder\": 1, "
+      "\"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": "
+      "[{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", "
+      "\"values\": [0.0]}, {\"name\": \"y\", \"values\": [0.0]}, {\"name\": "
+      "\"z\", \"values\": [0.0]}]}, {\"name\": \"solution\", \"components\": "
+      "[{\"name\": \"membrane/V\", \"values\": [36.18142823585638]}, "
+      "{\"name\": \"sodium_channel_m_gate/m\", \"values\": "
+      "[0.9987345768519429]}, {\"name\": \"sodium_channel_h_gate/h\", "
+      "\"values\": [0.2446134695357078]}, {\"name\": "
+      "\"potassium_channel_n_gate/n\", \"values\": [0.5789949501440312]}]}], "
+      "\"timeStepNo\": 90001, \"currentTime\": 0.90001}";
   assertFileMatchesContent("out_0000009.py", referenceOutput);
 }
 
-TEST(CellMLTest, ShortenOpenCOR)
-{
+TEST(CellMLTest, ShortenOpenCOR) {
   std::string pythonConfig = R"(
 
 # timing parameters
@@ -206,18 +239,83 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  TimeSteppingScheme::ExplicitEuler<
-    CellmlAdapter<56, 71>  // 57 states, 71 algebraics
-  > problem(settings);
+  TimeSteppingScheme::ExplicitEuler<CellmlAdapter<56, 71> // 57 states, 71
+                                                          // algebraics
+                                    >
+      problem(settings);
 
   problem.run();
 
-  std::string referenceOutput = "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, \"nElementsGlobal\": [0], \"nElementsLocal\": [0], \"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, \"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": [{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", \"values\": [0.0]}, {\"name\": \"y\", \"values\": [0.0]}, {\"name\": \"z\", \"values\": [0.0]}]}, {\"name\": \"solution\", \"components\": [{\"name\": \"wal_environment/vS\", \"values\": [23.814400125628982]}, {\"name\": \"wal_environment/vT\", \"values\": [32.0069535572101]}, {\"name\": \"wal_environment/K_t\", \"values\": [5.943505949614364]}, {\"name\": \"wal_environment/K_i\", \"values\": [150.89852020829184]}, {\"name\": \"wal_environment/K_e\", \"values\": [5.90670286335029]}, {\"name\": \"wal_environment/Na_i\", \"values\": [12.702309626201476]}, {\"name\": \"wal_environment/Na_t\", \"values\": [132.39316813125978]}, {\"name\": \"wal_environment/Na_e\", \"values\": [132.99816117889287]}, {\"name\": \"sarco_DR_channel/n\", \"values\": [0.6110086409474482]}, {\"name\": \"sarco_DR_channel/h_K\", \"values\": [0.9679442466363977]}, {\"name\": \"sarco_Na_channel/m\", \"values\": [0.9989395956165837]}, {\"name\": \"sarco_Na_channel/h\", \"values\": [0.011749768142590286]}, {\"name\": \"sarco_Na_channel/S\", \"values\": [0.5803854365011085]}, {\"name\": \"t_DR_channel/n_t\", \"values\": [0.31830761662008844]}, {\"name\": \"t_DR_channel/h_K_t\", \"values\": [0.00497357422926022]}, {\"name\": \"t_Na_channel/m_t\", \"values\": [0.9991117400268303]}, {\"name\": \"t_Na_channel/h_t\", \"values\": [0.037558451115072077]}, {\"name\": \"t_Na_channel/S_t\", \"values\": [0.5807554861436337]}, {\"name\": \"sternrios/O_0\", \"values\": [1.040185730088509e-06]}, {\"name\": \"sternrios/O_1\", \"values\": [1.7764261016973102e-05]}, {\"name\": \"sternrios/O_2\", \"values\": [0.00010214492966850287]}, {\"name\": \"sternrios/O_3\", \"values\": [0.0001806534304265151]}, {\"name\": \"sternrios/O_4\", \"values\": [7.488219517482619e-05]}, {\"name\": \"sternrios/C_0\", \"values\": [0.5235895401090125]}, {\"name\": \"sternrios/C_1\", \"values\": [0.3676938153420917]}, {\"name\": \"sternrios/C_2\", \"values\": [0.0967148096280458]}, {\"name\": \"sternrios/C_3\", \"values\": [0.011171890150204495]}, {\"name\": \"sternrios/C_4\", \"values\": [0.0004534597686249599]}, {\"name\": \"razumova/Ca_1\", \"values\": [83.4425093078456]}, {\"name\": \"razumova/Ca_SR1\", \"values\": [1060.6659068598588]}, {\"name\": \"razumova/Ca_2\", \"values\": [3.0314298736642855]}, {\"name\": \"razumova/Ca_SR2\", \"values\": [1199.7566783570803]}, {\"name\": \"razumova/Ca_T_2\", \"values\": [24.733571546894552]}, {\"name\": \"razumova/Ca_P1\", \"values\": [641.6053654748897]}, {\"name\": \"razumova/Ca_P2\", \"values\": [616.2261077701777]}, {\"name\": \"razumova/Mg_P1\", \"values\": [810.8520611234248]}, {\"name\": \"razumova/Mg_P2\", \"values\": [810.9433332103665]}, {\"name\": \"razumova/Ca_Cs1\", \"values\": [16897.537754304743]}, {\"name\": \"razumova/Ca_Cs2\", \"values\": [16898.598304725354]}, {\"name\": \"razumova/Ca_ATP1\", \"values\": [108.46786460987256]}, {\"name\": \"razumova/Ca_ATP2\", \"values\": [10.511248908824985]}, {\"name\": \"razumova/Mg_ATP1\", \"values\": [7235.085496468541]}, {\"name\": \"razumova/Mg_ATP2\", \"values\": [7237.758581434536]}, {\"name\": \"razumova/ATP1\", \"values\": [656.44663892157]}, {\"name\": \"razumova/ATP2\", \"values\": [751.7301696566033]}, {\"name\": \"razumova/Mg1\", \"values\": [963.0444607968487]}, {\"name\": \"razumova/Mg2\", \"values\": [962.3184690076832]}, {\"name\": \"razumova/Ca_CaT2\", \"values\": [2.9818968299099726]}, {\"name\": \"razumova/D_0\", \"values\": [0.7991173574101228]}, {\"name\": \"razumova/D_1\", \"values\": [1.211475056337586]}, {\"name\": \"razumova/D_2\", \"values\": [2.9720138760087482]}, {\"name\": \"razumova/A_1\", \"values\": [0.29493676390460843]}, {\"name\": \"razumova/A_2\", \"values\": [0.23169305229112158]}, {\"name\": \"razumova/P\", \"values\": [0.2300207028869685]}, {\"name\": \"razumova/P_SR\", \"values\": [0.2301171644715283]}, {\"name\": \"razumova/P_C_SR\", \"values\": [0.22988283186639114]}]}], \"timeStepNo\": 90001, \"currentTime\": 0.90001}";
+  std::string referenceOutput =
+      "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, "
+      "\"nElementsGlobal\": [0], \"nElementsLocal\": [0], "
+      "\"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], "
+      "\"basisFunction\": \"Lagrange\", \"basisOrder\": 1, "
+      "\"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": "
+      "[{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", "
+      "\"values\": [0.0]}, {\"name\": \"y\", \"values\": [0.0]}, {\"name\": "
+      "\"z\", \"values\": [0.0]}]}, {\"name\": \"solution\", \"components\": "
+      "[{\"name\": \"wal_environment/vS\", \"values\": [23.814400125628982]}, "
+      "{\"name\": \"wal_environment/vT\", \"values\": [32.0069535572101]}, "
+      "{\"name\": \"wal_environment/K_t\", \"values\": [5.943505949614364]}, "
+      "{\"name\": \"wal_environment/K_i\", \"values\": [150.89852020829184]}, "
+      "{\"name\": \"wal_environment/K_e\", \"values\": [5.90670286335029]}, "
+      "{\"name\": \"wal_environment/Na_i\", \"values\": [12.702309626201476]}, "
+      "{\"name\": \"wal_environment/Na_t\", \"values\": [132.39316813125978]}, "
+      "{\"name\": \"wal_environment/Na_e\", \"values\": [132.99816117889287]}, "
+      "{\"name\": \"sarco_DR_channel/n\", \"values\": [0.6110086409474482]}, "
+      "{\"name\": \"sarco_DR_channel/h_K\", \"values\": [0.9679442466363977]}, "
+      "{\"name\": \"sarco_Na_channel/m\", \"values\": [0.9989395956165837]}, "
+      "{\"name\": \"sarco_Na_channel/h\", \"values\": [0.011749768142590286]}, "
+      "{\"name\": \"sarco_Na_channel/S\", \"values\": [0.5803854365011085]}, "
+      "{\"name\": \"t_DR_channel/n_t\", \"values\": [0.31830761662008844]}, "
+      "{\"name\": \"t_DR_channel/h_K_t\", \"values\": [0.00497357422926022]}, "
+      "{\"name\": \"t_Na_channel/m_t\", \"values\": [0.9991117400268303]}, "
+      "{\"name\": \"t_Na_channel/h_t\", \"values\": [0.037558451115072077]}, "
+      "{\"name\": \"t_Na_channel/S_t\", \"values\": [0.5807554861436337]}, "
+      "{\"name\": \"sternrios/O_0\", \"values\": [1.040185730088509e-06]}, "
+      "{\"name\": \"sternrios/O_1\", \"values\": [1.7764261016973102e-05]}, "
+      "{\"name\": \"sternrios/O_2\", \"values\": [0.00010214492966850287]}, "
+      "{\"name\": \"sternrios/O_3\", \"values\": [0.0001806534304265151]}, "
+      "{\"name\": \"sternrios/O_4\", \"values\": [7.488219517482619e-05]}, "
+      "{\"name\": \"sternrios/C_0\", \"values\": [0.5235895401090125]}, "
+      "{\"name\": \"sternrios/C_1\", \"values\": [0.3676938153420917]}, "
+      "{\"name\": \"sternrios/C_2\", \"values\": [0.0967148096280458]}, "
+      "{\"name\": \"sternrios/C_3\", \"values\": [0.011171890150204495]}, "
+      "{\"name\": \"sternrios/C_4\", \"values\": [0.0004534597686249599]}, "
+      "{\"name\": \"razumova/Ca_1\", \"values\": [83.4425093078456]}, "
+      "{\"name\": \"razumova/Ca_SR1\", \"values\": [1060.6659068598588]}, "
+      "{\"name\": \"razumova/Ca_2\", \"values\": [3.0314298736642855]}, "
+      "{\"name\": \"razumova/Ca_SR2\", \"values\": [1199.7566783570803]}, "
+      "{\"name\": \"razumova/Ca_T_2\", \"values\": [24.733571546894552]}, "
+      "{\"name\": \"razumova/Ca_P1\", \"values\": [641.6053654748897]}, "
+      "{\"name\": \"razumova/Ca_P2\", \"values\": [616.2261077701777]}, "
+      "{\"name\": \"razumova/Mg_P1\", \"values\": [810.8520611234248]}, "
+      "{\"name\": \"razumova/Mg_P2\", \"values\": [810.9433332103665]}, "
+      "{\"name\": \"razumova/Ca_Cs1\", \"values\": [16897.537754304743]}, "
+      "{\"name\": \"razumova/Ca_Cs2\", \"values\": [16898.598304725354]}, "
+      "{\"name\": \"razumova/Ca_ATP1\", \"values\": [108.46786460987256]}, "
+      "{\"name\": \"razumova/Ca_ATP2\", \"values\": [10.511248908824985]}, "
+      "{\"name\": \"razumova/Mg_ATP1\", \"values\": [7235.085496468541]}, "
+      "{\"name\": \"razumova/Mg_ATP2\", \"values\": [7237.758581434536]}, "
+      "{\"name\": \"razumova/ATP1\", \"values\": [656.44663892157]}, "
+      "{\"name\": \"razumova/ATP2\", \"values\": [751.7301696566033]}, "
+      "{\"name\": \"razumova/Mg1\", \"values\": [963.0444607968487]}, "
+      "{\"name\": \"razumova/Mg2\", \"values\": [962.3184690076832]}, "
+      "{\"name\": \"razumova/Ca_CaT2\", \"values\": [2.9818968299099726]}, "
+      "{\"name\": \"razumova/D_0\", \"values\": [0.7991173574101228]}, "
+      "{\"name\": \"razumova/D_1\", \"values\": [1.211475056337586]}, "
+      "{\"name\": \"razumova/D_2\", \"values\": [2.9720138760087482]}, "
+      "{\"name\": \"razumova/A_1\", \"values\": [0.29493676390460843]}, "
+      "{\"name\": \"razumova/A_2\", \"values\": [0.23169305229112158]}, "
+      "{\"name\": \"razumova/P\", \"values\": [0.2300207028869685]}, "
+      "{\"name\": \"razumova/P_SR\", \"values\": [0.2301171644715283]}, "
+      "{\"name\": \"razumova/P_C_SR\", \"values\": [0.22988283186639114]}]}], "
+      "\"timeStepNo\": 90001, \"currentTime\": 0.90001}";
   assertFileMatchesContent("out_0000009.py", referenceOutput);
 }
 
-TEST(CellMLTest, FastFibersVc)
-{
+TEST(CellMLTest, FastFibersVc) {
   std::string pythonConfig = R"(
 
 import numpy as np
@@ -422,33 +520,25 @@ config = {
   DihuContext settings1(argc, argv, pythonConfig);
 
   // define problem
-  TimeSteppingScheme::RepeatedCall<
-    Control::MultipleInstances<                       // fibers
+  TimeSteppingScheme::RepeatedCall<Control::MultipleInstances< // fibers
       OperatorSplitting::Strang<
-        Control::MultipleInstances<
-          TimeSteppingScheme::Heun<                   // fiber reaction term
-            CellmlAdapter<
-              4, 9,  // nStates,nAlgebraics: 57,1 = Shorten, 4,9 = Hodgkin Huxley
-              FunctionSpace::FunctionSpace<
-                Mesh::StructuredDeformableOfDimension<1>,
-                BasisFunction::LagrangeOfOrder<1>
-              >
-            >
-          >
-        >,
-        Control::MultipleInstances<
-          TimeSteppingScheme::ImplicitEuler<          // fiber diffusion, note that implicit euler gives lower error in this case than crank nicolson
-            SpatialDiscretization::FiniteElementMethod<
-              Mesh::StructuredDeformableOfDimension<1>,
-              BasisFunction::LagrangeOfOrder<1>,
-              Quadrature::Gauss<2>,
-              Equation::Dynamic::IsotropicDiffusion
-            >
-          >
-        >
-      >
-    >
-  > problem1(settings1);
+          Control::MultipleInstances<TimeSteppingScheme::Heun< // fiber reaction
+                                                               // term
+              CellmlAdapter<4, 9, // nStates,nAlgebraics: 57,1 = Shorten, 4,9 =
+                                  // Hodgkin Huxley
+                            FunctionSpace::FunctionSpace<
+                                Mesh::StructuredDeformableOfDimension<1>,
+                                BasisFunction::LagrangeOfOrder<1>>>>>,
+          Control::MultipleInstances<
+              TimeSteppingScheme::ImplicitEuler< // fiber diffusion, note that
+                                                 // implicit euler gives lower
+                                                 // error in this case than
+                                                 // crank nicolson
+                  SpatialDiscretization::FiniteElementMethod<
+                      Mesh::StructuredDeformableOfDimension<1>,
+                      BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+                      Equation::Dynamic::IsotropicDiffusion>>>>>>
+      problem1(settings1);
 
   problem1.run();
 
@@ -459,35 +549,31 @@ config = {
   DihuContext settings2(argc, argv, pythonConfig);
 
   // define problem with FastMonodomainSolver
-  TimeSteppingScheme::RepeatedCall<
-    FastMonodomainSolver<                        // a wrapper that improves performance of multidomain
-      Control::MultipleInstances<                       // fibers
-        OperatorSplitting::Strang<
-          Control::MultipleInstances<
-            TimeSteppingScheme::Heun<                   // fiber reaction term
-              CellmlAdapter<
-                4, 9,  // nStates,nAlgebraics: 57,1 = Shorten, 4,9 = Hodgkin Huxley
-                FunctionSpace::FunctionSpace<
-                  Mesh::StructuredDeformableOfDimension<1>,
-                  BasisFunction::LagrangeOfOrder<1>
-                >
-              >
-            >
-          >,
-          Control::MultipleInstances<
-            TimeSteppingScheme::ImplicitEuler<          // fiber diffusion, note that implicit euler gives lower error in this case than crank nicolson
-              SpatialDiscretization::FiniteElementMethod<
-                Mesh::StructuredDeformableOfDimension<1>,
-                BasisFunction::LagrangeOfOrder<1>,
-                Quadrature::Gauss<2>,
-                Equation::Dynamic::IsotropicDiffusion
-              >
-            >
-          >
-        >
-      >
-    >
-  > problem2(settings2);
+  TimeSteppingScheme::RepeatedCall<FastMonodomainSolver< // a wrapper that
+                                                         // improves performance
+                                                         // of multidomain
+      Control::MultipleInstances<                        // fibers
+          OperatorSplitting::Strang<
+              Control::MultipleInstances<TimeSteppingScheme::Heun< // fiber
+                                                                   // reaction
+                                                                   // term
+                  CellmlAdapter<4, 9, // nStates,nAlgebraics: 57,1 = Shorten,
+                                      // 4,9 = Hodgkin Huxley
+                                FunctionSpace::FunctionSpace<
+                                    Mesh::StructuredDeformableOfDimension<1>,
+                                    BasisFunction::LagrangeOfOrder<1>>>>>,
+              Control::MultipleInstances<
+                  TimeSteppingScheme::ImplicitEuler< // fiber diffusion, note
+                                                     // that implicit euler
+                                                     // gives lower error in
+                                                     // this case than crank
+                                                     // nicolson
+                      SpatialDiscretization::FiniteElementMethod<
+                          Mesh::StructuredDeformableOfDimension<1>,
+                          BasisFunction::LagrangeOfOrder<1>,
+                          Quadrature::Gauss<2>,
+                          Equation::Dynamic::IsotropicDiffusion>>>>>>>
+      problem2(settings2);
 
   // run the vc simulation
   problem2.run();
@@ -571,35 +657,31 @@ print("vc avg error: {}".format(total_error))
   DihuContext settings3(argc, argv, pythonConfig);
 
   // define problem with FastMonodomainSolver
-  TimeSteppingScheme::RepeatedCall<
-    FastMonodomainSolver<                        // a wrapper that improves performance of multidomain
-      Control::MultipleInstances<                       // fibers
-        OperatorSplitting::Strang<
-          Control::MultipleInstances<
-            TimeSteppingScheme::Heun<                   // fiber reaction term
-              CellmlAdapter<
-                4, 9,  // nStates,nAlgebraics: 57,1 = Shorten, 4,9 = Hodgkin Huxley
-                FunctionSpace::FunctionSpace<
-                  Mesh::StructuredDeformableOfDimension<1>,
-                  BasisFunction::LagrangeOfOrder<1>
-                >
-              >
-            >
-          >,
-          Control::MultipleInstances<
-            TimeSteppingScheme::ImplicitEuler<          // fiber diffusion, note that implicit euler gives lower error in this case than crank nicolson
-              SpatialDiscretization::FiniteElementMethod<
-                Mesh::StructuredDeformableOfDimension<1>,
-                BasisFunction::LagrangeOfOrder<1>,
-                Quadrature::Gauss<2>,
-                Equation::Dynamic::IsotropicDiffusion
-              >
-            >
-          >
-        >
-      >
-    >
-  > problem3(settings3);
+  TimeSteppingScheme::RepeatedCall<FastMonodomainSolver< // a wrapper that
+                                                         // improves performance
+                                                         // of multidomain
+      Control::MultipleInstances<                        // fibers
+          OperatorSplitting::Strang<
+              Control::MultipleInstances<TimeSteppingScheme::Heun< // fiber
+                                                                   // reaction
+                                                                   // term
+                  CellmlAdapter<4, 9, // nStates,nAlgebraics: 57,1 = Shorten,
+                                      // 4,9 = Hodgkin Huxley
+                                FunctionSpace::FunctionSpace<
+                                    Mesh::StructuredDeformableOfDimension<1>,
+                                    BasisFunction::LagrangeOfOrder<1>>>>>,
+              Control::MultipleInstances<
+                  TimeSteppingScheme::ImplicitEuler< // fiber diffusion, note
+                                                     // that implicit euler
+                                                     // gives lower error in
+                                                     // this case than crank
+                                                     // nicolson
+                      SpatialDiscretization::FiniteElementMethod<
+                          Mesh::StructuredDeformableOfDimension<1>,
+                          BasisFunction::LagrangeOfOrder<1>,
+                          Quadrature::Gauss<2>,
+                          Equation::Dynamic::IsotropicDiffusion>>>>>>>
+      problem3(settings3);
 
   // run problem
   problem3.run();

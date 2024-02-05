@@ -1,14 +1,14 @@
 #include "output_writer/python_file/python_stiffness_matrix_writer.h"
 
-#include <Python.h>  // has to be the first included header
+#include <Python.h> // has to be the first included header
 #include <memory>
 #include <sstream>
 
-namespace OutputWriter
-{
+namespace OutputWriter {
 
-void NumpyFileWriter::writeToNumpyFile(std::vector<double> &data, std::string filename, std::vector<long> &nEntries)
-{
+void NumpyFileWriter::writeToNumpyFile(std::vector<double> &data,
+                                       std::string filename,
+                                       std::vector<long> &nEntries) {
   VLOG(1) << "writeToNumpyFile (filename=\"" << filename << "\")";
 #if 1
   // prepare shape string for python list, e.g. [5, 1, 1]
@@ -16,19 +16,19 @@ void NumpyFileWriter::writeToNumpyFile(std::vector<double> &data, std::string fi
   int dimension = nEntries.size();
   std::stringstream shape;
   shape << "[";
-  for (int i=0; i<dimension; i++)
-  {
+  for (int i = 0; i < dimension; i++) {
     nEntriesTotal *= nEntries[i];
     if (i != 0)
       shape << ",";
     shape << nEntries[i];
-    VLOG(1) << "nEntries[" <<i<< "] = " <<nEntries[i];
+    VLOG(1) << "nEntries[" << i << "] = " << nEntries[i];
   }
   shape << "]";
 
-  if (nEntriesTotal != (long int)data.size())
-  {
-    LOG(ERROR) << "Number of entries " << nEntriesTotal << " " << nEntries << " for file \"" << filename << "\" does not match vector size " << data.size() << ".";
+  if (nEntriesTotal != (long int)data.size()) {
+    LOG(ERROR) << "Number of entries " << nEntriesTotal << " " << nEntries
+               << " for file \"" << filename << "\" does not match vector size "
+               << data.size() << ".";
     return;
   }
 
@@ -37,36 +37,31 @@ void NumpyFileWriter::writeToNumpyFile(std::vector<double> &data, std::string fi
   temporaryFilename << "temp" << tempcntr++;
 
   // write data to binary file
-  std::ofstream file(temporaryFilename.str().c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
-  if (!file.is_open())
-  {
+  std::ofstream file(temporaryFilename.str().c_str(),
+                     std::ios::out | std::ios::binary | std::ios::trunc);
+  if (!file.is_open()) {
     LOG(ERROR) << "Could not write temporary files!";
     return;
   }
 
   // write 8-byte double values and collect the maximum value
   double maximum = 0;
-  for (auto value : data)
-  {
+  for (auto value : data) {
     union {
       double d = 0.0;
       char c[8];
     };
 
-    if (!std::isfinite(d))
-    {
+    if (!std::isfinite(d)) {
       d = 0.0;
-    }
-    else
-    {
+    } else {
       d = value;
     }
 
     if (value > maximum || maximum == 0)
       maximum = value;
 
-    for (int i=0; i<8; i++)
-    {
+    for (int i = 0; i < 8; i++) {
       file << c[i];
     }
   }
@@ -78,13 +73,13 @@ void NumpyFileWriter::writeToNumpyFile(std::vector<double> &data, std::string fi
   // convert to numpy file by python script
   std::stringstream converterScript;
   converterScript << "import numpy as np" << std::endl
-    << "v = np.fromfile(\"" << temporaryFilename.str() << "\")" << std::endl
-    << "v = np.reshape(v," << shape.str() << ")" << std::endl
-    << "np.save(\"" << filename << "\",v)";
+                  << "v = np.fromfile(\"" << temporaryFilename.str() << "\")"
+                  << std::endl
+                  << "v = np.reshape(v," << shape.str() << ")" << std::endl
+                  << "np.save(\"" << filename << "\",v)";
 
-  //LOG(DEBUG) << converterScript.str();
-  if (0)
-  {
+  // LOG(DEBUG) << converterScript.str();
+  if (0) {
     std::ofstream scriptFile("convert.py");
     scriptFile << converterScript.str();
     scriptFile.close();
@@ -92,38 +87,32 @@ void NumpyFileWriter::writeToNumpyFile(std::vector<double> &data, std::string fi
     if (ret)
       LOG(DEBUG) << "convert script failed!";
     std::remove("convert.py");
-  }
-  else
-  {
+  } else {
     VLOG(1) << "converterScript: [" << converterScript.str() << "]";
 
     int ret = 1;
     // try 2 times, because sometimes it fails for the first time
-    for (int nTries = 0; ret != 0 && nTries < 2; nTries++)
-    {
+    for (int nTries = 0; ret != 0 && nTries < 2; nTries++) {
       ret = PyRun_SimpleString(converterScript.str().c_str());
-      if (ret != 0)
-      {
-        LOG(WARNING) << "Conversion to numpy file \"" << filename << "\" failed.";
-        if (PyErr_Occurred())
-        {
+      if (ret != 0) {
+        LOG(WARNING) << "Conversion to numpy file \"" << filename
+                     << "\" failed.";
+        if (PyErr_Occurred()) {
           PyErr_Print();
         }
-      }
-      else
-        LOG(INFO) << "Array of shape " << shape.str() << " exported to \"" << filename << "\"";
+      } else
+        LOG(INFO) << "Array of shape " << shape.str() << " exported to \""
+                  << filename << "\"";
     }
   }
 
   // if solution probably diverged, output a warning
-  if (maximum > 1e100)
-  {
+  if (maximum > 1e100) {
     LOG(WARNING) << "Maximum is " << maximum;
   }
 
   // remove temporary file
-  if (!VLOG_IS_ON(1))
-  {
+  if (!VLOG_IS_ON(1)) {
     std::remove(temporaryFilename.str().c_str());
   }
 
@@ -165,7 +154,6 @@ void NumpyFileWriter::writeToNumpyFile(std::vector<double> &data, std::string fi
   Py_CLEAR(solutionVector);
   Py_CLEAR(filenamePython);
 #endif
-
 }
 
-}  // namespace
+} // namespace OutputWriter

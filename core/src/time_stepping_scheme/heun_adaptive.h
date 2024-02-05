@@ -7,17 +7,14 @@
 #include <iostream>
 #include <fstream>
 
-namespace TimeSteppingScheme
-{
+namespace TimeSteppingScheme {
 
 /** The adaptive method to perform calculation with Heun method
  */
-template<typename DiscretizableInTime>
-class HeunAdaptive:
-  public TimeSteppingExplicit<DiscretizableInTime>, public Runnable
-{
+template <typename DiscretizableInTime>
+class HeunAdaptive : public TimeSteppingExplicit<DiscretizableInTime>,
+                     public Runnable {
 public:
-
   //! constructor
   HeunAdaptive(DihuContext context);
 
@@ -27,10 +24,13 @@ public:
   //! initialize the data object
   virtual void initialize();
 
-  //! advance simulation by the given time span [startTime_, endTime_] with given numberTimeSteps, data in solution is used, afterwards new data is in solution
+  //! advance simulation by the given time span [startTime_, endTime_] with
+  //! given numberTimeSteps, data in solution is used, afterwards new data is in
+  //! solution
   void advanceTimeSpan(bool withOutputWritersEnabled = true);
 
-  //! Returns the current time passed in the simulation. Used to trigger rebalancing
+  //! Returns the current time passed in the simulation. Used to trigger
+  //! rebalancing
   double currentHeunTime();
 
   //! run the simulation
@@ -43,7 +43,8 @@ private:
   // offset to prevent small steps towards the end of the timeSpan
   double delta_;
 
-  // safes timeStepWidth when it has to be cut because of the end of the timeSpan
+  // safes timeStepWidth when it has to be cut because of the end of the
+  // timeSpan
   double savedTimeStepWidth_;
 
   // minimal timeStepWidth to use
@@ -89,12 +90,14 @@ private:
   // current time of the simulation
   double currentTimeHeun_;
 
-  std::string timeStepWidthsLogFilename_;   //< filename of log file that will contain timestep widths
+  std::string timeStepWidthsLogFilename_; //< filename of log file that will
+                                          //contain timestep widths
 
-  std::vector<double> times_;               //< time points that are visited
-  std::vector<double> timeStepWidths_;      //< a vector of all used timestep widths, to be written to a log at the end
+  std::vector<double> times_;          //< time points that are visited
+  std::vector<double> timeStepWidths_; //< a vector of all used timestep widths,
+                                       //to be written to a log at the end
 };
 
-}  // namespace
+} // namespace TimeSteppingScheme
 
 #include "time_stepping_scheme/heun_adaptive.tpp"

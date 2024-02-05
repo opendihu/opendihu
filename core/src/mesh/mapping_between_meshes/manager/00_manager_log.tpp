@@ -2,15 +2,15 @@
 
 #include "control/dihu_context.h"
 
-namespace MappingBetweenMeshes
-{
+namespace MappingBetweenMeshes {
 
 //! add a log entry for two field variables
-template<typename FieldVariableSourceType, typename FieldVariableTargetType>
-void ManagerLog::
-addLogEntryFieldVariable(std::shared_ptr<FieldVariableSourceType> fieldVariableSource, int componentNoSource,
-                         std::shared_ptr<FieldVariableTargetType> fieldVariableTarget, int componentNoTarget, mappingLogEntry_t::logEvent_t logEvent)
-{
+template <typename FieldVariableSourceType, typename FieldVariableTargetType>
+void ManagerLog::addLogEntryFieldVariable(
+    std::shared_ptr<FieldVariableSourceType> fieldVariableSource,
+    int componentNoSource,
+    std::shared_ptr<FieldVariableTargetType> fieldVariableTarget,
+    int componentNoTarget, mappingLogEntry_t::logEvent_t logEvent) {
   // only log mapping actions on rank 0
   if (DihuContext::ownRankNoCommWorld() != 0)
     return;
@@ -21,7 +21,7 @@ addLogEntryFieldVariable(std::shared_ptr<FieldVariableSourceType> fieldVariableS
     std::string meshNameFrom;
     int componentNoFrom;
     int dimensionalityFrom;
-    
+
     std::string fieldVariableNameTo;
     std::string meshNameTo;
     int componentNoTo;
@@ -42,35 +42,34 @@ addLogEntryFieldVariable(std::shared_ptr<FieldVariableSourceType> fieldVariableS
   mappingLogEntry_t logEntry;
 
   // set variables corresponding to the source field variable
-  if (fieldVariableSource)
-  {
+  if (fieldVariableSource) {
     logEntry.fieldVariableNameFrom = fieldVariableSource->name();
     logEntry.meshNameFrom = fieldVariableSource->functionSpace()->meshName();
     logEntry.componentNoFrom = componentNoSource;
     logEntry.dimensionalityFrom = fieldVariableSource->functionSpace()->dim();
   }
-  
+
   // set variables corresponding to the target field variable
-  if (fieldVariableTarget)
-  {
+  if (fieldVariableTarget) {
     logEntry.fieldVariableNameTo = fieldVariableTarget->name();
     logEntry.meshNameTo = fieldVariableTarget->functionSpace()->meshName();
     logEntry.componentNoTo = componentNoTarget;
     logEntry.dimensionalityTo = fieldVariableTarget->functionSpace()->dim();
   }
-  
+
   logEntry.logEvent = logEvent;
 
   // check if action was already logged previously
-  if (!logEntries_.empty())
-  {
-    if (logEntries_.back().fieldVariableNameFrom == logEntry.fieldVariableNameFrom
-        && logEntries_.back().componentNoFrom == logEntry.componentNoFrom
-        && logEntries_.back().fieldVariableNameTo == logEntry.fieldVariableNameTo
-        && logEntries_.back().componentNoTo == logEntry.componentNoTo
-        && logEntries_.back().logEvent == logEvent)
-    {
-      // last log entry is the same as the current action, repeat is repetitions counter and return
+  if (!logEntries_.empty()) {
+    if (logEntries_.back().fieldVariableNameFrom ==
+            logEntry.fieldVariableNameFrom &&
+        logEntries_.back().componentNoFrom == logEntry.componentNoFrom &&
+        logEntries_.back().fieldVariableNameTo ==
+            logEntry.fieldVariableNameTo &&
+        logEntries_.back().componentNoTo == logEntry.componentNoTo &&
+        logEntries_.back().logEvent == logEvent) {
+      // last log entry is the same as the current action, repeat is repetitions
+      // counter and return
       logEntries_.back().nRepetitions++;
       return;
     }
@@ -83,13 +82,12 @@ addLogEntryFieldVariable(std::shared_ptr<FieldVariableSourceType> fieldVariableS
   logEntries_.push_back(logEntry);
 }
 
-
 //! add a log entry when a new mapping is created or initialized
-template<typename FunctionSpaceSourceType, typename FunctionSpaceTargetType>
-void ManagerLog::
-addLogEntryMapping(std::shared_ptr<FunctionSpaceSourceType> functionSpaceSource,
-                   std::shared_ptr<FunctionSpaceTargetType> functionSpaceTarget, mappingLogEntry_t::logEvent_t logEvent)
-{
+template <typename FunctionSpaceSourceType, typename FunctionSpaceTargetType>
+void ManagerLog::addLogEntryMapping(
+    std::shared_ptr<FunctionSpaceSourceType> functionSpaceSource,
+    std::shared_ptr<FunctionSpaceTargetType> functionSpaceTarget,
+    mappingLogEntry_t::logEvent_t logEvent) {
   // only log mapping actions on rank 0
   if (DihuContext::ownRankNoCommWorld() != 0)
     return;
@@ -97,29 +95,26 @@ addLogEntryMapping(std::shared_ptr<FunctionSpaceSourceType> functionSpaceSource,
   mappingLogEntry_t logEntry;
 
   // set variables corresponding to the source field variable
-  if (functionSpaceSource)
-  {
+  if (functionSpaceSource) {
     logEntry.meshNameFrom = functionSpaceSource->meshName();
     logEntry.dimensionalityFrom = functionSpaceSource->dim();
   }
-  
+
   // set variables corresponding to the target field variable
-  if (functionSpaceTarget)
-  {
+  if (functionSpaceTarget) {
     logEntry.meshNameTo = functionSpaceTarget->meshName();
     logEntry.dimensionalityTo = functionSpaceTarget->dim();
   }
-  
+
   logEntry.logEvent = logEvent;
 
   // check if action was already logged previously
-  if (!logEntries_.empty())
-  {
-    if (logEntries_.back().meshNameFrom == logEntry.meshNameFrom
-        && logEntries_.back().meshNameTo == logEntry.meshNameTo
-        && logEntries_.back().logEvent == logEvent)
-    {
-      // last log entry is the same as the current action, repeat is repetitions counter and return
+  if (!logEntries_.empty()) {
+    if (logEntries_.back().meshNameFrom == logEntry.meshNameFrom &&
+        logEntries_.back().meshNameTo == logEntry.meshNameTo &&
+        logEntries_.back().logEvent == logEvent) {
+      // last log entry is the same as the current action, repeat is repetitions
+      // counter and return
       logEntries_.back().nRepetitions++;
       return;
     }
@@ -132,4 +127,4 @@ addLogEntryMapping(std::shared_ptr<FunctionSpaceSourceType> functionSpaceSource,
   logEntries_.push_back(logEntry);
 }
 
-}   // namespace
+} // namespace MappingBetweenMeshes

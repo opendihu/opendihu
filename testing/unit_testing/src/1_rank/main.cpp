@@ -3,15 +3,12 @@
 #include "easylogging++.h"
 
 int argc;
-char** argv;
+char **argv;
 
 namespace {
-TEST(CompileTest, GTestCompiles)
-{
-  ASSERT_EQ(true, true);
-}
+TEST(CompileTest, GTestCompiles) { ASSERT_EQ(true, true); }
 
-}  // namespace
+} // namespace
 
 int main(int argc_, char **argv_) {
   ::testing::InitGoogleTest(&argc_, argv_);
@@ -25,8 +22,7 @@ int main(int argc_, char **argv_) {
   int result = RUN_ALL_TESTS();
 
   // if all tests succeeded, create file "SUCCESS1"
-  if (result == 0)
-  {
+  if (result == 0) {
     LOG(INFO) << "\x1b[32mAll tests passed on a single rank.\x1b[0m";
     std::ofstream outfile("SUCCESS1");
     outfile.close();

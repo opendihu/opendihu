@@ -1,24 +1,25 @@
 #pragma once
 
-#include <Python.h>  // has to be the first included header
+#include <Python.h> // has to be the first included header
 #include <iostream>
 #include <vector>
 #include <memory>
 
 #include "function_space/function_space.h"
 
-namespace OutputWriter
-{
+namespace OutputWriter {
 
-template<typename FunctionSpaceType, typename FieldVariablesForOutputWriterType>
-class PythonCallbackWriter
-{
+template <typename FunctionSpaceType,
+          typename FieldVariablesForOutputWriterType>
+class PythonCallbackWriter {
 public:
   //! call python callback
-  static void callCallback(PyObject *callback, FieldVariablesForOutputWriterType fieldVariables,
-                           int timeStepNo, double currentTime, bool onlyNodalValues);
+  static void callCallback(PyObject *callback,
+                           FieldVariablesForOutputWriterType fieldVariables,
+                           int timeStepNo, double currentTime,
+                           bool onlyNodalValues);
 };
 
-} // namespace
+} // namespace OutputWriter
 
 #include "output_writer/python_callback/python_callback_writer.tpp"

@@ -2,13 +2,10 @@
 
 #include "easylogging++.h"
 
-namespace Mesh
-{
+namespace Mesh {
 
-std::string getString(face_or_edge_t face)
-{
-  switch(face)
-  {
+std::string getString(face_or_edge_t face) {
+  switch (face) {
   case faceEdge0Minus:
     return std::string("0-");
   case faceEdge0Plus:
@@ -32,10 +29,8 @@ std::string getString(face_or_edge_t face)
   }
   return std::string("");
 }
-face_or_edge_t oppositeFace(face_or_edge_t face)
-{
-  switch(face)
-  {
+face_or_edge_t oppositeFace(face_or_edge_t face) {
+  switch (face) {
   case faceEdge0Minus:
   case faceEdge1Minus:
   case faceEdge2Minus:
@@ -58,4 +53,4 @@ face_or_edge_t oppositeFace(face_or_edge_t face)
 #endif
 }
 
-}  // namespace
+} // namespace Mesh

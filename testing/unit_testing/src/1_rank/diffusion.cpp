@@ -1,4 +1,4 @@
-#include <Python.h>  // this has to be the first included header
+#include <Python.h> // this has to be the first included header
 
 #include <iostream>
 #include <cstdlib>
@@ -11,8 +11,7 @@
 #include "equation/diffusion.h"
 #include "../utility.h"
 
-TEST(DiffusionTest, ExplicitEuler1D)
-{
+TEST(DiffusionTest, ExplicitEuler1D) {
   std::string pythonConfig = R"(
 
 # Diffusion 1D
@@ -50,23 +49,33 @@ config = {
     DihuContext settings(argc, argv, pythonConfig);
 
     TimeSteppingScheme::ExplicitEuler<
-      SpatialDiscretization::FiniteElementMethod<
-        Mesh::StructuredRegularFixedOfDimension<1>,
-        BasisFunction::LagrangeOfOrder<>,
-        Quadrature::None,
-        Equation::Dynamic::IsotropicDiffusion
-      >
-    > problem(settings);
+        SpatialDiscretization::FiniteElementMethod<
+            Mesh::StructuredRegularFixedOfDimension<1>,
+            BasisFunction::LagrangeOfOrder<>, Quadrature::None,
+            Equation::Dynamic::IsotropicDiffusion>>
+        problem(settings);
 
     problem.run();
 
-    std::string referenceOutput = "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, \"nElementsGlobal\": [5], \"nElementsLocal\": [5], \"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, \"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": [{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", \"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, {\"name\": \"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {\"name\": \"z\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", \"components\": [{\"name\": \"0\", \"values\": [1.9161287833235827, 2.4114632239553027, 3.842059137806608, 4.19088848006689, 2.6521927547112885, 1.8906640235962393]}]}], \"timeStepNo\": 5, \"currentTime\": 0.1}";
+    std::string referenceOutput =
+        "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, "
+        "\"nElementsGlobal\": [5], \"nElementsLocal\": [5], "
+        "\"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], "
+        "\"basisFunction\": \"Lagrange\", \"basisOrder\": 1, "
+        "\"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": "
+        "[{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", "
+        "\"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, "
+        "{\"name\": \"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, "
+        "{\"name\": \"z\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, "
+        "{\"name\": \"solution\", \"components\": [{\"name\": \"0\", "
+        "\"values\": [1.9161287833235827, 2.4114632239553027, "
+        "3.842059137806608, 4.19088848006689, 2.6521927547112885, "
+        "1.8906640235962393]}]}], \"timeStepNo\": 5, \"currentTime\": 0.1}";
     assertFileMatchesContent("out_diffusion1d_0000004.py", referenceOutput);
   }
 }
 
-TEST(DiffusionTest, Heun1D)
-{
+TEST(DiffusionTest, Heun1D) {
   std::string pythonConfig = R"(
 
 # Diffusion 1D
@@ -92,24 +101,32 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  TimeSteppingScheme::Heun<
-    SpatialDiscretization::FiniteElementMethod<
+  TimeSteppingScheme::Heun<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredRegularFixedOfDimension<1>,
-      BasisFunction::LagrangeOfOrder<>,
-      Quadrature::None,
-      Equation::Dynamic::IsotropicDiffusion
-    >
-  > problem(settings);
+      BasisFunction::LagrangeOfOrder<>, Quadrature::None,
+      Equation::Dynamic::IsotropicDiffusion>>
+      problem(settings);
 
   problem.run();
 
-  std::string referenceOutput = "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, \"nElementsGlobal\": [5], \"nElementsLocal\": [5], \"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, \"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": [{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", \"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, {\"name\": \"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {\"name\": \"z\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", \"components\": [{\"name\": \"0\", \"values\": [1.9161287833235827, 2.4114632239553027, 3.842059137806608, 4.19088848006689, 2.6521927547112885, 1.8906640235962393]}]}], \"timeStepNo\": 5, \"currentTime\": 0.1}";
+  std::string referenceOutput =
+      "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, "
+      "\"nElementsGlobal\": [5], \"nElementsLocal\": [5], "
+      "\"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], "
+      "\"basisFunction\": \"Lagrange\", \"basisOrder\": 1, "
+      "\"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": "
+      "[{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", "
+      "\"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, {\"name\": "
+      "\"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {\"name\": \"z\", "
+      "\"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", "
+      "\"components\": [{\"name\": \"0\", \"values\": [1.9161287833235827, "
+      "2.4114632239553027, 3.842059137806608, 4.19088848006689, "
+      "2.6521927547112885, 1.8906640235962393]}]}], \"timeStepNo\": 5, "
+      "\"currentTime\": 0.1}";
   assertFileMatchesContent("out_diffusion1d_heun_0000004.py", referenceOutput);
-
 }
 
-TEST(DiffusionTest, ImplicitEuler1D)
-{
+TEST(DiffusionTest, ImplicitEuler1D) {
   std::string pythonConfig = R"(
 
 # Diffusion 1D
@@ -136,41 +153,61 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  TimeSteppingScheme::ImplicitEuler<
-    SpatialDiscretization::FiniteElementMethod<
+  TimeSteppingScheme::ImplicitEuler<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredRegularFixedOfDimension<1>,
-      BasisFunction::LagrangeOfOrder<>,
-      Quadrature::None,
-      Equation::Dynamic::IsotropicDiffusion
-    >
-  > problem(settings);
+      BasisFunction::LagrangeOfOrder<>, Quadrature::None,
+      Equation::Dynamic::IsotropicDiffusion>>
+      problem(settings);
 
   problem.run();
 
-  std::string referenceOutput = "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, \"nElementsGlobal\": [5], \"nElementsLocal\": [5], \"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, \"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": [{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", \"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, {\"name\": \"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {\"name\": \"z\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", \"components\": [{\"name\": \"0\", \"values\": [2.0429559072490386, 2.2518627527228317, 3.8477024200726957, 4.495048744910582, 2.3533552300645306, 2.0611026396733574]}]}], \"timeStepNo\": 5, \"currentTime\": 0.1}";
-  assertFileMatchesContent("out_diffusion1d_implicit_0000004.py", referenceOutput);
-
+  std::string referenceOutput =
+      "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, "
+      "\"nElementsGlobal\": [5], \"nElementsLocal\": [5], "
+      "\"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], "
+      "\"basisFunction\": \"Lagrange\", \"basisOrder\": 1, "
+      "\"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": "
+      "[{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", "
+      "\"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, {\"name\": "
+      "\"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {\"name\": \"z\", "
+      "\"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", "
+      "\"components\": [{\"name\": \"0\", \"values\": [2.0429559072490386, "
+      "2.2518627527228317, 3.8477024200726957, 4.495048744910582, "
+      "2.3533552300645306, 2.0611026396733574]}]}], \"timeStepNo\": 5, "
+      "\"currentTime\": 0.1}";
+  assertFileMatchesContent("out_diffusion1d_implicit_0000004.py",
+                           referenceOutput);
 }
 
 /*
  * this test is disabled, because it required LAPACK which is not default
 TEST(DiffusionTest, ImplicitEuler1DPOD)
 {
-  
+
   std::ofstream file("snapshots.csv");
   file << "2.0,2.0,4.0,5.0,2.0,2.0" << std::endl
-    << "2.0034121211861375,2.058007835934967,3.968881360409179,4.883936362778263,2.0849688767570007,2.004998592855786" << std::endl
-    << "2.0097405880834756,2.1119059414403125,3.9380119204269333,4.776057992869434,2.1620246733762216,2.0142679983785285" << std::endl
-    << "2.018648046962458,2.161994819687798,3.9074790263886396,4.6756844098820585,2.2319744389088783,2.0271049027743073" << std::endl
-    << "2.0297760090678523,2.208576359730558,3.8773622943996906,4.582198310705352,2.2955263252435896,2.0429232071836125" << std::endl
-    << "2.0428033920520487,2.2519271827902805,3.8477283146699097,4.495039321347134,2.353315231841094,2.061208635718552" << std::endl;
-  file.close();
-    
-  
+    <<
+"2.0034121211861375,2.058007835934967,3.968881360409179,4.883936362778263,2.0849688767570007,2.004998592855786"
+<< std::endl
+    <<
+"2.0097405880834756,2.1119059414403125,3.9380119204269333,4.776057992869434,2.1620246733762216,2.0142679983785285"
+<< std::endl
+    <<
+"2.018648046962458,2.161994819687798,3.9074790263886396,4.6756844098820585,2.2319744389088783,2.0271049027743073"
+<< std::endl
+    <<
+"2.0297760090678523,2.208576359730558,3.8773622943996906,4.582198310705352,2.2955263252435896,2.0429232071836125"
+<< std::endl
+    <<
+"2.0428033920520487,2.2519271827902805,3.8477283146699097,4.495039321347134,2.353315231841094,2.061208635718552"
+<< std::endl; file.close();
+
+
   std::string pythonConfigReduction = R"(
     # Diffusion 1D POD
 n = 5   # number of elements
-k = 6   # number of the reduced modes is equal to k+1 because there are 6 snapshots (initial value and five time steps) avalable from the full order model
+k = 6   # number of the reduced modes is equal to k+1 because there are 6
+snapshots (initial value and five time steps) avalable from the full order model
 
 config = {
   "ModelOrderReduction": {
@@ -188,8 +225,10 @@ config = {
           "diffusionTensor": [5.0],
        },
        "OutputWriter" : [
-         #{"format": "Paraview", "outputInterval": 1, "filename": "out", "binaryOutput": "false", "fixedFormat": False},
-         {"format": "PythonFile", "filename": "diffusion1d_pod_full", "outputInterval": 1, "binary":False}
+         #{"format": "Paraview", "outputInterval": 1, "filename": "out",
+"binaryOutput": "false", "fixedFormat": False},
+         {"format": "PythonFile", "filename": "diffusion1d_pod_full",
+"outputInterval": 1, "binary":False}
        ]
     },
     "ImplicitEulerReduced" : {
@@ -203,8 +242,10 @@ config = {
         "diffusionTensor": [5.0],
       },
       "OutputWriter" : [
-        #{"format": "Paraview", "outputInterval": 1, "filename": "out", "binaryOutput": "false", "fixedFormat": False},
-        {"format": "PythonFile", "filename": "diffusion1d_pod_reduced", "outputInterval": 1, "binary":False}
+        #{"format": "Paraview", "outputInterval": 1, "filename": "out",
+"binaryOutput": "false", "fixedFormat": False},
+        {"format": "PythonFile", "filename": "diffusion1d_pod_reduced",
+"outputInterval": 1, "binary":False}
       ]
     },
   },
@@ -244,8 +285,10 @@ config = {
         "diffusionTensor": [5.0],
      },
      "OutputWriter" : [
-       #{"format": "Paraview", "outputInterval": 1, "filename": "out", "binaryOutput": "false", "fixedFormat": False},
-       {"format": "PythonFile", "filename": "diffusion1d_implicit", "outputInterval": 1, "binary":False}
+       #{"format": "Paraview", "outputInterval": 1, "filename": "out",
+"binaryOutput": "false", "fixedFormat": False},
+       {"format": "PythonFile", "filename": "diffusion1d_implicit",
+"outputInterval": 1, "binary":False}
      ]
   }
 }
@@ -265,15 +308,15 @@ config = {
 
   // load file contents of reference problem
   std::ifstream outputFile("diffusion1d_implicit_0000004.py");
-  std::string referenceOutput((std::istreambuf_iterator<char>(outputFile)), (std::istreambuf_iterator<char>()));
+  std::string referenceOutput((std::istreambuf_iterator<char>(outputFile)),
+(std::istreambuf_iterator<char>()));
 
   // compare to full output of POD problem
   assertFileMatchesContent("diffusion1d_pod_full_0000004.py", referenceOutput);
 }
 */
 
-TEST(DiffusionTest, CrankNicolson1D)
-{
+TEST(DiffusionTest, CrankNicolson1D) {
   std::string pythonConfig = R"(
     
 # Diffusion 1D
@@ -300,24 +343,32 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  TimeSteppingScheme::CrankNicolson<
-    SpatialDiscretization::FiniteElementMethod<
+  TimeSteppingScheme::CrankNicolson<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredRegularFixedOfDimension<1>,
-      BasisFunction::LagrangeOfOrder<>,
-      Quadrature::None,
-      Equation::Dynamic::IsotropicDiffusion
-    >
-  > problem(settings);
+      BasisFunction::LagrangeOfOrder<>, Quadrature::None,
+      Equation::Dynamic::IsotropicDiffusion>>
+      problem(settings);
 
   problem.run();
 
-  std::string referenceOutput = "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, \"nElementsGlobal\": [5], \"nElementsLocal\": [5], \"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, \"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": [{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", \"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, {\"name\": \"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {\"name\": \"z\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", \"components\": [{\"name\": \"0\", \"values\": [1.9161287833235827, 2.4114632239553027, 3.842059137806608, 4.19088848006689, 2.6521927547112885, 1.8906640235962393]}]}], \"timeStepNo\": 5, \"currentTime\": 0.1}";
+  std::string referenceOutput =
+      "{\"meshType\": \"StructuredRegularFixed\", \"dimension\": 1, "
+      "\"nElementsGlobal\": [5], \"nElementsLocal\": [5], "
+      "\"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], "
+      "\"basisFunction\": \"Lagrange\", \"basisOrder\": 1, "
+      "\"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": "
+      "[{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", "
+      "\"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, {\"name\": "
+      "\"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {\"name\": \"z\", "
+      "\"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", "
+      "\"components\": [{\"name\": \"0\", \"values\": [1.9161287833235827, "
+      "2.4114632239553027, 3.842059137806608, 4.19088848006689, "
+      "2.6521927547112885, 1.8906640235962393]}]}], \"timeStepNo\": 5, "
+      "\"currentTime\": 0.1}";
   assertFileMatchesContent("out_diffusion1d_CN_0000004.py", referenceOutput);
-
 }
 
-TEST(DiffusionTest, ExplicitEuler1DStructuredDeformable)
-{
+TEST(DiffusionTest, ExplicitEuler1DStructuredDeformable) {
   std::string pythonConfig = R"(
 
 # Diffusion 1D
@@ -343,24 +394,32 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  TimeSteppingScheme::ExplicitEuler<
-    SpatialDiscretization::FiniteElementMethod<
+  TimeSteppingScheme::ExplicitEuler<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredDeformableOfDimension<1>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::Gauss<2>,
-      Equation::Dynamic::IsotropicDiffusion
-    >
-  > problem(settings);
+      BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+      Equation::Dynamic::IsotropicDiffusion>>
+      problem(settings);
 
   problem.run();
 
-  std::string referenceOutput = "{\"meshType\": \"StructuredDeformable\", \"dimension\": 1, \"nElementsGlobal\": [5], \"nElementsLocal\": [5], \"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, \"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": [{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", \"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, {\"name\": \"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {\"name\": \"z\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", \"components\": [{\"name\": \"0\", \"values\": [1.9161287833235827, 2.4114632239553027, 3.842059137806608, 4.19088848006689, 2.6521927547112885, 1.8906640235962393]}]}], \"timeStepNo\": 5, \"currentTime\": 0.1}";
+  std::string referenceOutput =
+      "{\"meshType\": \"StructuredDeformable\", \"dimension\": 1, "
+      "\"nElementsGlobal\": [5], \"nElementsLocal\": [5], "
+      "\"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], "
+      "\"basisFunction\": \"Lagrange\", \"basisOrder\": 1, "
+      "\"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": "
+      "[{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", "
+      "\"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, {\"name\": "
+      "\"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {\"name\": \"z\", "
+      "\"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", "
+      "\"components\": [{\"name\": \"0\", \"values\": [1.9161287833235827, "
+      "2.4114632239553027, 3.842059137806608, 4.19088848006689, "
+      "2.6521927547112885, 1.8906640235962393]}]}], \"timeStepNo\": 5, "
+      "\"currentTime\": 0.1}";
   assertFileMatchesContent("out_diffusion1d_0000004.py", referenceOutput);
-
 }
 
-TEST(DiffusionTest, Heun1DStructuredDeformable)
-{
+TEST(DiffusionTest, Heun1DStructuredDeformable) {
   std::string pythonConfig = R"(
 
 # Diffusion 1D
@@ -386,24 +445,32 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  TimeSteppingScheme::Heun<
-    SpatialDiscretization::FiniteElementMethod<
+  TimeSteppingScheme::Heun<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredDeformableOfDimension<1>,
-      BasisFunction::LagrangeOfOrder<>,
-      Quadrature::Gauss<2>,
-      Equation::Dynamic::IsotropicDiffusion
-    >
-  > problem(settings);
+      BasisFunction::LagrangeOfOrder<>, Quadrature::Gauss<2>,
+      Equation::Dynamic::IsotropicDiffusion>>
+      problem(settings);
 
   problem.run();
 
-  std::string referenceOutput = "{\"meshType\": \"StructuredDeformable\", \"dimension\": 1, \"nElementsGlobal\": [5], \"nElementsLocal\": [5], \"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, \"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": [{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", \"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, {\"name\": \"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {\"name\": \"z\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", \"components\": [{\"name\": \"0\", \"values\": [1.9161287833235827, 2.4114632239553027, 3.842059137806608, 4.19088848006689, 2.6521927547112885, 1.8906640235962393]}]}], \"timeStepNo\": 5, \"currentTime\": 0.1}";
+  std::string referenceOutput =
+      "{\"meshType\": \"StructuredDeformable\", \"dimension\": 1, "
+      "\"nElementsGlobal\": [5], \"nElementsLocal\": [5], "
+      "\"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], "
+      "\"basisFunction\": \"Lagrange\", \"basisOrder\": 1, "
+      "\"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": "
+      "[{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", "
+      "\"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, {\"name\": "
+      "\"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {\"name\": \"z\", "
+      "\"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", "
+      "\"components\": [{\"name\": \"0\", \"values\": [1.9161287833235827, "
+      "2.4114632239553027, 3.842059137806608, 4.19088848006689, "
+      "2.6521927547112885, 1.8906640235962393]}]}], \"timeStepNo\": 5, "
+      "\"currentTime\": 0.1}";
   assertFileMatchesContent("out_diffusion1d_heun_0000004.py", referenceOutput);
-
 }
 
-TEST(DiffusionTest, ImplicitEuler1DStructuredDeformable)
-{
+TEST(DiffusionTest, ImplicitEuler1DStructuredDeformable) {
   std::string pythonConfig = R"(
 
 # Diffusion 1D
@@ -430,24 +497,33 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  TimeSteppingScheme::ImplicitEuler<
-    SpatialDiscretization::FiniteElementMethod<
+  TimeSteppingScheme::ImplicitEuler<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredDeformableOfDimension<1>,
-      BasisFunction::LagrangeOfOrder<>,
-      Quadrature::Gauss<2>,
-      Equation::Dynamic::IsotropicDiffusion
-    >
-  > problem(settings);
+      BasisFunction::LagrangeOfOrder<>, Quadrature::Gauss<2>,
+      Equation::Dynamic::IsotropicDiffusion>>
+      problem(settings);
 
   problem.run();
 
-  std::string referenceOutput = "{\"meshType\": \"StructuredDeformable\", \"dimension\": 1, \"nElementsGlobal\": [5], \"nElementsLocal\": [5], \"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, \"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": [{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", \"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, {\"name\": \"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {\"name\": \"z\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", \"components\": [{\"name\": \"0\", \"values\": [1.9161287833235827, 2.4114632239553027, 3.842059137806608, 4.19088848006689, 2.6521927547112885, 1.8906640235962393]}]}], \"timeStepNo\": 5, \"currentTime\": 0.1}";
-  assertFileMatchesContent("out_diffusion1d_implicit_0000004.py", referenceOutput);
-
+  std::string referenceOutput =
+      "{\"meshType\": \"StructuredDeformable\", \"dimension\": 1, "
+      "\"nElementsGlobal\": [5], \"nElementsLocal\": [5], "
+      "\"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], "
+      "\"basisFunction\": \"Lagrange\", \"basisOrder\": 1, "
+      "\"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": "
+      "[{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", "
+      "\"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, {\"name\": "
+      "\"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {\"name\": \"z\", "
+      "\"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", "
+      "\"components\": [{\"name\": \"0\", \"values\": [1.9161287833235827, "
+      "2.4114632239553027, 3.842059137806608, 4.19088848006689, "
+      "2.6521927547112885, 1.8906640235962393]}]}], \"timeStepNo\": 5, "
+      "\"currentTime\": 0.1}";
+  assertFileMatchesContent("out_diffusion1d_implicit_0000004.py",
+                           referenceOutput);
 }
 
-TEST(DiffusionTest, CrankNicolson1DStructuredDeformable)
-{
+TEST(DiffusionTest, CrankNicolson1DStructuredDeformable) {
   std::string pythonConfig = R"(
     
 # Diffusion 1D
@@ -474,24 +550,33 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
-  TimeSteppingScheme::CrankNicolson<
-    SpatialDiscretization::FiniteElementMethod<
+  TimeSteppingScheme::CrankNicolson<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredDeformableOfDimension<1>,
-      BasisFunction::LagrangeOfOrder<>,
-      Quadrature::Gauss<2>,
-      Equation::Dynamic::IsotropicDiffusion
-    >
-  > problem(settings);
+      BasisFunction::LagrangeOfOrder<>, Quadrature::Gauss<2>,
+      Equation::Dynamic::IsotropicDiffusion>>
+      problem(settings);
 
   problem.run();
 
-  std::string referenceOutput = "{\"meshType\": \"StructuredDeformable\", \"dimension\": 1, \"nElementsGlobal\": [5], \"nElementsLocal\": [5], \"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], \"basisFunction\": \"Lagrange\", \"basisOrder\": 1, \"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": [{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", \"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, {\"name\": \"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {\"name\": \"z\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", \"components\": [{\"name\": \"0\", \"values\": [1.9161287833235827, 2.4114632239553027, 3.842059137806608, 4.19088848006689, 2.6521927547112885, 1.8906640235962393]}]}], \"timeStepNo\": 5, \"currentTime\": 0.1}";
-  assertFileMatchesContent("out_diffusion1d_implicit_0000004.py", referenceOutput);
-
+  std::string referenceOutput =
+      "{\"meshType\": \"StructuredDeformable\", \"dimension\": 1, "
+      "\"nElementsGlobal\": [5], \"nElementsLocal\": [5], "
+      "\"beginNodeGlobalNatural\": [0], \"hasFullNumberOfNodes\": [true], "
+      "\"basisFunction\": \"Lagrange\", \"basisOrder\": 1, "
+      "\"onlyNodalValues\": true, \"nRanks\": 1, \"ownRankNo\": 0, \"data\": "
+      "[{\"name\": \"geometry\", \"components\": [{\"name\": \"x\", "
+      "\"values\": [0.0, 0.8, 1.6, 2.4000000000000004, 3.2, 4.0]}, {\"name\": "
+      "\"y\", \"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {\"name\": \"z\", "
+      "\"values\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}]}, {\"name\": \"solution\", "
+      "\"components\": [{\"name\": \"0\", \"values\": [1.9161287833235827, "
+      "2.4114632239553027, 3.842059137806608, 4.19088848006689, "
+      "2.6521927547112885, 1.8906640235962393]}]}], \"timeStepNo\": 5, "
+      "\"currentTime\": 0.1}";
+  assertFileMatchesContent("out_diffusion1d_implicit_0000004.py",
+                           referenceOutput);
 }
 
-TEST(DiffusionTest, Compiles2D)
-{
+TEST(DiffusionTest, Compiles2D) {
   std::string pythonConfig = R"(
 # Diffusion 2D
 n = 5
@@ -522,13 +607,10 @@ config = {
 )";
 
   DihuContext settings(argc, argv, pythonConfig);
-  
-  TimeSteppingScheme::ExplicitEuler<
-    SpatialDiscretization::FiniteElementMethod<
+
+  TimeSteppingScheme::ExplicitEuler<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredRegularFixedOfDimension<2>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::None,
-      Equation::Dynamic::IsotropicDiffusion
-    >
-  > problem(settings);
+      BasisFunction::LagrangeOfOrder<1>, Quadrature::None,
+      Equation::Dynamic::IsotropicDiffusion>>
+      problem(settings);
 }

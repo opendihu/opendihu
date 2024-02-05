@@ -11,17 +11,15 @@
  *  print("program_name: {}".format(opendihu.program_name))
  *
  */
-namespace PythonOpendihu
-{
+namespace PythonOpendihu {
 
 extern PyModuleDef opendihuModule;
 
-extern std::string programName;      //< the name of the executable, as given in argv[0]
-extern std::string versionText;      //< the version text of the DihuContext class
-extern std::string metaText;         //< the meta text of the DihuContext class
+extern std::string
+    programName; //< the name of the executable, as given in argv[0]
+extern std::string versionText; //< the version text of the DihuContext class
+extern std::string metaText;    //< the meta text of the DihuContext class
 
 PyMODINIT_FUNC PyInit_opendihu(void);
 
-
 } // namespace PythonOpendihu
-

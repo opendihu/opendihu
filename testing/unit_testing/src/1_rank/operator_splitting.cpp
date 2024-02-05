@@ -1,4 +1,4 @@
-#include <Python.h>  // this has to be the first included header
+#include <Python.h> // this has to be the first included header
 
 #include <iostream>
 #include <cstdlib>
@@ -10,8 +10,7 @@
 #include "stiffness_matrix_tester.h"
 #include "equation/diffusion.h"
 
-TEST(OperatorSplittingTest, Godunov)
-{
+TEST(OperatorSplittingTest, Godunov) {
   std::string pythonConfig = R"(
 # Electrophysiology debug
 nElements = 5
@@ -92,31 +91,24 @@ config = {
 }
 )";
 
-  // 1D reaction-diffusion equation du/dt = c du^2/dx^2 + R(t), R is from cellml file
-  
+  // 1D reaction-diffusion equation du/dt = c du^2/dx^2 + R(t), R is from cellml
+  // file
+
   // initialize everything, handle arguments and parse settings from input file
   DihuContext settings(argc, argv, pythonConfig);
-  
-  
+
   OperatorSplitting::Godunov<
-    TimeSteppingScheme::ExplicitEuler<
-      CellmlAdapter<4>
-    >,
-    TimeSteppingScheme::ExplicitEuler<
-      SpatialDiscretization::FiniteElementMethod<
-        Mesh::StructuredRegularFixedOfDimension<1>,
-        BasisFunction::LagrangeOfOrder<1>,
-        Quadrature::Gauss<2>,
-        Equation::Dynamic::IsotropicDiffusion
-      >
-    >
-  >
-  problem(settings);
+      TimeSteppingScheme::ExplicitEuler<CellmlAdapter<4>>,
+      TimeSteppingScheme::ExplicitEuler<
+          SpatialDiscretization::FiniteElementMethod<
+              Mesh::StructuredRegularFixedOfDimension<1>,
+              BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+              Equation::Dynamic::IsotropicDiffusion>>>
+      problem(settings);
   problem.run();
 }
 
-TEST(OperatorSplittingTest, Strang)
-{
+TEST(OperatorSplittingTest, Strang) {
   std::string pythonConfig = R"(
 # Electrophysiology debug
 nElements = 5
@@ -203,25 +195,19 @@ config = {
 }
 )";
 
-  // 1D reaction-diffusion equation du/dt = c du^2/dx^2 + R(t), R is from cellml file
-  
+  // 1D reaction-diffusion equation du/dt = c du^2/dx^2 + R(t), R is from cellml
+  // file
+
   // initialize everything, handle arguments and parse settings from input file
   DihuContext settings(argc, argv, pythonConfig);
-  
-  
+
   OperatorSplitting::Strang<
-    TimeSteppingScheme::ExplicitEuler<
-      CellmlAdapter<4>
-    >,
-    TimeSteppingScheme::ExplicitEuler<
-      SpatialDiscretization::FiniteElementMethod<
-        Mesh::StructuredRegularFixedOfDimension<1>,
-        BasisFunction::LagrangeOfOrder<1>,
-        Quadrature::Gauss<2>,
-        Equation::Dynamic::IsotropicDiffusion
-      >
-    >
-  >
-  problem(settings);
+      TimeSteppingScheme::ExplicitEuler<CellmlAdapter<4>>,
+      TimeSteppingScheme::ExplicitEuler<
+          SpatialDiscretization::FiniteElementMethod<
+              Mesh::StructuredRegularFixedOfDimension<1>,
+              BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+              Equation::Dynamic::IsotropicDiffusion>>>
+      problem(settings);
   problem.run();
 }

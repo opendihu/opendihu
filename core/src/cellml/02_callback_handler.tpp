@@ -1,6 +1,6 @@
 #include "cellml/02_callback_handler.h"
 
-#include <Python.h>  // has to be the first included header
+#include <Python.h> // has to be the first included header
 
 #include <list>
 #include <sstream>
@@ -10,37 +10,37 @@
 #include "utility/string_utility.h"
 #include "mesh/mesh_manager/mesh_manager.h"
 
-template<int nStates, int nAlgebraics_, typename FunctionSpaceType>
-CallbackHandler<nStates,nAlgebraics_,FunctionSpaceType>::
-CallbackHandler(DihuContext context) :
-  RhsRoutineHandler<nStates,nAlgebraics_,FunctionSpaceType>(context),
-  fiberNoGlobal_(-1),
-  pythonSetSpecificParametersFunction_(NULL), pythonSetSpecificStatesFunction_(NULL), pythonHandleResultFunction_(NULL),
-  pySetFunctionAdditionalParameter_(NULL), pyHandleResultFunctionAdditionalParameter_(NULL), pyGlobalNaturalDofsList_(NULL)
-{
-}
+template <int nStates, int nAlgebraics_, typename FunctionSpaceType>
+CallbackHandler<nStates, nAlgebraics_, FunctionSpaceType>::CallbackHandler(
+    DihuContext context)
+    : RhsRoutineHandler<nStates, nAlgebraics_, FunctionSpaceType>(context),
+      fiberNoGlobal_(-1), pythonSetSpecificParametersFunction_(NULL),
+      pythonSetSpecificStatesFunction_(NULL), pythonHandleResultFunction_(NULL),
+      pySetFunctionAdditionalParameter_(NULL),
+      pyHandleResultFunctionAdditionalParameter_(NULL),
+      pyGlobalNaturalDofsList_(NULL) {}
 
-template<int nStates, int nAlgebraics_, typename FunctionSpaceType>
-CallbackHandler<nStates,nAlgebraics_,FunctionSpaceType>::
-CallbackHandler(DihuContext context, const typename CellmlAdapterBase<nStates,nAlgebraics_,FunctionSpaceType>::Data &rhsData) :
-  RhsRoutineHandler<nStates,nAlgebraics_,FunctionSpaceType>(context, rhsData),
-  fiberNoGlobal_(-1),
-  pythonSetSpecificParametersFunction_(NULL), pythonSetSpecificStatesFunction_(NULL), pythonHandleResultFunction_(NULL),
-  pySetFunctionAdditionalParameter_(NULL), pyHandleResultFunctionAdditionalParameter_(NULL), pyGlobalNaturalDofsList_(NULL)
-{
-}
+template <int nStates, int nAlgebraics_, typename FunctionSpaceType>
+CallbackHandler<nStates, nAlgebraics_, FunctionSpaceType>::CallbackHandler(
+    DihuContext context,
+    const typename CellmlAdapterBase<nStates, nAlgebraics_,
+                                     FunctionSpaceType>::Data &rhsData)
+    : RhsRoutineHandler<nStates, nAlgebraics_, FunctionSpaceType>(context,
+                                                                  rhsData),
+      fiberNoGlobal_(-1), pythonSetSpecificParametersFunction_(NULL),
+      pythonSetSpecificStatesFunction_(NULL), pythonHandleResultFunction_(NULL),
+      pySetFunctionAdditionalParameter_(NULL),
+      pyHandleResultFunctionAdditionalParameter_(NULL),
+      pyGlobalNaturalDofsList_(NULL) {}
 
-template<int nStates, int nAlgebraics_, typename FunctionSpaceType>
-CallbackHandler<nStates,nAlgebraics_,FunctionSpaceType>::
-~CallbackHandler()
-{
+template <int nStates, int nAlgebraics_, typename FunctionSpaceType>
+CallbackHandler<nStates, nAlgebraics_, FunctionSpaceType>::~CallbackHandler() {
   clearPyObjects();
 }
 
-template<int nStates, int nAlgebraics_, typename FunctionSpaceType>
-void CallbackHandler<nStates,nAlgebraics_,FunctionSpaceType>::
-clearPyObjects()
-{
+template <int nStates, int nAlgebraics_, typename FunctionSpaceType>
+void CallbackHandler<nStates, nAlgebraics_,
+                     FunctionSpaceType>::clearPyObjects() {
   // Py_CLEAR has no effect if the variable is NULL
   Py_CLEAR(pythonSetSpecificParametersFunction_);
   Py_CLEAR(pythonSetSpecificStatesFunction_);
@@ -51,82 +51,98 @@ clearPyObjects()
   Py_CLEAR(pyGlobalNaturalDofsList_);
 }
 
-template<int nStates, int nAlgebraics_, typename FunctionSpaceType>
-void CallbackHandler<nStates,nAlgebraics_,FunctionSpaceType>::
-initializeCallbackFunctions()
-{
-  if (this->specificSettings_.hasKey("setParametersFunction"))
-  {
-    LOG(ERROR) << "Option " << this->specificSettings_ << "[\"setParametersFunction\"] is no longer supported. Use \"setSpecificParametersFunction\" instead.";
+template <int nStates, int nAlgebraics_, typename FunctionSpaceType>
+void CallbackHandler<nStates, nAlgebraics_,
+                     FunctionSpaceType>::initializeCallbackFunctions() {
+  if (this->specificSettings_.hasKey("setParametersFunction")) {
+    LOG(ERROR) << "Option " << this->specificSettings_
+               << "[\"setParametersFunction\"] is no longer supported. Use "
+                  "\"setSpecificParametersFunction\" instead.";
   }
 
   // parse the setSpecificParametersFunction callback function
-  if (this->specificSettings_.hasKey("setSpecificParametersFunction"))
-  {
-    pythonSetSpecificParametersFunction_ = this->specificSettings_.getOptionFunction("setSpecificParametersFunction");
+  if (this->specificSettings_.hasKey("setSpecificParametersFunction")) {
+    pythonSetSpecificParametersFunction_ =
+        this->specificSettings_.getOptionFunction(
+            "setSpecificParametersFunction");
 
     // if a callback function was specified, also parse the call interval
-    if (pythonSetSpecificParametersFunction_)
-    {
-      setSpecificParametersCallInterval_ = this->specificSettings_.getOptionInt("setSpecificParametersCallInterval", 1, PythonUtility::Positive);
-      pySetFunctionAdditionalParameter_ = this->specificSettings_.getOptionPyObject("additionalArgument", Py_None);
+    if (pythonSetSpecificParametersFunction_) {
+      setSpecificParametersCallInterval_ = this->specificSettings_.getOptionInt(
+          "setSpecificParametersCallInterval", 1, PythonUtility::Positive);
+      pySetFunctionAdditionalParameter_ =
+          this->specificSettings_.getOptionPyObject("additionalArgument",
+                                                    Py_None);
 
-      LOG(DEBUG) << "registered setSpecificParameters function, call interval: " << setSpecificParametersCallInterval_;
+      LOG(DEBUG) << "registered setSpecificParameters function, call interval: "
+                 << setSpecificParametersCallInterval_;
     }
   }
 
-  if (this->specificSettings_.hasKey("setSpecificStatesFunction"))
-  {
-    pythonSetSpecificStatesFunction_ = this->specificSettings_.getOptionFunction("setSpecificStatesFunction");
+  if (this->specificSettings_.hasKey("setSpecificStatesFunction")) {
+    pythonSetSpecificStatesFunction_ =
+        this->specificSettings_.getOptionFunction("setSpecificStatesFunction");
 
     // if a callback function was specified, also parse the call interval
-    if (pythonSetSpecificStatesFunction_)
-    {
-      setSpecificStatesCallInterval_ = this->specificSettings_.getOptionInt("setSpecificStatesCallInterval", 1, PythonUtility::NonNegative);
-      pySetFunctionAdditionalParameter_ = this->specificSettings_.getOptionPyObject("additionalArgument", Py_None);
+    if (pythonSetSpecificStatesFunction_) {
+      setSpecificStatesCallInterval_ = this->specificSettings_.getOptionInt(
+          "setSpecificStatesCallInterval", 1, PythonUtility::NonNegative);
+      pySetFunctionAdditionalParameter_ =
+          this->specificSettings_.getOptionPyObject("additionalArgument",
+                                                    Py_None);
 
-      // try to convert the pySetFunctionAdditionalParameter_ value to an integer, to be used for the stimulation log
-      if (this->pySetFunctionAdditionalParameter_)
-      {
-        if (PyLong_Check(pySetFunctionAdditionalParameter_))
-        {
-          fiberNoGlobal_ = PythonUtility::convertFromPython<int>::get(this->pySetFunctionAdditionalParameter_);
+      // try to convert the pySetFunctionAdditionalParameter_ value to an
+      // integer, to be used for the stimulation log
+      if (this->pySetFunctionAdditionalParameter_) {
+        if (PyLong_Check(pySetFunctionAdditionalParameter_)) {
+          fiberNoGlobal_ = PythonUtility::convertFromPython<int>::get(
+              this->pySetFunctionAdditionalParameter_);
         }
       }
 
-      LOG(DEBUG) << "registered setSpecificStates function, call interval: " << setSpecificStatesCallInterval_;
+      LOG(DEBUG) << "registered setSpecificStates function, call interval: "
+                 << setSpecificStatesCallInterval_;
     }
   }
 
-  if (this->specificSettings_.hasKey("handleResultFunction"))
-  {
-    pythonHandleResultFunction_ = this->specificSettings_.getOptionFunction("handleResultFunction");
+  if (this->specificSettings_.hasKey("handleResultFunction")) {
+    pythonHandleResultFunction_ =
+        this->specificSettings_.getOptionFunction("handleResultFunction");
 
     // if a callback function was specified, also parse the call interval
-    if (pythonHandleResultFunction_)
-    {
-      handleResultCallInterval_ = this->specificSettings_.getOptionInt("handleResultCallInterval", 1, PythonUtility::Positive);
-      pyHandleResultFunctionAdditionalParameter_ = this->specificSettings_.getOptionPyObject("handleResultFunctionAdditionalParameter", Py_None);
+    if (pythonHandleResultFunction_) {
+      handleResultCallInterval_ = this->specificSettings_.getOptionInt(
+          "handleResultCallInterval", 1, PythonUtility::Positive);
+      pyHandleResultFunctionAdditionalParameter_ =
+          this->specificSettings_.getOptionPyObject(
+              "handleResultFunctionAdditionalParameter", Py_None);
 
-      LOG(DEBUG) << "registered handleResult function, call interval: " << handleResultCallInterval_;
+      LOG(DEBUG) << "registered handleResult function, call interval: "
+                 << handleResultCallInterval_;
     }
   }
 }
 
-template<int nStates, int nAlgebraics_, typename FunctionSpaceType>
-void CallbackHandler<nStates,nAlgebraics_,FunctionSpaceType>::
-callPythonSetSpecificParametersFunction(int nInstances, int timeStepNo, double currentTime, double *localParameters, int nParameters)
-{
+template <int nStates, int nAlgebraics_, typename FunctionSpaceType>
+void CallbackHandler<nStates, nAlgebraics_, FunctionSpaceType>::
+    callPythonSetSpecificParametersFunction(int nInstances, int timeStepNo,
+                                            double currentTime,
+                                            double *localParameters,
+                                            int nParameters) {
   if (pythonSetSpecificParametersFunction_ == NULL)
     return;
 
-  VLOG(1) << "callPythonSetSpecificParametersFunction timeStepNo=" << timeStepNo;
+  VLOG(1) << "callPythonSetSpecificParametersFunction timeStepNo="
+          << timeStepNo;
 
   // compose callback function
   PyObject *globalParametersDict = PyDict_New();
-  PyObject *arglist = Py_BuildValue("(i,i,d,O,O)", this->functionSpace_->meshPartition()->nDofsGlobal(),
-                                    timeStepNo, currentTime, globalParametersDict, pySetFunctionAdditionalParameter_);
-  PyObject *returnValue = PyObject_CallObject(pythonSetSpecificParametersFunction_, arglist);
+  PyObject *arglist = Py_BuildValue(
+      "(i,i,d,O,O)", this->functionSpace_->meshPartition()->nDofsGlobal(),
+      timeStepNo, currentTime, globalParametersDict,
+      pySetFunctionAdditionalParameter_);
+  PyObject *returnValue =
+      PyObject_CallObject(pythonSetSpecificParametersFunction_, arglist);
 
   // if there was an error while executing the function, print the error message
   if (returnValue == NULL)
@@ -137,12 +153,12 @@ callPythonSetSpecificParametersFunction(int nInstances, int timeStepNo, double c
   Py_ssize_t pos = 0;
 
   // iterate over key-value pairs in the python dict
-  while (PyDict_Next(globalParametersDict, &pos, &keyPy, &valuePy))
-  {
+  while (PyDict_Next(globalParametersDict, &pos, &keyPy, &valuePy)) {
     // extract the key of dict that was given in the python config
-    typedef std::tuple<std::array<global_no_t,D>,int,int> KeyType;
-    KeyType key = PythonUtility::convertFromPython<KeyType>::get(keyPy);   // tuple( [x,y,z], nodalDofIndex, parameterNo )
-    std::array<global_no_t,D> coordinatesGlobal = std::get<0>(key);
+    typedef std::tuple<std::array<global_no_t, D>, int, int> KeyType;
+    KeyType key = PythonUtility::convertFromPython<KeyType>::get(
+        keyPy); // tuple( [x,y,z], nodalDofIndex, parameterNo )
+    std::array<global_no_t, D> coordinatesGlobal = std::get<0>(key);
     int nodalDofIndex = std::get<1>(key);
     int parameterNo = std::get<2>(key);
 
@@ -150,43 +166,62 @@ callPythonSetSpecificParametersFunction(int nInstances, int timeStepNo, double c
     double value = PythonUtility::convertFromPython<double>::get(valuePy);
 
     // error checking on parameter
-    if (parameterNo >= this->cellmlSourceCodeGenerator_.nParameters())
-    {
-      LOG(FATAL) << "In setSpecificParametersFunction: the parameters have an assignment "
-          << "parameters[(coordinatesGlobal=" << coordinatesGlobal << ", nodalDofIndex=" << nodalDofIndex
-          << ", parameterNo=" << parameterNo <<")] = " << value << ". But there are only " << this->cellmlSourceCodeGenerator_.nParameters()
-          << " specified. Set \"parametersUsedAsAlgebraic\" and \"parametersUsedAsConstant\" appropriately.";
+    if (parameterNo >= this->cellmlSourceCodeGenerator_.nParameters()) {
+      LOG(FATAL) << "In setSpecificParametersFunction: the parameters have an "
+                    "assignment "
+                 << "parameters[(coordinatesGlobal=" << coordinatesGlobal
+                 << ", nodalDofIndex=" << nodalDofIndex
+                 << ", parameterNo=" << parameterNo << ")] = " << value
+                 << ". But there are only "
+                 << this->cellmlSourceCodeGenerator_.nParameters()
+                 << " specified. Set \"parametersUsedAsAlgebraic\" and "
+                    "\"parametersUsedAsConstant\" appropriately.";
     }
 
-    VLOG(1) << "coordinatesGlobal: " << coordinatesGlobal << ", nodalDofIndex: " << nodalDofIndex
-      << ", parameterNo: " << parameterNo << ", value: " << value;
+    VLOG(1) << "coordinatesGlobal: " << coordinatesGlobal
+            << ", nodalDofIndex: " << nodalDofIndex
+            << ", parameterNo: " << parameterNo << ", value: " << value;
 
-    // tranform global coordinates to local dof no, this can be outside of the local domain
+    // tranform global coordinates to local dof no, this can be outside of the
+    // local domain
     bool isOnLocalDomain;
-    dof_no_t dofNoLocal = this->functionSpace_->meshPartition()->getDofNoLocal(coordinatesGlobal, nodalDofIndex, isOnLocalDomain);
-    dof_no_t nDofsLocalWithoutGhosts = this->functionSpace_->nDofsLocalWithoutGhosts();
+    dof_no_t dofNoLocal = this->functionSpace_->meshPartition()->getDofNoLocal(
+        coordinatesGlobal, nodalDofIndex, isOnLocalDomain);
+    dof_no_t nDofsLocalWithoutGhosts =
+        this->functionSpace_->nDofsLocalWithoutGhosts();
 
-    VLOG(1) << "dofNoLocal: " << dofNoLocal << " is OnLocalDomain: " << isOnLocalDomain;
+    VLOG(1) << "dofNoLocal: " << dofNoLocal
+            << " is OnLocalDomain: " << isOnLocalDomain;
 
-    if (isOnLocalDomain)   // if the given parameter values is for a dof inside the current domain
+    if (isOnLocalDomain) // if the given parameter values is for a dof inside
+                         // the current domain
     {
       // set first parameter value to given value
-      const int index = parameterNo*nDofsLocalWithoutGhosts + dofNoLocal;
+      const int index = parameterNo * nDofsLocalWithoutGhosts + dofNoLocal;
 
-      if (index >= nParameters*nDofsLocalWithoutGhosts)
-      {
-        LOG(FATAL) << "in setSpecificParametersFunction: the parameters have an assignment "
-          << "parameters[(coordinatesGlobal=" << coordinatesGlobal << ", nodalDofIndex=" << nodalDofIndex
-          << ", parameterNo=" << parameterNo <<")] = " << value << ".\n "
-          << "The global coordinates, " << coordinatesGlobal << " refer to local dof " << dofNoLocal
-          << ". There are " << nDofsLocalWithoutGhosts << " local dofs in total.\n"
-          << "There are " << this->cellmlSourceCodeGenerator_.nParameters() << "=" << nParameters << " parameters.\n"
-          << "The local field of parameters has " << nParameters*nDofsLocalWithoutGhosts << " entries, however the index is "
-          << parameterNo << "*" << nDofsLocalWithoutGhosts << " + " << dofNoLocal << " = " << index
-          << " >= " << nParameters*nDofsLocalWithoutGhosts;
+      if (index >= nParameters * nDofsLocalWithoutGhosts) {
+        LOG(FATAL) << "in setSpecificParametersFunction: the parameters have "
+                      "an assignment "
+                   << "parameters[(coordinatesGlobal=" << coordinatesGlobal
+                   << ", nodalDofIndex=" << nodalDofIndex
+                   << ", parameterNo=" << parameterNo << ")] = " << value
+                   << ".\n "
+                   << "The global coordinates, " << coordinatesGlobal
+                   << " refer to local dof " << dofNoLocal << ". There are "
+                   << nDofsLocalWithoutGhosts << " local dofs in total.\n"
+                   << "There are "
+                   << this->cellmlSourceCodeGenerator_.nParameters() << "="
+                   << nParameters << " parameters.\n"
+                   << "The local field of parameters has "
+                   << nParameters * nDofsLocalWithoutGhosts
+                   << " entries, however the index is " << parameterNo << "*"
+                   << nDofsLocalWithoutGhosts << " + " << dofNoLocal << " = "
+                   << index << " >= " << nParameters * nDofsLocalWithoutGhosts;
       }
 
-      // the local parameter array stores the parameter values in struct-of-array layout, there is space allocated for `nAlgebraics` parameters, even if there are only nLocalParameters parameters
+      // the local parameter array stores the parameter values in
+      // struct-of-array layout, there is space allocated for `nAlgebraics`
+      // parameters, even if there are only nLocalParameters parameters
       *(localParameters + index) = value;
     }
   }
@@ -197,10 +232,11 @@ callPythonSetSpecificParametersFunction(int nInstances, int timeStepNo, double c
   Py_CLEAR(arglist);
 }
 
-template<int nStates, int nAlgebraics_, typename FunctionSpaceType>
-void CallbackHandler<nStates,nAlgebraics_,FunctionSpaceType>::
-callPythonSetSpecificStatesFunction(int nInstances, int timeStepNo, double currentTime, double *localStates)
-{
+template <int nStates, int nAlgebraics_, typename FunctionSpaceType>
+void CallbackHandler<nStates, nAlgebraics_, FunctionSpaceType>::
+    callPythonSetSpecificStatesFunction(int nInstances, int timeStepNo,
+                                        double currentTime,
+                                        double *localStates) {
   if (pythonSetSpecificStatesFunction_ == NULL)
     return;
 
@@ -208,9 +244,12 @@ callPythonSetSpecificStatesFunction(int nInstances, int timeStepNo, double curre
 
   // compose callback function
   PyObject *globalStatesDict = PyDict_New();
-  PyObject *arglist = Py_BuildValue("(i,i,d,O,O)", this->functionSpace_->meshPartition()->nDofsGlobal(),
-                                    timeStepNo, currentTime, globalStatesDict, pySetFunctionAdditionalParameter_);
-  PyObject *returnValue = PyObject_CallObject(pythonSetSpecificStatesFunction_, arglist);
+  PyObject *arglist = Py_BuildValue(
+      "(i,i,d,O,O)", this->functionSpace_->meshPartition()->nDofsGlobal(),
+      timeStepNo, currentTime, globalStatesDict,
+      pySetFunctionAdditionalParameter_);
+  PyObject *returnValue =
+      PyObject_CallObject(pythonSetSpecificStatesFunction_, arglist);
 
   // if there was an error while executing the function, print the error message
   if (returnValue == NULL)
@@ -221,34 +260,42 @@ callPythonSetSpecificStatesFunction(int nInstances, int timeStepNo, double curre
   Py_ssize_t pos = 0;
 
   // iterate over key-value pairs in the python dict
-  while (PyDict_Next(globalStatesDict, &pos, &keyPy, &valuePy))
-  {
+  while (PyDict_Next(globalStatesDict, &pos, &keyPy, &valuePy)) {
     // extract the key of dict that was given in the python config
-    typedef std::tuple<std::array<global_no_t,D>,int,int> KeyType;
-    KeyType key = PythonUtility::convertFromPython<KeyType>::get(keyPy);   // tuple( [x,y,z], nodalDofIndex, stateNo )
-    std::array<global_no_t,D> coordinatesGlobal = std::get<0>(key);
+    typedef std::tuple<std::array<global_no_t, D>, int, int> KeyType;
+    KeyType key = PythonUtility::convertFromPython<KeyType>::get(
+        keyPy); // tuple( [x,y,z], nodalDofIndex, stateNo )
+    std::array<global_no_t, D> coordinatesGlobal = std::get<0>(key);
     int nodalDofIndex = std::get<1>(key);
     int stateNo = std::get<2>(key);
 
     // extract the value
     double value = PythonUtility::convertFromPython<double>::get(valuePy);
 
-    VLOG(1) << "coordinatesGlobal: " << coordinatesGlobal << ", nodalDofIndex: " << nodalDofIndex
-      << ", stateNo: " << stateNo << ", value: " << value;
+    VLOG(1) << "coordinatesGlobal: " << coordinatesGlobal
+            << ", nodalDofIndex: " << nodalDofIndex << ", stateNo: " << stateNo
+            << ", value: " << value;
 
-    // tranform global coordinates to local dof no, this can be outside of the local domain
+    // tranform global coordinates to local dof no, this can be outside of the
+    // local domain
     bool isOnLocalDomain;
-    dof_no_t dofNoLocal = this->functionSpace_->meshPartition()->getDofNoLocal(coordinatesGlobal, nodalDofIndex, isOnLocalDomain);
-    dof_no_t nDofsLocalWithoutGhosts = this->functionSpace_->nDofsLocalWithoutGhosts();
+    dof_no_t dofNoLocal = this->functionSpace_->meshPartition()->getDofNoLocal(
+        coordinatesGlobal, nodalDofIndex, isOnLocalDomain);
+    dof_no_t nDofsLocalWithoutGhosts =
+        this->functionSpace_->nDofsLocalWithoutGhosts();
 
-    VLOG(1) << "dofNoLocal: " << dofNoLocal << " is OnLocalDomain: " << isOnLocalDomain;
+    VLOG(1) << "dofNoLocal: " << dofNoLocal
+            << " is OnLocalDomain: " << isOnLocalDomain;
 
-    if (isOnLocalDomain)   // if the given parameter values is for a dof inside the current domain
+    if (isOnLocalDomain) // if the given parameter values is for a dof inside
+                         // the current domain
     {
-      LOG(DEBUG) << "after python setSpecificStates callback: set dof " << dofNoLocal << ", state " << stateNo << " to value " << value;
+      LOG(DEBUG) << "after python setSpecificStates callback: set dof "
+                 << dofNoLocal << ", state " << stateNo << " to value "
+                 << value;
 
       // set first parameter value to given value
-      localStates[stateNo*nDofsLocalWithoutGhosts + dofNoLocal] = value;
+      localStates[stateNo * nDofsLocalWithoutGhosts + dofNoLocal] = value;
     }
   }
 
@@ -258,28 +305,37 @@ callPythonSetSpecificStatesFunction(int nInstances, int timeStepNo, double curre
   Py_CLEAR(arglist);
 }
 
-template<int nStates, int nAlgebraics_, typename FunctionSpaceType>
-void CallbackHandler<nStates,nAlgebraics_,FunctionSpaceType>::
-callPythonHandleResultFunction(int nInstances, int timeStepNo, double currentTime,
-                               double *localStates, double *algebraics)
-{
+template <int nStates, int nAlgebraics_, typename FunctionSpaceType>
+void CallbackHandler<nStates, nAlgebraics_, FunctionSpaceType>::
+    callPythonHandleResultFunction(int nInstances, int timeStepNo,
+                                   double currentTime, double *localStates,
+                                   double *algebraics) {
   if (pythonHandleResultFunction_ == NULL)
     return;
 
   // compose callback function
-  LOG(DEBUG) << "callPythonHandleResultFunction: nInstances: " << this->nInstances_ << ", nStates: " << nStates
-    << ", nAlgebraics: " << this->nAlgebraics();
-  PyObject *statesList = PythonUtility::convertToPythonList(nStates*this->nInstances_, localStates);
-  PyObject *algebraicsList = PythonUtility::convertToPythonList(nAlgebraics_*this->nInstances_, algebraics);
+  LOG(DEBUG) << "callPythonHandleResultFunction: nInstances: "
+             << this->nInstances_ << ", nStates: " << nStates
+             << ", nAlgebraics: " << this->nAlgebraics();
+  PyObject *statesList = PythonUtility::convertToPythonList(
+      nStates * this->nInstances_, localStates);
+  PyObject *algebraicsList = PythonUtility::convertToPythonList(
+      nAlgebraics_ * this->nInstances_, algebraics);
 
-  std::map<std::string,std::vector<std::string>> nameInformation;
+  std::map<std::string, std::vector<std::string>> nameInformation;
   nameInformation["stateNames"] = this->cellmlSourceCodeGenerator_.stateNames();
-  nameInformation["algebraicNames"] = this->cellmlSourceCodeGenerator_.algebraicNames();
+  nameInformation["algebraicNames"] =
+      this->cellmlSourceCodeGenerator_.algebraicNames();
 
-  PyObject *nameInformationPy = PythonUtility::convertToPython<std::map<std::string,std::vector<std::string>>>::get(nameInformation);
+  PyObject *nameInformationPy = PythonUtility::convertToPython<
+      std::map<std::string, std::vector<std::string>>>::get(nameInformation);
 
-  PyObject *arglist = Py_BuildValue("(i,i,d,O,O,O,O)", nInstances, timeStepNo, currentTime, statesList, algebraicsList, nameInformationPy, pyHandleResultFunctionAdditionalParameter_);
-  PyObject *returnValue = PyObject_CallObject(pythonHandleResultFunction_, arglist);
+  PyObject *arglist =
+      Py_BuildValue("(i,i,d,O,O,O,O)", nInstances, timeStepNo, currentTime,
+                    statesList, algebraicsList, nameInformationPy,
+                    pyHandleResultFunctionAdditionalParameter_);
+  PyObject *returnValue =
+      PyObject_CallObject(pythonHandleResultFunction_, arglist);
 
   // if there was an error while executing the function, print the error message
   if (returnValue == NULL)
@@ -292,18 +348,16 @@ callPythonHandleResultFunction(int nInstances, int timeStepNo, double currentTim
   Py_CLEAR(arglist);
 }
 
-template<int nStates, int nAlgebraics_, typename FunctionSpaceType>
-double CallbackHandler<nStates,nAlgebraics_,FunctionSpaceType>::
-lastCallSpecificStatesTime()
-{
+template <int nStates, int nAlgebraics_, typename FunctionSpaceType>
+double CallbackHandler<nStates, nAlgebraics_,
+                       FunctionSpaceType>::lastCallSpecificStatesTime() {
   return this->lastCallSpecificStatesTime_;
 }
 
-template<int nStates, int nAlgebraics_, typename FunctionSpaceType>
-void CallbackHandler<nStates,nAlgebraics_,FunctionSpaceType>::
-setLastCallSpecificStatesTime(double lastCallSpecificStatesTime)
-{
+template <int nStates, int nAlgebraics_, typename FunctionSpaceType>
+void CallbackHandler<nStates, nAlgebraics_, FunctionSpaceType>::
+    setLastCallSpecificStatesTime(double lastCallSpecificStatesTime) {
   this->lastCallSpecificStatesTime_ = lastCallSpecificStatesTime;
-  LOG(DEBUG) << "now set lastCallSpecificStatesTime_ to " << lastCallSpecificStatesTime_;
+  LOG(DEBUG) << "now set lastCallSpecificStatesTime_ to "
+             << lastCallSpecificStatesTime_;
 }
-

@@ -1,10 +1,9 @@
 #pragma once
 
-class Runnable
-{
+class Runnable {
 public:
   virtual ~Runnable() {}
   virtual void run() = 0;
-private:
 
+private:
 };

@@ -1,4 +1,4 @@
-#include <Python.h>  // this has to be the first included header
+#include <Python.h> // this has to be the first included header
 
 #include <iostream>
 #include <cstdlib>
@@ -9,11 +9,9 @@
 #include "opendihu.h"
 #include "../utility.h"
 
-namespace SpatialDiscretization
-{
+namespace SpatialDiscretization {
 
-TEST(LaplaceTest, SerialEqualsParallelDeformable3DGlobal)
-{
+TEST(LaplaceTest, SerialEqualsParallelDeformable3DGlobal) {
   // run serial problem
   std::string pythonConfig = R"(
 # Laplace 3D, Neumann BC
@@ -115,13 +113,10 @@ config = {
   int ownRankNo = settings.ownRankNo();
 
   typedef Control::MultipleInstances<
-    FiniteElementMethod<
-      Mesh::StructuredRegularFixedOfDimension<3>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::Gauss<3>,
-      Equation::Static::Laplace
-    >
-  > ProblemType;
+      FiniteElementMethod<Mesh::StructuredRegularFixedOfDimension<3>,
+                          BasisFunction::LagrangeOfOrder<1>,
+                          Quadrature::Gauss<3>, Equation::Static::Laplace>>
+      ProblemType;
   ProblemType problemSerial(settings);
 
   problemSerial.run();
@@ -224,24 +219,22 @@ config = {
 
 )";
 
-
   DihuContext settings2(argc, argv, pythonConfig2);
 
   ProblemType problemParallel(settings2);
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out20.py", "out20.0.py", "out20.1.py"};
-  if (ownRankNo == 0)
-  {
+  std::vector<std::string> outputFilesToCheck = {"out20.py", "out20.0.py",
+                                                 "out20.1.py"};
+  if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
   }
 
   nFails += ::testing::Test::HasFailure();
 }
 
-TEST(LaplaceTest, SerialEqualsParallelDeformable3DLocal)
-{
+TEST(LaplaceTest, SerialEqualsParallelDeformable3DLocal) {
   // run serial problem
   std::string pythonConfig = R"(
 # Laplace 3D, Neumann BC
@@ -343,13 +336,10 @@ config = {
   int ownRankNo = settings.ownRankNo();
 
   typedef Control::MultipleInstances<
-    FiniteElementMethod<
-      Mesh::StructuredRegularFixedOfDimension<3>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::Gauss<3>,
-      Equation::Static::Laplace
-    >
-  > ProblemType;
+      FiniteElementMethod<Mesh::StructuredRegularFixedOfDimension<3>,
+                          BasisFunction::LagrangeOfOrder<1>,
+                          Quadrature::Gauss<3>, Equation::Static::Laplace>>
+      ProblemType;
   ProblemType problemSerial(settings);
 
   problemSerial.run();
@@ -452,21 +442,19 @@ config = {
 
 )";
 
-
   DihuContext settings2(argc, argv, pythonConfig2);
 
   ProblemType problemParallel(settings2);
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out21.py", "out21.0.py", "out21.1.py"};
-  if (ownRankNo == 0)
-  {
+  std::vector<std::string> outputFilesToCheck = {"out21.py", "out21.0.py",
+                                                 "out21.1.py"};
+  if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
   }
 
   nFails += ::testing::Test::HasFailure();
 }
 
-}  // namespace
-
+} // namespace SpatialDiscretization

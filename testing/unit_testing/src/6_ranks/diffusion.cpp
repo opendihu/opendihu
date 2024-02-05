@@ -1,4 +1,4 @@
-#include <Python.h>  // this has to be the first included header
+#include <Python.h> // this has to be the first included header
 
 #include <iostream>
 #include <cstdlib>
@@ -10,18 +10,13 @@
 #include "../utility.h"
 
 // 2D regular fixed
-TEST(DiffusionTest, SerialEqualsParallelGlobal)
-{
-  typedef Control::MultipleInstances<
-    TimeSteppingScheme::ExplicitEuler<
+TEST(DiffusionTest, SerialEqualsParallelGlobal) {
+  typedef Control::MultipleInstances<TimeSteppingScheme::ExplicitEuler<
       SpatialDiscretization::FiniteElementMethod<
-        Mesh::StructuredRegularFixedOfDimension<2>,
-        BasisFunction::LagrangeOfOrder<1>,
-        Quadrature::Gauss<2>,
-        Equation::Dynamic::IsotropicDiffusion
-      >
-    >
-  > ProblemType;
+          Mesh::StructuredRegularFixedOfDimension<2>,
+          BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+          Equation::Dynamic::IsotropicDiffusion>>>
+      ProblemType;
 
   // run global settings problem
   std::string pythonConfig = R"(
@@ -135,10 +130,11 @@ config = {
   ProblemType problemSerial(settings0);
   problemSerial.run();
 
-
-  std::vector<std::string> outputFilesToCheck = {"out0_0000004.py", "out0_0000004.0.py", "out0_0000004.1.py", "out0_0000004.2.py", "out0_0000004.3.py", "out0_0000004.4.py", "out0_0000004.5.py"};
-  if (ownRankNo == 0)
-  {
+  std::vector<std::string> outputFilesToCheck = {
+      "out0_0000004.py",   "out0_0000004.0.py", "out0_0000004.1.py",
+      "out0_0000004.2.py", "out0_0000004.3.py", "out0_0000004.4.py",
+      "out0_0000004.5.py"};
+  if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
   }
 
@@ -146,18 +142,13 @@ config = {
 }
 
 // 2D regular fixed
-TEST(DiffusionTest, SerialEqualsParallelLocal)
-{
-  typedef Control::MultipleInstances<
-    TimeSteppingScheme::ExplicitEuler<
+TEST(DiffusionTest, SerialEqualsParallelLocal) {
+  typedef Control::MultipleInstances<TimeSteppingScheme::ExplicitEuler<
       SpatialDiscretization::FiniteElementMethod<
-        Mesh::StructuredRegularFixedOfDimension<2>,
-        BasisFunction::LagrangeOfOrder<1>,
-        Quadrature::Gauss<2>,
-        Equation::Dynamic::IsotropicDiffusion
-      >
-    >
-  > ProblemType;
+          Mesh::StructuredRegularFixedOfDimension<2>,
+          BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+          Equation::Dynamic::IsotropicDiffusion>>>
+      ProblemType;
 
   // run problem with global settings with only 1 rank
   std::string pythonConfig0 = R"(
@@ -280,9 +271,11 @@ config = {
 
   problemLocalSettings.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out1_0000004.py", "out1_0000004.0.py", "out1_0000004.1.py", "out1_0000004.2.py", "out1_0000004.3.py", "out1_0000004.4.py", "out1_0000004.5.py"};
-  if (ownRankNo == 0)
-  {
+  std::vector<std::string> outputFilesToCheck = {
+      "out1_0000004.py",   "out1_0000004.0.py", "out1_0000004.1.py",
+      "out1_0000004.2.py", "out1_0000004.3.py", "out1_0000004.4.py",
+      "out1_0000004.5.py"};
+  if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
   }
 

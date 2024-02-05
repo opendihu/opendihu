@@ -4,64 +4,45 @@
 #include "basis_function/hermite.h"
 #include "utility/string_utility.h"
 
-namespace BasisFunction
-{
+namespace BasisFunction {
 
 // linear Lagrange
-template<>
-std::string getBasisRepresentationString<1,LagrangeOfOrder<1>>()
-{
+template <> std::string getBasisRepresentationString<1, LagrangeOfOrder<1>>() {
   return StringUtility::multiply<1>("l.Lagrange");
 }
 
-template<>
-std::string getBasisRepresentationString<2,LagrangeOfOrder<1>>()
-{
+template <> std::string getBasisRepresentationString<2, LagrangeOfOrder<1>>() {
   return StringUtility::multiply<2>("l.Lagrange");
 }
 
-template<>
-std::string getBasisRepresentationString<3,LagrangeOfOrder<1>>()
-{
+template <> std::string getBasisRepresentationString<3, LagrangeOfOrder<1>>() {
   return StringUtility::multiply<3>("l.Lagrange");
 }
 
 // quadratic Lagrange
-template<>
-std::string getBasisRepresentationString<1,LagrangeOfOrder<2>>()
-{
+template <> std::string getBasisRepresentationString<1, LagrangeOfOrder<2>>() {
   return StringUtility::multiply<1>("q.Lagrange");
 }
 
-template<>
-std::string getBasisRepresentationString<2,LagrangeOfOrder<2>>()
-{
+template <> std::string getBasisRepresentationString<2, LagrangeOfOrder<2>>() {
   return StringUtility::multiply<2>("q.Lagrange");
 }
 
-template<>
-std::string getBasisRepresentationString<3,LagrangeOfOrder<2>>()
-{
+template <> std::string getBasisRepresentationString<3, LagrangeOfOrder<2>>() {
   return StringUtility::multiply<3>("q.Lagrange");
 }
 
 // cubic Hermite
-template<>
-std::string getBasisRepresentationString<1,Hermite>()
-{
+template <> std::string getBasisRepresentationString<1, Hermite>() {
   return StringUtility::multiply<1>("c.Hermite");
 }
 
-template<>
-std::string getBasisRepresentationString<2,Hermite>()
-{
+template <> std::string getBasisRepresentationString<2, Hermite>() {
   return StringUtility::multiply<2>("c.Hermite");
 }
 
-template<>
-std::string getBasisRepresentationString<3,Hermite>()
-{
+template <> std::string getBasisRepresentationString<3, Hermite>() {
   return StringUtility::multiply<3>("c.Hermite");
 }
 
-}   // namespace
+} // namespace BasisFunction
