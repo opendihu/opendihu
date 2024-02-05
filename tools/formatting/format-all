@@ -4,14 +4,5 @@
 
 # Format C/C++
 
-find core -iname *.h -o -iname *.cpp -o -iname *.tpp | xargs clang-format -i
-echo -e "\n Done formatting core files"
-
-find examples -iname *.h -o -iname *.cpp -o -iname *.tpp | xargs clang-format -i
-echo -e "\n Done formatting examples files"
-
-find testing -iname *.h -o -iname *.cpp -o -iname *.tpp | xargs clang-format -i
-echo -e "\n Done formatting testing files"
-
-find scripts -iname *.h -o -iname *.cpp -o -iname *.tpp | xargs clang-format -i
-echo -e "\n Done formatting scripts files"
+find . -path ./dependencies -prune -iname *.h -o -iname *.cpp -o -iname *.tpp | xargs clang-format -i
+echo -e "\n Apply clang-format to OpenDiHu done."
