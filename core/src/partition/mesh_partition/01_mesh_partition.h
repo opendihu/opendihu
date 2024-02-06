@@ -9,15 +9,14 @@
 #include "mesh/type_traits.h"
 #include "mesh/face_t.h"
 
-namespace Partition
-{
- 
-/** Global numbering: such that each rank has its own contiguous subset of the total range.
- *  Local numbering: starting with 0, up to total number including ghost elements
- */
-template<typename FunctionSpaceType, typename DummyForTraits = typename FunctionSpaceType::Mesh>
-class MeshPartition
-{
-};
+namespace Partition {
 
-}   // namespace
+/** Global numbering: such that each rank has its own contiguous subset of the
+ * total range. Local numbering: starting with 0, up to total number including
+ * ghost elements
+ */
+template <typename FunctionSpaceType,
+          typename DummyForTraits = typename FunctionSpaceType::Mesh>
+class MeshPartition {};
+
+} // namespace Partition

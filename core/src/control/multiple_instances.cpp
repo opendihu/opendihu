@@ -1,8 +1,7 @@
 #include "control/multiple_instances.h"
 
-namespace Control
-{
+namespace Control {
 
 bool outputInitialize_ = true;
 
-}  // namespace
+} // namespace Control

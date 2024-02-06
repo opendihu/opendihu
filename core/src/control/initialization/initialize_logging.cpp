@@ -1,9 +1,8 @@
 #include "control/dihu_context.h"
 
-#include <Python.h>  // this has to be the first included header
+#include <Python.h> // this has to be the first included header
 
-void DihuContext::initializeLogging(int &argc, char *argv[])
-{
+void DihuContext::initializeLogging(int &argc, char *argv[]) {
   START_EASYLOGGINGPP(argc, argv);
 /*
   std::ifstream file("logging.conf");
@@ -42,15 +41,15 @@ void DihuContext::initializeLogging(int &argc, char *argv[])
 */
 
 // color codes: https://github.com/shiena/ansicolor/blob/master/README.md
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_COLOR_YELLOW  "\x1b[33m"
-#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_RED "\x1b[31m"
+#define ANSI_COLOR_GREEN "\x1b[32m"
+#define ANSI_COLOR_YELLOW "\x1b[33m"
+#define ANSI_COLOR_BLUE "\x1b[34m"
 #define ANSI_COLOR_MAGENTA "\x1b[35m"
-#define ANSI_COLOR_CYAN    "\x1b[36m"
-#define ANSI_COLOR_LIGHT_GRAY    "\x1b[90m"
-#define ANSI_COLOR_LIGHT_WHITE    "\x1b[97m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
+#define ANSI_COLOR_CYAN "\x1b[36m"
+#define ANSI_COLOR_LIGHT_GRAY "\x1b[90m"
+#define ANSI_COLOR_LIGHT_WHITE "\x1b[97m"
+#define ANSI_COLOR_RESET "\x1b[0m"
 
   std::string separator(80, '_');
   el::Configurations conf;
@@ -58,79 +57,69 @@ void DihuContext::initializeLogging(int &argc, char *argv[])
 
   // set prefix for output that includes current rank no
   std::string prefix;
-  if (nRanksCommWorld_ > 1)
-  {
+  if (nRanksCommWorld_ > 1) {
     std::stringstream s;
     s << ownRankNoCommWorld_ << "/" << nRanksCommWorld_ << " ";
     prefix = s.str();
   }
 
   // set location of log files
-  std::string logFilesPath = "/tmp/logs/";   // must end with '/'
+  std::string logFilesPath = "/tmp/logs/"; // must end with '/'
 
-  // if the 3rd argument starts with '--log=', interpret it as logging path under /tmp/logs/
-  if (argc >= 3)
-  {
+  // if the 3rd argument starts with '--log=', interpret it as logging path
+  // under /tmp/logs/
+  if (argc >= 3) {
     std::string argument(argv[2]);
-    if (argument.substr(0,6) == "--log=")
-    {
+    if (argument.substr(0, 6) == "--log=") {
       // parse logging directory, ensure that last character is '/'
       std::string logDirectory = argument.substr(6);
-      if (logDirectory[logDirectory.size()-1] != '/')
+      if (logDirectory[logDirectory.size() - 1] != '/')
         logDirectory += "/";
 
       logFilesPath += logDirectory;
 
       // remove this argument
       argc--;
-      for (int i = 2; i < argc; i++)
-      {
-        argv[i] = argv[i+1];
+      for (int i = 2; i < argc; i++) {
+        argv[i] = argv[i + 1];
       }
-    }
-    else if (argument.substr(0,15) == "--log-no-prefix")
-    {
+    } else if (argument.substr(0, 15) == "--log-no-prefix") {
       prefix = "";
 
       // remove this argument
       argc--;
-      for (int i = 2; i < argc; i++)
-      {
-        argv[i] = argv[i+1];
+      for (int i = 2; i < argc; i++) {
+        argv[i] = argv[i + 1];
       }
     }
   }
-  
-#ifdef NDEBUG      // if release
-  if (nRanksCommWorld_ > 1)
-  {
-    conf.setGlobally(el::ConfigurationType::Format, prefix+": %msg");
-  }
-  else
-  {
+
+#ifdef NDEBUG // if release
+  if (nRanksCommWorld_ > 1) {
+    conf.setGlobally(el::ConfigurationType::Format, prefix + ": %msg");
+  } else {
     conf.setGlobally(el::ConfigurationType::Format, "%msg");
   }
 #else
-  conf.setGlobally(el::ConfigurationType::Format, prefix+"INFO : %msg");
+  conf.setGlobally(el::ConfigurationType::Format, prefix + "INFO : %msg");
 #endif
 
-  if (nRanksCommWorld_ > 1)
-  {
+  if (nRanksCommWorld_ > 1) {
     std::stringstream s;
     s << logFilesPath << ownRankNoCommWorld_ << "_opendihu.log";
     conf.setGlobally(el::ConfigurationType::Filename, s.str());
 
     // truncate logfile
-    std::ofstream logfile(s.str().c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
+    std::ofstream logfile(s.str().c_str(),
+                          std::ios::out | std::ios::trunc | std::ios::binary);
     logfile.close();
-  }
-  else
-  {
-    std::string logFilename = logFilesPath+"opendihu.log";
+  } else {
+    std::string logFilename = logFilesPath + "opendihu.log";
     conf.setGlobally(el::ConfigurationType::Filename, logFilename);
 
     // truncate logfile
-    std::ofstream logfile(logFilename.c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
+    std::ofstream logfile(logFilename.c_str(),
+                          std::ios::out | std::ios::trunc | std::ios::binary);
     logfile.close();
   }
 
@@ -139,34 +128,41 @@ void DihuContext::initializeLogging(int &argc, char *argv[])
   conf.setGlobally(el::ConfigurationType::ToStandardOutput, "true");
 
   // set format of outputs
-  conf.set(el::Level::Debug, el::ConfigurationType::Format, prefix+"DEBUG: %msg");
-  conf.set(el::Level::Trace, el::ConfigurationType::Format, prefix+"TRACE: %msg (" ANSI_COLOR_LIGHT_GRAY "%func" ANSI_COLOR_RESET " at "
-    ANSI_COLOR_LIGHT_GRAY "%loc" ANSI_COLOR_RESET ")");
-  conf.set(el::Level::Verbose, el::ConfigurationType::Format, ANSI_COLOR_LIGHT_WHITE "" + prefix+"VERB%vlevel: %msg" ANSI_COLOR_RESET);
+  conf.set(el::Level::Debug, el::ConfigurationType::Format,
+           prefix + "DEBUG: %msg");
+  conf.set(el::Level::Trace, el::ConfigurationType::Format,
+           prefix + "TRACE: %msg (" ANSI_COLOR_LIGHT_GRAY
+                    "%func" ANSI_COLOR_RESET " at " ANSI_COLOR_LIGHT_GRAY
+                    "%loc" ANSI_COLOR_RESET ")");
+  conf.set(el::Level::Verbose, el::ConfigurationType::Format,
+           ANSI_COLOR_LIGHT_WHITE "" + prefix +
+               "VERB%vlevel: %msg" ANSI_COLOR_RESET);
   conf.set(el::Level::Warning, el::ConfigurationType::Format,
-  //         prefix+"WARN : %loc %func: \n" ANSI_COLOR_YELLOW "Warning: " ANSI_COLOR_RESET "%msg");
-           prefix+ANSI_COLOR_YELLOW "Warning: " ANSI_COLOR_RESET "%msg");
+           //         prefix+"WARN : %loc %func: \n" ANSI_COLOR_YELLOW "Warning:
+           //         " ANSI_COLOR_RESET "%msg");
+           prefix + ANSI_COLOR_YELLOW "Warning: " ANSI_COLOR_RESET "%msg");
 
   conf.set(el::Level::Error, el::ConfigurationType::Format,
-           prefix+"ERROR: %loc %func: \n" ANSI_COLOR_RED "Error: %msg" ANSI_COLOR_RESET);
+           prefix + "ERROR: %loc %func: \n" ANSI_COLOR_RED
+                    "Error: %msg" ANSI_COLOR_RESET);
 
   conf.set(el::Level::Fatal, el::ConfigurationType::Format,
-           "FATAL: %loc %func: \n"+std::string(ANSI_COLOR_MAGENTA)+prefix+separator
-           +"\n\nFatal error: %msg\n"+separator+ANSI_COLOR_RESET+"\n");
+           "FATAL: %loc %func: \n" + std::string(ANSI_COLOR_MAGENTA) + prefix +
+               separator + "\n\nFatal error: %msg\n" + separator +
+               ANSI_COLOR_RESET + "\n");
 
   // disable output for ranks != 0
-  if (ownRankNoCommWorld_ > 0)
-  {
+  if (ownRankNoCommWorld_ > 0) {
     conf.set(el::Level::Info, el::ConfigurationType::Enabled, "false");
     conf.set(el::Level::Warning, el::ConfigurationType::Enabled, "false");
   }
 
-  //el::Loggers::addFlag(el::LoggingFlag::HierarchicalLogging);
+  // el::Loggers::addFlag(el::LoggingFlag::HierarchicalLogging);
 
-//#ifdef NDEBUG      // if release
-//  conf.set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
-//  std::cout<< "DISABLE Debug" << std::endl;
-//#endif
+  //#ifdef NDEBUG      // if release
+  //  conf.set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
+  //  std::cout<< "DISABLE Debug" << std::endl;
+  //#endif
 
   // reconfigure all loggers
   el::Loggers::reconfigureAllLoggers(conf);

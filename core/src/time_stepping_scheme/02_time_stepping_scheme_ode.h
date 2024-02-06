@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Python.h>  // has to be the first included header
+#include <Python.h> // has to be the first included header
 
 #include "control/dihu_context.h"
 #include "data_management/time_stepping/time_stepping.h"
@@ -12,14 +12,14 @@
 #include "spatial_discretization/dirichlet_boundary_conditions/01_dirichlet_boundary_conditions.h"
 #include "time_stepping_scheme/01_time_stepping_scheme_ode_base.h"
 
-namespace TimeSteppingScheme
-{
+namespace TimeSteppingScheme {
 /** This is the base class for all ode solvers.
  */
-template<typename DiscretizableInTimeType>
-class TimeSteppingSchemeOdeBaseDiscretizable:
-  public TimeSteppingSchemeOdeBase<typename DiscretizableInTimeType::FunctionSpace, DiscretizableInTimeType::nComponents()>
-{
+template <typename DiscretizableInTimeType>
+class TimeSteppingSchemeOdeBaseDiscretizable
+    : public TimeSteppingSchemeOdeBase<
+          typename DiscretizableInTimeType::FunctionSpace,
+          DiscretizableInTimeType::nComponents()> {
 public:
   typedef DiscretizableInTimeType DiscretizableInTime;
   typedef typename DiscretizableInTimeType::FunctionSpace FunctionSpace;
@@ -32,45 +32,48 @@ public:
 
   //! initialize discretizableInTime
   virtual void initialize();
-  
+
   //! discretizable in time object
   DiscretizableInTimeType &discretizableInTime();
-  
+
   //! set the subset of ranks that will compute the work
   void setRankSubset(Partition::RankSubset rankSubset);
-  
+
   //! reset state such that new initialization becomes necessary
   virtual void reset();
 
   //! object that stores Dirichlet boundary condition values
-  std::shared_ptr<
-    SpatialDiscretization::DirichletBoundaryConditions<FunctionSpace,DiscretizableInTimeType::nComponents()>
-  > dirichletBoundaryConditions();
+  std::shared_ptr<SpatialDiscretization::DirichletBoundaryConditions<
+      FunctionSpace, DiscretizableInTimeType::nComponents()>>
+  dirichletBoundaryConditions();
 
 protected:
-
-  //! prepare the discretizableInTime object for the following call to getSlotConnectorData()
+  //! prepare the discretizableInTime object for the following call to
+  //! getSlotConnectorData()
   virtual void prepareForGetSlotConnectorData() override;
 
-  //int timeStepOutputInterval_;    //< time step number and time is output every timeStepOutputInterval_ time steps
-  DiscretizableInTimeType discretizableInTime_;    //< the object to be discretized
-  bool initialized_;     //< if initialize() was already called
+  // int timeStepOutputInterval_;    //< time step number and time is output
+  // every timeStepOutputInterval_ time steps
+  DiscretizableInTimeType discretizableInTime_; //< the object to be discretized
+  bool initialized_; //< if initialize() was already called
 
-  std::shared_ptr<
-    SpatialDiscretization::DirichletBoundaryConditions<FunctionSpace,DiscretizableInTimeType::nComponents()>
-  > dirichletBoundaryConditions_;  //< object that stores Dirichlet boundary condition values
+  std::shared_ptr<SpatialDiscretization::DirichletBoundaryConditions<
+      FunctionSpace, DiscretizableInTimeType::nComponents()>>
+      dirichletBoundaryConditions_; //< object that stores Dirichlet boundary
+                                    // condition values
 };
 
-template<typename DiscretizableInTimeType>
-class TimeSteppingSchemeOde :
-  public TimeSteppingSchemeOdeBaseDiscretizable<DiscretizableInTimeType>
-  {
+template <typename DiscretizableInTimeType>
+class TimeSteppingSchemeOde
+    : public TimeSteppingSchemeOdeBaseDiscretizable<DiscretizableInTimeType> {
 public:
   //! use constructor of parent class
-  using TimeSteppingSchemeOdeBaseDiscretizable<DiscretizableInTimeType>::TimeSteppingSchemeOdeBaseDiscretizable;
-  
-  //using TimeSteppingSchemeOdeBaseDiscretizable<DiscretizableInTimeType>::initialize;
+  using TimeSteppingSchemeOdeBaseDiscretizable<
+      DiscretizableInTimeType>::TimeSteppingSchemeOdeBaseDiscretizable;
+
+  // using
+  // TimeSteppingSchemeOdeBaseDiscretizable<DiscretizableInTimeType>::initialize;
 };
-}  // namespace
+} // namespace TimeSteppingScheme
 
 #include "time_stepping_scheme/02_time_stepping_scheme_ode.tpp"

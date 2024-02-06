@@ -1,15 +1,11 @@
 #pragma once
 
-#include <Python.h>  // has to be the first included header
+#include <Python.h> // has to be the first included header
 
-namespace FieldVariable
-{
+namespace FieldVariable {
 
-template<typename FunctionSpaceType,int nComponents>
-class FieldVariableData
-{
+template <typename FunctionSpaceType, int nComponents> class FieldVariableData {
 public:
-
 };
 
-}  // namespace
+} // namespace FieldVariable

@@ -15,16 +15,18 @@
 #include "solver/solver_manager.h"
 #include "solver/linear.h"
 
-namespace SpatialDiscretization
-{
+namespace SpatialDiscretization {
 
-template<typename FunctionSpaceType, typename QuadratureType, int nComponents, typename Term>
-void FiniteElementMethodTimeStepping<FunctionSpaceType, QuadratureType, nComponents, Term>::
-computeInverseMassMatrixTimesRightHandSide(Vec &result)
-{
+template <typename FunctionSpaceType, typename QuadratureType, int nComponents,
+          typename Term>
+void FiniteElementMethodTimeStepping<
+    FunctionSpaceType, QuadratureType, nComponents,
+    Term>::computeInverseMassMatrixTimesRightHandSide(Vec &result) {
   // massMatrix * f_strong = rhs_weak
-  Vec &rightHandSide = this->data_.rightHandSide()->valuesGlobal();   // rhs in weak formulation
-  std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>> massMatrix = this->data_.massMatrix();
+  Vec &rightHandSide =
+      this->data_.rightHandSide()->valuesGlobal(); // rhs in weak formulation
+  std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>> massMatrix =
+      this->data_.massMatrix();
 
   PetscErrorCode ierr;
 
@@ -33,33 +35,39 @@ computeInverseMassMatrixTimesRightHandSide(Vec &result)
   initializeLinearSolver();
 
   // set matrix used for linear system and preconditioner to ksp context
-  ierr = KSPSetOperators(*ksp_, massMatrix->valuesGlobal(), massMatrix->valuesGlobal()); CHKERRV(ierr);
+  ierr = KSPSetOperators(*ksp_, massMatrix->valuesGlobal(),
+                         massMatrix->valuesGlobal());
+  CHKERRV(ierr);
 
-  // solve the system, KSP assumes the initial guess is to be zero (and thus zeros it out before solving)
-  if (VLOG_IS_ON(1))
-  {
+  // solve the system, KSP assumes the initial guess is to be zero (and thus
+  // zeros it out before solving)
+  if (VLOG_IS_ON(1)) {
     this->linearSolver_->solve(rightHandSide, result, "Rhs recovered");
-  }
-  else
-  {
+  } else {
     this->linearSolver_->solve(rightHandSide, result);
   }
 }
 
-template<typename FunctionSpaceType, typename QuadratureType, int nComponents, typename Term>
-void FiniteElementMethodTimeStepping<FunctionSpaceType, QuadratureType, nComponents, Term>::
-evaluateTimesteppingRightHandSideExplicit(Vec &input, Vec &output, int timeStepNo, double currentTime)
-{
+template <typename FunctionSpaceType, typename QuadratureType, int nComponents,
+          typename Term>
+void FiniteElementMethodTimeStepping<
+    FunctionSpaceType, QuadratureType, nComponents,
+    Term>::evaluateTimesteppingRightHandSideExplicit(Vec &input, Vec &output,
+                                                     int timeStepNo,
+                                                     double currentTime) {
   // this method computes output = M^{-1}*K*input
-  std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>> stiffnessMatrix = this->data_.stiffnessMatrix();
+  std::shared_ptr<PartitionedPetscMat<FunctionSpaceType>> stiffnessMatrix =
+      this->data_.stiffnessMatrix();
   Vec &rhs = this->data_.rightHandSide()->valuesGlobal();
 
   // check if matrix and vector sizes match
-  PetscUtility::checkDimensionsMatrixVector(stiffnessMatrix->valuesGlobal(), input);
+  PetscUtility::checkDimensionsMatrixVector(stiffnessMatrix->valuesGlobal(),
+                                            input);
 
   // compute rhs = stiffnessMatrix*input
   PetscErrorCode ierr;
-  ierr = MatMult(stiffnessMatrix->valuesGlobal(), input, rhs); CHKERRV(ierr);
+  ierr = MatMult(stiffnessMatrix->valuesGlobal(), input, rhs);
+  CHKERRV(ierr);
 
   // compute output = massMatrix^{-1}*rhs
   computeInverseMassMatrixTimesRightHandSide(output);

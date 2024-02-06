@@ -1,41 +1,47 @@
 #include "specialized_solver/solid_mechanics/hyperelasticity/01_material_computations.h"
 
-#include <Python.h>  // has to be the first included header
+#include <Python.h> // has to be the first included header
 
 #include "equation/mooney_rivlin_incompressible.h"
 
-namespace SpatialDiscretization
-{
+namespace SpatialDiscretization {
 
-template<typename Term,bool withLargeOutput,typename MeshType,int nDisplacementComponents>
-template<typename double_v_t>
-double HyperelasticityMaterialComputations<Term,withLargeOutput,MeshType,nDisplacementComponents>::
-computeSbarC(const Tensor2<3,double_v_t> &Sbar, const Tensor2<3,double_v_t> &C)
-{
+template <typename Term, bool withLargeOutput, typename MeshType,
+          int nDisplacementComponents>
+template <typename double_v_t>
+double HyperelasticityMaterialComputations<
+    Term, withLargeOutput, MeshType,
+    nDisplacementComponents>::computeSbarC(const Tensor2<3, double_v_t> &Sbar,
+                                           const Tensor2<3, double_v_t> &C) {
   double_v_t SbarC = 0;
-  for (int a = 0; a < 3; a++)
-  {
-    for (int b = 0; b < 3; b++)
-    {
+  for (int a = 0; a < 3; a++) {
+    for (int b = 0; b < 3; b++) {
       SbarC += Sbar[b][a] * C[b][a];
     }
   }
   return SbarC;
 }
 
-template<typename Term,bool withLargeOutput,typename MeshType,int nDisplacementComponents>
-template<typename double_v_t>
-void HyperelasticityMaterialComputations<Term,withLargeOutput,MeshType,nDisplacementComponents>::
-materialTesting(const double_v_t pressure,                            //< [in] pressure value p
-                const Tensor2<3,double_v_t> &rightCauchyGreen,        //< [in] C
-                const Tensor2<3,double_v_t> &inverseRightCauchyGreen, //< [in] C^{-1}
-                const std::array<double_v_t,5> reducedInvariants,     //< [in] the reduced invariants Ibar_1, Ibar_2
-                const double_v_t deformationGradientDeterminant,      //< [in] J = det(F)
-                VecD<3,double_v_t> fiberDirection,                    //< [in] a0, direction of fibers
-                Tensor2<3,double_v_t> &fictitiousPK2Stress,           //< [in] Sbar, the fictitious 2nd Piola-Kirchhoff stress tensor
-                Tensor2<3,double_v_t> &pk2StressIsochoric             //< [in] S_iso, the isochoric part of the 2nd Piola-Kirchhoff stress tensor
-               )
-{
+template <typename Term, bool withLargeOutput, typename MeshType,
+          int nDisplacementComponents>
+template <typename double_v_t>
+void HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
+                                         nDisplacementComponents>::
+    materialTesting(
+        const double_v_t pressure, //< [in] pressure value p
+        const Tensor2<3, double_v_t> &rightCauchyGreen,        //< [in] C
+        const Tensor2<3, double_v_t> &inverseRightCauchyGreen, //< [in] C^{-1}
+        const std::array<double_v_t, 5>
+            reducedInvariants, //< [in] the reduced invariants Ibar_1, Ibar_2
+        const double_v_t deformationGradientDeterminant, //< [in] J = det(F)
+        VecD<3, double_v_t> fiberDirection, //< [in] a0, direction of fibers
+        Tensor2<3, double_v_t>
+            &fictitiousPK2Stress, //< [in] Sbar, the fictitious 2nd
+                                  // Piola-Kirchhoff stress tensor
+        Tensor2<3, double_v_t>
+            &pk2StressIsochoric //< [in] S_iso, the isochoric part of the 2nd
+                                // Piola-Kirchhoff stress tensor
+    ) {
   // note, this is implemented for double_v_t == double
 
   // this function contains a lot of checks if the implementation is correct
@@ -1133,4 +1139,4 @@ materialTesting(const double_v_t pressure,                            //< [in] p
 #endif
 }
 
-} // namespace
+} // namespace SpatialDiscretization

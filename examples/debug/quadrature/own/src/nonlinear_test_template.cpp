@@ -4,13 +4,14 @@
 
 #include "opendihu.h"
 
-void testQuadrature(int argc, char *argv[])
-{
-  // specify the class to be used for the quadrature. Change the first argument after typedef!
-  //typedef Quadrature::ClenshawCurtis<5> QuadratureType;
-  
+void testQuadrature(int argc, char *argv[]) {
+  // specify the class to be used for the quadrature. Change the first argument
+  // after typedef!
+  // typedef Quadrature::ClenshawCurtis<5> QuadratureType;
+
   // define problem configuration
-  // 2D Mooney-Rivlin incompressible material, mixed formulation, Taylor-Hood elements, no static condensation
+  // 2D Mooney-Rivlin incompressible material, mixed formulation, Taylor-Hood
+  // elements, no static condensation
   std::string pythonConfig = R"(
 import random
 
@@ -61,22 +62,18 @@ config = {
 
   // initialize everything, handle arguments and parse settings from input file
   DihuContext settings(argc, argv, pythonConfig);
-  
+
   // define computation structure
   SpatialDiscretization::FiniteElementMethod<
-    Mesh::StructuredDeformableOfDimension<2>,
-    BasisFunction::Mixed<
-      BasisFunction::LagrangeOfOrder<1>,
-      BasisFunction::LagrangeOfOrder<2>
-    >,
-    Quadrature::Mixed<
-      Quadrature::Gauss<2>,  // low order (pressure)
-      QuadratureType   // high order (displacements)
-    >,
-    Equation::Static::MooneyRivlinIncompressible2D
-  >
-  problem(settings);
-  
+      Mesh::StructuredDeformableOfDimension<2>,
+      BasisFunction::Mixed<BasisFunction::LagrangeOfOrder<1>,
+                           BasisFunction::LagrangeOfOrder<2>>,
+      Quadrature::Mixed<Quadrature::Gauss<2>, // low order (pressure)
+                        QuadratureType        // high order (displacements)
+                        >,
+      Equation::Static::MooneyRivlinIncompressible2D>
+      problem(settings);
+
   // run simulation
   problem.run();
 }

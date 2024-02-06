@@ -45,7 +45,7 @@ public:
     v_.resize(5);
     std::iota(v_.begin(), v_.end(), 0);
   }
-  
+
   void print()
   {
     LOG(DEBUG) << "v: ";
@@ -62,64 +62,69 @@ protected:
   std::vector<int> v_;
 };
 */
-double gen()
-{
-  double d = rand()*1e-5;
-  if (rand()%2 == 0)
-  {
+double gen() {
+  double d = rand() * 1e-5;
+  if (rand() % 2 == 0) {
     return -d;
   }
   return d;
 }
-int main(int argc, char *argv[])
-{/*
-  LOG(DEBUG) << "debug" << f(1);
-  LOG(INFO) << "info" << f(2);
-  VLOG(1) << "vlog1 " << f(3);
-  LOG(ERROR) << "logerror" << f(4);
-  
-  cout << "double vector size: " << Vc::double_v::size() << ", float vector size: " << Vc::float_v::size() << endl;
-  
-  // test Vc
-  
-  Vc::array<double,14> data;
-  std::iota(data.begin(), data.end(), 10);
-  
-  LOG(INFO) << "data: " << data;
-  //auto indexes = Vc::double_v::IndexType::IndexesFromZero();
-  auto indexes = Vc::double_v([](int n) { return n; });
-  Vc::double_v gathered = data[indexes];  // gathered == [0, 1, 2, ...]
-  LOG(INFO) << "gathered: " << gathered;
-  
-  //Vc::double_v gathered2 = data[Vc::IndexesFromZero];  // gathered == [0, 1, 2, ...]
-  //LOG(DEBUG) << "gathered2: " << gathered2;
-  
-  auto indexes2 = Vc::double_v([](int n) { return n+1; });
-  LOG(INFO) << StringUtility::demangle(typeid(indexes2).name());
-  Vc::double_v gathered3 = data[indexes2];  // gathered == [0, 1, 2, ...]
-  LOG(INFO) << "indexes2: " << indexes2 << ", gathered3: " << gathered3 << ",";
+int main(
+    int argc,
+    char *argv
+        []) { /*
+               LOG(DEBUG) << "debug" << f(1);
+               LOG(INFO) << "info" << f(2);
+               VLOG(1) << "vlog1 " << f(3);
+               LOG(ERROR) << "logerror" << f(4);
 
-  for (int i = 0; i < int(ceil((float)data.size() / Vc::double_v::size())); i++)
-  {
-    auto indexes = Vc::double_v([&i](int n) { return i*Vc::double_v::size() + n; });
-    Vc::double_v v = data[indexes];
-    LOG(INFO) << "indexes: " << indexes << ", v: " << v;
-  }*/
+               cout << "double vector size: " << Vc::double_v::size() << ",
+               float vector size: " << Vc::float_v::size() << endl;
 
-  VecD<3,Vc::double_v> a{Vc::double_v(Vc::Zero),Vc::double_v(Vc::Zero),Vc::double_v(Vc::One)};
+               // test Vc
+
+               Vc::array<double,14> data;
+               std::iota(data.begin(), data.end(), 10);
+
+               LOG(INFO) << "data: " << data;
+               //auto indexes = Vc::double_v::IndexType::IndexesFromZero();
+               auto indexes = Vc::double_v([](int n) { return n; });
+               Vc::double_v gathered = data[indexes];  // gathered == [0, 1, 2,
+               ...] LOG(INFO) << "gathered: " << gathered;
+
+               //Vc::double_v gathered2 = data[Vc::IndexesFromZero];  //
+               gathered == [0, 1, 2, ...]
+               //LOG(DEBUG) << "gathered2: " << gathered2;
+
+               auto indexes2 = Vc::double_v([](int n) { return n+1; });
+               LOG(INFO) << StringUtility::demangle(typeid(indexes2).name());
+               Vc::double_v gathered3 = data[indexes2];  // gathered == [0, 1,
+               2, ...] LOG(INFO) << "indexes2: " << indexes2 << ", gathered3: "
+               << gathered3 << ",";
+
+               for (int i = 0; i < int(ceil((float)data.size() /
+               Vc::double_v::size())); i++)
+               {
+                 auto indexes = Vc::double_v([&i](int n) { return
+               i*Vc::double_v::size() + n; }); Vc::double_v v = data[indexes];
+                 LOG(INFO) << "indexes: " << indexes << ", v: " << v;
+               }*/
+
+  VecD<3, Vc::double_v> a{Vc::double_v(Vc::Zero), Vc::double_v(Vc::Zero),
+                          Vc::double_v(Vc::One)};
   a[0][0] = 0.1;
   a[0][1] = 0.2;
   a[0][2] = 0.3;
   a[0][3] = 0.4;
-  Vc::double_v inverseNorm = 1./MathUtility::norm<3,Vc::double_v>(a);
-  
+  Vc::double_v inverseNorm = 1. / MathUtility::norm<3, Vc::double_v>(a);
+
   LOG(INFO) << a;
   LOG(INFO) << "inverseNorm: " << inverseNorm;
-  LOG(INFO) << a*inverseNorm;
-  VecD<3,Vc::double_v> normalizedA = a*inverseNorm;
-  LOG(INFO) << MathUtility::norm<3,Vc::double_v>(normalizedA);
-  
-  MathUtility::normalize<3,Vc::double_v>(a);
+  LOG(INFO) << a * inverseNorm;
+  VecD<3, Vc::double_v> normalizedA = a * inverseNorm;
+  LOG(INFO) << MathUtility::norm<3, Vc::double_v>(normalizedA);
+
+  MathUtility::normalize<3, Vc::double_v>(a);
   LOG(INFO) << a;
   exit(0);
 #if 0  

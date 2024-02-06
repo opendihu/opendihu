@@ -1,0 +1,8 @@
+#! /bin/bash
+# Call this script to format every c[pp] & h[pp] file
+# in the parent directory using clang-format
+
+# Format C/C++
+
+find . -not \( -path "./dependencies" -prune \) -iname *.h -o -iname *.cpp -o -iname *.tpp | xargs clang-format -i
+echo -e "\n Apply clang-format to OpenDiHu done."

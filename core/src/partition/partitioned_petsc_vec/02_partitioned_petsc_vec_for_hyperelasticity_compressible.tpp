@@ -4,53 +4,72 @@
 
 // ---- compressible case ----
 //! constructor
-template<typename DisplacementsFunctionSpaceType, typename PressureFunctionSpaceType, typename Term, int nComponents>
-PartitionedPetscVecForHyperelasticity<DisplacementsFunctionSpaceType,PressureFunctionSpaceType,Term,nComponents,std::enable_if_t<!Term::isIncompressible,Term>>::
-PartitionedPetscVecForHyperelasticity(
-  std::shared_ptr<Partition::MeshPartition<DisplacementsFunctionSpaceType>> meshPartitionDisplacements,
-  std::shared_ptr<Partition::MeshPartition<PressureFunctionSpaceType>> meshPartitionPressure,
-  std::shared_ptr<SpatialDiscretization::DirichletBoundaryConditions<DisplacementsFunctionSpaceType,nComponents>> dirichletBoundaryConditions, std::string name) :
-  PartitionedPetscVecWithDirichletBc<DisplacementsFunctionSpaceType,nComponents,nComponents>(meshPartitionDisplacements, dirichletBoundaryConditions, name, true),
-  meshPartitionPressure_(meshPartitionPressure)
-{
+template <typename DisplacementsFunctionSpaceType,
+          typename PressureFunctionSpaceType, typename Term, int nComponents>
+PartitionedPetscVecForHyperelasticity<
+    DisplacementsFunctionSpaceType, PressureFunctionSpaceType, Term,
+    nComponents, std::enable_if_t<!Term::isIncompressible, Term>>::
+    PartitionedPetscVecForHyperelasticity(
+        std::shared_ptr<
+            Partition::MeshPartition<DisplacementsFunctionSpaceType>>
+            meshPartitionDisplacements,
+        std::shared_ptr<Partition::MeshPartition<PressureFunctionSpaceType>>
+            meshPartitionPressure,
+        std::shared_ptr<SpatialDiscretization::DirichletBoundaryConditions<
+            DisplacementsFunctionSpaceType, nComponents>>
+            dirichletBoundaryConditions,
+        std::string name)
+    : PartitionedPetscVecWithDirichletBc<DisplacementsFunctionSpaceType,
+                                         nComponents, nComponents>(
+          meshPartitionDisplacements, dirichletBoundaryConditions, name, true),
+      meshPartitionPressure_(meshPartitionPressure) {
   // initialize variables for 3 or 6 displacement/velocity components
-  LOG(DEBUG) << "\"" << this->name_ << "\" initialize PartitionedPetscVecForHyperelasticity";
+  LOG(DEBUG) << "\"" << this->name_
+             << "\" initialize PartitionedPetscVecForHyperelasticity";
   this->initialize(0);
 
   // create the Petsc Vec
   this->createVector();
 }
 
-template<typename DisplacementsFunctionSpaceType, typename PressureFunctionSpaceType, typename Term, int nComponents>
-std::shared_ptr<Partition::MeshPartition<PressureFunctionSpaceType>> PartitionedPetscVecForHyperelasticity<DisplacementsFunctionSpaceType,PressureFunctionSpaceType,Term,nComponents,std::enable_if_t<!Term::isIncompressible,Term>>::
-meshPartitionPressure()
-{
+template <typename DisplacementsFunctionSpaceType,
+          typename PressureFunctionSpaceType, typename Term, int nComponents>
+std::shared_ptr<Partition::MeshPartition<PressureFunctionSpaceType>>
+PartitionedPetscVecForHyperelasticity<
+    DisplacementsFunctionSpaceType, PressureFunctionSpaceType, Term,
+    nComponents,
+    std::enable_if_t<!Term::isIncompressible, Term>>::meshPartitionPressure() {
   return meshPartitionPressure_;
 }
 
-template<typename DisplacementsFunctionSpaceType, typename PressureFunctionSpaceType, typename Term, int nComponents>
-void PartitionedPetscVecForHyperelasticity<DisplacementsFunctionSpaceType,PressureFunctionSpaceType,Term,nComponents,std::enable_if_t<!Term::isIncompressible,Term>>::
-dumpGlobalNatural(std::string filename)
-{
+template <typename DisplacementsFunctionSpaceType,
+          typename PressureFunctionSpaceType, typename Term, int nComponents>
+void PartitionedPetscVecForHyperelasticity<
+    DisplacementsFunctionSpaceType, PressureFunctionSpaceType, Term,
+    nComponents, std::enable_if_t<!Term::isIncompressible, Term>>::
+    dumpGlobalNatural(std::string filename) {
   // write file
   std::ofstream file;
   std::string vectorName = filename;
   if (vectorName.find("/") != std::string::npos)
-    vectorName = vectorName.substr(vectorName.rfind("/")+1);
+    vectorName = vectorName.substr(vectorName.rfind("/") + 1);
   filename += std::string(".m");
   OutputWriter::Generic::openFile(file, filename);
 
   // write header
-  file << "% " << this->name_ << ", " << this->nEntriesGlobal_ << " entries, " << this->meshPartition_->nRanks() << " MPI ranks" << std::endl;
+  file << "% " << this->name_ << ", " << this->nEntriesGlobal_ << " entries, "
+       << this->meshPartition_->nRanks() << " MPI ranks" << std::endl;
   file << getString(false, vectorName);
   LOG(INFO) << "Vector \"" << filename << "\" written.";
   file.close();
 }
 
-template<typename DisplacementsFunctionSpaceType, typename PressureFunctionSpaceType, typename Term, int nComponents>
-std::string PartitionedPetscVecForHyperelasticity<DisplacementsFunctionSpaceType,PressureFunctionSpaceType,Term,nComponents,std::enable_if_t<!Term::isIncompressible,Term>>::
-getString(bool horizontal, std::string vectorName) const
-{
+template <typename DisplacementsFunctionSpaceType,
+          typename PressureFunctionSpaceType, typename Term, int nComponents>
+std::string PartitionedPetscVecForHyperelasticity<
+    DisplacementsFunctionSpaceType, PressureFunctionSpaceType, Term,
+    nComponents, std::enable_if_t<!Term::isIncompressible, Term>>::
+    getString(bool horizontal, std::string vectorName) const {
   /*does not compile for composite meshes*/
 #if 0
   // do not assemble a horizontal string for console in release mode, because this is only needed for debugging output
@@ -265,10 +284,12 @@ getString(bool horizontal, std::string vectorName) const
 #endif
 }
 
-template<typename DisplacementsFunctionSpaceType, typename PressureFunctionSpaceType, typename Term, int nComponents>
-IS PartitionedPetscVecForHyperelasticity<DisplacementsFunctionSpaceType,PressureFunctionSpaceType,Term,nComponents,std::enable_if_t<!Term::isIncompressible,Term>>::
-displacementDofsGlobal()
-{
+template <typename DisplacementsFunctionSpaceType,
+          typename PressureFunctionSpaceType, typename Term, int nComponents>
+IS PartitionedPetscVecForHyperelasticity<
+    DisplacementsFunctionSpaceType, PressureFunctionSpaceType, Term,
+    nComponents,
+    std::enable_if_t<!Term::isIncompressible, Term>>::displacementDofsGlobal() {
   MPI_Comm mpiCommunicator = this->meshPartition_->mpiCommunicator();
 
   // create index sets of rows of displacement dofs
@@ -278,34 +299,43 @@ displacementDofsGlobal()
 
   IS indexSet;
   PetscErrorCode ierr;
-  ierr = ISCreateGeneral(mpiCommunicator, nDisplacementDofsLocal, indices.data(), PETSC_COPY_VALUES, &indexSet); CHKERRABORT(mpiCommunicator,ierr);
+  ierr = ISCreateGeneral(mpiCommunicator, nDisplacementDofsLocal,
+                         indices.data(), PETSC_COPY_VALUES, &indexSet);
+  CHKERRABORT(mpiCommunicator, ierr);
 
   return indexSet;
 }
 
-template<typename DisplacementsFunctionSpaceType, typename PressureFunctionSpaceType, typename Term, int nComponents>
-IS PartitionedPetscVecForHyperelasticity<DisplacementsFunctionSpaceType,PressureFunctionSpaceType,Term,nComponents,std::enable_if_t<!Term::isIncompressible,Term>>::
-velocityDofsGlobal()
-{
+template <typename DisplacementsFunctionSpaceType,
+          typename PressureFunctionSpaceType, typename Term, int nComponents>
+IS PartitionedPetscVecForHyperelasticity<
+    DisplacementsFunctionSpaceType, PressureFunctionSpaceType, Term,
+    nComponents,
+    std::enable_if_t<!Term::isIncompressible, Term>>::velocityDofsGlobal() {
   MPI_Comm mpiCommunicator = this->meshPartition_->mpiCommunicator();
 
   // create index sets of rows of displacement dofs
   int nDisplacementDofsLocal = nDisplacementDofsWithoutBcLocal();
   int nVelocityDofsLocal = nVelocityDofsWithoutBcLocal();
   std::vector<dof_no_t> indices(nVelocityDofsLocal);
-  std::iota(indices.begin(), indices.end(), this->nonBcDofNoGlobalBegin_ + nDisplacementDofsLocal);
+  std::iota(indices.begin(), indices.end(),
+            this->nonBcDofNoGlobalBegin_ + nDisplacementDofsLocal);
 
   IS indexSet;
   PetscErrorCode ierr;
-  ierr = ISCreateGeneral(mpiCommunicator, nVelocityDofsLocal, indices.data(), PETSC_COPY_VALUES, &indexSet); CHKERRABORT(mpiCommunicator,ierr);
+  ierr = ISCreateGeneral(mpiCommunicator, nVelocityDofsLocal, indices.data(),
+                         PETSC_COPY_VALUES, &indexSet);
+  CHKERRABORT(mpiCommunicator, ierr);
 
   return indexSet;
 }
 
-template<typename DisplacementsFunctionSpaceType, typename PressureFunctionSpaceType, typename Term, int nComponents>
-IS PartitionedPetscVecForHyperelasticity<DisplacementsFunctionSpaceType,PressureFunctionSpaceType,Term,nComponents,std::enable_if_t<!Term::isIncompressible,Term>>::
-pressureDofsGlobal()
-{
+template <typename DisplacementsFunctionSpaceType,
+          typename PressureFunctionSpaceType, typename Term, int nComponents>
+IS PartitionedPetscVecForHyperelasticity<
+    DisplacementsFunctionSpaceType, PressureFunctionSpaceType, Term,
+    nComponents,
+    std::enable_if_t<!Term::isIncompressible, Term>>::pressureDofsGlobal() {
   MPI_Comm mpiCommunicator = this->meshPartition_->mpiCommunicator();
 
   // create index sets of rows of pressure dofs
@@ -313,55 +343,63 @@ pressureDofsGlobal()
   std::vector<dof_no_t> indices(nPressureDofsLocal);
   IS indexSet;
   PetscErrorCode ierr;
-  ierr = ISCreateGeneral(mpiCommunicator, nPressureDofsLocal, indices.data(), PETSC_COPY_VALUES, &indexSet); CHKERRABORT(mpiCommunicator,ierr);
+  ierr = ISCreateGeneral(mpiCommunicator, nPressureDofsLocal, indices.data(),
+                         PETSC_COPY_VALUES, &indexSet);
+  CHKERRABORT(mpiCommunicator, ierr);
 
   return indexSet;
 }
 
-template<typename DisplacementsFunctionSpaceType, typename PressureFunctionSpaceType, typename Term, int nComponents>
-dof_no_t PartitionedPetscVecForHyperelasticity<DisplacementsFunctionSpaceType,PressureFunctionSpaceType,Term,nComponents,std::enable_if_t<!Term::isIncompressible,Term>>::
-nDisplacementDofsWithoutBcLocal()
-{
+template <typename DisplacementsFunctionSpaceType,
+          typename PressureFunctionSpaceType, typename Term, int nComponents>
+dof_no_t PartitionedPetscVecForHyperelasticity<
+    DisplacementsFunctionSpaceType, PressureFunctionSpaceType, Term,
+    nComponents, std::enable_if_t<!Term::isIncompressible, Term>>::
+    nDisplacementDofsWithoutBcLocal() {
   dof_no_t result = 0;
-  for (int componentNo = 0; componentNo < 3; componentNo++)
-  {
+  for (int componentNo = 0; componentNo < 3; componentNo++) {
     result += this->nNonBcDofsWithoutGhosts_[componentNo];
   }
   return result;
 }
 
-template<typename DisplacementsFunctionSpaceType, typename PressureFunctionSpaceType, typename Term, int nComponents>
-dof_no_t PartitionedPetscVecForHyperelasticity<DisplacementsFunctionSpaceType,PressureFunctionSpaceType,Term,nComponents,std::enable_if_t<!Term::isIncompressible,Term>>::
-nVelocityDofsWithoutBcLocal()
-{
+template <typename DisplacementsFunctionSpaceType,
+          typename PressureFunctionSpaceType, typename Term, int nComponents>
+dof_no_t PartitionedPetscVecForHyperelasticity<
+    DisplacementsFunctionSpaceType, PressureFunctionSpaceType, Term,
+    nComponents, std::enable_if_t<!Term::isIncompressible, Term>>::
+    nVelocityDofsWithoutBcLocal() {
   dof_no_t result = 0;
-  for (int componentNo = 3; componentNo < nComponents; componentNo++)
-  {
+  for (int componentNo = 3; componentNo < nComponents; componentNo++) {
     result += this->nNonBcDofsWithoutGhosts_[componentNo];
   }
   return result;
 }
 
-template<typename DisplacementsFunctionSpaceType, typename PressureFunctionSpaceType, typename Term, int nComponents>
-bool PartitionedPetscVecForHyperelasticity<DisplacementsFunctionSpaceType,PressureFunctionSpaceType,Term,nComponents,std::enable_if_t<!Term::isIncompressible,Term>>::
-containsNanOrInf()
-{
+template <typename DisplacementsFunctionSpaceType,
+          typename PressureFunctionSpaceType, typename Term, int nComponents>
+bool PartitionedPetscVecForHyperelasticity<
+    DisplacementsFunctionSpaceType, PressureFunctionSpaceType, Term,
+    nComponents,
+    std::enable_if_t<!Term::isIncompressible, Term>>::containsNanOrInf() {
   // get all local values
   std::vector<double> values;
 
-  for (int componentNo = 0; componentNo < nComponents; componentNo++)
-  {
+  for (int componentNo = 0; componentNo < nComponents; componentNo++) {
     values.resize(this->meshPartition_->nDofsLocalWithoutGhosts());
 
-    // void getValues(int componentNo, PetscInt ni, const PetscInt ix[], PetscScalar y[]) const;
-    this->getValues(componentNo, this->meshPartition_->nDofsLocalWithoutGhosts(), this->meshPartition_->dofNosLocal().data(), values.data());
+    // void getValues(int componentNo, PetscInt ni, const PetscInt ix[],
+    // PetscScalar y[]) const;
+    this->getValues(componentNo,
+                    this->meshPartition_->nDofsLocalWithoutGhosts(),
+                    this->meshPartition_->dofNosLocal().data(), values.data());
 
     // loop over values and check if they are neither nan nor inf
-    for (int i = 0; i < values.size(); i++)
-    {
-      if (!std::isfinite(values[i]) || fabs(values[i]) > 1e+75)
-      {
-        LOG(ERROR) << "containsNanOrInf(): value " << i << "/" << values.size() << ", component " << componentNo << "/" << nComponents << ": " << values[i];
+    for (int i = 0; i < values.size(); i++) {
+      if (!std::isfinite(values[i]) || fabs(values[i]) > 1e+75) {
+        LOG(ERROR) << "containsNanOrInf(): value " << i << "/" << values.size()
+                   << ", component " << componentNo << "/" << nComponents
+                   << ": " << values[i];
         return true;
       }
     }

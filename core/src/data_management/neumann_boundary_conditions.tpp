@@ -2,26 +2,19 @@
 
 #include "easylogging++.h"
 
-namespace Data
-{
+namespace Data {
 
-template<typename FunctionSpaceType,int nComponents>
-NeumannBoundaryConditions<FunctionSpaceType,nComponents>::
-~NeumannBoundaryConditions()
-{
-}
+template <typename FunctionSpaceType, int nComponents>
+NeumannBoundaryConditions<FunctionSpaceType,
+                          nComponents>::~NeumannBoundaryConditions() {}
 
-template<typename FunctionSpaceType,int nComponents>
-void NeumannBoundaryConditions<FunctionSpaceType,nComponents>::
-initialize()
-{
+template <typename FunctionSpaceType, int nComponents>
+void NeumannBoundaryConditions<FunctionSpaceType, nComponents>::initialize() {
   Data<FunctionSpaceType>::initialize();
 }
 
-template<typename FunctionSpaceType,int nComponents>
-void NeumannBoundaryConditions<FunctionSpaceType,nComponents>::
-reset()
-{
+template <typename FunctionSpaceType, int nComponents>
+void NeumannBoundaryConditions<FunctionSpaceType, nComponents>::reset() {
   // set initalize_ to false
   Data<FunctionSpaceType>::reset();
 
@@ -30,27 +23,26 @@ reset()
   this->deformationGradient_ = nullptr;
 }
 
-template<typename FunctionSpaceType,int nComponents>
-void NeumannBoundaryConditions<FunctionSpaceType,nComponents>::
-createPetscObjects()
-{
+template <typename FunctionSpaceType, int nComponents>
+void NeumannBoundaryConditions<FunctionSpaceType,
+                               nComponents>::createPetscObjects() {
   LOG(TRACE) << "NeumannBoundaryConditions::createPetscObjects";
 
   assert(this->functionSpace_);
-  this->rhs_ = this->functionSpace_->template createFieldVariable<nComponents>("-rhsNeumannBC");
+  this->rhs_ = this->functionSpace_->template createFieldVariable<nComponents>(
+      "-rhsNeumannBC");
 }
 
-template<typename FunctionSpaceType,int nComponents>
-std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType,nComponents>> NeumannBoundaryConditions<FunctionSpaceType,nComponents>::
-rhs()
-{
+template <typename FunctionSpaceType, int nComponents>
+std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, nComponents>>
+NeumannBoundaryConditions<FunctionSpaceType, nComponents>::rhs() {
   return this->rhs_;
 }
 
-template<typename FunctionSpaceType,int nComponents>
-std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType,9>> &NeumannBoundaryConditions<FunctionSpaceType,nComponents>::
-deformationGradient()
-{
+template <typename FunctionSpaceType, int nComponents>
+std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 9>> &
+NeumannBoundaryConditions<FunctionSpaceType,
+                          nComponents>::deformationGradient() {
   return this->deformationGradient_;
 }
 

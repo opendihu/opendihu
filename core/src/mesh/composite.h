@@ -1,23 +1,20 @@
 #pragma once
 
-#include <Python.h>  // has to be the first included header
+#include <Python.h> // has to be the first included header
 #include <array>
 
 #include "control/types.h"
 #include "mesh/mesh.h"
 
-namespace Mesh
-{
+namespace Mesh {
 
 /**
- * A composite mesh is a mesh that consists of multiple submeshes of dimension D.
- * Using this it is possible to model a geometry other than a cuboid
- * that behaves the same way as a normal structured mesh.
+ * A composite mesh is a mesh that consists of multiple submeshes of dimension
+ * D. Using this it is possible to model a geometry other than a cuboid that
+ * behaves the same way as a normal structured mesh.
  * @param D dimension
  */
-template<int D>
-class CompositeOfDimension : public MeshOfDimension<D>
-{
+template <int D> class CompositeOfDimension : public MeshOfDimension<D> {
 public:
   //! constructor from python settings, one for each submesh
   CompositeOfDimension(PythonConfig specificSettings);
@@ -29,12 +26,12 @@ public:
   global_no_t nElementsGlobal() const;
 
 protected:
-
-  element_no_t nElementsLocal_;     // local number of elements which is the sum of local elements of all submeshes
-  global_no_t nElementsGlobal_;     // global number of elements which is the sum of global elements of all submeshes
+  element_no_t nElementsLocal_; // local number of elements which is the sum of
+                                // local elements of all submeshes
+  global_no_t nElementsGlobal_; // global number of elements which is the sum of
+                                // global elements of all submeshes
 };
 
-}  // namespace
+} // namespace Mesh
 
 #include "mesh/composite.tpp"
-

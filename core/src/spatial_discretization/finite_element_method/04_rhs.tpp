@@ -12,43 +12,49 @@
 #include "utility/python_utility.h"
 #include "utility/petsc_utility.h"
 
-namespace SpatialDiscretization
-{
+namespace SpatialDiscretization {
 
-template<typename FunctionSpaceType, typename QuadratureType, int nComponents, typename Term>
-void FiniteElementMethodRhs<FunctionSpaceType, QuadratureType, nComponents, Term>::
-setRightHandSide()
-{
+template <typename FunctionSpaceType, typename QuadratureType, int nComponents,
+          typename Term>
+void FiniteElementMethodRhs<FunctionSpaceType, QuadratureType, nComponents,
+                            Term>::setRightHandSide() {
   LOG(TRACE) << "setRightHandSide";
 
-  dof_no_t nUnknownsLocal = this->data_.functionSpace()->nDofsLocalWithoutGhosts()*nComponents;     // local unknows without ghosts
-  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType,nComponents>> rightHandSide = this->data_.rightHandSide();
+  dof_no_t nUnknownsLocal =
+      this->data_.functionSpace()->nDofsLocalWithoutGhosts() *
+      nComponents; // local unknows without ghosts
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, nComponents>>
+      rightHandSide = this->data_.rightHandSide();
 
   std::vector<VecD<nComponents>> localValues;
-  
+
   // parse values from config
-  bool inputMeshIsGlobal = this->specificSettings_.getOptionBool("inputMeshIsGlobal", true);
-  if (inputMeshIsGlobal)
-  {
-    global_no_t nUnknownsGlobal = this->data_.functionSpace()->nDofsGlobal()*nComponents;
+  bool inputMeshIsGlobal =
+      this->specificSettings_.getOptionBool("inputMeshIsGlobal", true);
+  if (inputMeshIsGlobal) {
+    global_no_t nUnknownsGlobal =
+        this->data_.functionSpace()->nDofsGlobal() * nComponents;
 
-    this->specificSettings_.template getOptionVector<VecD<nComponents>>("rightHandSide", nUnknownsGlobal, localValues);
-    this->data_.functionSpace()->meshPartition()->extractLocalDofsWithoutGhosts(localValues);
-  }
-  else 
-  {
-    this->specificSettings_.template getOptionVector<VecD<nComponents>>("rightHandSide", nUnknownsLocal, localValues);
+    this->specificSettings_.template getOptionVector<VecD<nComponents>>(
+        "rightHandSide", nUnknownsGlobal, localValues);
+    this->data_.functionSpace()->meshPartition()->extractLocalDofsWithoutGhosts(
+        localValues);
+  } else {
+    this->specificSettings_.template getOptionVector<VecD<nComponents>>(
+        "rightHandSide", nUnknownsLocal, localValues);
   }
 
-  // assign read values to rightHandSide variable. They are now stored in "strong form" and need to be transformed to "weak form" by multiplying with mass matrix
+  // assign read values to rightHandSide variable. They are now stored in
+  // "strong form" and need to be transformed to "weak form" by multiplying with
+  // mass matrix
   rightHandSide->setValuesWithoutGhosts(localValues);
 
   // transform the entries from strong form to weak form
   this->multiplyRightHandSideWithMassMatrix();
 
-  // if implemented for the current equation, further manipulate the rhs values that are now in weak form
-  // this method is empty by default
+  // if implemented for the current equation, further manipulate the rhs values
+  // that are now in weak form this method is empty by default
   this->manipulateWeakRhs();
 }
 
-}  // namespace
+} // namespace SpatialDiscretization

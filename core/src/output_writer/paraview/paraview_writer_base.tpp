@@ -16,15 +16,14 @@
 #include "mesh/mesh.h"
 #include "function_space/function_space.h"
 
-namespace OutputWriter
-{
+namespace OutputWriter {
 
-template<typename DataType>
-void ParaviewWriter::write(DataType& data, int timeStepNo, double currentTime, int callCountIncrement)
-{
+template <typename DataType>
+void ParaviewWriter::write(DataType &data, int timeStepNo, double currentTime,
+                           int callCountIncrement) {
   // check if output should be written in this timestep and prepare filename
-  if (!Generic::prepareWrite(data, timeStepNo, currentTime, callCountIncrement))
-  {
+  if (!Generic::prepareWrite(data, timeStepNo, currentTime,
+                             callCountIncrement)) {
     return;
   }
 
@@ -32,25 +31,26 @@ void ParaviewWriter::write(DataType& data, int timeStepNo, double currentTime, i
 }
 
 template <int dimension, typename DataType>
-void ParaviewWriter::writeSolutionDim(DataType &data)
-{
-  LOG(TRACE) << "writeMesh<" << dimension<< ">()";
+void ParaviewWriter::writeSolutionDim(DataType &data) {
+  LOG(TRACE) << "writeMesh<" << dimension << ">()";
 
-  if (std::dynamic_pointer_cast<Mesh::StructuredRegularFixedOfDimension<dimension>>(data.functionSpace()) != NULL)
-  {
-    writeRectilinearGrid<Mesh::StructuredRegularFixedOfDimension<dimension>>(data);
-  }
-  else if (std::dynamic_pointer_cast<
-             FunctionSpace::FunctionSpace<Mesh::StructuredDeformableOfDimension<dimension>,BasisFunction::LagrangeOfOrder<1>>
-           >(data.functionSpace()) != NULL)
-  {
-    // structured grid only for elements that contain only nodes at the corners (i.e. linear lagrange elements)
+  if (std::dynamic_pointer_cast<
+          Mesh::StructuredRegularFixedOfDimension<dimension>>(
+          data.functionSpace()) != NULL) {
+    writeRectilinearGrid<Mesh::StructuredRegularFixedOfDimension<dimension>>(
+        data);
+  } else if (std::dynamic_pointer_cast<FunctionSpace::FunctionSpace<
+                 Mesh::StructuredDeformableOfDimension<dimension>,
+                 BasisFunction::LagrangeOfOrder<1>>>(data.functionSpace()) !=
+             NULL) {
+    // structured grid only for elements that contain only nodes at the corners
+    // (i.e. linear lagrange elements)
     writeStructuredGrid<dimension>(data);
-  }
-  else if (std::dynamic_pointer_cast<Mesh::UnstructuredDeformableOfDimension<dimension>>(data.functionSpace()) != NULL)
-  {
+  } else if (std::dynamic_pointer_cast<
+                 Mesh::UnstructuredDeformableOfDimension<dimension>>(
+                 data.functionSpace()) != NULL) {
     writeUnstructuredGrid<dimension>(data);
   }
 }
 
-};
+}; // namespace OutputWriter

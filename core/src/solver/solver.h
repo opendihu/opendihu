@@ -1,18 +1,17 @@
 #pragma once
 
-#include <Python.h>  // has to be the first included header
+#include <Python.h> // has to be the first included header
 #include <iostream>
 
 #include "control/python_config/python_config.h"
 
-namespace Solver
-{
+namespace Solver {
 
 /**
- * A solver object contains all parameters for PETSc and the PETSc solver object.
+ * A solver object contains all parameters for PETSc and the PETSc solver
+ * object.
  */
-class Solver
-{
+class Solver {
 public:
   //! construct solver from python settings
   Solver(PythonConfig specificSettings, std::string name);
@@ -27,10 +26,9 @@ public:
   std::string name();
 
 protected:
-
-  PythonConfig specificSettings_;   //< the python config dict
-  std::string name_;           //< the name of the solver
-  std::string durationLogKey_;         //< key for logging of the duration of solve
+  PythonConfig specificSettings_; //< the python config dict
+  std::string name_;              //< the name of the solver
+  std::string durationLogKey_;    //< key for logging of the duration of solve
 };
 
-}  // namespace
+} // namespace Solver

@@ -1,4 +1,4 @@
-name: general
+name: unit-tests
 on: [push, pull_request]
 jobs:
   container-test-job:

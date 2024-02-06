@@ -5,9 +5,9 @@ Conventions and Tips
 Style guide
 -------------
 
-- Write code in style similar to what is already there: camelCase, all in english, enough comments, comment all member variables and methods.
-- Use less abbreviations, instead long names for variables and methods. (Except maybe in comments)
-- The rest is common sense.
+OpenDiHu follows the [LLVM style guide]. If you make changes to OpenDiHu, you can use the [clang-format](https://clang.llvm.org/docs/ClangFormat.html) tool to format the code according to the style guide.
+
+You can install clang-format with `sudo apt install clang-format`. To format a specific file, run `clang-format -i file.cpp`. You can also format all files if you run `. tools/formatting/format-all` in the parent directory. 
 
 Commonly used terms
 -----------------------

@@ -6,34 +6,29 @@
 // author: Matteo, user matteotiziano
 // licence: MIT
 
-namespace MathUtility
-{
+namespace MathUtility {
 
-namespace NelderMead
-{
+namespace NelderMead {
 
 //-----------------------------------------------------------------------------
 // Definitions
 //-----------------------------------------------------------------------------
 
 // define a generic point containing a position (x) and a value (fx)
-typedef struct
-{
+typedef struct {
   double *x;
   double fx;
 } point_t;
 
 // define a simplex struct containing an array of n+1 points (p)
 // each having dimension (n)
-typedef struct
-{
+typedef struct {
   point_t *p;
   int n;
 } simplex_t;
 
 // define optimization settings
-typedef struct
-{
+typedef struct {
   double tolx;
   double tolf;
   int max_iter;
@@ -45,8 +40,7 @@ typedef struct
 // Cost function interface
 //-----------------------------------------------------------------------------
 
-typedef std::function<void (int, point_t *, const void *)> fun_t;
-
+typedef std::function<void(int, point_t *, const void *)> fun_t;
 
 //-----------------------------------------------------------------------------
 // Main function
@@ -81,5 +75,5 @@ void copyPoint(int, const point_t *, point_t *);
 
 void swapPoints(int, point_t *, point_t *);
 
-}  // namespace NelderMead
-}  // namespace MathUtility
+} // namespace NelderMead
+} // namespace MathUtility

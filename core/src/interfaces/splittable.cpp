@@ -1,5 +1,3 @@
 #include "interfaces/splittable.h"
 
-Splittable::Splittable()
-{
-}
+Splittable::Splittable() {}

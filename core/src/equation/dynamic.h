@@ -2,17 +2,15 @@
 
 #include "equation/equation.h"
 
-namespace Equation
-{
-namespace Dynamic
-{
+namespace Equation {
+namespace Dynamic {
 
-class Dynamic : public Equation
-{
+class Dynamic : public Equation {
 public:
   virtual ~Dynamic() {}
+
 private:
 };
 
-}  // namespace
-}  // namespace
+} // namespace Dynamic
+} // namespace Equation

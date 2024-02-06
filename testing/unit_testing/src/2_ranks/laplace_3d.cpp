@@ -1,4 +1,4 @@
-#include <Python.h>  // this has to be the first included header
+#include <Python.h> // this has to be the first included header
 
 #include <iostream>
 #include <cstdlib>
@@ -13,10 +13,10 @@
 #ifndef ON_TRAVIS_CI
 
 // 3D structured deformable
-TEST(LaplaceTest, SerialEqualsParallelDeformable3DLinear)
-{
+TEST(LaplaceTest, SerialEqualsParallelDeformable3DLinear) {
   LOG(INFO) << "wait 1 s";
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));  // pause execution, such that output files can be closed
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      1000)); // pause execution, such that output files can be closed
 
   // run serial problem
   std::string pythonConfig = R"(
@@ -63,14 +63,11 @@ config = {
 
   int ownRankNo = settings.ownRankNo();
 
-  Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+  Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredDeformableOfDimension<3>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > problemSerial(settings);
+      BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+      Equation::Static::Laplace>>
+      problemSerial(settings);
 
   problemSerial.run();
 
@@ -117,34 +114,28 @@ config = {
 
   DihuContext settings2(argc, argv, pythonConfig2);
 
-  Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+  Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredDeformableOfDimension<3>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > problemParallel(settings2);
+      BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+      Equation::Static::Laplace>>
+      problemParallel(settings2);
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out14.py", "out14.0.py", "out14.1.py"};
-  if (ownRankNo == 0)
-  {
+  std::vector<std::string> outputFilesToCheck = {"out14.py", "out14.0.py",
+                                                 "out14.1.py"};
+  if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
-  }
-  else
-  {
-
+  } else {
   }
 
   nFails += ::testing::Test::HasFailure();
 }
 
-TEST(LaplaceTest, SerialEqualsParallelDeformable3DQuadratic)
-{
+TEST(LaplaceTest, SerialEqualsParallelDeformable3DQuadratic) {
   LOG(INFO) << "wait 1 s";
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));  // pause execution, such that output files can be closed
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      1000)); // pause execution, such that output files can be closed
 
   // run serial problem
   std::string pythonConfig = R"(
@@ -241,14 +232,11 @@ config = {
 
   int ownRankNo = settings.ownRankNo();
 
-  typedef Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+  typedef Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredDeformableOfDimension<3>,
-      BasisFunction::LagrangeOfOrder<2>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > ProblemType;
+      BasisFunction::LagrangeOfOrder<2>, Quadrature::Gauss<2>,
+      Equation::Static::Laplace>>
+      ProblemType;
   ProblemType problemSerial(settings);
 
   problemSerial.run();
@@ -346,16 +334,15 @@ config = {
 }
 )";
 
-
   DihuContext settings2(argc, argv, pythonConfig2);
 
   ProblemType problemParallel(settings2);
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out15.py", "out15.0.py", "out15.1.py"};
-  if (ownRankNo == 0)
-  {
+  std::vector<std::string> outputFilesToCheck = {"out15.py", "out15.0.py",
+                                                 "out15.1.py"};
+  if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
   }
 
@@ -363,10 +350,10 @@ config = {
 }
 
 // Test does not converge and gives slightly different results
-TEST(LaplaceTest, SerialEqualsParallelDeformable3DHermite)
-{
+TEST(LaplaceTest, SerialEqualsParallelDeformable3DHermite) {
   LOG(INFO) << "wait 1 s";
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));  // pause execution, such that output files can be closed
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      1000)); // pause execution, such that output files can be closed
 
   // run serial problem
   std::string pythonConfig = R"(
@@ -412,16 +399,12 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
- int ownRankNo = settings.ownRankNo();
+  int ownRankNo = settings.ownRankNo();
 
-  typedef Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
-      Mesh::StructuredDeformableOfDimension<3>,
-      BasisFunction::Hermite,
-      Quadrature::Gauss<3>,
-      Equation::Static::Laplace
-    >
-  > ProblemType;
+  typedef Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
+      Mesh::StructuredDeformableOfDimension<3>, BasisFunction::Hermite,
+      Quadrature::Gauss<3>, Equation::Static::Laplace>>
+      ProblemType;
   ProblemType problemSerial(settings);
 
   problemSerial.run();
@@ -468,16 +451,15 @@ config = {
 }
 )";
 
-
   DihuContext settings2(argc, argv, pythonConfig2);
 
   ProblemType problemParallel(settings2);
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out16.py", "out16.0.py", "out16.1.py"};
-  if (ownRankNo == 0)
-  {
+  std::vector<std::string> outputFilesToCheck = {"out16.py", "out16.0.py",
+                                                 "out16.1.py"};
+  if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
   }
 
@@ -485,10 +467,10 @@ config = {
 }
 
 // 3D structured regular fixed
-TEST(LaplaceTest, SerialEqualsParallelRegular3DLinear)
-{
+TEST(LaplaceTest, SerialEqualsParallelRegular3DLinear) {
   LOG(INFO) << "wait 1 s";
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));  // pause execution, such that output files can be closed
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      1000)); // pause execution, such that output files can be closed
 
   // run serial problem
   std::string pythonConfig = R"(
@@ -535,14 +517,11 @@ config = {
 
   int ownRankNo = settings.ownRankNo();
 
-  Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+  Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredRegularFixedOfDimension<3>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > problemSerial(settings);
+      BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+      Equation::Static::Laplace>>
+      problemSerial(settings);
 
   problemSerial.run();
 
@@ -589,30 +568,27 @@ config = {
 
   DihuContext settings2(argc, argv, pythonConfig2);
 
-  Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+  Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredRegularFixedOfDimension<3>,
-      BasisFunction::LagrangeOfOrder<1>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > problemParallel(settings2);
+      BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
+      Equation::Static::Laplace>>
+      problemParallel(settings2);
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out17.py", "out17.0.py", "out17.1.py"};
-  if (ownRankNo == 0)
-  {
+  std::vector<std::string> outputFilesToCheck = {"out17.py", "out17.0.py",
+                                                 "out17.1.py"};
+  if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
   }
 
   nFails += ::testing::Test::HasFailure();
 }
 
-TEST(LaplaceTest, SerialEqualsParallelRegular3DQuadratic)
-{
+TEST(LaplaceTest, SerialEqualsParallelRegular3DQuadratic) {
   LOG(INFO) << "wait 1 s";
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));  // pause execution, such that output files can be closed
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      1000)); // pause execution, such that output files can be closed
 
   // run serial problem
   std::string pythonConfig = R"(
@@ -709,14 +685,11 @@ config = {
 
   int ownRankNo = settings.ownRankNo();
 
-  typedef Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
+  typedef Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
       Mesh::StructuredRegularFixedOfDimension<3>,
-      BasisFunction::LagrangeOfOrder<2>,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > ProblemType;
+      BasisFunction::LagrangeOfOrder<2>, Quadrature::Gauss<2>,
+      Equation::Static::Laplace>>
+      ProblemType;
   ProblemType problemSerial(settings);
 
   problemSerial.run();
@@ -813,16 +786,15 @@ config = {
 }
 )";
 
-
   DihuContext settings2(argc, argv, pythonConfig2);
 
   ProblemType problemParallel(settings2);
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out18.py", "out18.0.py", "out18.1.py"};
-  if (ownRankNo == 0)
-  {
+  std::vector<std::string> outputFilesToCheck = {"out18.py", "out18.0.py",
+                                                 "out18.1.py"};
+  if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
   }
 
@@ -830,10 +802,10 @@ config = {
 }
 
 // Test does sometimes not converge and gives slightly different solutions
-TEST(LaplaceTest, SerialEqualsParallelRegular3DHermite)
-{
+TEST(LaplaceTest, SerialEqualsParallelRegular3DHermite) {
   LOG(INFO) << "wait 1 s";
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));  // pause execution, such that output files can be closed
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      1000)); // pause execution, such that output files can be closed
 
   // run serial problem
   std::string pythonConfig = R"(
@@ -983,16 +955,12 @@ config = {
 
   DihuContext settings(argc, argv, pythonConfig);
 
- int ownRankNo = settings.ownRankNo();
+  int ownRankNo = settings.ownRankNo();
 
-  typedef Control::MultipleInstances<
-    SpatialDiscretization::FiniteElementMethod<
-      Mesh::StructuredRegularFixedOfDimension<3>,
-      BasisFunction::Hermite,
-      Quadrature::Gauss<2>,
-      Equation::Static::Laplace
-    >
-  > ProblemType;
+  typedef Control::MultipleInstances<SpatialDiscretization::FiniteElementMethod<
+      Mesh::StructuredRegularFixedOfDimension<3>, BasisFunction::Hermite,
+      Quadrature::Gauss<2>, Equation::Static::Laplace>>
+      ProblemType;
   ProblemType problemSerial(settings);
 
   problemSerial.run();
@@ -1143,18 +1111,17 @@ config = {
 }
 )";
 
-
   DihuContext settings2(argc, argv, pythonConfig2);
 
   ProblemType problemParallel(settings2);
 
   problemParallel.run();
 
-  std::vector<std::string> outputFilesToCheck = {"out19.py", "out19.0.py", "out19.1.py"};
-  if (ownRankNo == 0)
- {
-   assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
- }
+  std::vector<std::string> outputFilesToCheck = {"out19.py", "out19.0.py",
+                                                 "out19.1.py"};
+  if (ownRankNo == 0) {
+    assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
+  }
 
   nFails += ::testing::Test::HasFailure();
 }

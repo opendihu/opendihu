@@ -2,29 +2,25 @@
 
 #include "easylogging++.h"
 
-namespace Mesh
-{
+namespace Mesh {
 
-face_t parseFace(std::string str)
-{
+face_t parseFace(std::string str) {
   std::string faceNames[6] = {"0-", "0+", "1-", "1+", "2-", "2+"};
 
-  for (int i = 0; i < 6; i++)
-  {
-    if (str == faceNames[i])
-    {
+  for (int i = 0; i < 6; i++) {
+    if (str == faceNames[i]) {
       return face_t(i);
     }
   }
 
-  LOG(ERROR) << "Could not parse face \"" << str << "\", possible values are: \"0-\", \"0+\", \"1-\", \"1+\", \"2-\", \"2+\"";
+  LOG(ERROR) << "Could not parse face \"" << str
+             << "\", possible values are: \"0-\", \"0+\", \"1-\", \"1+\", "
+                "\"2-\", \"2+\"";
   return face_t::face0Minus;
 }
 
-std::string getString(face_t face)
-{
-  switch(face)
-  {
+std::string getString(face_t face) {
+  switch (face) {
   case face0Minus:
     return std::string("0-");
   case face0Plus:
@@ -40,10 +36,8 @@ std::string getString(face_t face)
   }
   return std::string("");
 }
-face_t oppositeFace(face_t face)
-{
-  switch(face)
-  {
+face_t oppositeFace(face_t face) {
+  switch (face) {
   case face0Minus:
   case face1Minus:
   case face2Minus:
@@ -56,11 +50,8 @@ face_t oppositeFace(face_t face)
 #endif
 }
 
-template<>
-Vec3 getNormal<3>(face_t face)
-{
-  switch(face)
-  {
+template <> Vec3 getNormal<3>(face_t face) {
+  switch (face) {
   case face0Minus:
     return Vec3({-1., 0., 0.});
   case face0Plus:
@@ -77,11 +68,8 @@ Vec3 getNormal<3>(face_t face)
   return Vec3();
 }
 
-template<>
-Vec2 getNormal<2>(face_t face)
-{
-  switch(face)
-  {
+template <> Vec2 getNormal<2>(face_t face) {
+  switch (face) {
   case face0Minus:
     return Vec2({-1., 0.});
   case face0Plus:
@@ -96,44 +84,40 @@ Vec2 getNormal<2>(face_t face)
   return Vec2();
 }
 
-Vec3 getXiOnFace(face_t face, std::array<double,2> xiSurface)
-{
+Vec3 getXiOnFace(face_t face, std::array<double, 2> xiSurface) {
   Vec3 xi;
 
   // xiSurface is 2D, coordinates on the face to integrate
   // set value of xi with 3D coordinates
-  switch(face)
-  {
+  switch (face) {
   case face_t::face0Minus:
-    xi = {0.0, xiSurface[1], xiSurface[0]};  // zy
+    xi = {0.0, xiSurface[1], xiSurface[0]}; // zy
     break;
   case face_t::face0Plus:
-    xi = {1.0, xiSurface[0], xiSurface[1]};  // yz
+    xi = {1.0, xiSurface[0], xiSurface[1]}; // yz
     break;
   case face_t::face1Minus:
-    xi = {xiSurface[0], 0.0, xiSurface[1]};  // xz
+    xi = {xiSurface[0], 0.0, xiSurface[1]}; // xz
     break;
   case face_t::face1Plus:
-    xi = {xiSurface[1], 1.0, xiSurface[0]};  // zx
+    xi = {xiSurface[1], 1.0, xiSurface[0]}; // zx
     break;
   case face_t::face2Minus:
-    xi = {xiSurface[1], xiSurface[0], 0.0};  // yx
+    xi = {xiSurface[1], xiSurface[0], 0.0}; // yx
     break;
   case face_t::face2Plus:
-    xi = {xiSurface[0], xiSurface[1], 1.0};  // xy
+    xi = {xiSurface[0], xiSurface[1], 1.0}; // xy
     break;
   }
   return xi;
 }
 
-Vec2 getXiOnFace(face_t face, std::array<double,1> xiSurface)
-{
+Vec2 getXiOnFace(face_t face, std::array<double, 1> xiSurface) {
   Vec2 xi;
 
   // xiSurface is 2D, coordinates on the face to integrate
   // set value of xi with 3D coordinates
-  switch(face)
-  {
+  switch (face) {
   case face_t::face0Minus:
     xi = {0.0, xiSurface[0]};
     break;
@@ -141,10 +125,10 @@ Vec2 getXiOnFace(face_t face, std::array<double,1> xiSurface)
     xi = {1.0, xiSurface[0]};
     break;
   case face_t::face1Minus:
-    xi = {xiSurface[0], 0.0};  // xz
+    xi = {xiSurface[0], 0.0}; // xz
     break;
   case face_t::face1Plus:
-    xi = {xiSurface[0], 1.0};  // zx
+    xi = {xiSurface[0], 1.0}; // zx
     break;
   default:
     LOG(ERROR) << "Face not valid for 2D element in getXiOnFace";
@@ -153,10 +137,8 @@ Vec2 getXiOnFace(face_t face, std::array<double,1> xiSurface)
 }
 
 //! dummy function
-VecD<1> getXiOnFace(face_t face, std::array<double,0> xiSurface)
-{
+VecD<1> getXiOnFace(face_t face, std::array<double, 0> xiSurface) {
   return VecD<1>({});
 }
 
-
-}  // namespace
+} // namespace Mesh

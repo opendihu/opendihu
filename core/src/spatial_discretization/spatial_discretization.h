@@ -1,13 +1,12 @@
 #pragma once
 
-namespace SpatialDiscretization
-{
+namespace SpatialDiscretization {
 
-class SpatialDiscretization
-{
+class SpatialDiscretization {
 public:
   virtual ~SpatialDiscretization() {}
+
 private:
 };
 
-}  // namespace
+} // namespace SpatialDiscretization
