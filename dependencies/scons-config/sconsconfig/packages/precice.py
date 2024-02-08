@@ -30,29 +30,39 @@ class precice(Package):
       std::ofstream file("install_precice-config.xml");
       file << R"(<?xml version="1.0"?>
 <precice-configuration>
- 
-    <!-- Data fields that are exchanged between the solvers -->
+    
     <data:scalar name="Data"/>
-
-    <!-- A common mesh that uses these data fields -->
-    <mesh name="Mesh" dimensions="3">
+    <mesh name="Mesh1" dimensions="3">
+      <use-data name="Data"/>
+    </mesh>
+    <mesh name="Mesh2" dimensions="3">
       <use-data name="Data"/>
     </mesh>
     
     <participant name="Participant1">
-      <provide-mesh name="Mesh"/>
+      <provide-mesh name="Mesh1"/>
+      <write-data name="Data" mesh="Mesh1"/>    
     </participant>
-    <participant name="Participant2">
-      <receive-mesh name="Mesh"/>
-    </participant>
-    <m2n:sockets from="Participant1" to="Participant2" network="lo" />
 
+    <participant name="Participant2">
+      <receive-mesh name="Mesh1"/>
+      <provide-mesh name="Mesh2"/>
+      <read-data name="Data" mesh="Mesh2"/>
+      <mapping:nearest-neighbor
+        direction="read"
+        from="Mesh1"
+        to="Mesh2"
+        constraint="consistent" />
+    </participant>
+    
+    <m2n:sockets acceptor="Participant1" connector="Participant2" network="lo" />
     <coupling-scheme:serial-explicit>
       <participants first="Participant1" second="Participant2"/>
       <time-window-size value="0.01"/>
       <max-time value="0.05"/>
-      <exchange data="Data" mesh="Mesh" from="Participant1" to="Participant2"/>
+      <exchange data="Data" mesh="Mesh1" from="Participant1" to="Participant2"/>
     </coupling-scheme:serial-explicit>
+
 </precice-configuration>
 )";
       file.close();
@@ -101,7 +111,7 @@ class precice(Package):
           -DLIBXML2_DIR=${LIBXML2_DIR} \
           -DLibXml2_ROOT=${LIBXML2_DIR} \
           ..',
-        'cd ${SOURCE_DIR}/build && CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:${PREFIX}/include/libxml2 make precice install -j 16'
+        'cd ${SOURCE_DIR}/build && CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:${PREFIX}/include/libxml2 make precice install -j 1'
       ])
       
       res = super(precice, self).check(ctx)
