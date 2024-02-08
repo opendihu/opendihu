@@ -6,7 +6,7 @@ class precice(Package):
 
   def __init__(self, **kwargs):
     defaults = {
-        'download_url': 'https://github.com/precice/precice/archive/refs/tags/v2.5.0.zip',
+        'download_url': 'https://github.com/precice/precice/archive/refs/tags/v3.0.0.zip',
     }
     defaults.update(kwargs)
     super(precice, self).__init__(**defaults)
@@ -23,30 +23,27 @@ class precice(Package):
     #include <iostream>
     #include <cstdlib>
     #include <fstream>
-    #include <precice/SolverInterface.hpp>
+    #include <precice/precice.hpp>
     
     int main()
     {
       std::ofstream file("install_precice-config.xml");
       file << R"(<?xml version="1.0"?>
 <precice-configuration>
-  <solver-interface dimensions="3">
-    
+ 
     <!-- Data fields that are exchanged between the solvers -->
     <data:scalar name="Data"/>
 
     <!-- A common mesh that uses these data fields -->
-    <mesh name="Mesh">
+    <mesh name="Mesh" dimensions="3">
       <use-data name="Data"/>
     </mesh>
     
     <participant name="Participant1">
-      <!-- Makes the named mesh available to the participant. Mesh is provided by the solver directly. -->
-      <use-mesh name="Mesh" provide="yes"/>
+      <provide-mesh name="Mesh"/>
     </participant>
     <participant name="Participant2">
-      <!-- Makes the named mesh available to the participant. Mesh is provided by the solver directly. -->
-      <use-mesh name="Mesh" provide="yes"/>
+      <receive-mesh name="Mesh"/>
     </participant>
     <m2n:sockets from="Participant1" to="Participant2" network="lo" />
 
@@ -56,14 +53,13 @@ class precice(Package):
       <max-time value="0.05"/>
       <exchange data="Data" mesh="Mesh" from="Participant1" to="Participant2"/>
     </coupling-scheme:serial-explicit>
-  </solver-interface>
 </precice-configuration>
 )";
       file.close();
     
-      precice::SolverInterface solverInterface("Participant1","install_precice-config.xml",0,1);
-      //solverInterface.initialize();
-      //solverInterface.finalize();
+      precice::Participant participant("Participant1","install_precice-config.xml",0,1);
+      //participant.initialize();
+      //participant.finalize();
       
       int ret = system("rm -f install_precice-config.xml");
     
@@ -77,7 +73,7 @@ class precice(Package):
     self.extra_libs = [[],
                        ['boost_filesystem', 'boost_log_setup', 'boost_log', 'boost_program_options', 'boost_system', 'boost_thread', 'boost_unit_test_framework', 'dl', 'boost_regex'],
     									 ['boost_atomic', 'boost_chrono', 'boost_filesystem', 'boost_log_setup', 'boost_log', 'boost_prg_exec_monitor', 'boost_program_options', 'boost_system', 'boost_test_exec_monitor', 'boost_thread', 'boost_unit_test_framework', 'dl', 'boost_regex']]
-    self.headers = ["precice/SolverInterface.hpp"]
+    self.headers = ["precice/precice.hpp"]
 
   def check(self, ctx):
     env = ctx.env
@@ -99,7 +95,6 @@ class precice(Package):
           -DCMAKE_BUILD_TYPE=RELEASE \
           -DPRECICE_PythonActions=OFF \
           -DCMAKE_BUILD_TYPE=RELEASE -DPYTHON_EXECUTABLE=${DEPENDENCIES_DIR}/python/install/bin/python3 \
-          -DPETSc_DIR=${PETSC_DIR} \
           -DPRECICE_ENABLE_FORTRAN=OFF \
           -DMPI_CXX_COMPILER='+ctx.env["mpiCC"]+' -DPETSC_COMPILER='+ctx.env["mpiCC"]+' -DMPI_DIR=$MPI_DIR \
           -DEigen3_ROOT=${SOURCE_DIR}/eigen-3.3.8 \
