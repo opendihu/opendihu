@@ -42,24 +42,24 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
   }
 
   // assert that precice is properly initialized and the interface is available
-  assert(this->preciceSolverInterface_);
+  assert(this->preciceParticipant_);
 
   // perform initial data transfer, if required
-  if (this->preciceSolverInterface_->isActionRequired(
+  if (this->preciceParticipant_->isActionRequired(
           precice::constants::actionWriteInitialData())) {
     // writeData for this participant
     this->preciceWriteData();
 
-    this->preciceSolverInterface_->markActionFulfilled(
+    this->preciceParticipant_->markActionFulfilled(
         precice::constants::actionWriteInitialData());
 
     // initialize data in precice
-    this->preciceSolverInterface_->initializeData();
+    this->preciceParticipant_->initializeData();
   }
 
   // perform the computation of this solver
   // main simulation loop of adapter
-  for (int timeStepNo = 0; this->preciceSolverInterface_->isCouplingOngoing();
+  for (int timeStepNo = 0; this->preciceParticipant_->isCouplingOngoing();
        timeStepNo++) {
     if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
         (this->timeStepOutputInterval_ <= 10 ||
@@ -73,11 +73,11 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
     // checkpointing is not implemented in the volume coupling adapter
 #if 0
     // determine if checkpoint needs to be written
-    if (this->preciceSolverInterface_->isActionRequired(precice::constants::actionWriteIterationCheckpoint()))
+    if (this->preciceParticipant_->isActionRequired(precice::constants::actionWriteIterationCheckpoint()))
     {
       // save checkpoint
       this->saveCheckpoint(currentTime);
-      this->preciceSolverInterface_->markActionFulfilled(precice::constants::actionWriteIterationCheckpoint());
+      this->preciceParticipant_->markActionFulfilled(precice::constants::actionWriteIterationCheckpoint());
     }
 #endif
 
@@ -104,7 +104,7 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
 
     // advance timestepping in precice
     this->maximumPreciceTimestepSize_ =
-        this->preciceSolverInterface_->advance(timeStepWidth);
+        this->preciceParticipant_->advance(timeStepWidth);
 
     LOG(INFO) << "precice::advance(" << timeStepWidth
               << "), maximumPreciceTimestepSize_: "
@@ -113,16 +113,16 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
     // if coupling did not converge, reset to previously stored checkpoint
     // checkpointing is not implemented in the volume coupling adapter
 #if 0
-    if (this->preciceSolverInterface_->isActionRequired(precice::constants::actionReadIterationCheckpoint()))
+    if (this->preciceParticipant_->isActionRequired(precice::constants::actionReadIterationCheckpoint()))
     {
       // set variables back to last checkpoint
       currentTime = this->loadCheckpoint();
-      this->preciceSolverInterface_->markActionFulfilled(precice::constants::actionReadIterationCheckpoint());
+      this->preciceParticipant_->markActionFulfilled(precice::constants::actionReadIterationCheckpoint());
     }
 #endif
 
     // if the current time step did converge and subcycling is complete
-    if (this->preciceSolverInterface_->isTimeWindowComplete()) {
+    if (this->preciceParticipant_->isTimeWindowComplete()) {
       if (this->outputOnlyConvergedTimeSteps_) {
         // output all data in the nested solvers
         this->nestedSolver_.callOutputWriter(timeStepNo, currentTime);
@@ -132,7 +132,7 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
   } // loop over time steps
 
   // finalize precice interface
-  this->preciceSolverInterface_->finalize();
+  this->preciceParticipant_->finalize();
 
 #else
   LOG(FATAL) << "Not compiled with preCICE!";

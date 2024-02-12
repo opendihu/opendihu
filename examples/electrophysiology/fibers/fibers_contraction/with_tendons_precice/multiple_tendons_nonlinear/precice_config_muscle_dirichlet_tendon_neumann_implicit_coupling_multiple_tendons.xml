@@ -56,7 +56,7 @@
 
     <!-- Represents each solver using preCICE. In a coupled simulation, two participants have to be
          defined. The name of the participant has to match the name given on construction of the
-         precice::SolverInterface object used by the participant. -->
+         precice::Participant object used by the participant. -->
     
     <participant name="MuscleSolver">
       <!-- Makes the named mesh available to the participant. Mesh is provided by the solver directly. -->

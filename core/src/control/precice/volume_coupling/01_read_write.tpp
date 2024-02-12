@@ -33,12 +33,12 @@ void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceReadData() {
 
       // get all data at once
       if (preciceData.isGeometryField) {
-        this->preciceSolverInterface_->readBlockVectorData(
+        this->preciceParticipant_->readBlockVectorData(
             preciceData.preciceDataId, preciceData.preciceMesh->nNodesLocal,
             preciceData.preciceMesh->preciceVertexIds.data(),
             scalarValues_.data());
       } else {
-        this->preciceSolverInterface_->readBlockScalarData(
+        this->preciceParticipant_->readBlockScalarData(
             preciceData.preciceDataId, preciceData.preciceMesh->nNodesLocal,
             preciceData.preciceMesh->preciceVertexIds.data(),
             scalarValues_.data());
@@ -207,7 +207,7 @@ void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceWriteData() {
                      << " != " << preciceData.preciceMesh->nNodesLocal
                      << ", nArrayItems: " << nArrayItems;
 
-        this->preciceSolverInterface_->writeBlockVectorData(
+        this->preciceParticipant_->writeBlockVectorData(
             preciceData.preciceDataId, preciceData.preciceMesh->nNodesLocal,
             preciceData.preciceMesh->preciceVertexIds.data(),
             scalarValues_.data());
@@ -218,7 +218,7 @@ void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceWriteData() {
                      << " != " << preciceData.preciceMesh->nNodesLocal
                      << ", nArrayItems: " << nArrayItems;
 
-        this->preciceSolverInterface_->writeBlockScalarData(
+        this->preciceParticipant_->writeBlockScalarData(
             preciceData.preciceDataId, preciceData.preciceMesh->nNodesLocal,
             preciceData.preciceMesh->preciceVertexIds.data(),
             scalarValues_.data());

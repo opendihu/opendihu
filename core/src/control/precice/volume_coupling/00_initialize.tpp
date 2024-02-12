@@ -96,7 +96,7 @@ void PreciceAdapterVolumeCouplingInitialize<NestedSolver>::initialize() {
   // << std::endl;
 
   // initialize interface to precice
-  preciceSolverInterface_ = std::make_shared<precice::SolverInterface>(
+  preciceParticipant_ = std::make_shared<precice::Participant>(
       preciceParticipantName_, configFileName, rankNo, nRanks);
 
   // parse the options in "preciceData" and initialize all variables in precice,
@@ -108,7 +108,7 @@ void PreciceAdapterVolumeCouplingInitialize<NestedSolver>::initialize() {
 
   // determine maximum timestep size
   maximumPreciceTimestepSize_ = std::max(maximumPreciceTimestepSize_,
-                                         preciceSolverInterface_->initialize());
+                                         preciceParticipant_->initialize());
   LOG(DEBUG) << "precice initialization done, dt: "
              << maximumPreciceTimestepSize_ << "," << timeStepWidth_;
 
@@ -200,7 +200,7 @@ void PreciceAdapterVolumeCouplingInitialize<
     // parse the mesh
     std::string preciceMeshName =
         currentPreciceData.getOptionString("preciceMeshName", "");
-    int preciceMeshId = preciceSolverInterface_->getMeshID(preciceMeshName);
+    int preciceMeshId = preciceParticipant_->getMeshID(preciceMeshName);
 
     LOG(DEBUG) << "parse item " << listIndex
                << " of \"preciceData\", isGeometryField: "
@@ -323,15 +323,15 @@ void PreciceAdapterVolumeCouplingInitialize<
 
       // get precice id from precice config
       preciceMesh->preciceMeshId =
-          preciceSolverInterface_->getMeshID(preciceMesh->preciceMeshName);
+          preciceParticipant_->getMeshID(preciceMesh->preciceMeshName);
 
       // resize buffer for vertex ids
       preciceMesh->preciceVertexIds.resize(preciceMesh->nNodesLocal);
 
       // give the node positions to precice and get the vertex ids
-      // void precice::SolverInterface::setMeshVertices(int meshID, int size,
+      // void precice::Participant::setMeshVertices(int meshID, int size,
       // const double *positions, int *ids)
-      preciceSolverInterface_->setMeshVertices(
+      preciceParticipant_->setMeshVertices(
           preciceMesh->preciceMeshId, preciceMesh->nNodesLocal,
           geometryValuesContiguous.data(),
           preciceMesh->preciceVertexIds.data());
@@ -373,7 +373,7 @@ void PreciceAdapterVolumeCouplingInitialize<
         currentPreciceData.getOptionString("preciceDataName", "variable");
 
     // get precice data id
-    preciceData.preciceDataId = preciceSolverInterface_->getDataID(
+    preciceData.preciceDataId = preciceParticipant_->getDataID(
         preciceData.preciceDataName, preciceData.preciceMesh->preciceMeshId);
 
     // increment slotNo, this value is used for slots that are not identified by

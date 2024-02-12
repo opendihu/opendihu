@@ -5,7 +5,7 @@
 #include "control/precice/volume_coupling/00_initialize.h"
 
 #ifdef HAVE_PRECICE
-#include "precice/SolverInterface.hpp"
+#include "precice/precice.hpp"
 #endif
 
 namespace Control {
@@ -97,8 +97,8 @@ protected:
       preciceMeshes_;                    //< all coupling meshes
   std::vector<PreciceData> preciceData_; //< all precice variables "data"
 
-  std::shared_ptr<precice::SolverInterface>
-      preciceSolverInterface_; //< the precice solver interface that makes all
+  std::shared_ptr<precice::Participant>
+      preciceParticipant_; //< the precice solver interface that makes all
                                // preCICE functionality accessible
 
 #endif

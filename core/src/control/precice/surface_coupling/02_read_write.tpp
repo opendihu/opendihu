@@ -27,13 +27,13 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceReadData() {
         velocityValues_.resize(nEntries);
 
         // get all data at once
-        this->preciceSolverInterface_->readBlockVectorData(
+        this->preciceParticipant_->readBlockVectorData(
             preciceData.preciceDataIdDisplacements,
             preciceData.preciceMesh->nNodesLocal,
             preciceData.preciceMesh->preciceVertexIds.data(),
             displacementValues_.data());
 
-        this->preciceSolverInterface_->readBlockVectorData(
+        this->preciceParticipant_->readBlockVectorData(
             preciceData.preciceDataIdVelocities,
             preciceData.preciceMesh->nNodesLocal,
             preciceData.preciceMesh->preciceVertexIds.data(),
@@ -44,7 +44,7 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceReadData() {
       // if the data is traction
       else if (!preciceData.tractionName.empty()) {
         tractionValues_.resize(nEntries);
-        this->preciceSolverInterface_->readBlockVectorData(
+        this->preciceParticipant_->readBlockVectorData(
             preciceData.preciceDataIdTraction,
             preciceData.preciceMesh->nNodesLocal,
             preciceData.preciceMesh->preciceVertexIds.data(),
@@ -349,14 +349,14 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceWriteData() {
           value *= this->scalingFactor_;
 
         // write displacement values in precice
-        this->preciceSolverInterface_->writeBlockVectorData(
+        this->preciceParticipant_->writeBlockVectorData(
             preciceData.preciceDataIdDisplacements,
             preciceData.preciceMesh->nNodesLocal,
             preciceData.preciceMesh->preciceVertexIds.data(),
             displacementValues_.data());
 
         // write velocity values in precice
-        this->preciceSolverInterface_->writeBlockVectorData(
+        this->preciceParticipant_->writeBlockVectorData(
             preciceData.preciceDataIdVelocities,
             preciceData.preciceMesh->nNodesLocal,
             preciceData.preciceMesh->preciceVertexIds.data(),
@@ -390,7 +390,7 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceWriteData() {
           value *= -1;
         }
 
-        this->preciceSolverInterface_->writeBlockVectorData(
+        this->preciceParticipant_->writeBlockVectorData(
             preciceData.preciceDataIdTraction,
             preciceData.preciceMesh->nNodesLocal,
             preciceData.preciceMesh->preciceVertexIds.data(),
@@ -419,7 +419,7 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceWriteData() {
           value *= -1;
         }
 
-        this->preciceSolverInterface_->writeBlockVectorData(
+        this->preciceParticipant_->writeBlockVectorData(
             preciceData.preciceDataIdTraction,
             preciceData.preciceMesh->nNodesLocal,
             preciceData.preciceMesh->preciceVertexIds.data(),
