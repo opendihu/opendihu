@@ -11,13 +11,6 @@ class precice(Package):
     defaults.update(kwargs)
     super(precice, self).__init__(**defaults)
     self.ext = '.cpp'
-    #self.sub_dirs = [
-    #    ('include/mysql', 'lib'),
-    #    ('include/mysql', 'lib64'),
-    #]
-    #self.headers = ['mysql.h']
-    #self.libs = ['adios2']
-    #self.extra_libs = [['boost_atomic', 'boost_chrono', 'boost_date_time', 'boost_filesystem', 'boost_log', 'boost_log_setup', 'boost_prg_exec_monitor', 'boost_program_options', 'boost_regex', 'boost_system', 'boost_test_exec_monitor', 'boost_thread', 'boost_timer', 'boost_unit_test_framework']]
     self.set_rpath = True
     self.check_text = r'''
     #include <iostream>
@@ -45,7 +38,7 @@ class precice(Package):
     </participant>
 
     <participant name="Participant2">
-      <receive-mesh name="Mesh1"/>
+      <receive-mesh name="Mesh1" from="Participant1"/>
       <provide-mesh name="Mesh2"/>
       <read-data name="Data" mesh="Mesh2"/>
       <mapping:nearest-neighbor
@@ -82,7 +75,7 @@ class precice(Package):
     self.libs = ['precice']
     self.extra_libs = [[],
                        ['boost_filesystem', 'boost_log_setup', 'boost_log', 'boost_program_options', 'boost_system', 'boost_thread', 'boost_unit_test_framework', 'dl', 'boost_regex'],
-    									 ['boost_atomic', 'boost_chrono', 'boost_filesystem', 'boost_log_setup', 'boost_log', 'boost_prg_exec_monitor', 'boost_program_options', 'boost_system', 'boost_test_exec_monitor', 'boost_thread', 'boost_unit_test_framework', 'dl', 'boost_regex']]
+    									 ['boost_atomic', 'boost_chrono', 'boost_filesystem', 'boost_log_setup', 'boost_log', 'boost_prg_exec_monitor', 'boost_program_options', 'boost_system', 'boost_test_exec_monitor', 'boost_thread', 'boost_unit_test_framework', 'dl', 'boost_regex']]    
     self.headers = ["precice/precice.hpp"]
 
   def check(self, ctx):
@@ -95,75 +88,22 @@ class precice(Package):
       self.set_build_handler([
         'mkdir -p ${PREFIX}/include',
 
-        # Eigen
-        'cd ${SOURCE_DIR} && if [ ! -f eigen-3.3.8.tar.gz ]; then \
-          wget https://gitlab.com/libeigen/eigen/-/archive/3.3.8/eigen-3.3.8.tar.gz && tar xf eigen-3.3.8.tar.gz; fi && \
-          ln -s ${SOURCE_DIR}/eigen-3.3.8/Eigen ${PREFIX}/include/Eigen',   # eigen
-
         # precice
         'cd ${SOURCE_DIR} && mkdir -p build && cd build && '+ctx.env["cmake"]+' -DCMAKE_INSTALL_PREFIX=${PREFIX} \
           -DCMAKE_BUILD_TYPE=RELEASE \
-          -DPRECICE_PythonActions=OFF \
-          -DCMAKE_BUILD_TYPE=RELEASE -DPYTHON_EXECUTABLE=${DEPENDENCIES_DIR}/python/install/bin/python3 \
-          -DPRECICE_ENABLE_FORTRAN=OFF \
-          -DMPI_CXX_COMPILER='+ctx.env["mpiCC"]+' -DPETSC_COMPILER='+ctx.env["mpiCC"]+' -DMPI_DIR=$MPI_DIR \
-          -DEigen3_ROOT=${SOURCE_DIR}/eigen-3.3.8 \
-          -DLIBXML2_DIR=${LIBXML2_DIR} \
-          -DLibXml2_ROOT=${LIBXML2_DIR} \
+          -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
           ..',
-        'cd ${SOURCE_DIR}/build && CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:${PREFIX}/include/libxml2 make precice install -j 1'
+        'cd ${SOURCE_DIR}/build -j 1 && make precice install -j 1'
       ])
       
       res = super(precice, self).check(ctx)
     
-    # if installation of precice failed with the current command, retry with different options 
-    if not res[0]:
-      ctx.Log('Retry (1) with manually building boost and libxml2\n')
-      ctx.Message('Retry (1) with manually building boost and libxml2.')
-
-      # only build boost if it was not yet build
-      self.set_build_handler([
-        'mkdir -p ${PREFIX}/include',
-
-        # Eigen
-        'cd ${SOURCE_DIR} && if [ ! -f eigen-3.3.8.tar.gz ]; then \
-          wget https://gitlab.com/libeigen/eigen/-/archive/3.3.8/eigen-3.3.8.tar.gz && tar xf eigen-3.3.8.tar.gz; fi && \
-          ln -s ${SOURCE_DIR}/eigen-3.3.8/Eigen ${PREFIX}/include/Eigen',   # eigen
-
-        # boost
-        'if [ ! -d ${PREFIX}/include/boost ]; then \
-          cd ${SOURCE_DIR} && [ ! -f ${SOURCE_DIR}/boost_1_65_1.tar.gz ] && \
-          ( wget https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz && tar xf boost_1_83_0.tar.gz ); \
-          cd boost_1_83_0 && ./bootstrap.sh --with-libraries=log,thread,system,filesystem,program_options,test,regex --prefix=${PREFIX} && \
-          ./b2 -j12 install; \
-        fi',
-
-        # libxml2
-        'cd ${SOURCE_DIR} && if [ ! -f ${SOURCE_DIR}/libxml2-2.9.9.tar.gz ]; then wget ftp://xmlsoft.org/libxml2/libxml2-2.9.9.tar.gz; fi; \
-         tar xf libxml2-2.9.9.tar.gz; cd libxml2-2.9.9; ./configure --prefix=${PREFIX} --without-python && make install -j 16',
-
-        # precice
-        'cd ${SOURCE_DIR} && mkdir -p build && cd build && '+ctx.env["cmake"]+' -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-        -DCMAKE_BUILD_TYPE=RELEASE \
-        -DPRECICE_PythonActions=OFF \
-        -DCMAKE_BUILD_TYPE=RELEASE \
-        -DPETSc_DIR=${PETSC_DIR} \
-        -DLIBXML2_INCLUDE_DIR=${PREFIX}/include/libxml2 -DLIBXML2_LIBRARY=${PREFIX}/lib/libxml2.so \
-        -DPRECICE_ENABLE_FORTRAN=OFF \
-        -DMPI_CXX_COMPILER='+ctx.env["mpiCC"]+' -DMPI_DIR=$MPI_DIR \
-        -DEigen3_ROOT=${SOURCE_DIR}/eigen-3.3.8 \
-        -DBoost_ROOT=${PREFIX} \
-        -DBoost_DIR=${PREFIX} \
-        ..',
-        'cd ${SOURCE_DIR}/build && make precice install -j 16'
-      ])  
-  
+    
     self.check_options(env)
     res = super(precice, self).check(ctx)
   
     if not res[0]:
-      ctx.Log('\n\nInstallation of preCICE failed. Often, the problem is that boost is not installed. Install boost with\n  sudo apt install libboost-all-dev\nThen rebuild with\n  make clean; scons PRECICE_REBUILD=True\n\n')
-      ctx.Message('\n\nInstallation of preCICE failed. Often, the problem is that boost is not installed. Install boost with\n  sudo apt install libboost-all-dev\nThen rebuild with\n  make clean; scons PRECICE_REBUILD=True\n\n')
+      ctx.Log('\n\nInstallation of preCICE failed. Rebuild with\n  make clean; scons PRECICE_REBUILD=True\n\n')
       
     self.check_required(res[0], ctx)
     ctx.Result(res[0])
