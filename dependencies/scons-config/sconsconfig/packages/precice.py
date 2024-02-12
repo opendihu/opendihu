@@ -93,7 +93,7 @@ class precice(Package):
           -DCMAKE_BUILD_TYPE=RELEASE \
           -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
           ..',
-        'cd ${SOURCE_DIR}/build -j 1 && make precice install -j 1'
+        'cd ${SOURCE_DIR}/build && make precice install'
       ])
       
       res = super(precice, self).check(ctx)
