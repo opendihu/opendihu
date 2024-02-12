@@ -46,13 +46,10 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
   assert(this->preciceParticipant_);
 
   // perform initial data transfer, if required
-  if (this->preciceParticipant_->isActionRequired(
-          precice::constants::actionWriteInitialData())) {
+  if (this->preciceParticipant_->requiresInitialData(
+          )) {
     // writeData for this participant
     this->preciceWriteData();
-
-    this->preciceParticipant_->markActionFulfilled(
-        precice::constants::actionWriteInitialData());
 
     // initialize data in precice
     this->preciceParticipant_->initializeData();
@@ -73,13 +70,10 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
     }
 
     // determine if checkpoint needs to be written
-    if (this->preciceParticipant_->isActionRequired(
-            precice::constants::actionWriteIterationCheckpoint())) {
+    if (this->preciceParticipant_->requiresWritingCheckpoint()) {
       // save checkpoint
       this->saveCheckpoint(currentTime);
       this->saveFiberData(this->nestedSolver_);
-      this->preciceParticipant_->markActionFulfilled(
-          precice::constants::actionWriteIterationCheckpoint());
     }
 
     // read incoming values
@@ -112,13 +106,10 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
                << this->maximumPreciceTimestepSize_;
 
     // if coupling did not converge, reset to previously stored checkpoint
-    if (this->preciceParticipant_->isActionRequired(
-            precice::constants::actionReadIterationCheckpoint())) {
+    if (this->preciceParticipant_->requiresReadingCheckpoint()) {
       // set variables back to last checkpoint
       currentTime = this->loadCheckpoint();
       this->loadFiberData(this->nestedSolver_);
-      this->preciceParticipant_->markActionFulfilled(
-          precice::constants::actionReadIterationCheckpoint());
     }
 
     // if the current time step did converge and subcycling is complete

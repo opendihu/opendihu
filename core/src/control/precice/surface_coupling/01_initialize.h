@@ -33,10 +33,8 @@ protected:
    * opendihu mesh
    */
   struct PreciceMesh {
-    std::string preciceMeshName; //< name of the precice mesh as used in the
+    std::string meshName; //< name of the precice mesh as used in the
                                  // precice config XML file
-    int preciceMeshId; //< mesh ID of precice of the surface mesh that contains
-                       // all nodes
     std::vector<int>
         preciceVertexIds; //< the vertex ids in precice of the geometry values
     std::vector<dof_no_t> dofNosLocal; //< the local dof nos in the 3D mesh of
@@ -56,15 +54,16 @@ protected:
   /** a precice coupling participant to which the current solver is coupled to
    */
   struct PreciceData {
+
     std::string displacementsName; //< precice name of the displacements
                                    // variable, if any
     std::string
         velocitiesName; //< precice name of the velocities variable, if any
     std::string tractionName; //< precice name of the traction variable, if any
 
-    int preciceDataIdDisplacements; //< precice id of the displacements variable
-    int preciceDataIdVelocities;    //< precice id of the velocities variable
-    int preciceDataIdTraction;      //< precice id of the traction variable
+    const int preciceDataDimDisplacements; //< precice dim of the displacements variable
+    const int preciceDataDimVelocities;    //< precice dim of the velocities variable
+    const int preciceDataDimTraction;      //< precice dim of the traction variable
 
     bool average;
 
