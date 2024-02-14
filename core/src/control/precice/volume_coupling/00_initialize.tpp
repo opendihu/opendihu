@@ -107,8 +107,8 @@ void PreciceAdapterVolumeCouplingInitialize<NestedSolver>::initialize() {
   scalingFactor_ = this->specificSettings_.getOptionDouble("scalingFactor", 1);
 
   // determine maximum timestep size
-  maximumPreciceTimestepSize_ = std::max(maximumPreciceTimestepSize_,
-                                         preciceParticipant_->initialize());
+  maximumPreciceTimestepSize_ =
+      std::max(maximumPreciceTimestepSize_, preciceParticipant_->initialize());
   LOG(DEBUG) << "precice initialization done, dt: "
              << maximumPreciceTimestepSize_ << "," << timeStepWidth_;
 

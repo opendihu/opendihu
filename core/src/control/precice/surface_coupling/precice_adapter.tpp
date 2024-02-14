@@ -46,8 +46,7 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
   assert(this->preciceParticipant_);
 
   // perform initial data transfer, if required
-  if (this->preciceParticipant_->requiresInitialData(
-          )) {
+  if (this->preciceParticipant_->requiresInitialData()) {
     // writeData for this participant
     this->preciceWriteData();
   }
@@ -95,7 +94,8 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
     currentTime += timeStepWidth;
 
     // advance timestepping in precice
-    this->maximumPreciceTimestepSize_ = this->preciceParticipant_->getMaxTimeStepSize();
+    this->maximumPreciceTimestepSize_ =
+        this->preciceParticipant_->getMaxTimeStepSize();
     this->preciceParticipant_->advance(timeStepWidth);
 
     LOG(DEBUG) << "precice::advance(" << timeStepWidth

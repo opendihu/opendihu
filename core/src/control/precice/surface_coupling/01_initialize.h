@@ -34,7 +34,7 @@ protected:
    */
   struct PreciceMesh {
     std::string meshName; //< name of the precice mesh as used in the
-                                 // precice config XML file
+                          // precice config XML file
     precice::span<int>
         preciceVertexIds; //< the vertex ids in precice of the geometry values
     std::vector<dof_no_t> dofNosLocal; //< the local dof nos in the 3D mesh of
@@ -61,7 +61,8 @@ protected:
         velocitiesName; //< precice name of the velocities variable, if any
     std::string tractionName; //< precice name of the traction variable, if any
 
-    int preciceDataDimDisplacements; //< precice dim of the displacements variable
+    int preciceDataDimDisplacements; //< precice dim of the displacements
+                                     // variable
     int preciceDataDimVelocities;    //< precice dim of the velocities variable
     int preciceDataDimTraction;      //< precice dim of the traction variable
 
@@ -117,7 +118,7 @@ protected:
 
   std::shared_ptr<precice::Participant>
       preciceParticipant_; //< the precice solver interface that makes all
-                               // preCICE functionality accessible
+                           // preCICE functionality accessible
 
   std::shared_ptr<
       typename PreciceAdapterNestedSolver<NestedSolver>::FunctionSpace>

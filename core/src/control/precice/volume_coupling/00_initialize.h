@@ -99,7 +99,7 @@ protected:
 
   std::shared_ptr<precice::Participant>
       preciceParticipant_; //< the precice solver interface that makes all
-                               // preCICE functionality accessible
+                           // preCICE functionality accessible
 
 #endif
 
