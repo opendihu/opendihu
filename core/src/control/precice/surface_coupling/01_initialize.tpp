@@ -198,15 +198,11 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceMeshes() {
         }
       }
 
-      // resize buffer for vertex ids
-      preciceMesh->preciceVertexIds.resize(preciceMesh->nNodesLocal);
 
       // give the node positions to precice and get the vertex ids
-      // void precice::Participant::setMeshVertices(int meshID, int size,
-      // const double *positions, int *ids)
       preciceParticipant_->setMeshVertices(
-          preciceMesh->preciceMeshId, preciceMesh->nNodesLocal,
-          geometryValuesSurface.data(), preciceMesh->preciceVertexIds.data());
+          preciceMesh->meshName, 
+          geometryValuesSurface, preciceMesh->preciceVertexIds);
     } else {
       // there are no local nodes of this surface
       preciceMesh->nNodesLocal = 0;
@@ -241,15 +237,15 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceData() {
     typename std::vector<std::shared_ptr<PreciceMesh>>::iterator iter =
         std::find_if(
             preciceMeshes_.begin(), preciceMeshes_.end(),[&currentMeshName](std::shared_ptr<PreciceMesh> preciceMesh) {
-              return preciceMesh->getOptionString("meshName", "") == currentMeshName;
+              return preciceMesh->meshName == currentMeshName;
             });
 
     if (iter == preciceMeshes_.end()) {
       std::stringstream s;
       for (std::shared_ptr<PreciceMesh> preciceMesh : preciceMeshes_)
-        s << " \"" << preciceMesh->preciceData.meshName << "\"";
+        s << " \"" << preciceMesh->meshName << "\"";
       LOG(FATAL) << currentPreciceData << "[\"meshName\"] = \""
-                 << preciceData.meshName
+                 << currentMeshName
                  << "\" could not be found, available precice meshes: "
                  << s.str();
     }
@@ -268,11 +264,11 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceData() {
           currentPreciceData.getOptionString("velocitiesName", "Velocity");
 
       // get precice data ids
-      preciceData.preciceDataIdDisplacements =
+      preciceData.preciceDataDimDisplacements =
           preciceParticipant_->getDataDimensions(currentMeshName,
               preciceData.displacementsName);
 
-      preciceData.preciceDataIdVelocities = preciceParticipant_->getDataDimensions(
+      preciceData.preciceDataDimVelocities = preciceParticipant_->getDataDimensions(
           currentMeshName,preciceData.velocitiesName);
     } else if (mode == "read-traction") {
       preciceData.ioType = PreciceData::ioRead;
@@ -283,7 +279,7 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceData() {
           currentPreciceData.getOptionString("tractionName", "Traction");
 
       // get precice data ids
-      preciceData.preciceDataIdTraction = preciceParticipant_->getDataDimensions(
+      preciceData.preciceDataDimTraction = preciceParticipant_->getDataDimensions(
           currentMeshName,preciceData.tractionName);
     } else if (mode == "write-displacements-velocities") {
       preciceData.ioType = PreciceData::ioWrite;
@@ -295,10 +291,10 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceData() {
           currentPreciceData.getOptionString("velocitiesName", "Velocity");
 
       // get precice data ids
-      preciceData.preciceDataIdDisplacements =
+      preciceData.preciceDataDimDisplacements =
           preciceParticipant_->getDataDimensions(currentMeshName,
               preciceData.displacementsName);
-      preciceData.preciceDataIdVelocities = preciceParticipant_->getDataDimensions(
+      preciceData.preciceDataDimVelocities = preciceParticipant_->getDataDimensions(
           currentMeshName,preciceData.velocitiesName);
  
     } else if (mode == "write-traction") {
@@ -309,7 +305,7 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceData() {
           currentPreciceData.getOptionString("tractionName", "Traction");
 
       // get precice data ids
-      preciceData.preciceDataIdTraction = preciceParticipant_->getDataDimensions(
+      preciceData.preciceDataDimTraction = preciceParticipant_->getDataDimensions(
           currentMeshName,preciceData.tractionName);
     } else if (mode == "write-averaged-traction") {
       preciceData.ioType = PreciceData::ioWrite;
@@ -321,7 +317,7 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceData() {
           currentPreciceData.getOptionString("tractionName", "Traction");
 
       // get precice data ids
-      preciceData.preciceDataIdTraction = preciceParticipant_->getDataDimensions(
+      preciceData.preciceDataDimTraction = preciceParticipant_->getDataDimensions(
           currentMeshName,preciceData.tractionName);
     } else {
       LOG(FATAL) << currentPreciceData << "[\"mode\"] is \"" << mode << "\", "
