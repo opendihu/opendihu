@@ -45,14 +45,6 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
   // assert that precice is properly initialized and the interface is available
   assert(this->preciceParticipant_);
 
-  // perform initial data transfer, if required
-  if (this->preciceParticipant_->requiresInitialData()) {
-    // writeData for this participant
-    this->preciceWriteData();
-  }
-
-  // perform the computation of this solver
-
   // main simulation loop of adapter
   for (int timeStepNo = 0; this->preciceParticipant_->isCouplingOngoing();
        timeStepNo++) {
