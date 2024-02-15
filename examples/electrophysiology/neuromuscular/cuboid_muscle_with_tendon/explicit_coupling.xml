@@ -50,7 +50,7 @@
 
   <m2n:sockets acceptor="TendonSolver" connector="MuscleSolver" network="lo" />
 
-  <!-- <coupling-scheme:serial-explicit>
+  <coupling-scheme:serial-explicit>
     <participants first="MuscleSolver" second="TendonSolver"/>
     
     <max-time value="20.0"/>          
@@ -59,34 +59,6 @@
     <exchange data="Displacement" mesh="TendonMesh" from="TendonSolver" to="MuscleSolver"/>  
     <exchange data="Velocity" mesh="TendonMesh" from="TendonSolver" to="MuscleSolver"/>  
     <exchange data="Traction" mesh="MuscleMesh" from="MuscleSolver" to="TendonSolver"/>  
-  </coupling-scheme:serial-explicit> -->
-
-  <coupling-scheme:parallel-implicit>
-    <participants first="MuscleSolver" second="TendonSolver"/>
-          
-    <max-time value="20.0"/>          
-    <time-window-size value="0.01"/>  
-
-    <acceleration:IQN-ILS>
-      <data name="Displacement" mesh="TendonMesh"/>
-      <data name="Velocity" mesh="TendonMesh"/>
-      <data name="Traction" mesh="MuscleMesh"/>
-      <preconditioner type="residual-sum"/>
-      <filter type="QR2" limit="1e-3"/>
-      <initial-relaxation value="0.1"/>
-      <max-used-iterations value="40"/>
-      <time-windows-reused value="15"/>
-    </acceleration:IQN-ILS>
-
-    <max-iterations value="25" />
-
-    <relative-convergence-measure limit="1e-3" data="Displacement" mesh="TendonMesh" strict="0"/>
-    <relative-convergence-measure limit="1e-3" data="Velocity" mesh="TendonMesh" strict="0"/>
-    <absolute-convergence-measure limit="1e-3" data="Traction" mesh="MuscleMesh" strict="0"/>
-      
-    <exchange data="Displacement" mesh="TendonMesh" from="TendonSolver" to="MuscleSolver"/>  
-    <exchange data="Velocity" mesh="TendonMesh" from="TendonSolver" to="MuscleSolver"/>  
-    <exchange data="Traction" mesh="MuscleMesh" from="MuscleSolver" to="TendonSolver"/> 
-  </coupling-scheme:parallel-implicit>
+  </coupling-scheme:serial-explicit>
 
 </precice-configuration>

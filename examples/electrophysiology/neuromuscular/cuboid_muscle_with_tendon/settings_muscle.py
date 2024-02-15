@@ -15,6 +15,17 @@ sys.path.insert(0, os.path.join(script_path,'variables'))
 
 import variables              # file variables.py, defined default values for all parameters, you can set the parameters there
 
+# define command line arguments
+mbool = lambda x:bool(distutils.util.strtobool(x))   # function to parse bool arguments
+parser = argparse.ArgumentParser(description='precice_config')
+parser.add_argument('--case_name', help='The name to identify this run in the log.', default=variables.case_name)
+parser.add_argument('--precice_file', help='The precice_config.xml file.', default=variables.precice_file)
+
+# parse command line arguments and assign values to variables module
+args, other_args = parser.parse_known_args(args=sys.argv[:-2], namespace=variables)
+if len(other_args) != 0 and rank_no == 0:
+    print("Warning: These arguments were not parsed by the settings python file\n  " + "\n  ".join(other_args), file=sys.stderr)
+
 
 variables.n_subdomains = variables.n_subdomains_x*variables.n_subdomains_y*variables.n_subdomains_z
 
@@ -50,7 +61,8 @@ if n_ranks != variables.n_subdomains:
 
 # output information of run
 if rank_no == 0:
-  print("scenario_name: {},  n_subdomains: {} {} {},  n_ranks: {},  end_time: {}".format(variables.scenario_name, variables.n_subdomains_x, variables.n_subdomains_y, variables.n_subdomains_z, n_ranks, variables.end_time))
+  print("case_name: {},  n_subdomains: {} {} {},  n_ranks: {},  end_time: {}".format(variables.case_name, variables.n_subdomains_x, variables.n_subdomains_y, variables.n_subdomains_z, n_ranks, variables.end_time))
+  print("preciceConfigFilename:             {}".format(variables.precice_file))
   print("cellml_file:             {}".format(variables.cellml_file))
   print("firing_times_file:       {}".format(variables.firing_times_file))
   print("********************************************************************************")

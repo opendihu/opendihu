@@ -17,6 +17,17 @@ import variables              # file variables.py, defines default values for al
 from create_partitioned_meshes_for_settings import *   # file create_partitioned_meshes_for_settings with helper functions about own subdomain
 from helper import *
 
+# define command line arguments
+mbool = lambda x:bool(distutils.util.strtobool(x))   # function to parse bool arguments
+parser = argparse.ArgumentParser(description='precice_config')
+parser.add_argument('--case_name', help='The name to identify this run in the log.', default=variables.case_name)
+parser.add_argument('--precice_file', help='The precice_config.xml file.', default=variables.precice_file)
+
+# parse command line arguments and assign values to variables module
+args, other_args = parser.parse_known_args(args=sys.argv[:-2], namespace=variables)
+if len(other_args) != 0 and rank_no == 0:
+    print("Warning: These arguments were not parsed by the settings python file\n  " + "\n  ".join(other_args), file=sys.stderr)
+
 variables.scenario_name = "tendon"
 
 # compute partitioning
