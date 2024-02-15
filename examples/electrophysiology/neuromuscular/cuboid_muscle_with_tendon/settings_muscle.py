@@ -61,8 +61,8 @@ if n_ranks != variables.n_subdomains:
 
 # output information of run
 if rank_no == 0:
-  print("case_name: {},  n_subdomains: {} {} {},  n_ranks: {},  end_time: {}".format(variables.case_name, variables.n_subdomains_x, variables.n_subdomains_y, variables.n_subdomains_z, n_ranks, variables.end_time))
-  print("preciceConfigFilename:             {}".format(variables.precice_file))
+  print("This is case {},".format(variables.case_name))
+  print("using preciceConfigFilename: {}.".format(variables.precice_file))
   print("cellml_file:             {}".format(variables.cellml_file))
   print("firing_times_file:       {}".format(variables.firing_times_file))
   print("********************************************************************************")

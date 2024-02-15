@@ -22,11 +22,21 @@ mbool = lambda x:bool(distutils.util.strtobool(x))   # function to parse bool ar
 parser = argparse.ArgumentParser(description='precice_config')
 parser.add_argument('--case_name', help='The name to identify this run in the log.', default=variables.case_name)
 parser.add_argument('--precice_file', help='The precice_config.xml file.', default=variables.precice_file)
+parser.add_argument('--tendon_material', help='The precice_config.xml file.', default=variables.tendon_material)
 
 # parse command line arguments and assign values to variables module
 args, other_args = parser.parse_known_args(args=sys.argv[:-2], namespace=variables)
 if len(other_args) != 0 and rank_no == 0:
     print("Warning: These arguments were not parsed by the settings python file\n  " + "\n  ".join(other_args), file=sys.stderr)
+
+# output information of run
+if rank_no == 0:
+  print("This is case {},".format(variables.case_name))
+  print("using preciceConfigFilename: {}.".format(variables.precice_file))
+  print("tendon_material:             {}".format(variables.tendon_material))
+  print("cellml_file:             {}".format(variables.cellml_file))
+  print("firing_times_file:       {}".format(variables.firing_times_file))
+  print("********************************************************************************")
 
 variables.scenario_name = "tendon"
 
