@@ -105,6 +105,8 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
   scalingFactor_ = this->specificSettings_.getOptionDouble("scalingFactor", 1);
 
   // determine maximum timestep size
+  preciceParticipant_->initialize();
+
   maximumPreciceTimestepSize_ = preciceParticipant_->getMaxTimeStepSize();
 
   LOG(DEBUG) << "precice initialization done, dt: "
@@ -197,6 +199,7 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceMeshes() {
         }
       }
 
+      preciceMesh->preciceVertexIds.resize(preciceMesh->nNodesLocal);
       // give the node positions to precice and get the vertex ids
       preciceParticipant_->setMeshVertices(preciceMesh->meshName,
                                            geometryValuesSurface,
