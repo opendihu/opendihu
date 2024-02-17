@@ -104,9 +104,8 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
   // parse scalingFactor from settings
   scalingFactor_ = this->specificSettings_.getOptionDouble("scalingFactor", 1);
 
-  // determine maximum timestep size
   preciceParticipant_->initialize();
-
+  // determine maximum timestep size
   maximumPreciceTimestepSize_ = preciceParticipant_->getMaxTimeStepSize();
 
   LOG(DEBUG) << "precice initialization done, dt: "

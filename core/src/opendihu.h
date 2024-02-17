@@ -8,6 +8,7 @@
 #include "control/load_balancing/load_balancing.h"
 #include "control/map_dofs/map_dofs.h"
 #include "control/precice/surface_coupling/precice_adapter.h"
+#include "control/precice/volume_coupling/precice_adapter_volume_coupling.h"
 
 #include "basis_function/lagrange.h"
 #include "basis_function/hermite.h"

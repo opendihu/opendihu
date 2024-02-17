@@ -12,6 +12,7 @@ template <typename NestedSolver>
 void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceReadData() {
 
   LOG(DEBUG) << "read data from precice";
+  double preciceDt = this->preciceParticipant_->getMaxTimeStepSize();
 
   using SlotConnectorDataType = typename NestedSolver::SlotConnectorDataType;
   std::shared_ptr<SlotConnectorDataType> slotConnectorData =
@@ -32,17 +33,12 @@ void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceReadData() {
       scalarValues_.resize(nEntries);
 
       // get all data at once
-      if (preciceData.isGeometryField) {
-        this->preciceParticipant_->readBlockVectorData(
-            preciceData.preciceDataId, preciceData.preciceMesh->nNodesLocal,
-            preciceData.preciceMesh->preciceVertexIds.data(),
-            scalarValues_.data());
-      } else {
-        this->preciceParticipant_->readBlockScalarData(
-            preciceData.preciceDataId, preciceData.preciceMesh->nNodesLocal,
-            preciceData.preciceMesh->preciceVertexIds.data(),
-            scalarValues_.data());
-      }
+      this->preciceParticipant_->readData(
+          preciceData.preciceMesh->meshName,
+          preciceData.preciceDataName, 
+          preciceDt,
+          preciceData.preciceMesh->preciceVertexIds,
+          scalarValues_);
 
       // get the mesh partition
       std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase =
@@ -199,33 +195,21 @@ void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceWriteData() {
         value *= this->scalingFactor_;
 
       // write values in precice
+      if (scalarValues_.size() != preciceData.preciceMesh->nNodesLocal)
+        LOG(FATAL) << "Wrong number of scalar values: "
+                    << scalarValues_.size()
+                    << " != " << preciceData.preciceMesh->nNodesLocal
+                    << ", nArrayItems: " << nArrayItems;
 
-      if (preciceData.isGeometryField) {
-        if (scalarValues_.size() != 3 * preciceData.preciceMesh->nNodesLocal)
-          LOG(FATAL) << "Wrong number of scalar values (isGeometryField): "
-                     << scalarValues_.size()
-                     << " != " << preciceData.preciceMesh->nNodesLocal
-                     << ", nArrayItems: " << nArrayItems;
 
-        this->preciceParticipant_->writeBlockVectorData(
-            preciceData.preciceDataId, preciceData.preciceMesh->nNodesLocal,
-            preciceData.preciceMesh->preciceVertexIds.data(),
-            scalarValues_.data());
-      } else {
-        if (scalarValues_.size() != preciceData.preciceMesh->nNodesLocal)
-          LOG(FATAL) << "Wrong number of scalar values: "
-                     << scalarValues_.size()
-                     << " != " << preciceData.preciceMesh->nNodesLocal
-                     << ", nArrayItems: " << nArrayItems;
-
-        this->preciceParticipant_->writeBlockScalarData(
-            preciceData.preciceDataId, preciceData.preciceMesh->nNodesLocal,
-            preciceData.preciceMesh->preciceVertexIds.data(),
-            scalarValues_.data());
-      }
-    }
+      this->preciceParticipant_->writeData(
+          preciceData.preciceMesh->meshName,
+          preciceData.preciceDataName, 
+          preciceData.preciceMesh->preciceVertexIds.data(),
+          scalarValues_.data());
+    
   }
-
+}
   LOG(DEBUG) << "write data to precice complete";
 }
 #endif
