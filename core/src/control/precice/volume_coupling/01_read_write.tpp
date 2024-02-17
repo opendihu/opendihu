@@ -34,11 +34,8 @@ void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceReadData() {
 
       // get all data at once
       this->preciceParticipant_->readData(
-          preciceData.preciceMesh->meshName,
-          preciceData.preciceDataName, 
-          preciceDt,
-          preciceData.preciceMesh->preciceVertexIds,
-          scalarValues_);
+          preciceData.preciceMesh->preciceMeshName, preciceData.preciceDataName,
+          preciceData.preciceMesh->preciceVertexIds, preciceDt, scalarValues_);
 
       // get the mesh partition
       std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase =
@@ -196,20 +193,15 @@ void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceWriteData() {
 
       // write values in precice
       if (scalarValues_.size() != preciceData.preciceMesh->nNodesLocal)
-        LOG(FATAL) << "Wrong number of scalar values: "
-                    << scalarValues_.size()
-                    << " != " << preciceData.preciceMesh->nNodesLocal
-                    << ", nArrayItems: " << nArrayItems;
-
+        LOG(FATAL) << "Wrong number of scalar values: " << scalarValues_.size()
+                   << " != " << preciceData.preciceMesh->nNodesLocal
+                   << ", nArrayItems: " << nArrayItems;
 
       this->preciceParticipant_->writeData(
-          preciceData.preciceMesh->meshName,
-          preciceData.preciceDataName, 
-          preciceData.preciceMesh->preciceVertexIds.data(),
-          scalarValues_.data());
-    
+          preciceData.preciceMesh->preciceMeshName, preciceData.preciceDataName,
+          preciceData.preciceMesh->preciceVertexIds, scalarValues_);
+    }
   }
-}
   LOG(DEBUG) << "write data to precice complete";
 }
 #endif

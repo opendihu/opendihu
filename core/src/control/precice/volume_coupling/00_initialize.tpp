@@ -210,7 +210,6 @@ void PreciceAdapterVolumeCouplingInitialize<
               return preciceMesh->preciceMeshName == currentMeshName;
             });
 
-
     // if the mesh is not in preciceMeshes_, create it and add it to
     // preciceMeshes_
     if (iter == preciceMeshes_.end()) {
@@ -319,10 +318,9 @@ void PreciceAdapterVolumeCouplingInitialize<
       preciceMesh->preciceVertexIds.resize(preciceMesh->nNodesLocal);
 
       // give the node positions to precice and get the vertex ids
-      preciceParticipant_->setMeshVertices(
-          preciceMesh->preciceMeshName,
-          geometryValuesContiguous,
-          preciceMesh->preciceVertexIds);
+      preciceParticipant_->setMeshVertices(preciceMesh->preciceMeshName,
+                                           geometryValuesContiguous,
+                                           preciceMesh->preciceVertexIds);
 
       // store newly created mesh in preciceData
       preciceData.preciceMesh = preciceMesh;
@@ -340,8 +338,7 @@ void PreciceAdapterVolumeCouplingInitialize<
                 << " fibers/compartments)";
       LOG(INFO) << message.str() << ".";
     } else {
-      LOG(DEBUG) << "Use existing precice mesh "
-                 <<currentMeshName;
+      LOG(DEBUG) << "Use existing precice mesh " << currentMeshName;
       preciceData.preciceMesh = *iter;
     }
 

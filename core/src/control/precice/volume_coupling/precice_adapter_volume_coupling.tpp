@@ -90,7 +90,8 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
 
     // advance timestepping in precice
     this->maximumPreciceTimestepSize_ =
-        this->preciceParticipant_->advance(timeStepWidth);
+        this->preciceParticipant_->getMaxTimeStepSize();
+    this->preciceParticipant_->advance(timeStepWidth);
 
     LOG(INFO) << "precice::advance(" << timeStepWidth
               << "), maximumPreciceTimestepSize_: "
