@@ -13,11 +13,13 @@
 
   <mesh name="TendonMeshLeft" dimensions="3">
       <use-data name="Displacement"/>
+      <use-data name="Velocity"/>
       <use-data name="Traction"/>
   </mesh>
 
   <mesh name="TendonMeshRight" dimensions="3">
       <use-data name="Displacement"/>
+      <use-data name="Velocity"/>
       <use-data name="Traction"/>
   </mesh>
 
