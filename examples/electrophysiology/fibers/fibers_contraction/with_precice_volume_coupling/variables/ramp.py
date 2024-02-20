@@ -99,8 +99,8 @@ input_directory   = os.path.join(os.environ["OPENDIHU_HOME"], "examples/electrop
 #fiber_file        = input_directory + "/left_biceps_brachii_7x7fibers.bin"
 fiber_file        = input_directory + "/left_biceps_brachii_13x13fibers.bin"
 firing_times_file = input_directory + "/MU_firing_times_always.txt"
-#fiber_distribution_file = input_directory + "/MU_fibre_distribution_10MUs.txt"
-fiber_distribution_file = input_directory + "/MU_fibre_distribution_10MUs_13x13.txt"
+fiber_distribution_file = input_directory + "/MU_fibre_distribution_10MUs.txt"
+#fiber_distribution_file = input_directory + "/MU_fibre_distribution_10MUs_13x13.txt"
 cellml_file       = input_directory + "/new_slow_TK_2014_12_08.cellml"
 
 # EMG solver parameters
