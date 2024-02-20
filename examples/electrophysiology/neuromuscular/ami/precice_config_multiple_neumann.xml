@@ -41,9 +41,11 @@
     <receive-mesh name="MuscleMeshRight" from="MuscleSolverRight"/>
 
     <write-data name="Displacement"  mesh="TendonMeshRight"/>
+    <write-data name="Velocity"  mesh="TendonMeshRight"/>
     <read-data  name="Traction"      mesh="TendonMeshRight"/>
 
     <write-data name="Displacement"  mesh="TendonMeshLeft"/>
+    <write-data name="Velocity"  mesh="TendonMeshLeft"/>
     <read-data  name="Traction"      mesh="TendonMeshLeft"/>
 
     <mapping:nearest-neighbor direction="read" from="MuscleMeshLeft" to="TendonMeshLeft" constraint="consistent"/>
@@ -57,6 +59,7 @@
     <receive-mesh name="TendonMeshLeft"     from="TendonSolver"/>
 
     <read-data  name="Displacement"  mesh="MuscleMeshLeft"/>
+    <read-data  name="Velocity"  mesh="MuscleMeshLeft"/>
     <write-data name="Traction"      mesh="MuscleMeshLeft"/>
 
     <mapping:nearest-neighbor direction="read" from="TendonMeshLeft" to="MuscleMeshLeft" constraint="consistent"/>
@@ -68,6 +71,7 @@
     <receive-mesh name="TendonMeshRight"     from="TendonSolver"/>
 
     <write-data  name="Displacement"  mesh="MuscleMeshRight"/>
+    <write-data  name="Velocity"  mesh="MuscleMeshRight"/>
     <read-data name="Traction"      mesh="MuscleMeshRight"/>
     
     <mapping:nearest-neighbor direction="read" from="TendonMeshRight" to="MuscleMeshRight" constraint="consistent"/>
@@ -88,8 +92,10 @@
 
     <acceleration:IQN-ILS>
       <data name="Displacement" mesh="TendonMeshLeft"/>
+      <data name="Velocity" mesh="TendonMeshLeft"/>
       <data name="Traction" mesh="MuscleMeshLeft"/>
       <data name="Displacement" mesh="TendonMeshRight"/>
+      <data name="Velocity" mesh="TendonMeshRight"/>
       <data name="Traction" mesh="MuscleMeshRight"/>
       <preconditioner type="residual-sum"/>
       <filter type="QR2" limit="1e-3"/>
@@ -101,15 +107,19 @@
     <max-iterations value="25" />
 
     <relative-convergence-measure limit="1e-3" data="Displacement" mesh="TendonMeshLeft" strict="0"/>
+    <relative-convergence-measure limit="1e-3" data="Velocity" mesh="TendonMeshLeft" strict="0"/>
     <absolute-convergence-measure limit="1e-1" data="Traction" mesh="MuscleMeshLeft" strict="0"/>
 
     <relative-convergence-measure limit="1e-3" data="Displacement" mesh="TendonMeshRight" strict="0"/>
+    <relative-convergence-measure limit="1e-3" data="Velocity" mesh="TendonMeshRight" strict="0"/>
     <absolute-convergence-measure limit="1e-1" data="Traction" mesh="MuscleMeshRight" strict="0"/>
 
     <exchange data="Displacement" mesh="TendonMeshLeft" from="TendonSolver" to="MuscleSolverLeft"/>  
+    <exchange data="Velocity" mesh="TendonMeshLeft" from="TendonSolver" to="MuscleSolverLeft"/>  
     <exchange data="Traction" mesh="MuscleMeshLeft" from="MuscleSolverLeft" to="TendonSolver"/>  
 
     <exchange data="Displacement" mesh="TendonMeshRight" from="TendonSolver" to="MuscleSolverRight"/>  
+    <exchange data="Velocity" mesh="TendonMeshRight" from="TendonSolver" to="MuscleSolverRight"/>  
     <exchange data="Traction" mesh="MuscleMeshRight" from="MuscleSolverRight" to="TendonSolver"/> 
   </coupling-scheme:multi>
 
