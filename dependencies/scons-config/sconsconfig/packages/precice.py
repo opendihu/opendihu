@@ -102,26 +102,15 @@ class precice(Package):
     self.check_options(env)
     res = super(precice, self).check(ctx)
   
-    if not res[0]:
-      ctx.Log('Retry (1) with libxml2 configuration flags\n')
-      self.set_build_handler([
-        'mkdir -p ${PREFIX}/include',
 
-        # precice
-        'cd ${SOURCE_DIR} && mkdir -p build && cd build && '+ctx.env["cmake"]+' -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-          -DCMAKE_BUILD_TYPE=RELEASE \
-          -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
-          -DLIBXML2_DIR=${LIBXML2_DIR} \
-          -DLibXml2_ROOT=${LIBXML2_DIR} \
-          ..',
-        'cd ${SOURCE_DIR}/build && make precice install'
-      ])
-      
-      self.check_options(env)
-      res = super(precice, self).check(ctx)
+    # try again downloading libxml2 -> this is necessary for the ipvs epyc cluster
+    # to run in the ipvs_epyc cluster, you also need to add 
+    # export PKG_CONFIG_PATH="/path/to/opendihu/dependencies/petsc/install/lib/pkgconfig:${PKG_CONFIG_PATH}"
+
+
 
     if not res[0]:
-      ctx.Log('Retry (2) with manually building libxml2\n')
+      ctx.Log('Retry (1) with manually building libxml2\n')
       self.set_build_handler([
         'mkdir -p ${PREFIX}/include',
 
@@ -134,7 +123,6 @@ class precice(Package):
           -DCMAKE_BUILD_TYPE=RELEASE \
           -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
           -DLIBXML2_INCLUDE_DIR=${PREFIX}/include/libxml2 -DLIBXML2_LIBRARY=${PREFIX}/lib/libxml2.so \
-          -DPETSc_DIR=${PETSC_DIR} \
           ..',
         'cd ${SOURCE_DIR}/build && make precice install'
       ])
