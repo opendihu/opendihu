@@ -200,7 +200,7 @@ void PreciceAdapterVolumeCouplingInitialize<
 
     // parse the mesh
     std::string currentMeshName =
-        currentPreciceData.getOptionString("meshName", "");
+        currentPreciceData.getOptionString("preciceMeshName", "");
 
     // find the mesh in the already parsed precice meshes
     typename std::vector<std::shared_ptr<PreciceMesh>>::iterator iter =
