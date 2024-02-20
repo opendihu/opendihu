@@ -134,6 +134,7 @@ class precice(Package):
           -DCMAKE_BUILD_TYPE=RELEASE \
           -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
           -DLIBXML2_INCLUDE_DIR=${PREFIX}/include/libxml2 -DLIBXML2_LIBRARY=${PREFIX}/lib/libxml2.so \
+          -DPETSc_DIR=${PETSC_DIR} \
           ..',
         'cd ${SOURCE_DIR}/build && make precice install'
       ])
