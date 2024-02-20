@@ -103,6 +103,45 @@ class precice(Package):
     res = super(precice, self).check(ctx)
   
     if not res[0]:
+      ctx.Log('Retry (1) with libxml2 configuration flags\n')
+      self.set_build_handler([
+        'mkdir -p ${PREFIX}/include',
+
+        # precice
+        'cd ${SOURCE_DIR} && mkdir -p build && cd build && '+ctx.env["cmake"]+' -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+          -DCMAKE_BUILD_TYPE=RELEASE \
+          -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
+          -DLIBXML2_DIR=${LIBXML2_DIR} \
+          -DLibXml2_ROOT=${LIBXML2_DIR} \
+          ..',
+        'cd ${SOURCE_DIR}/build && make precice install'
+      ])
+      
+      self.check_options(env)
+      res = super(precice, self).check(ctx)
+
+    if not res[0]:
+      ctx.Log('Retry (2) with manually building libxml2\n')
+      self.set_build_handler([
+        'mkdir -p ${PREFIX}/include',
+
+        # libxml2
+        'cd ${SOURCE_DIR} && if [ ! -f ${SOURCE_DIR}/libxml2-2.9.9.tar.gz ]; then wget ftp://xmlsoft.org/libxml2/libxml2-2.9.9.tar.gz; fi; \
+         tar xf libxml2-2.9.9.tar.gz; cd libxml2-2.9.9; ./configure --prefix=${PREFIX} --without-python && make install -j 16',
+
+        # precice
+        'cd ${SOURCE_DIR} && mkdir -p build && cd build && '+ctx.env["cmake"]+' -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+          -DCMAKE_BUILD_TYPE=RELEASE \
+          -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
+          -DLIBXML2_INCLUDE_DIR=${PREFIX}/include/libxml2 -DLIBXML2_LIBRARY=${PREFIX}/lib/libxml2.so \
+          ..',
+        'cd ${SOURCE_DIR}/build && make precice install'
+      ])
+      
+      self.check_options(env)
+      res = super(precice, self).check(ctx)
+
+    if not res[0]:
       ctx.Log('\n\nInstallation of preCICE failed. Rebuild with\n  make clean; scons PRECICE_REBUILD=True\n\n')
       
     self.check_required(res[0], ctx)
