@@ -1,6 +1,7 @@
 # This file contains internal values of create_partitioned_meshes_for_settings.py 
 # that need to be persistent for the helper function to work
-
+case_name = "default"
+precice_config_file = "precice-config.xml"
 debug_output = False                # verbose output in this python script, for debugging the domain decomposition
 
 dt_elasticity = 1e-3

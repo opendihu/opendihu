@@ -56,6 +56,8 @@ n_ranks = (int)(sys.argv[-1])
 
 # define command line arguments
 parser = argparse.ArgumentParser(description='tendon')
+parser.add_argument('--precice_config_file',                       help='The name to identify this run in the log.',   default=variables.precice_config_file)
+parser.add_argument('--case_name',                       help='The name to identify this run in the log.',   default=variables.case_name)
 parser.add_argument('--n_subdomains', nargs=3,               help='Number of subdomains in x,y,z direction.',    type=int)
 parser.add_argument('--n_subdomains_x', '-x',                help='Number of subdomains in x direction.',        type=int, default=variables.n_subdomains_x)
 parser.add_argument('--n_subdomains_y', '-y',                help='Number of subdomains in y direction.',        type=int, default=variables.n_subdomains_y)
@@ -195,14 +197,14 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "extrapolateInitialGuess":     True,                                # if the initial values for the dynamic nonlinear problem should be computed by extrapolating the previous displacements and velocities
   "constantBodyForce":           variables.constant_body_force,       # a constant force that acts on the whole body, e.g. for gravity
   
-  "dirichletOutputFilename":     "out/"+variables.scenario_name+"/dirichlet_boundary_conditions_tendon",    # filename for a vtp file that contains the Dirichlet boundary condition nodes and their values, set to None to disable
+  "dirichletOutputFilename":     "out/" + variables.case_name + '/' +variables.scenario_name+"/dirichlet_boundary_conditions_tendon",    # filename for a vtp file that contains the Dirichlet boundary condition nodes and their values, set to None to disable
   
   # define which file formats should be written
   # 1. main output writer that writes output files using the quadratic elements function space. Writes displacements, velocities and PK2 stresses.
   "OutputWriter" : [
     
     # Paraview files
-    {"format": "Paraview", "outputInterval": 1, "filename": "out/"+variables.scenario_name+"/tendon", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+    {"format": "Paraview", "outputInterval": 1, "filename": "out/" + variables.case_name + '/' +variables.scenario_name+"/tendon", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
     
     # Python callback function "postprocess"
     #{"format": "PythonCallback", "outputInterval": 1, "callback": postprocess, "onlyNodalValues":True, "filename": ""},
@@ -216,7 +218,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   # 3. additional output writer that writes virtual work terms
   "dynamic": {    # output of the dynamic solver, has additional virtual work values 
     "OutputWriter" : [   # output files for displacements function space (quadratic elements)
-      {"format": "Paraview", "outputInterval": 1, "filename": "out/"+variables.scenario_name+"/virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+      {"format": "Paraview", "outputInterval": 1, "filename": "out/" + variables.case_name + '/' +variables.scenario_name+"/virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
       #{"format": "Paraview", "outputInterval": 1, "filename": "out/"+variables.scenario_name+"/virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
     ],
   },
@@ -239,24 +241,24 @@ config = {
     "timeStepOutputInterval":   100,                        # interval in which to display current timestep and time in console
     "timestepWidth":            1,                          # coupling time step width, must match the value in the precice config
     "couplingEnabled":          True,                       # if the precice coupling is enabled, if not, it simply calls the nested solver, for debugging
-    "preciceConfigFilename":    "precice_config_muscle_dirichlet_tendon_neumann_implicit_coupling.xml",    # the preCICE configuration file
+    "preciceConfigFilename":    variables.precice_config_file,    # the preCICE configuration file
     "preciceParticipantName":   "TendonSolver",             # name of the own precice participant, has to match the name given in the precice xml config file
     "preciceMeshes": [                                      # the precice meshes get created as the top or bottom surface of the main geometry mesh of the nested solver
       {
-        "preciceMeshName":      "TendonMeshTop",            # precice name of the 2D coupling mesh
+        "meshName":      "TendonMeshTop",            # precice name of the 2D coupling mesh
         "face":                 "2+",                       # face of the 3D mesh where the 2D mesh is located, "2-" = bottom, "2+" = top
       }
     ],
     "preciceData": [
       {
         "mode":                 "write-displacements-velocities",   # mode is one of "read-displacements-velocities", "read-traction", "write-displacements-velocities", "write-traction"
-        "preciceMeshName":      "TendonMeshTop",                    # name of the precice coupling surface mesh, as given in the precice xml settings file
+        "meshName":      "TendonMeshTop",                    # name of the precice coupling surface mesh, as given in the precice xml settings file
         "displacementsName":    "Displacement",                     # name of the displacements "data", i.e. field variable, as given in the precice xml settings file
         "velocitiesName":       "Velocity",                         # name of the velocity "data", i.e. field variable, as given in the precice xml settings file
       },
       {
         "mode":                 "read-traction",                    # mode is one of "read-displacements-velocities", "read-traction", "write-displacements-velocities", "write-traction"
-        "preciceMeshName":      "TendonMeshTop",                    # name of the precice coupling surface mesh, as given in the precice xml settings 
+        "meshName":      "TendonMeshTop",                    # name of the precice coupling surface mesh, as given in the precice xml settings 
         "tractionName":         "Traction",                         # name of the traction "data", i.e. field variable, as given in the precice xml settings file
       }
     ],
