@@ -89,7 +89,7 @@ variables.elasticity_neumann_bc = [{"element": k*mx*my + j*mx + i, "constantVect
 
 def update_neumann_bc(t):
   k = 0
-  factor = min(1, t/100)   # for t ∈ [0,100] from 0 to force in 100 ms
+  factor = min(1, t/variables.force_time_span)   # for t ∈ [0,100] from 0 to force in 100 ms
   elasticity_neumann_bc = [{
 		"element": k*mx*my + j*mx + i, 
 		"constantVector": [0,0,-variables.force*factor], 		

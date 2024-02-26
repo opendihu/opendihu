@@ -2,10 +2,15 @@ scenario_name = ""
 
 # timing parameters [ms]
 # ----------------------
-dt_elasticity = 0.1
-end_time = 100.0
+dt_elasticity = 1.0
+end_time = 10.0
 
-output_timestep_elasticity = 10 # 1 means to output every timestep     
+# pulling force
+# -------------
+force = 2e4 
+force_time_span = 10 # [ms] time at which full force is reached
+
+output_timestep_elasticity = 1 # 1 means to output every timestep     
 
 # material parameters
 # -------------------
@@ -33,7 +38,6 @@ bottom_tendon_offset = [0.0, 0.0, 0.0]
 
 # boundary conditions
 # -------------------
-force = 1e5
 divideNeumannBoundaryConditionValuesByTotalArea = False
 elasticity_dirichlet_bc = {}
 elasticity_neumann_bc = []
