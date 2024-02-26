@@ -52,17 +52,17 @@ if (variables.tendon_material == "SaintVenantKirchoff"):
 # add meshes
 meshes_tendon = {
   "tendon_Mesh": {
-    "nElements" :         variables.n_elements_tendon,
-    "physicalExtent":     variables.tendon_extent,
-    "physicalOffset":     variables.tendon_offset,
+    "nElements" :         variables.bottom_n_elements_tendon,
+    "physicalExtent":     variables.bottom_tendon_extent,
+    "physicalOffset":     variables.bottom_tendon_offset,
     "logKey":             "tendon",
     "inputMeshIsGlobal":  True,
     "nRanks":             n_ranks
   },
   "tendon_Mesh_quadratic": {
-    "nElements" :         [elems // 2 for elems in variables.n_elements_tendon],
-    "physicalExtent":     variables.tendon_extent,
-    "physicalOffset":     variables.tendon_offset,
+    "nElements" :         [elems // 2 for elems in variables.bottom_n_elements_tendon],
+    "physicalExtent":     variables.bottom_tendon_extent,
+    "physicalOffset":     variables.bottom_tendon_offset,
     "logKey":             "tendon_quadratic",
     "inputMeshIsGlobal":  True,
     "nRanks":             n_ranks,
@@ -72,8 +72,8 @@ meshes_tendon = {
 # boundary conditions (for quadratic elements)
 # --------------------------------------------
 
-[nx, ny, nz] = [elem + 1 for elem in variables.n_elements_tendon]
-[mx, my, mz] = [elem // 2 for elem in variables.n_elements_tendon] # quadratic elements consist of 2 linear elements along each axis
+[nx, ny, nz] = [elem + 1 for elem in variables.bottom_n_elements_tendon]
+[mx, my, mz] = [elem // 2 for elem in variables.bottom_n_elements_tendon] # quadratic elements consist of 2 linear elements along each axis
 
 # Neumann: Pull the bottom of the tendon
 k = 0
@@ -82,7 +82,7 @@ variables.elasticity_neumann_bc = [{"element": k*mx*my + j*mx + i, "constantVect
 
 def update_neumann_bc(t):
   k = 0
-  factor = min(1, t/100)   # for t ∈ [0,100] from 0 to force in 100 ms
+  factor = min(1, t/variables.force_time_span)   # for t ∈ [0,100] from 0 to force in 100 ms
   elasticity_neumann_bc = [{
 		"element": k*mx*my + j*mx + i, 
 		"constantVector": [0,0,-variables.force*factor], 		

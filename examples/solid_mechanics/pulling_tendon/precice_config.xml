@@ -52,16 +52,27 @@
   <m2n:sockets acceptor="TopTendonSolver" connector="BottomTendonSolver" network="lo" />
 
   <coupling-scheme:parallel-implicit>
-    <participants first="TopTendonSolver" second="BottomTendonSolver"/>
+    <participants first="BottomTendonSolver" second="TopTendonSolver"/>
 
     <max-time value="20.0"/>          
-    <time-window-size value="0.1"/>   
+    <time-window-size value="1.0"/>   
 
-    <max-iterations value="25" />
+    <max-iterations value="20" />
 
-    <relative-convergence-measure limit="1e-4" data="Displacement" mesh="TopTendonMesh" strict="0"/>
-    <relative-convergence-measure limit="1e-4" data="Velocity" mesh="TopTendonMesh" strict="0"/>
-    <absolute-convergence-measure limit="1e-2" data="Traction" mesh="BottomTendonMesh" strict="0"/>
+    <acceleration:IQN-ILS>
+      <data name="Displacement" mesh="TopTendonMesh"/>
+      <data name="Velocity" mesh="TopTendonMesh"/>
+      <data name="Traction" mesh="BottomTendonMesh"/>
+      <preconditioner type="residual-sum"/>
+      <filter type="QR1" limit="1e-6"/>
+      <initial-relaxation value="0.4"/>
+      <max-used-iterations value="40"/>
+      <time-windows-reused value="15"/>
+    </acceleration:IQN-ILS>
+
+    <relative-convergence-measure limit="1e-2" data="Displacement" mesh="TopTendonMesh" strict="1"/>
+    <relative-convergence-measure limit="1e-2" data="Velocity" mesh="TopTendonMesh" strict="1"/>
+    <absolute-convergence-measure limit="1e-2" data="Traction" mesh="BottomTendonMesh" strict="1"/>
 
     <exchange data="Traction" mesh="BottomTendonMesh" from="BottomTendonSolver" to="TopTendonSolver"/>  
     <exchange data="Displacement" mesh="TopTendonMesh" from="TopTendonSolver" to="BottomTendonSolver"/>  
