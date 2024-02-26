@@ -108,7 +108,7 @@ sconsconfig.add_options(vars)
 
 # initialize environment object containing build system settings such as compilers and flags
 # command line options are considered
-env = Environment(tools = ['default'], toolpath = ['config/tools'], variables = vars, ENV = os.environ)
+env = Environment(tools = ['default'], toolpath = ['config/tools'], variables = vars, ENV = os.environ, COMPILATIONDB_USE_ABSPATH=True)
 vars.Save('out.py',env)
 
 # check for unknown variables and output warning

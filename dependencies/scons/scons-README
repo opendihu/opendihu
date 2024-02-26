@@ -1,4 +1,3 @@
-# Copyright (c) 2001 - 2019 The SCons Foundation
 
                  SCons - a software construction tool
 
@@ -38,14 +37,15 @@ LATEST VERSION
 Before going further, you can check for the latest version of the
 scons-local package, or any SCons package, at the SCons download page:
 
-        http://www.scons.org/download.html
+        https://scons.org/pages/download.html
 
 
 EXECUTION REQUIREMENTS
 ======================
 
-Running SCons requires either Python version 2.7.* or Python 3.5 or higher.
-There should be no other dependencies or requirements to run SCons.
+Running SCons requires Python 3.6 or higher. There should be no other
+dependencies or requirements to run standard SCons.
+The last release to support Python 3.5 was 4.2.0.
 
 The default SCons configuration assumes use of the Microsoft Visual C++
 compiler suite on WIN32 systems (either through the Visual Studio
@@ -81,6 +81,11 @@ Or (if, for example, you installed this package in a subdirectory named
 
 That should be all you have to do.  (If it isn't that simple, please let
 us know!)
+
+Since 4.5, there is also an alternate form of scons-local avaialble:
+a zipapp. This is a single file with a .pyz suffix, which can be
+downloaded and executed directly (e.g.: python scons-local-4.5.2.pyz)
+without unpacking. This may be more convenient in a few cases.
 
 
 CONTENTS OF THIS PACKAGE
@@ -189,8 +194,9 @@ You may subscribe to the scons-users mailing list at:
 
         http://two.pairlist.net/mailman/listinfo/scons-users
 
-An active mailing list for developers of SCons is available.  You may
-send questions or comments to the list at:
+In addition to the scons-users list which is appropriate for almost any
+question, there is a mailing list specifically for developers of SCons
+You may send questions or comments to the list at:
 
         scons-dev@scons.org
 
@@ -202,15 +208,11 @@ Subscription to the developer's mailing list is by approval.  In practice, no
 one is refused list membership, but we reserve the right to limit membership
 in the future and/or weed out lurkers.
 
-There is also a low-volume mailing list available for announcements about
-SCons.  Subscribe by sending email to:
-
-        announce-subscribe@scons.tigris.org
-
-There are other mailing lists available for SCons users, for notification of
-SCons code changes, and for notification of updated bug reports and project
-documents.  Please see our mailing lists page for details.
-
+Note that while this list still exists, the number of different places you
+can talk about SCons means it is no longer very active.  GitHub has
+support for discussions as well as for issues, and there is usually more
+immediacy on the Discord chat, so these are probably now considered the
+preferred places for "development" topics.
 
 
 FOR MORE INFORMATION
@@ -221,18 +223,29 @@ Check the SCons web site at:
         http://www.scons.org/
 
 
-AUTHOR INFO
+Author Info
 ===========
 
-Steven Knight
-knight at baldmt dot com
-http://www.baldmt.com/~knight/
+SCons was originally written by Steven Knight, knight at baldmt dot com.
+Since around 2010 it has been maintained by the SCons
+development team, co-managed by Bill Deegan and Gary Oberbrunner, with
+many contributors, including but not at all limited to:
 
-With plenty of help from the SCons Development team:
-        Chad Austin
-        Charles Crain
-        Steve Leblanc
-        Anthony Roach
-        Terrel Shumway
+- Chad Austin
+- Dirk Baechle
+- Charles Crain
+- William Deegan
+- Steve Leblanc
+- Rob Managan
+- Greg Noel
+- Gary Oberbrunner
+- Anthony Roach
+- Greg Spencer
+- Tom Tanner
+- Anatoly Techtonik
+- Christoph Wiedemann
+- Mats Wichmann
+- Russel Winder
+- Mats Wichmann
 
-
+\... and many others.
