@@ -12,4 +12,6 @@ Import('env')     # import Environment object from calling SConstruct
 # create the main executable
 env.Program(target = 'tendon', source = "src/linear_tendon.cpp")
 env.Program(target = 'tendon_with_precice', source = "src/linear_tendon_precice.cpp")
+env.Program(target = 'non_linear_tendon', source = "src/non_linear_tendon.cpp")
+env.Program(target = 'non_linear_tendon_with_precice', source = "src/non_linear_tendon_precice.cpp")
 

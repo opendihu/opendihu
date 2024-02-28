@@ -2,7 +2,7 @@ scenario_name = ""
 
 # timing parameters [ms]
 # ----------------------
-dt_elasticity = 1.0
+dt_elasticity = 0.05
 end_time = 10.0
 
 # pulling force
@@ -14,7 +14,8 @@ output_timestep_elasticity = 1 # 1 means to output every timestep
 
 # material parameters
 # -------------------
-tendon_material = "SaintVenantKirchoff"         
+tendon_material = "nonLinear"
+#tendon_material = "SaintVenantKirchoff"         
 rho = 10   ## [1e-4 kg/cm^3] density of the water
 constant_body_force = [0,0,0]
 
