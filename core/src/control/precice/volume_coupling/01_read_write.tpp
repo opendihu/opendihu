@@ -7,7 +7,6 @@
 
 namespace Control {
 
-#ifdef HAVE_PRECICE
 template <typename NestedSolver>
 void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceReadData() {
 
@@ -191,12 +190,22 @@ void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceWriteData() {
       for (double &value : scalarValues_)
         value *= this->scalingFactor_;
 
-      // write values in precice
-      if (scalarValues_.size() != preciceData.preciceMesh->nNodesLocal)
-        LOG(FATAL) << "Wrong number of scalar values: " << scalarValues_.size()
-                   << " != " << preciceData.preciceMesh->nNodesLocal
-                   << ", nArrayItems: " << nArrayItems;
+      // check dim for scalarValues_
+      if (preciceData.isGeometryField) {
+        if (scalarValues_.size() != 3 * preciceData.preciceMesh->nNodesLocal)
+          LOG(FATAL) << "Wrong number of scalar values (isGeometryField): "
+                     << scalarValues_.size()
+                     << " != " << preciceData.preciceMesh->nNodesLocal
+                     << ", nArrayItems: " << nArrayItems;
+      } else {
+        if (scalarValues_.size() != preciceData.preciceMesh->nNodesLocal)
+          LOG(FATAL) << "Wrong number of scalar values: "
+                     << scalarValues_.size()
+                     << " != " << preciceData.preciceMesh->nNodesLocal
+                     << ", nArrayItems: " << nArrayItems;
+      }
 
+      // write values in precice
       this->preciceParticipant_->writeData(
           preciceData.preciceMesh->preciceMeshName, preciceData.preciceDataName,
           preciceData.preciceMesh->preciceVertexIds, scalarValues_);
@@ -204,6 +213,5 @@ void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceWriteData() {
   }
   LOG(DEBUG) << "write data to precice complete";
 }
-#endif
 
 } // namespace Control
