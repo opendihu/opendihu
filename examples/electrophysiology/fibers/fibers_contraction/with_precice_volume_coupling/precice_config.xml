@@ -34,7 +34,7 @@
     <!-- Makes the named mesh available to the participant. Mesh is provided by the solver directly. -->
     <provide-mesh name="PartitionedFibersMesh"/>
     <receive-mesh name="MuscleContractionMesh" from="MuscleContraction"/>
-    <export:vtk directory="precice-output" every-n-time-windows="10"  />
+    <export:vtu directory="precice-output" every-n-time-windows="10"  />
     
     <!-- Define input/output of the solver.  -->
     <write-data name="Gamma" mesh="PartitionedFibersMesh"/>
@@ -79,7 +79,7 @@ s = 91.0456277631
     <receive-mesh name="PartitionedFibersMesh" from="PartitionedFibers"/>
     <write-data name="Geometry" mesh="MuscleContractionMesh"/>
     <read-data  name="Gamma"    mesh="MuscleContractionMesh"/>
-    <export:vtk directory="precice-output" every-n-time-windows="10"  />
+    <export:vtu directory="precice-output" every-n-time-windows="10"  />
     
     <!-- map from PartitionedFibersMesh to  MuscleContractionMesh -->
     <!-- shape-parameter: 

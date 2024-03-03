@@ -8,157 +8,145 @@
     <!--<sink type="file" output="debug.log" filter= "(%Severity% >= debug)" format="%Message%" enabled="true" />	-->
   </log>
 
-  <solver-interface dimensions="3">
     
-    <!-- Data fields that are exchanged between the solvers -->
-    <data:vector name="Displacement"/>
-    <data:vector name="Velocity"/>
-    <data:vector name="Traction"/>
+  <!-- Data fields that are exchanged between the solvers -->
+  <data:vector name="Displacement"/>
+  <data:vector name="Velocity"/>
+  <data:vector name="Traction"/>
 
-    <!-- A common mesh that uses these data fields -->
-    <mesh name="TendonMeshTop">
-      <use-data name="Displacement"/>
-      <use-data name="Velocity"/>
-      <use-data name="Traction"/>
-    </mesh>
+  <!-- A common mesh that uses these data fields -->
+  <mesh name="TendonMeshTop" dimensions="3">
+    <use-data name="Displacement"/>
+    <use-data name="Velocity"/>
+    <use-data name="Traction"/>
+  </mesh>
 
-    <mesh name="MuscleMeshBottom">
-      <use-data name="Displacement"/>
-      <use-data name="Velocity"/>
-      <use-data name="Traction"/>
-    </mesh>
+  <mesh name="MuscleMeshBottom" dimensions="3">
+    <use-data name="Displacement"/>
+    <use-data name="Velocity"/>
+    <use-data name="Traction"/>
+  </mesh>
 
-    <!-- Represents each solver using preCICE. In a coupled simulation, two participants have to be
-         defined. The name of the participant has to match the name given on construction of the
-         precice::Participant object used by the participant. -->
+  <!-- Represents each solver using preCICE. In a coupled simulation, two participants have to be
+        defined. The name of the participant has to match the name given on construction of the
+        precice::Participant object used by the participant. -->
+  
+  <participant name="TendonSolver">
     
-    <participant name="TendonSolver">
-      
-      <!-- Makes the named mesh available to the participant. Mesh is provided by the solver directly. -->
-      <use-mesh name="TendonMeshTop" provide="yes"/>
-      <use-mesh name="MuscleMeshBottom" from="MuscleSolver"/>
-      <export:vtk directory="precice-output" />
-      
-      <!-- Define input/output of the solver, the mesh should be the own one.  -->
-      <write-data name="Displacement"  mesh="TendonMeshTop"/>
-      <write-data name="Velocity"      mesh="TendonMeshTop"/>
-      <read-data  name="Traction"      mesh="TendonMeshTop"/>
+    <!-- Makes the named mesh available to the participant. Mesh is provided by the solver directly. -->
+    <provide-mesh name="TendonMeshTop" />
+    <receive-mesh name="MuscleMeshBottom" from="MuscleSolver"/>
+    <export:vtu directory="precice-output" />
+    
+    <!-- Define input/output of the solver, the mesh should be the own one.  -->
+    <write-data name="Displacement"  mesh="TendonMeshTop"/>
+    <write-data name="Velocity"      mesh="TendonMeshTop"/>
+    <read-data  name="Traction"      mesh="TendonMeshTop"/>
 
-      <!-- rbf to map from MuscleMeshBottom to TendonMeshTop -->
-      <!--
+    <!-- rbf to map from MuscleMeshBottom to TendonMeshTop -->
+    <!--
 $./rbfShape.py 0.01 5
 Using values:
-  h     = 0.01
-  m     = 5
-  decay = 1e-09
+h     = 0.01
+m     = 5
+decay = 1e-09
 Result:
-  s = 91.0456277631
+s = 91.0456277631
 -->
-      <mapping:rbf-gaussian 
-        direction="read" 
-        from="MuscleMeshBottom" 
-        to="TendonMeshTop" 
-        constraint="consistent" 
-        timing="initial" 
-        shape-parameter="91.05"
-      />
-      
-      <!--<mapping:nearest-neighbor direction="read" from="MuscleMeshBottom" to="TendonMeshTop" constraint="consistent" />-->
-      <!-- rbf-compact-tps-c2 abgeschnittene splines, 3-5 Nachbarn im support radius--> 
-      <!-- <mapping:rbf-thin-plate-splines
-        direction="read" 
-        from="MuscleMeshBottom" 
-        to="TendonMeshTop" 
-        constraint="consistent" 
-        />-->
+    <mapping:rbf direction="read" from="MuscleMeshBottom" to="TendonMeshTop" constraint="consistent"> 
+      <basis-function:gaussian shape-parameter="91.05" />
+    </mapping:rbf>
     
-    </participant>
-    
-    <participant name="MuscleSolver">
-      <!-- Makes the named mesh available to the participant. Mesh is provided by the solver directly. -->
-      <use-mesh name="MuscleMeshBottom" provide="yes"/>
-      <use-mesh name="TendonMeshTop" from="TendonSolver"/>
-      
-      <!-- Define input/output of the solver, the mesh should be the own one. -->
-      <read-data  name="Displacement"  mesh="MuscleMeshBottom"/>
-      <read-data  name="Velocity"      mesh="MuscleMeshBottom"/>
-      <write-data name="Traction"      mesh="MuscleMeshBottom"/>
-      <export:vtk directory="precice-output" />
-      
-      <!-- map from TendonMeshTop to MuscleMeshBottom -->
-      <!-- shape-parameter: 
-      ./rbfShape.py 0.01 3
-      Using values:
-        h     = 0.01
-        m     = 3
-        decay = 1e-09
-      Result:
-        s = 151.74271293851464
-      -->
-      <!-- <mapping:rbf-gaussian 
-        direction="read" 
-        from="TendonMeshTop" 
-        to="MuscleMeshBottom" 
-        constraint="consistent" 
-        timing="initial" 
-        shape-parameter="151.74"
+    <!--<mapping:nearest-neighbor direction="read" from="MuscleMeshBottom" to="TendonMeshTop" constraint="consistent" />-->
+    <!-- rbf-compact-tps-c2 abgeschnittene splines, 3-5 Nachbarn im support radius--> 
+    <!-- <mapping:rbf-thin-plate-splines
+      direction="read" 
+      from="MuscleMeshBottom" 
+      to="TendonMeshTop" 
+      constraint="consistent" 
       />-->
-     <mapping:rbf-compact-polynomial-c6
-        direction="read" 
-        from="TendonMeshTop" 
-        to="MuscleMeshBottom" 
-        constraint="consistent" 
-        timing="initial" 
-        support-radius="0.1"  
-      />  <!-- spacing between nodes is 0.01 -->
-      
-      <!-- available mappings:
-        rbf-thin-plate-splines
-        rbf-multiquadrics
-        rbf-inverse-multiquadrics
-        rbf-volume-splines
-        rbf-gaussian
-        rbf-compact-tps-c2
-        rbf-compact-polynomial-c0
-        rbf-compact-polynomial-c6
-        nearest-neighbor
-        nearest-projection
-      -->
-
-      <!--<mapping:nearest-neighbor 
-        direction="read" from="PartitionedFibersMesh" to="MuscleContractionMesh" constraint="consistent" timing="initial"/>-->
-      <!--
-      rbf is very slow!
-      <mapping:rbf-thin-plate-splines
-        direction="read" 
-        from="PartitionedFibersMesh" 
-        to="MuscleContractionMesh" 
-        constraint="consistent" 
-        />-->
-      
-      <!-- rbf-compact-tps-c2 abgeschnittene splines, 3-5 Nachbarn im support radius--> 
-      <!--<mapping:rbf-compact-polynomial-c6
-        direction="read" 
-        from="PartitionedFibersMesh" 
-        to="MuscleContractionMesh" 
-        constraint="consistent" 
-        support-radius="0.1"
-      />-->
-      
-    </participant>
-
-    <!-- Communication method, use TCP sockets, Change network to "ib0" on SuperMUC -->
-    <m2n:sockets from="TendonSolver" to="MuscleSolver" network="lo" />
-
-    <coupling-scheme:serial-explicit>
-      <participants first="TendonSolver" second="MuscleSolver"/>
-      <max-time value="1000.0"/>           <!-- end time of the whole simulation -->
-      <time-window-size value="0.1"/>   <!-- timestep width for coupling -->
-      
-      <exchange data="Displacement"    mesh="TendonMeshTop"    from="TendonSolver" to="MuscleSolver"/>
-      <exchange data="Velocity"        mesh="TendonMeshTop"    from="TendonSolver" to="MuscleSolver"/>
-      <exchange data="Traction"        mesh="MuscleMeshBottom" from="MuscleSolver" to="TendonSolver"/>  <!--initialize="true"-->
-    </coupling-scheme:serial-explicit>
+  
+  </participant>
+  
+  <participant name="MuscleSolver">
+    <!-- Makes the named mesh available to the participant. Mesh is provided by the solver directly. -->
+    <provide-mesh name="MuscleMeshBottom" />
+    <receive-mesh name="TendonMeshTop" from="TendonSolver"/>
     
-  </solver-interface>
+    <!-- Define input/output of the solver, the mesh should be the own one. -->
+    <read-data  name="Displacement"  mesh="MuscleMeshBottom"/>
+    <read-data  name="Velocity"      mesh="MuscleMeshBottom"/>
+    <write-data name="Traction"      mesh="MuscleMeshBottom"/>
+    <export:vtu directory="precice-output" />
+    
+    <!-- map from TendonMeshTop to MuscleMeshBottom -->
+    <!-- shape-parameter: 
+    ./rbfShape.py 0.01 3
+    Using values:
+      h     = 0.01
+      m     = 3
+      decay = 1e-09
+    Result:
+      s = 151.74271293851464
+    -->
+    <!-- <mapping:rbf-gaussian 
+      direction="read" 
+      from="TendonMeshTop" 
+      to="MuscleMeshBottom" 
+      constraint="consistent" 
+      timing="initial" 
+      shape-parameter="151.74"
+    />-->
+    <mapping:rbf direction="read" from="TendonMeshTop" to="MuscleMeshBottom" constraint="consistent"> 
+      <basis-function:compact-polynomial-c6 support-radius="0.1" />  <!-- spacing between nodes is 0.01 -->
+    </mapping:rbf>
+    
+    <!-- available mappings:
+      rbf-thin-plate-splines
+      rbf-multiquadrics
+      rbf-inverse-multiquadrics
+      rbf-volume-splines
+      rbf-gaussian
+      rbf-compact-tps-c2
+      rbf-compact-polynomial-c0
+      rbf-compact-polynomial-c6
+      nearest-neighbor
+      nearest-projection
+    -->
+
+    <!--<mapping:nearest-neighbor 
+      direction="read" from="PartitionedFibersMesh" to="MuscleContractionMesh" constraint="consistent" timing="initial"/>-->
+    <!--
+    rbf is very slow!
+    <mapping:rbf-thin-plate-splines
+      direction="read" 
+      from="PartitionedFibersMesh" 
+      to="MuscleContractionMesh" 
+      constraint="consistent" 
+      />-->
+    
+    <!-- rbf-compact-tps-c2 abgeschnittene splines, 3-5 Nachbarn im support radius--> 
+    <!--<mapping:rbf-compact-polynomial-c6
+      direction="read" 
+      from="PartitionedFibersMesh" 
+      to="MuscleContractionMesh" 
+      constraint="consistent" 
+      support-radius="0.1"
+    />-->
+    
+  </participant>
+
+  <!-- Communication method, use TCP sockets, Change network to "ib0" on SuperMUC -->
+  <m2n:sockets acceptor="TendonSolver" connector="MuscleSolver" network="lo" />
+
+  <coupling-scheme:serial-explicit>
+    <participants first="TendonSolver" second="MuscleSolver"/>
+    <max-time value="1000.0"/>           <!-- end time of the whole simulation -->
+    <time-window-size value="0.1"/>   <!-- timestep width for coupling -->
+    
+    <exchange data="Displacement"    mesh="TendonMeshTop"    from="TendonSolver" to="MuscleSolver"/>
+    <exchange data="Velocity"        mesh="TendonMeshTop"    from="TendonSolver" to="MuscleSolver"/>
+    <exchange data="Traction"        mesh="MuscleMeshBottom" from="MuscleSolver" to="TendonSolver"/>  <!--initialize="true"-->
+  </coupling-scheme:serial-explicit>
+    
 </precice-configuration>
