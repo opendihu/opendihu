@@ -28,12 +28,14 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceReadData() {
 
         // get all data at once
         this->preciceParticipant_->readData(
-            preciceData.preciceMesh->meshName, preciceData.displacementsName,
+            preciceData.preciceMesh->preciceMeshName,
+            preciceData.displacementsName,
             preciceData.preciceMesh->preciceVertexIds, preciceDt,
             displacementValues_);
 
         this->preciceParticipant_->readData(
-            preciceData.preciceMesh->meshName, preciceData.velocitiesName,
+            preciceData.preciceMesh->preciceMeshName,
+            preciceData.velocitiesName,
             preciceData.preciceMesh->preciceVertexIds, preciceDt,
             velocityValues_);
 
@@ -43,7 +45,7 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceReadData() {
       else if (!preciceData.tractionName.empty()) {
         tractionValues_.resize(nEntries);
         this->preciceParticipant_->readData(
-            preciceData.preciceMesh->meshName, preciceData.tractionName,
+            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
             preciceData.preciceMesh->preciceVertexIds, preciceDt,
             tractionValues_);
 
@@ -347,12 +349,14 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceWriteData() {
 
         // write displacement values in precice
         this->preciceParticipant_->writeData(
-            preciceData.preciceMesh->meshName, preciceData.displacementsName,
+            preciceData.preciceMesh->preciceMeshName,
+            preciceData.displacementsName,
             preciceData.preciceMesh->preciceVertexIds, displacementValues_);
 
         // write velocity values in precice
         this->preciceParticipant_->writeData(
-            preciceData.preciceMesh->meshName, preciceData.velocitiesName,
+            preciceData.preciceMesh->preciceMeshName,
+            preciceData.velocitiesName,
             preciceData.preciceMesh->preciceVertexIds, velocityValues_);
       }
       // if the data is traction
@@ -384,7 +388,7 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceWriteData() {
         }
 
         this->preciceParticipant_->writeData(
-            preciceData.preciceMesh->meshName, preciceData.tractionName,
+            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
             preciceData.preciceMesh->preciceVertexIds, tractionValues_);
       } else if (!preciceData.tractionName.empty()) {
 
@@ -411,7 +415,7 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceWriteData() {
         }
 
         this->preciceParticipant_->writeData(
-            preciceData.preciceMesh->meshName, preciceData.tractionName,
+            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
             preciceData.preciceMesh->preciceVertexIds, tractionValues_);
       } else {
         LOG(FATAL) << "Unknown precice data (write), none of displacements, "

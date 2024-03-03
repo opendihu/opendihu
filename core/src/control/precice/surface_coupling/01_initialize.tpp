@@ -143,7 +143,8 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceMeshes() {
     std::shared_ptr<PreciceMesh> preciceMesh = std::make_shared<PreciceMesh>();
 
     // parse name of mesh
-    preciceMesh->meshName = currentMeshConfig.getOptionString("meshName", "");
+    preciceMesh->preciceMeshName =
+        currentMeshConfig.getOptionString("preciceMeshName", "");
 
     // parse face
     std::string face = currentMeshConfig.getOptionString("face", "2-");
@@ -200,7 +201,7 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceMeshes() {
 
       preciceMesh->preciceVertexIds.resize(preciceMesh->nNodesLocal);
       // give the node positions to precice and get the vertex ids
-      preciceParticipant_->setMeshVertices(preciceMesh->meshName,
+      preciceParticipant_->setMeshVertices(preciceMesh->preciceMeshName,
                                            geometryValuesSurface,
                                            preciceMesh->preciceVertexIds);
     } else {
@@ -231,21 +232,21 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceData() {
 
     // parse the mesh
     std::string currentMeshName =
-        currentPreciceData.getOptionString("meshName", "");
+        currentPreciceData.getOptionString("preciceMeshName", "");
 
     // find the mesh in the already parsed precice meshes
     typename std::vector<std::shared_ptr<PreciceMesh>>::iterator iter =
         std::find_if(
             preciceMeshes_.begin(), preciceMeshes_.end(),
             [&currentMeshName](std::shared_ptr<PreciceMesh> preciceMesh) {
-              return preciceMesh->meshName == currentMeshName;
+              return preciceMesh->preciceMeshName == currentMeshName;
             });
 
     if (iter == preciceMeshes_.end()) {
       std::stringstream s;
       for (std::shared_ptr<PreciceMesh> preciceMesh : preciceMeshes_)
-        s << " \"" << preciceMesh->meshName << "\"";
-      LOG(FATAL) << currentPreciceData << "[\"meshName\"] = \""
+        s << " \"" << preciceMesh->preciceMeshName << "\"";
+      LOG(FATAL) << currentPreciceData << "[\"preciceMeshName\"] = \""
                  << currentMeshName
                  << "\" could not be found, available precice meshes: "
                  << s.str();

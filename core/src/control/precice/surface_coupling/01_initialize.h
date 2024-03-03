@@ -33,8 +33,8 @@ protected:
    * opendihu mesh
    */
   struct PreciceMesh {
-    std::string meshName; //< name of the precice mesh as used in the
-                          // precice config XML file
+    std::string preciceMeshName; //< name of the precice mesh as used in the
+                                 // precice config XML file
     std::vector<int>
         preciceVertexIds; //< the vertex ids in precice of the geometry values
     std::vector<dof_no_t> dofNosLocal; //< the local dof nos in the 3D mesh of
