@@ -67,8 +67,14 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
     }
 #endif
 
+    if (timeStepNo >= 1)
+      Control::PerformanceMeasurement::start("precice_read_data");
+
     // read incoming values
     this->preciceReadData();
+
+    if (timeStepNo >= 1)
+      Control::PerformanceMeasurement::stop("precice_read_data");
 
     // compute the time step width such that it fits in the remaining time in
     // the current time window
@@ -82,8 +88,14 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
     // time span the parameter specifies whether the output writers are enabled
     this->nestedSolver_.advanceTimeSpan(!this->outputOnlyConvergedTimeSteps_);
 
+    if (timeStepNo >= 1)
+      Control::PerformanceMeasurement::start("precice_write_data");
+
     // write outgoing data to precice
     this->preciceWriteData();
+
+    if (timeStepNo >= 1)
+      Control::PerformanceMeasurement::stop("precice_write_data");
 
     // increase current simulation time
     currentTime += timeStepWidth;
@@ -110,8 +122,10 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
     // if the current time step did converge and subcycling is complete
     if (this->preciceParticipant_->isTimeWindowComplete()) {
       if (this->outputOnlyConvergedTimeSteps_) {
+        Control::PerformanceMeasurement::start("precice_output");
         // output all data in the nested solvers
         this->nestedSolver_.callOutputWriter(timeStepNo, currentTime);
+        Control::PerformanceMeasurement::stop("precice_output");
       }
     }
 
@@ -138,6 +152,40 @@ typename PreciceAdapterVolumeCoupling<NestedSolver>::Data &
 PreciceAdapterVolumeCoupling<NestedSolver>::data() {
   // get a reference to the data object
   return this->nestedSolver_.data();
+}
+
+//! get the data that will be transferred in the operator splitting to the other term of the splitting
+//! the transfer is done by the slot_connector_data_transfer class
+template<typename NestedSolver>
+std::shared_ptr<typename PreciceAdapterVolumeCoupling<NestedSolver>::SlotConnectorDataType> PreciceAdapterVolumeCoupling<NestedSolver>::
+getSlotConnectorData()
+{
+  return this->nestedSolver_.getSlotConnectorData();
+}
+
+//! set a new time interval that will be simulated by next call to advanceTimeSpan. This also potentially changes the time step width (it preserves the number of timesteps in the new time span)
+template<typename NestedSolver>
+void PreciceAdapterVolumeCoupling<NestedSolver>::
+setTimeSpan(double startTime, double endTime)
+{
+  this->nestedSolver_.setTimeSpan(startTime, endTime);
+}
+
+//! advance simulation by the given time span [startTime_, endTime_] with given numberTimeSteps
+template<typename NestedSolver>
+void PreciceAdapterVolumeCoupling<NestedSolver>::
+advanceTimeSpan(bool withOutputWritersEnabled)
+{
+  run();
+  //this->nestedSolver_.advanceTimeSpan(withOutputWritersEnabled);
+}
+
+//! call the output writer on the data object, output files will contain currentTime, with callCountIncrement !=1 output timesteps can be skipped
+template<typename NestedSolver>
+void PreciceAdapterVolumeCoupling<NestedSolver>::
+callOutputWriter(int timeStepNo, double currentTime, int callCountIncrement)
+{
+  this->nestedSolver_.callOutputWriter(timeStepNo, currentTime, callCountIncrement);
 }
 
 } // namespace Control
