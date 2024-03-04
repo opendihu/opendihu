@@ -33,7 +33,7 @@
 
     <mapping:nearest-neighbor direction="read" from="MuscleMesh" to="TendonMesh" constraint="consistent"/>
 
-    <export:vtk directory="preCICE-output" /> 
+    <export:vtu directory="preCICE-output" /> 
   </participant>
 
   <participant name="MuscleSolver">
@@ -45,7 +45,7 @@
     <write-data name="Traction"      mesh="MuscleMesh"/>
 
     <mapping:nearest-neighbor direction="read" from="TendonMesh" to="MuscleMesh" constraint="consistent"/>
-    <export:vtk directory="preCICE-output"/>
+    <export:vtu directory="preCICE-output"/>
   </participant>
 
   <m2n:sockets acceptor="TendonSolver" connector="MuscleSolver" network="lo" />

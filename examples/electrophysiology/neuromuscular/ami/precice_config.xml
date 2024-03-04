@@ -53,7 +53,7 @@
     <mapping:nearest-neighbor direction="read" from="MuscleMeshLeft" to="TendonMeshLeft" constraint="consistent"/>
     <mapping:nearest-neighbor direction="read" from="MuscleMeshRight" to="TendonMeshRight" constraint="consistent"/>
 
-    <export:vtk directory="preCICE-output" />
+    <export:vtu directory="preCICE-output" />
   </participant>
 
   <participant name="MuscleSolverLeft">
@@ -65,7 +65,7 @@
     <write-data name="Traction"      mesh="MuscleMeshLeft"/>
 
     <mapping:nearest-neighbor direction="read" from="TendonMeshLeft" to="MuscleMeshLeft" constraint="consistent"/>
-    <export:vtk directory="preCICE-output"/>
+    <export:vtu directory="preCICE-output"/>
   </participant>
   
   <participant name="MuscleSolverRight">
@@ -77,7 +77,7 @@
     <read-data name="Traction"      mesh="MuscleMeshRight"/>
     
     <mapping:nearest-neighbor direction="read" from="TendonMeshRight" to="MuscleMeshRight" constraint="consistent"/>
-    <export:vtk directory="preCICE-output"/>
+    <export:vtu directory="preCICE-output"/>
   </participant>
 
   <!-- Communication method, use TCP sockets, Change network to "ib0" on SuperMUC -->

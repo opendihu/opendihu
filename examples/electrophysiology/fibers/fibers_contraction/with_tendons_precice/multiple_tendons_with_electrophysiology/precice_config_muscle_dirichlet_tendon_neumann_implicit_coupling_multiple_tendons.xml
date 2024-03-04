@@ -78,7 +78,7 @@
     <read-data  name="Velocity"      mesh="MuscleMeshTopB"/>
     <write-data name="Traction"      mesh="MuscleMeshTopB"/>
     
-    <!--<export:vtk directory="precice-output" />-->
+    <!--<export:vtu directory="precice-output" />-->
     
     <!-- map from TendonMeshTop to MuscleMeshBottom -->
     <!-- shape-parameter: 
@@ -137,7 +137,7 @@
     <!-- Makes the named mesh available to the participant. Mesh is provided by the solver directly. -->
     <provide-mesh name="TendonMeshTop"/>
     <receive-mesh name="MuscleMeshBottom" from="MuscleSolver"/>
-    <!--<export:vtk directory="precice-output" />-->
+    <!--<export:vtu directory="precice-output" />-->
     
     <!-- Define input/output of the solver, the mesh should be the own one.  -->
     <write-data name="Displacement"  mesh="TendonMeshTop"/>
@@ -159,7 +159,7 @@
     <!-- Makes the named mesh available to the participant. Mesh is provided by the solver directly. -->
     <provide-mesh name="TendonMeshBottomA"/>
     <receive-mesh name="MuscleMeshTopA" from="MuscleSolver"/>
-    <!--<export:vtk directory="precice-output" />-->
+    <!--<export:vtu directory="precice-output" />-->
     
     <!-- Define input/output of the solver, the mesh should be the own one.  -->
     <write-data name="Displacement"  mesh="TendonMeshBottomA"/>
@@ -181,7 +181,7 @@
     <!-- Makes the named mesh available to the participant. Mesh is provided by the solver directly. -->
     <provide-mesh name="TendonMeshBottomB"/>
     <receive-mesh name="MuscleMeshTopB" from="MuscleSolver"/>
-    <!--<export:vtk directory="precice-output" />-->
+    <!--<export:vtu directory="precice-output" />-->
     
     <!-- Define input/output of the solver, the mesh should be the own one.  -->
     <write-data name="Displacement"  mesh="TendonMeshBottomB"/>
@@ -214,19 +214,42 @@
     
     <max-time value="20000.0"/>           <!-- end time of the whole simulation -->
     <time-window-size value="1.0"/>   <!-- timestep width for coupling -->
-    <max-iterations value="1000" />
+    <max-iterations value="100" />
     
-    <absolute-convergence-measure limit="0.1" data="Displacement" mesh="TendonMeshTop" />
-    <absolute-convergence-measure limit="0.1" data="Displacement" mesh="TendonMeshBottomA" />
-    <absolute-convergence-measure limit="0.1" data="Displacement" mesh="TendonMeshBottomB" />
+    <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonMeshTop" />
+    <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonMeshBottomA" />
+    <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonMeshBottomB" />
+    <relative-convergence-measure limit="0.01" data="Velocity" mesh="TendonMeshTop" />
+    <relative-convergence-measure limit="0.01" data="Velocity" mesh="TendonMeshBottomA" />
+    <relative-convergence-measure limit="0.01" data="Velocity" mesh="TendonMeshBottomB" />
+    <relative-convergence-measure limit="0.1" data="Traction" mesh="MuscleMeshBottom" />
+    <relative-convergence-measure limit="0.1" data="Traction" mesh="MuscleMeshTopA" />
+    <relative-convergence-measure limit="0.1" data="Traction" mesh="MuscleMeshTopB" />
     <!--<relative-convergence-measure limit="0.1" data="Displacement" mesh="TendonMeshTop" />-->
     <!--<relative-convergence-measure limit="0.1" data="Displacement" mesh="TendonMeshBottomA" />-->
     <!--<relative-convergence-measure limit="0.1" data="Displacement" mesh="TendonMeshBottomB" />-->
     <!--<min-iteration-convergence-measure min-iterations="{integer}" data="{string}" mesh="{string}" strict="0" suffices="0"/>-->
     
-    <acceleration:constant>
-      <relaxation value="0.5" />
-    </acceleration:constant>
+    <acceleration:IQN-ILS>
+      <data name="Displacement" mesh="TendonMeshTop"/>
+      <data name="Displacement" mesh="TendonMeshBottomA"/>
+      <data name="Displacement" mesh="TendonMeshBottomB"/>
+      <data name="Velocity" mesh="TendonMeshTop"/>
+      <data name="Velocity" mesh="TendonMeshBottomA"/>
+      <data name="Velocity" mesh="TendonMeshBottomB"/>
+      <data name="Traction" mesh="MuscleMeshBottom"/>
+      <data name="Traction" mesh="MuscleMeshTopA"/>
+      <data name="Traction" mesh="MuscleMeshTopB"/>
+      <preconditioner type="residual-sum"/>
+      <filter type="QR2" limit="1e-3"/>
+      <initial-relaxation value="0.4"/>
+      <max-used-iterations value="40"/>
+      <time-windows-reused value="15"/>
+    </acceleration:IQN-ILS>
+
+    <!-- <acceleration:constant>
+      <relaxation value="0.7" />
+    </acceleration:constant> -->
 
     <exchange data="Displacement"    mesh="TendonMeshTop"      from="TendonSolverBottom" to="MuscleSolver"/>
     <exchange data="Velocity"        mesh="TendonMeshTop"      from="TendonSolverBottom" to="MuscleSolver"/>
