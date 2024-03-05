@@ -25,13 +25,14 @@ b  = 1.075e-2               # [N/cm^2] anisotropy parameter
 d  = 9.1733                 # [-] anisotropy parameter
 material_parameters = [c1, c2, b, d]   # material parameters
 pmax = 7.3                  # [N/cm^2] maximum isometric active stress
+pmax = 2
 
 # for debugging, b = 0 leads to normal Mooney-Rivlin
 #b = 0
 
 constant_body_force = (0,0,-9.81e-4)   # [cm/ms^2], gravity constant for the body force
 #constant_body_force = (0,0,0)
-bottom_traction = [0.0,0.0,-10]        # [1 N]
+bottom_traction = [0.0,0.0,-1e-1]        # [1 N]
 #bottom_traction = [0.0,0.0,0.0]        # [1 N]
 
 # timing and activation parameters
@@ -52,7 +53,7 @@ motor_units = [
 ]
 # note: negative start time is the same as zero, it is just there for debugging. Delete the minus signs to get a ramp
 
-end_time = 1000                      # [ms] end time of the simulation
+end_time = 100                      # [ms] end time of the simulation
 dt_0D = 2.5e-5                      # [ms] timestep width of ODEs (2e-3)
 dt_1D = 2.5e-5                      # [ms] timestep width of diffusion (4e-3)
 dt_splitting = 2.5e-5               # [ms] overall timestep width of strang splitting (4e-3)
@@ -87,7 +88,7 @@ else:
   sampling_stride_z = 20
   # good values: divisors of 1480: 1480 = 1*1480 = 2*740 = 4*370 = 5*296 = 8*185 = 10*148 = 20*74 = 37*40 
 
-distribute_nodes_equally = True     # (default: False)
+distribute_nodes_equally = False     # (default: False)
 # True: set high priority to make subdomains have approximately equal number of fibers but creates tiny remainder elements inside the subdomains
 # False: make elements more equally sized, this can lead to a slight imbalance in the number of fibers per subdomain
 
@@ -95,8 +96,8 @@ distribute_nodes_equally = True     # (default: False)
 import os
 input_directory   = os.path.join(os.environ["OPENDIHU_HOME"], "examples/electrophysiology/input")
 
-fiber_file        = input_directory + "/left_biceps_brachii_7x7fibers.bin"
-#fiber_file        = input_directory + "/left_biceps_brachii_13x13fibers.bin"
+#fiber_file        = input_directory + "/left_biceps_brachii_7x7fibers.bin"
+fiber_file        = input_directory + "/left_biceps_brachii_13x13fibers.bin"
 firing_times_file = input_directory + "/MU_firing_times_always.txt"
 fiber_distribution_file = input_directory + "/MU_fibre_distribution_10MUs.txt"
 #fiber_distribution_file = input_directory + "/MU_fibre_distribution_10MUs_13x13.txt"
