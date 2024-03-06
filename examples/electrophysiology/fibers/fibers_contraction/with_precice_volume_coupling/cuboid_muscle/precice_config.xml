@@ -7,64 +7,53 @@
       enabled="true" />
   </log>
 
-  <solver-interface dimensions="3">
-    <data:scalar name="Gamma" />
-    <data:vector name="Geometry"/>
+  <data:scalar name="Gamma" />
+  <data:vector name="Geometry"/>
 
-    <mesh name="MuscleMesh">
-       <use-data name="Geometry"/>
-       <use-data name="Gamma"/>
-    </mesh>
-
-    <mesh name="FibersMesh">
+  <mesh name="MuscleMesh" dimensions="3">
       <use-data name="Geometry"/>
       <use-data name="Gamma"/>
-    </mesh>
+  </mesh>
 
-    <participant name="Fibers">
-      <use-mesh name="FibersMesh" provide="yes"/>
-      <use-mesh name="MuscleMesh" from="Muscle"/>
+  <mesh name="FibersMesh" dimensions="3">
+    <use-data name="Geometry"/>
+    <use-data name="Gamma"/>
+  </mesh>
 
-      <read-data name="Geometry" mesh="FibersMesh"/>
-      <write-data name="Gamma" mesh="FibersMesh"/>
+  <participant name="Fibers">
+    <provide-mesh name="FibersMesh"/>
+    <receive-mesh name="MuscleMesh" from="Muscle"/>
 
-      <mapping:rbf-compact-polynomial-c6
-        direction="read" 
-        from="MuscleMesh" 
-        to="FibersMesh" 
-        constraint="consistent" 
-        timing="initial" 
-	support-radius="0.5"
-      />  
-      <export:vtk directory="../output/precice-output" every-n-time-windows="1"/>
-    </participant>
+    <read-data name="Geometry" mesh="FibersMesh"/>
+    <write-data name="Gamma" mesh="FibersMesh"/>
 
-    <participant name="Muscle">
-      <use-mesh name="MuscleMesh" provide="yes"/>
-      <use-mesh name="FibersMesh" from="Fibers"/>
+    <mapping:rbf direction="read" from="MuscleMesh" to="FibersMesh" constraint="consistent">
+      <basis-function:compact-polynomial-c6 support-radius="0.5"/>
+    </mapping:rbf>
 
-      <read-data name="Gamma" mesh="MuscleMesh"/>
-      <write-data name="Geometry" mesh="MuscleMesh"/>
+    <export:vtu directory="../output/precice-output" every-n-time-windows="1"/>
+  </participant>
 
-      <mapping:rbf-compact-polynomial-c6
-	direction="read"
-	from="FibersMesh"
-	to="MuscleMesh"
-	constraint="consistent"
-	timing="initial"
-	support-radius="0.5"
-      />
-      <export:vtk directory="../output/precice-output" every-n-time-windows="1"/>
-    </participant>
+  <participant name="Muscle">
+    <provide-mesh name="MuscleMesh"/>
+    <receive-mesh name="FibersMesh" from="Fibers"/>
 
-    <m2n:sockets from="Fibers" to="Muscle" exchange-directory=".."/>
+    <read-data name="Gamma" mesh="MuscleMesh"/>
+    <write-data name="Geometry" mesh="MuscleMesh"/>
 
-    <coupling-scheme:serial-explicit>
-      <participants first="Fibers" second="Muscle" />
-      <time-window-size value="1e-1" />
-      <max-time value="30.0" />
-      <exchange data="Geometry" mesh="MuscleMesh" from="Muscle" to="Fibers"/>
-      <exchange data="Gamma" mesh="FibersMesh" from="Fibers" to="Muscle"/>
-    </coupling-scheme:serial-explicit>
-  </solver-interface>
+    <mapping:rbf direction="read" from="FibersMesh" to="MuscleMesh" constraint="consistent">
+      <basis-function:compact-polynomial-c6 support-radius="0.5"/>
+    </mapping:rbf>
+    <export:vtu directory="../output/precice-output" every-n-time-windows="1"/>
+  </participant>
+
+  <m2n:sockets acceptor="Fibers" connector="Muscle"/>
+
+  <coupling-scheme:serial-explicit>
+    <participants first="Fibers" second="Muscle" />
+    <time-window-size value="1e-1" />
+    <max-time value="30.0" />
+    <exchange data="Geometry" mesh="MuscleMesh" from="Muscle" to="Fibers"/>
+    <exchange data="Gamma" mesh="FibersMesh" from="Fibers" to="Muscle"/>
+  </coupling-scheme:serial-explicit>
 </precice-configuration>
