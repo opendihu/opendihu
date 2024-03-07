@@ -27,9 +27,9 @@
     <read-data name="Geometry" mesh="FibersMesh"/>
     <write-data name="Gamma" mesh="FibersMesh"/>
 
-    <mapping:rbf direction="read" from="MuscleMesh" to="FibersMesh" constraint="consistent">
-      <basis-function:compact-polynomial-c6 support-radius="0.5"/>
-    </mapping:rbf>
+      <mapping:rbf-pum-direct project-to-input="false" vertices-per-cluster="100" relative-overlap="0.2" constraint="consistent" direction="read" from="MuscleMesh" to="FibersMesh" >
+          <basis-function:compact-polynomial-c6 support-radius="3" />
+     </mapping:rbf-pum-direct>
 
     <export:vtu directory="../output/precice-output" every-n-time-windows="1"/>
   </participant>
@@ -41,9 +41,9 @@
     <read-data name="Gamma" mesh="MuscleMesh"/>
     <write-data name="Geometry" mesh="MuscleMesh"/>
 
-    <mapping:rbf direction="read" from="FibersMesh" to="MuscleMesh" constraint="consistent">
-      <basis-function:compact-polynomial-c6 support-radius="0.5"/>
-    </mapping:rbf>
+     <mapping:rbf-pum-direct project-to-input="false" vertices-per-cluster="100" relative-overlap="0.2" constraint="consistent" direction="read" from="FibersMesh" to="MuscleMesh" >
+          <basis-function:compact-polynomial-c6 support-radius="3" />
+     </mapping:rbf-pum-direct>
     <export:vtu directory="../output/precice-output" every-n-time-windows="1"/>
   </participant>
 
