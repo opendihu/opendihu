@@ -5,15 +5,33 @@ import importlib
 # parse arguments
 rank_no = (int)(sys.argv[-2])
 n_ranks = (int)(sys.argv[-1])
-var_file = sys.argv[0] if ".py" in sys.argv[0] else "variables.py"
 
 # add folders to python path
 script_path = os.path.dirname(os.path.abspath(__file__))
-var_path = os.path.join(script_path, "variables")
-sys.path.insert(0, var_path)
+sys.path.insert(0, script_path)
+sys.path.insert(0, os.path.join(script_path,'variables'))
 
 import variables
-scenario_name = "muscle-opendihu"
+
+# if first argument contains "*.py", it is a custom variable definition file, load these values
+if ".py" in sys.argv[0]:
+  variables_path_and_filename = sys.argv[0]
+  variables_path,variables_filename = os.path.split(variables_path_and_filename)  # get path and filename 
+  sys.path.insert(0, os.path.join(script_path,variables_path))                    # add the directory of the variables file to python path
+  variables_module,_ = os.path.splitext(variables_filename)                       # remove the ".py" extension to get the name of the module
+  
+  if rank_no == 0:
+    print("Loading variables from \"{}\".".format(variables_path_and_filename))
+    
+  custom_variables = importlib.import_module(variables_module, package=variables_filename)    # import variables module
+  variables.__dict__.update(custom_variables.__dict__)
+  sys.argv = sys.argv[1:]     # remove first argument, which now has already been parsed
+else:
+  if rank_no == 0:
+    print("Warning: There is no variables file, e.g:\n ./mechanics ../settings_mechanics.py mechanics.py\n")
+  exit(0)
+
+scenario_name = "mechanics"
 
 # define config
 config = {
