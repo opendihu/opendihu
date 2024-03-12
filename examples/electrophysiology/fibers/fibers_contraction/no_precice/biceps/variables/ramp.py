@@ -72,12 +72,12 @@ output_timestep_3D = 4e0              # [ms] timestep for output of fibers and m
 
 
 # input files
-#fiber_file = "../../../../input/left_biceps_brachii_9x9fibers.bin"
-fiber_file = "../../../../input/left_biceps_brachii_13x13fibers.bin"
+#fiber_file = "../../../../../input//left_biceps_brachii_9x9fibers.bin"
+fiber_file = "../../../../../input//left_biceps_brachii_13x13fibers.bin"
 fat_mesh_file = fiber_file + "_fat.bin"
-firing_times_file = "../../../../input/MU_firing_times_always.txt"    # use setSpecificStatesCallEnableBegin and setSpecificStatesCallFrequency
-fiber_distribution_file = "../../../../input/MU_fibre_distribution_25x25_10MUs.txt"
-cellml_file             = "../../../../input/new_slow_TK_2014_12_08.c"
+firing_times_file = "../../../../../input//MU_firing_times_always.txt"    # use setSpecificStatesCallEnableBegin and setSpecificStatesCallFrequency
+fiber_distribution_file = "../../../../../input//MU_fibre_distribution_25x25_10MUs.txt"
+cellml_file             = "../../../../../input//new_slow_TK_2014_12_08.c"
 
 # stride for sampling the 3D elements from the fiber data
 # a higher number leads to less 3D elements
