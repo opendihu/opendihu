@@ -59,7 +59,8 @@ void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceReadData() {
       // store received data in field variable
       if (preciceData.isGeometryField) {
         // loop over fibers if there are any
-        for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
+        if(!std::all_of(scalarValues_.begin(),scalarValues_.end(),[](auto & val){return val == 0;}))
+{        for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
           // fill the vector geometryValues_ with the geometry values of the
           // current fiber or mesh
           geometryValues_.resize(nDofsLocalWithoutGhosts);
@@ -70,6 +71,7 @@ void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceReadData() {
                   scalarValues_[3 * (arrayIndex * nDofsLocalWithoutGhosts +
                                      dofNoLocal) +
                                 componentNo];
+                                // std::cout<<geometryValues_[dofNoLocal][componentNo]<<std::endl;
             }
           }
 
@@ -77,7 +79,7 @@ void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceReadData() {
               slotConnectorData, preciceData.slotNo, arrayIndex,
               dofNosLocalWithoutGhosts, geometryValues_);
         }
-      } else {
+}      } else {
         // loop over fibers if there are any
         for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
           // fill the vector geometryValues_ with the geometry values of the
