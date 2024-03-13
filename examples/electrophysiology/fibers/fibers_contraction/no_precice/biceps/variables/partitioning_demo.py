@@ -1,3 +1,5 @@
+# run as:
+# mpirun -n 12 ./biceps_contraction ../settings_biceps_contraction.py partitioning_demo.py --n_subdomains 4 3 1
 
 # scenario name for log file
 scenario_name = "ramp"
@@ -17,7 +19,7 @@ b  = 1.075e-2               # [N/cm^2] anisotropy parameter
 d  = 9.1733                 # [-] anisotropy parameter
 
 # for debugging, b = 0 leads to normal Mooney-Rivlin
-#b = 0
+b = 0
 
 material_parameters = [c1, c2, b, d]   # material parameters
 pmax = 7.3                  # [N/cm^2] maximum isometric active stress
@@ -60,30 +62,32 @@ motor_units = [
 
 # timing parameters
 # -----------------
-end_time = 4000.0                      # [ms] end time of the simulation
+end_time = 1e-5                      # [ms] end time of the simulation
 stimulation_frequency = 100*1e-3    # [ms^-1] sampling frequency of stimuli in firing_times_file, in stimulations per ms, number before 1e-3 factor is in Hertz.
 stimulation_frequency_jitter = 0    # [-] jitter in percent of the frequency, added and substracted to the stimulation_frequency after each stimulation
-dt_0D = 2.5e-5                        # [ms] timestep width of ODEs (2e-3)
-dt_1D = 2.5e-5                        # [ms] timestep width of diffusion (4e-3)
-dt_splitting = 2.5e-5                 # [ms] overall timestep width of strang splitting (4e-3)
+dt_0D = 1e-3                        # [ms] timestep width of ODEs (1e-3)
+dt_1D = 1e-3                        # [ms] timestep width of diffusion (1e-3)
+dt_splitting = 1e-3                 # [ms] overall timestep width of strang splitting (1e-3)
 dt_3D = 1                           # [ms] time step width of coupling, when 3D should be performed, also sampling time of monopolar EMG
-output_timestep_fibers = 4e0       # [ms] timestep for fiber output, 0.5
+output_timestep_fibers = 1e-3       # [ms] timestep for fiber output, 0.5
 output_timestep_3D = 4e0              # [ms] timestep for output of fibers and mechanics, should be a multiple of dt_3D
 
 
 # input files
-#fiber_file = "../../../../input/left_biceps_brachii_9x9fibers.bin"
-fiber_file = "../../../../input/left_biceps_brachii_13x13fibers.bin"
+#fiber_file = "../../../../../input/left_biceps_brachii_7x7fibers.bin"
+fiber_file = "../../../../../input/left_biceps_brachii_9x9fibers.bin"
+#fiber_file = "../../../../../input/left_biceps_brachii_13x13fibers.bin"
+fiber_file = "../../../../../input/left_biceps_brachii_23x23fibers.no_boundary.bin"
 fat_mesh_file = fiber_file + "_fat.bin"
-firing_times_file = "../../../../input/MU_firing_times_always.txt"    # use setSpecificStatesCallEnableBegin and setSpecificStatesCallFrequency
-fiber_distribution_file = "../../../../input/MU_fibre_distribution_25x25_10MUs.txt"
-cellml_file             = "../../../../input/new_slow_TK_2014_12_08.c"
+firing_times_file = "../../../../../input/MU_firing_times_always.txt"    # use setSpecificStatesCallEnableBegin and setSpecificStatesCallFrequency
+fiber_distribution_file = "../../../../../input/MU_fibre_distribution_10MUs.txt"
+cellml_file             = "../../../../../input/new_slow_TK_2014_12_08.c"
 
 # stride for sampling the 3D elements from the fiber data
 # a higher number leads to less 3D elements
 sampling_stride_x = 2
 sampling_stride_y = 2
-sampling_stride_z = 30
+sampling_stride_z = 200     # good values: divisors of 1480: 1480 = 1*1480 = 2*740 = 4*370 = 5*296 = 8*185 = 10*148 = 20*74 = 37*40 
 
 distribute_nodes_equally = False   
 # True: set high priority to make subdomains have approximately equal number of fibers but creates tiny remainder elements inside the subdomains
@@ -108,7 +112,7 @@ use_vc = True                       # If the vc optimization type should be used
 # functions, here, Am, Cm and Conductivity are constant for all fibers and MU's
 def get_am(fiber_no, mu_no):
   # get radius in cm, 1 μm = 1e-6 m = 1e-4*1e-2 m = 1e-4 cm
-  r = motor_units[mu_no % len(motor_units)]["radius"]*1e-4
+  r = motor_units[mu_no]["radius"]*1e-4
   # cylinder surface: A = 2*π*r*l, V = cylinder volume: π*r^2*l, Am = A/V = 2*π*r*l / (π*r^2*l) = 2/r
   return 2./r
   #return Am
