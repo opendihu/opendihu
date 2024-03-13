@@ -31,7 +31,7 @@
           <basis-function:compact-polynomial-c6 support-radius="3" />
      </mapping:rbf-pum-direct>
 
-    <export:vtu directory="../output/precice-output" every-n-time-windows="1"/>
+    <export:vtu directory="precice-output" every-n-time-windows="1"/>
   </participant>
 
   <participant name="Muscle">

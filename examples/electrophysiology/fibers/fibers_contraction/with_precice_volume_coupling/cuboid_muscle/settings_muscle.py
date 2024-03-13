@@ -38,8 +38,8 @@ config = {
   "scenarioName":                   scenario_name,
 
   "logFormat":                      "csv",
-  "mappingsBetweenMeshesLogFile":   "../output/" + scenario_name + "/muscle_mappings_between_meshes_log.txt",
-  "solverStructureDiagramFile":     "../output/" + scenario_name + "/muscle_solver_structure_diagram.txt",
+  "mappingsBetweenMeshesLogFile":   "out/" + scenario_name + "/muscle_mappings_between_meshes_log.txt",
+  "solverStructureDiagramFile":     "out/" + scenario_name + "/muscle_solver_structure_diagram.txt",
 
   "Meshes":                         variables.meshes,
   "MappingsBetweenMeshes":          {},
@@ -105,7 +105,7 @@ config = {
         {
           "format":             "Paraview",
           "outputInterval":     int(1.0 / variables.dt_3D * variables.output_interval),
-          "filename":           "../output/" + scenario_name + "/muscle",
+          "filename":           "out/" + scenario_name + "/muscle",
           "fileNumbering":      "incremental", 
           "binary":             True,
           "fixedFormat":        False,
@@ -149,9 +149,9 @@ config = {
         "initialValuesVelocities":    [[0, 0, 0] for _ in range(variables.bs_x * variables.bs_y * variables.bs_z)],
         "constantBodyForce":          (0, 0, 0),
 
-        "dirichletOutputFilename":    "../output/" + scenario_name + "/muscle_dirichlet_output",
-        "residualNormLogFilename":    "../output/" + scenario_name + "/muscle_residual_norm_log.txt",
-        "totalForceLogFilename":      "../output/" + scenario_name + "/muscle_total_force_log.txt",
+        "dirichletOutputFilename":    "out/" + scenario_name + "/muscle_dirichlet_output",
+        "residualNormLogFilename":    "out/" + scenario_name + "/muscle_residual_norm_log.txt",
+        "totalForceLogFilename":      "out/" + scenario_name + "/muscle_total_force_log.txt",
 
         "OutputWriter": [],
         "pressure":       { "OutputWriter": [] },
