@@ -148,7 +148,7 @@ s = 91.0456277631
     <time-window-size value="1e-1"/>   <!-- timestep width dt_3D -->
     
     <exchange data="Gamma"    mesh="PartitionedFibersMesh" from="PartitionedFibers" to="MuscleContraction"/>
-    <exchange data="Geometry" mesh="MuscleContractionMesh" from="MuscleContraction" to="PartitionedFibers"/> <!--initialize="true"-->
+    <exchange data="Geometry" mesh="MuscleContractionMesh" from="MuscleContraction" to="PartitionedFibers" initialize="yes"/> 
   </coupling-scheme:serial-explicit>
   
 </precice-configuration>
