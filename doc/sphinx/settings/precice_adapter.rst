@@ -1,12 +1,14 @@
 PreciceAdapter
 =================
 
-There are two different precice adapters, one for surface coupling (``PreciceAdapter``) and one for volume coupling (``PreciceAdapterVolumeCoupling``) .
+There are two different preCICE adapters, one for surface coupling (``PreciceAdapter``) and one for volume coupling (``PreciceAdapterVolumeCoupling``) .
 
 Surface coupling
 -------------------
 
-The precice adapter is a simple wrapper to its nested solvers:
+To couple mechanical solvers with a shared surface, use the surface adapter. In this case one partipant, e.g., a muscle, can send tractions to another participant, e.g., a tendon, which sends back displacements and velocities. In the `precice_config.xml` file, you can choose your coupling scheme, i.e. explicit or implicit coupling.  
+
+The preCICE adapter for surface coupling is a simple wrapper to its nested solvers:
 
 C++ code:
 
@@ -84,7 +86,19 @@ The python settings for the surface coupling adapter are as follows:
 Volume coupling
 -------------------
 
-The precice adapter is a simple wrapper to its nested solvers:
+The volume coupling adapter is designed to couple the fibers of a muscle to the respective mechanics solver. In this case, the fibers participant sends *Gamma* to the mechanics participant, which sends back *Geometry*. Only explicit coupling is supported.
+Note that the "Geometry" has to be initialized in the `precice_config.xml` file:
+
+.. code-block:: XML
+  <coupling-scheme:serial-explicit>
+    <participants first="Fibers" second="Mechanics" />
+    <time-window-size value="1e-1" />
+    <max-time value="30.0" />
+    <exchange data="Geometry" mesh="MuscleMesh" from="Mechanics" to="Fibers" initialize="yes"/>
+    <exchange data="Gamma" mesh="FibersMesh" from="Fibers" to="Mechanics"/>
+  </coupling-scheme:serial-explicit>
+
+The preCICE adapter for volume coupling is a simple wrapper to its nested solvers:
 
 C++ code:
 
