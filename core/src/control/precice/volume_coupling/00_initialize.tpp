@@ -106,14 +106,14 @@ void PreciceAdapterVolumeCouplingInitialize<NestedSolver>::initialize() {
   // parse scalingFactor from settings
   scalingFactor_ = this->specificSettings_.getOptionDouble("scalingFactor", 1);
 
-  preciceParticipant_->initialize();
-  // determine maximum timestep size
-  maximumPreciceTimestepSize_ = preciceParticipant_->getMaxTimeStepSize();
+  // preciceParticipant_->initialize();
+  // // determine maximum timestep size
+  // maximumPreciceTimestepSize_ = preciceParticipant_->getMaxTimeStepSize();
 
-  LOG(DEBUG) << "precice initialization done, dt: "
-             << maximumPreciceTimestepSize_ << "," << timeStepWidth_;
+  // LOG(DEBUG) << "precice initialization done, dt: "
+  //            << maximumPreciceTimestepSize_ << "," << timeStepWidth_;
 
-  initialized_ = true;
+  // initialized_ = true;
 
 #else
   LOG(FATAL) << "Failed to initialize PreciceAdapterVolumeCoupling because "

@@ -53,7 +53,7 @@
     <participants first="Fibers" second="Muscle" />
     <time-window-size value="1e-1" />
     <max-time value="30.0" />
-    <exchange data="Geometry" mesh="MuscleMesh" from="Muscle" to="Fibers"/>
+    <exchange data="Geometry" mesh="MuscleMesh" from="Muscle" to="Fibers" initialize="yes"/>
     <exchange data="Gamma" mesh="FibersMesh" from="Fibers" to="Muscle"/>
   </coupling-scheme:serial-explicit>
 </precice-configuration>

@@ -41,6 +41,20 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
     return;
   }
 
+  // initialize
+  if (this->preciceParticipant_->requiresInitialData()) {
+    this->preciceWriteData();
+  }
+  this->preciceParticipant_->initialize();
+  this->maximumPreciceTimestepSize_ =
+      this->preciceParticipant_->getMaxTimeStepSize();
+
+  LOG(DEBUG) << "precice initialization done, dt: "
+             << this->maximumPreciceTimestepSize_ << ","
+             << this->timeStepWidth_;
+
+  this->initialized_ = true;
+
   // assert that precice is properly initialized and the interface is available
   assert(this->preciceParticipant_);
 

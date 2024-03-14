@@ -70,6 +70,7 @@ void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceReadData() {
                   scalarValues_[3 * (arrayIndex * nDofsLocalWithoutGhosts +
                                      dofNoLocal) +
                                 componentNo];
+              // std::cout<<geometryValues_[dofNoLocal][componentNo]<<std::endl;
             }
           }
 
