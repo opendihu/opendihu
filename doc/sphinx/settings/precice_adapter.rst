@@ -1,12 +1,12 @@
 PreciceAdapter
 =================
 
-There are two different precice adapters, one for surface coupling (``PreciceAdapter``) and one for volume coupling (``PreciceAdapterVolumeCoupling``) .
+There are two different preCICE adapters, one for surface coupling (``PreciceAdapter``) and one for volume coupling (``PreciceAdapterVolumeCoupling``) .
 
 Surface coupling
 -------------------
 
-The precice adapter is a simple wrapper to its nested solvers:
+The preCICE adapter is a simple wrapper to its nested solvers:
 
 C++ code:
 
@@ -84,7 +84,7 @@ The python settings for the surface coupling adapter are as follows:
 Volume coupling
 -------------------
 
-The precice adapter is a simple wrapper to its nested solvers:
+The preCICE adapter is a simple wrapper to its nested solvers:
 
 C++ code:
 
