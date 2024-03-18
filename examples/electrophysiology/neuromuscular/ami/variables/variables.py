@@ -1,7 +1,7 @@
 # scenario name for log file
 case_name = "default"
 scenario_name = ""
-precice_file = "../precice_config_multiple_neumann.xml"
+precice_file = "../precice_config.xml"
 
 # timing parameters
 # -----------------
