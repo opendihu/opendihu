@@ -89,13 +89,13 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
   preciceParticipant_ = std::make_shared<precice::Participant>(
       preciceParticipantName_, configFileName, rankNo, nRanks);
 
-  // parse the options in "preciceMeshes" and initialize all meshes in precice,
+  // parse the options in "preciceSurfaceMeshes" and initialize all meshes in precice,
   // store in variable preciceSurfaceMeshes_
-  initializePreciceMeshes();
+  initializePreciceSurfaceMeshes();
 
-  // parse the options in "preciceData" and initialize all variables in precice,
+  // parse the options in "preciceSurfaceData" and initialize all variables in precice,
   // store in variable preciceSurfaceData_
-  initializePreciceData();
+  initializePreciceSurfaceData();
 
   // initialize Dirichlet boundary conditions at all dofs that will get some
   // prescribed values during coupling
@@ -121,7 +121,7 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
 
 #ifdef HAVE_PRECICE
 template <typename NestedSolver>
-void PreciceAdapterInitialize<NestedSolver>::initializePreciceMeshes() {
+void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceMeshes() {
   const int nNodesX = functionSpace_->nNodesLocalWithoutGhosts(0);
   const int nNodesY = functionSpace_->nNodesLocalWithoutGhosts(1);
   const int nNodesZ = functionSpace_->nNodesLocalWithoutGhosts(2);
@@ -130,7 +130,7 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceMeshes() {
   functionSpace_->geometryField().getValuesWithoutGhosts(geometryValues);
 
   // parse settings of meshes
-  std::string settingsKey("preciceMeshes");
+  std::string settingsKey("preciceSurfaceMeshes");
   PyObject *listPy = this->specificSettings_.getOptionPyObject(settingsKey);
   std::vector<PyObject *> list =
       PythonUtility::convertFromPython<std::vector<PyObject *>>::get(listPy);
@@ -215,10 +215,10 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceMeshes() {
 }
 
 template <typename NestedSolver>
-void PreciceAdapterInitialize<NestedSolver>::initializePreciceData() {
+void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceData() {
   // parse settings for coupling participants / tendons
   // loop over items of the key "preciceData"
-  std::string settingsKey("preciceData");
+  std::string settingsKey("preciceSurfaceData");
   PyObject *listPy = this->specificSettings_.getOptionPyObject(settingsKey);
   std::vector<PyObject *> list =
       PythonUtility::convertFromPython<std::vector<PyObject *>>::get(listPy);

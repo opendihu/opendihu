@@ -122,14 +122,14 @@ protected:
   };
 
   //! parse the options in "preciceMeshes" and store in variable preciceSurfaceMeshes_
-  void initializePreciceMeshes();
+  void initializePreciceSurfaceMeshes();
 
   //! initialize all meshes in precice from the variable preciceSurfaceMeshes_
   void setMeshesInPrecice();
 
   //! parse the options in "preciceData" and initialize all variables in
   //! precice, store in variable preciceSurfaceData_
-  void initializePreciceData();
+  void initializePreciceSurfaceData();
 
   //! initialize Dirichlet boundary conditions at all dofs that will get some
   //! prescribed values during coupling
