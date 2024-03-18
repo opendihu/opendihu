@@ -76,7 +76,7 @@ void PreciceAdapterReadWrite<NestedSolver>::setDirichletBoundaryConditions(
 
     // for top surface
     if (preciceData.preciceMesh->face ==
-        PreciceAdapterReadWrite<NestedSolver>::PreciceMesh::face2Plus) {
+        PreciceAdapterReadWrite<NestedSolver>::PreciceSurfaceMesh::face2Plus) {
       nodeIndexZ = nNodesZ - 1;
     }
 
@@ -167,7 +167,7 @@ void PreciceAdapterReadWrite<NestedSolver>::setNeumannBoundaryConditions(
 
     // for top surface
     if (preciceData.preciceMesh->face ==
-        PreciceAdapterReadWrite<NestedSolver>::PreciceMesh::face2Plus) {
+        PreciceAdapterReadWrite<NestedSolver>::PreciceSurfaceMesh::face2Plus) {
       nodeIndexZ = nNodesZ - 1;
       elementIndexZ = nElementsZ - 1;
       elementalNodeIndexZ = 2;
@@ -185,7 +185,7 @@ void PreciceAdapterReadWrite<NestedSolver>::setNeumannBoundaryConditions(
         // set surface dofs
         Mesh::face_t face = Mesh::face_t::face2Minus;
         if (preciceData.preciceMesh->face ==
-            PreciceAdapterReadWrite<NestedSolver>::PreciceMesh::face2Plus)
+            PreciceAdapterReadWrite<NestedSolver>::PreciceSurfaceMesh::face2Plus)
           face = Mesh::face_t::face2Plus;
 
         elementWithFaces.face = face;
@@ -253,7 +253,7 @@ void PreciceAdapterReadWrite<NestedSolver>::setNeumannBoundaryConditions(
 
             // for top surface
             if (preciceData.preciceMesh->face ==
-                PreciceAdapterReadWrite<NestedSolver>::PreciceMesh::face2Plus) {
+                PreciceAdapterReadWrite<NestedSolver>::PreciceSurfaceMesh::face2Plus) {
               surfaceDof = 18 + elementalDofIndex;
             }
             elementWithFaces.dofVectors.push_back(

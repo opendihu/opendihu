@@ -94,7 +94,7 @@ protected:
     } boundaryConditionType; //< the type of the boundary condition to set, if
                              // ioType == ioRead
 
-    std::shared_ptr<PreciceMesh>
+    std::shared_ptr<PreciceSurfaceMesh>
         preciceMesh; //< the coupling mesh, this is derived from the option
                      // preciceMeshName
   };
@@ -116,7 +116,7 @@ protected:
   } ioType; //< if this variable is to be written or read to other
             // participants over precice
 
-  std::shared_ptr<PreciceMesh>
+  std::shared_ptr<PreciceVolumeMesh>
       preciceMesh; //< the coupling mesh, this is derived from the option
                     // preciceMeshName
   };
