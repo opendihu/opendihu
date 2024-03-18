@@ -94,7 +94,7 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
   initializePreciceMeshes();
 
   // parse the options in "preciceData" and initialize all variables in precice,
-  // store in variable preciceData_
+  // store in variable preciceSurfaceData_
   initializePreciceData();
 
   // initialize Dirichlet boundary conditions at all dofs that will get some
@@ -228,7 +228,7 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceData() {
   for (int i = 0; i < list.size(); i++) {
     PythonConfig currentPreciceData(preciceDataConfig, i);
 
-    PreciceData preciceData;
+    PreciceSurfaceData preciceData;
 
     // parse the mesh
     std::string currentMeshName =
@@ -256,8 +256,8 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceData() {
     // parse mode and variable names
     std::string mode = currentPreciceData.getOptionString("mode", "");
     if (mode == "read-displacements-velocities") {
-      preciceData.ioType = PreciceData::ioRead;
-      preciceData.boundaryConditionType = PreciceData::bcTypeDirichlet;
+      preciceData.ioType = PreciceSurfaceData::ioRead;
+      preciceData.boundaryConditionType = PreciceSurfaceData::bcTypeDirichlet;
 
       // get precice names of the variables
       preciceData.displacementsName = currentPreciceData.getOptionString(
@@ -274,8 +274,8 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceData() {
           preciceParticipant_->getDataDimensions(currentMeshName,
                                                  preciceData.velocitiesName);
     } else if (mode == "read-traction") {
-      preciceData.ioType = PreciceData::ioRead;
-      preciceData.boundaryConditionType = PreciceData::bcTypeNeumann;
+      preciceData.ioType = PreciceSurfaceData::ioRead;
+      preciceData.boundaryConditionType = PreciceSurfaceData::bcTypeNeumann;
 
       // get precice names of the variables
       preciceData.tractionName =
@@ -286,7 +286,7 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceData() {
           preciceParticipant_->getDataDimensions(currentMeshName,
                                                  preciceData.tractionName);
     } else if (mode == "write-displacements-velocities") {
-      preciceData.ioType = PreciceData::ioWrite;
+      preciceData.ioType = PreciceSurfaceData::ioWrite;
 
       // get precice names of the variables
       preciceData.displacementsName = currentPreciceData.getOptionString(
@@ -303,7 +303,7 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceData() {
                                                  preciceData.velocitiesName);
 
     } else if (mode == "write-traction") {
-      preciceData.ioType = PreciceData::ioWrite;
+      preciceData.ioType = PreciceSurfaceData::ioWrite;
 
       // get precice names of the variables
       preciceData.tractionName =
@@ -314,7 +314,7 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceData() {
           preciceParticipant_->getDataDimensions(currentMeshName,
                                                  preciceData.tractionName);
     } else if (mode == "write-averaged-traction") {
-      preciceData.ioType = PreciceData::ioWrite;
+      preciceData.ioType = PreciceSurfaceData::ioWrite;
       preciceData.average = true;
       LOG(INFO) << "Set average = true";
 
@@ -334,7 +334,7 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceData() {
     }
 
     // store preciceData to vector
-    preciceData_.push_back(preciceData);
+    preciceSurfaceData_.push_back(preciceData);
   }
 }
 
@@ -358,9 +358,9 @@ void PreciceAdapterInitialize<
 
   // loop over precice field variables to be transferred, collect surface meshes
   // at bottom or top
-  for (PreciceData &preciceData : preciceData_) {
-    if (preciceData.ioType == PreciceData::ioRead &&
-        preciceData.boundaryConditionType == PreciceData::bcTypeDirichlet) {
+  for (PreciceSurfaceData &preciceData : preciceSurfaceData_) {
+    if (preciceData.ioType == PreciceSurfaceData::ioRead &&
+        preciceData.boundaryConditionType == PreciceSurfaceData::bcTypeDirichlet) {
       if (preciceData.preciceMesh->face == PreciceSurfaceMesh::face2Minus) {
         elementIndicesZ.insert(0);
       } else if (preciceData.preciceMesh->face == PreciceSurfaceMesh::face2Plus) {

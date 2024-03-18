@@ -14,10 +14,10 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceReadData() {
   LOG(DEBUG) << "read data from precice";
   double preciceDt = this->preciceParticipant_->getMaxTimeStepSize();
   // loop over data
-  for (typename PreciceAdapterInitialize<NestedSolver>::PreciceData
-           &preciceData : this->preciceData_) {
+  for (typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData
+           &preciceData : this->preciceSurfaceData_) {
     if (preciceData.ioType ==
-        PreciceAdapterReadWrite<NestedSolver>::PreciceData::ioRead) {
+        PreciceAdapterReadWrite<NestedSolver>::PreciceSurfaceData::ioRead) {
       // allocate memory
       int nEntries = preciceData.preciceMesh->nNodesLocal * 3;
 
@@ -60,7 +60,7 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceReadData() {
 
 template <typename NestedSolver>
 void PreciceAdapterReadWrite<NestedSolver>::setDirichletBoundaryConditions(
-    typename PreciceAdapterInitialize<NestedSolver>::PreciceData &preciceData) {
+    typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData &preciceData) {
   std::vector<std::pair<global_no_t, std::array<double, 6>>>
       newDirichletBCValues;
 
@@ -123,7 +123,7 @@ void PreciceAdapterReadWrite<NestedSolver>::setDirichletBoundaryConditions(
 
 template <typename NestedSolver>
 void PreciceAdapterReadWrite<NestedSolver>::setNeumannBoundaryConditions(
-    typename PreciceAdapterInitialize<NestedSolver>::PreciceData &preciceData) {
+    typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData &preciceData) {
   // set traction values as neumann boundary conditions
   using FunctionSpace =
       typename PreciceAdapterNestedSolver<NestedSolver>::FunctionSpace;
@@ -322,10 +322,10 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceWriteData() {
   LOG(DEBUG) << "write data to precice";
 
   // loop over data
-  for (typename PreciceAdapterInitialize<NestedSolver>::PreciceData
-           &preciceData : this->preciceData_) {
+  for (typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData
+           &preciceData : this->preciceSurfaceData_) {
     if (preciceData.ioType ==
-        PreciceAdapterInitialize<NestedSolver>::PreciceData::ioWrite) {
+        PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData::ioWrite) {
       // if the data is displacements and velocities
       if (!preciceData.displacementsName.empty()) {
         // convert geometry values to precice data layout

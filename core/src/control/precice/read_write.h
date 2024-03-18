@@ -27,12 +27,12 @@ protected:
 #ifdef HAVE_PRECICE
   //! set the data from preciceData as Neumann boundary conditions
   void setNeumannBoundaryConditions(
-      typename PreciceAdapterInitialize<NestedSolver>::PreciceData
+      typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData
           &preciceData);
 
   //! set the data from preciceData as Dirichlet boundary conditions
   void setDirichletBoundaryConditions(
-      typename PreciceAdapterInitialize<NestedSolver>::PreciceData
+      typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData
           &preciceData);
 #endif
 
