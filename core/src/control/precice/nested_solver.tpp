@@ -5,6 +5,88 @@
 namespace Control {
 
 // --------------------------------------------------
+// FastMonodomainSolver<T1>
+template <typename T1>
+std::shared_ptr<typename PreciceAdapterNestedSolver<
+    FastMonodomainSolver<T1>>::FunctionSpace>
+PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::functionSpace(NestedSolverType
+                                                             &nestedSolver) {
+  return nestedSolver.data().functionSpace();
+}
+
+template <typename T1>
+void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
+    addDirichletBoundaryConditions(
+        NestedSolverType &nestedSolver,
+        std::vector<
+            typename SpatialDiscretization::DirichletBoundaryConditionsBase<
+                FunctionSpace, 6>::ElementWithNodes>
+            &dirichletBoundaryConditionElements) {}
+
+//! update existing boundary conditions with new values
+template <typename T1>
+void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
+    updateDirichletBoundaryConditions(
+        NestedSolverType &nestedSolver,
+        std::vector<std::pair<global_no_t, std::array<double, 6>>>
+            newDirichletBoundaryConditionValues) {}
+
+template <typename T1>
+void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
+    updateNeumannBoundaryConditions(
+        NestedSolverType &nestedSolver,
+        std::shared_ptr<SpatialDiscretization::NeumannBoundaryConditions<
+            FunctionSpace, Quadrature::Gauss<3>, 3>>
+            neumannBoundaryConditions) {}
+
+//! get the displacement and velocity vectors of the given local dof nos
+template <typename T1>
+void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
+    getDisplacementVelocityValues(NestedSolverType &nestedSolver,
+                                  const std::vector<dof_no_t> &dofNosLocal,
+                                  std::vector<double> &displacementValues,
+                                  std::vector<double> &velocityValues) {}
+ 
+
+//! get the traction vectors of the given local dof nos
+template <typename T1>
+void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
+    getTractionValues(NestedSolverType &nestedSolver,
+                      const std::vector<dof_no_t> &dofNosLocal,
+                      std::vector<double> &tractionValues) {}
+
+template <typename T1>
+Vec PreciceAdapterNestedSolver<
+    FastMonodomainSolver<T1>>::currentState(NestedSolverType
+                                                            &nestedSolver) {}
+
+template <typename T1>
+std::shared_ptr<FieldVariable::FieldVariable<
+    typename PreciceAdapterNestedSolver<
+        FastMonodomainSolver<T1>>::FunctionSpace,
+    9>>
+PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
+    deformationGradientField(NestedSolverType &nestedSolver) {}
+
+template <typename T1>
+void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::reset(NestedSolverType
+                                                     &nestedSolver) {
+  // nestedSolver.timeStepping1().reset();
+  nestedSolver.reset();
+}
+
+//! save fibers checkpoint
+template <typename T1>
+void PreciceAdapterNestedSolver<
+    FastMonodomainSolver<T1>>::saveFiberData(NestedSolverType
+                                                             &nestedSolver) {}
+
+//! load fibers checkpoint
+template <typename T1>
+void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::loadFiberData(NestedSolverType
+                                                             &nestedSolver) {}
+                  
+// --------------------------------------------------
 // MuscleContractionSolver<T1,T2>
 template <typename T1, typename T2>
 std::shared_ptr<typename PreciceAdapterNestedSolver<
