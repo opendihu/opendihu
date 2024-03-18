@@ -28,6 +28,7 @@ protected:
 #ifdef HAVE_PRECICE
 
   using PreciceAdapterNestedSolver<NestedSolver>::FunctionSpace;
+  typedef typename NestedSolver::FunctionSpace VolumeFunctionSpace;
 
   /** a coupling mesh of precice, this does not have to coincide with an
    * opendihu mesh
@@ -127,13 +128,17 @@ protected:
   //! initialize all meshes in precice from the variable preciceSurfaceMeshes_
   void setMeshesInPrecice();
 
-  //! parse the options in "preciceData" and initialize all variables in
+  //! parse the options in "preciceSurfaceData" and initialize all variables in
   //! precice, store in variable preciceSurfaceData_
   void initializePreciceSurfaceData();
 
   //! initialize Dirichlet boundary conditions at all dofs that will get some
   //! prescribed values during coupling
   void initializeDirichletBoundaryConditions();
+  
+  //! parse the options in "preciceVolumeData" and initialize all variables in
+  //! precice, store in variable preciceVolumeData_
+  void initializePreciceVolumeData();
 #endif
 
   DihuContext context_; //< object that contains the python config for the
