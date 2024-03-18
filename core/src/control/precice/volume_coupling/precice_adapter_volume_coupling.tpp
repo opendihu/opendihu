@@ -86,6 +86,8 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
 
     // compute the time step width such that it fits in the remaining time in
     // the current time window
+    this->maximumPreciceTimestepSize_ =
+        this->preciceParticipant_->getMaxTimeStepSize();
     double timeStepWidth =
         std::min(this->maximumPreciceTimestepSize_, this->timeStepWidth_);
 
@@ -103,8 +105,6 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
     currentTime += timeStepWidth;
 
     // advance timestepping in precice
-    this->maximumPreciceTimestepSize_ =
-        this->preciceParticipant_->getMaxTimeStepSize();
     this->preciceParticipant_->advance(timeStepWidth);
 
     LOG(INFO) << "precice::advance(" << timeStepWidth
