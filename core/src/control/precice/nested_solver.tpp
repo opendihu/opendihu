@@ -5,6 +5,166 @@
 namespace Control {
 
 // --------------------------------------------------
+// MuscleContractionSolver<T1,T2>
+template <typename T1, typename T2>
+std::shared_ptr<typename PreciceAdapterNestedSolver<
+    MuscleContractionSolver<T1, T2>>::FunctionSpace>
+PreciceAdapterNestedSolver<MuscleContractionSolver<T1, T2>>::functionSpace(NestedSolverType
+                                                             &nestedSolver) {
+  return nestedSolver.data().functionSpace();
+}
+
+template <typename T1, typename T2>
+void PreciceAdapterNestedSolver<MuscleContractionSolver<T1, T2>>::
+    addDirichletBoundaryConditions(
+        NestedSolverType &nestedSolver,
+        std::vector<
+            typename SpatialDiscretization::DirichletBoundaryConditionsBase<
+                FunctionSpace, 6>::ElementWithNodes>
+            &dirichletBoundaryConditionElements) {
+  // add the dirichlet bc values
+  bool overwriteBcOnSameDof = true;
+  nestedSolver.dynamicHyperelasticitySolver()
+      ->addDirichletBoundaryConditions(dirichletBoundaryConditionElements,
+                                       overwriteBcOnSameDof);
+}
+
+//! update existing boundary conditions with new values
+template <typename T1, typename T2>
+void PreciceAdapterNestedSolver<MuscleContractionSolver<T1, T2>>::
+    updateDirichletBoundaryConditions(
+        NestedSolverType &nestedSolver,
+        std::vector<std::pair<global_no_t, std::array<double, 6>>>
+            newDirichletBoundaryConditionValues) {
+  nestedSolver.dynamicHyperelasticitySolver()
+      ->updateDirichletBoundaryConditions(newDirichletBoundaryConditionValues);
+}
+
+template <typename T1, typename T2>
+void PreciceAdapterNestedSolver<MuscleContractionSolver<T1, T2>>::
+    updateNeumannBoundaryConditions(
+        NestedSolverType &nestedSolver,
+        std::shared_ptr<SpatialDiscretization::NeumannBoundaryConditions<
+            FunctionSpace, Quadrature::Gauss<3>, 3>>
+            neumannBoundaryConditions) {
+  nestedSolver.dynamicHyperelasticitySolver()
+      ->hyperelasticitySolver()
+      .updateNeumannBoundaryConditions(neumannBoundaryConditions);
+}
+
+//! get the displacement and velocity vectors of the given local dof nos
+template <typename T1, typename T2>
+void PreciceAdapterNestedSolver<MuscleContractionSolver<T1, T2>>::
+    getDisplacementVelocityValues(NestedSolverType &nestedSolver,
+                                  const std::vector<dof_no_t> &dofNosLocal,
+                                  std::vector<double> &displacementValues,
+                                  std::vector<double> &velocityValues) {
+  // get the displacement values
+  static std::vector<Vec3> values;
+  values.clear();
+  nestedSolver.data().displacements()->getValues(dofNosLocal,
+                                                                 values);
+
+  // store displacement values in interleaved order (array of struct)
+  int nVectors = values.size();
+  displacementValues.resize(nVectors * 3);
+
+  for (int i = 0; i < nVectors; i++) {
+    displacementValues[3 * i + 0] = values[i][0];
+    displacementValues[3 * i + 1] = values[i][1];
+    displacementValues[3 * i + 2] = values[i][2];
+  }
+
+  // get the velocity values
+  values.clear();
+  nestedSolver.data().velocities()->getValues(dofNosLocal,
+                                                              values);
+
+  // store velocity values in interleaved order (array of struct)
+  nVectors = values.size();
+  velocityValues.resize(nVectors * 3);
+
+  for (int i = 0; i < nVectors; i++) {
+    velocityValues[3 * i + 0] = values[i][0];
+    velocityValues[3 * i + 1] = values[i][1];
+    velocityValues[3 * i + 2] = values[i][2];
+  }
+}
+
+//! get the traction vectors of the given local dof nos
+template <typename T1, typename T2>
+void PreciceAdapterNestedSolver<MuscleContractionSolver<T1, T2>>::
+    getTractionValues(NestedSolverType &nestedSolver,
+                      const std::vector<dof_no_t> &dofNosLocal,
+                      std::vector<double> &tractionValues) {
+  /*std::vector<Vec3> values0;
+  nestedSolver.timeStepping2().data().materialTraction()->getValuesWithoutGhosts(values0);
+
+  std::stringstream s;
+  for (int i = 0; i < values0.size(); i++)
+  {
+    s << " " << values0[i][2];
+  }
+  LOG(INFO) << values0.size() << " local traction values in total
+  (MuscleContractionSolver), "
+    << "\ndofNosLocal: " << dofNosLocal << "\nall values: " << values0 << "\nz
+  values: " << s.str();
+*/
+  static std::vector<Vec3> values;
+  values.clear();
+  nestedSolver.data().materialTraction()->getValues(dofNosLocal,
+                                                                    values);
+
+  int nVectors = values.size();
+  tractionValues.resize(nVectors * 3);
+
+  for (int i = 0; i < nVectors; i++) {
+    tractionValues[3 * i + 0] = values[i][0];
+    tractionValues[3 * i + 1] = values[i][1];
+    tractionValues[3 * i + 2] = values[i][2];
+  }
+}
+
+template <typename T1, typename T2>
+Vec PreciceAdapterNestedSolver<
+    MuscleContractionSolver<T1, T2>>::currentState(NestedSolverType
+                                                            &nestedSolver) {
+  return nestedSolver.dynamicHyperelasticitySolver()
+      ->currentState();
+}
+
+template <typename T1, typename T2>
+std::shared_ptr<FieldVariable::FieldVariable<
+    typename PreciceAdapterNestedSolver<
+        MuscleContractionSolver<T1, T2>>::FunctionSpace,
+    9>>
+PreciceAdapterNestedSolver<MuscleContractionSolver<T1, T2>>::
+    deformationGradientField(NestedSolverType &nestedSolver) {
+  return nestedSolver.dynamicHyperelasticitySolver()
+      ->hyperelasticitySolver()
+      .data()
+      .deformationGradient();
+}
+
+template <typename T1, typename T2>
+void PreciceAdapterNestedSolver<MuscleContractionSolver<T1, T2>>::reset(NestedSolverType
+                                                     &nestedSolver) {
+  // nestedSolver.timeStepping1().reset();
+  nestedSolver.reset();
+}
+
+//! save fibers checkpoint
+template <typename T1, typename T2>
+void PreciceAdapterNestedSolver<
+    MuscleContractionSolver<T1, T2>>::saveFiberData(NestedSolverType
+                                                             &nestedSolver) {}
+
+//! load fibers checkpoint
+template <typename T1, typename T2>
+void PreciceAdapterNestedSolver<MuscleContractionSolver<T1, T2>>::loadFiberData(NestedSolverType
+                                                             &nestedSolver) {}
+
+// --------------------------------------------------
 // Coupling<T1,MuscleContractionSolver<T2,T3>>
 template <typename T1, typename T2, typename T3>
 std::shared_ptr<typename PreciceAdapterNestedSolver<

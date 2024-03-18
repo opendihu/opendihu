@@ -28,7 +28,7 @@ protected:
 #ifdef HAVE_PRECICE
 
   using PreciceAdapterNestedSolver<NestedSolver>::FunctionSpace;
-  typedef typename NestedSolver::FunctionSpace VolumeFunctionSpace;
+  // typedef typename NestedSolver::FunctionSpace VolumeFunctionSpace;
 
   /** a coupling mesh of precice, this does not have to coincide with an
    * opendihu mesh

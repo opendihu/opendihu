@@ -101,6 +101,8 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
   // prescribed values during coupling
   initializeDirichletBoundaryConditions();
 
+  // initializePreciceVolumeData();
+
   // parse scalingFactor from settings
   scalingFactor_ = this->specificSettings_.getOptionDouble("scalingFactor", 1);
 
@@ -501,10 +503,10 @@ void PreciceAdapterInitialize<
       int nArrayItems = 1;
 
       // get the function space that is used to initialize the mapping
-      std::shared_ptr<VolumeFunctionSpace> functionSpace = nullptr;
+      std::shared_ptr<typename NestedSolver::FunctionSpace> functionSpace = nullptr;
       if (preciceData.opendihuMeshName != "") {
         functionSpace =
-            DihuContext::meshManager()->functionSpace<VolumeFunctionSpace>(
+            DihuContext::meshManager()->functionSpace<typename NestedSolver::FunctionSpace>(
                 preciceData.opendihuMeshName);
         LOG(DEBUG) << "Using opendihu mesh with name \""
                    << preciceData.opendihuMeshName

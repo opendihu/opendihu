@@ -48,6 +48,11 @@ protected:
       velocityVectors_; //< send value buffer for the velocity values
   std::vector<Vec3>
       tractionVectors_; //< send value buffer for the traction values
+ std::vector<double> scalarValues_; //< temporary buffer for any scalar values
+  std::vector<double>
+      scalarValuesOfMesh_; //< second buffer for any scalar values
+  std::vector<Vec3>
+      geometryValues_; //< temporary buffer for the geometry values
 };
 
 } // namespace Control
