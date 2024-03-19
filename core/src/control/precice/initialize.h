@@ -83,7 +83,7 @@ public:
 
     bool average;
 
-    enum ReadWrite {
+    enum {
       ioRead,
       ioWrite
     } ioType; //< if this variable is to be written or read to other
