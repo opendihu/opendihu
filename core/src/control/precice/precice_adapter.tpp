@@ -94,7 +94,7 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
                << "), maximumPreciceTimestepSize_: "
                << this->maximumPreciceTimestepSize_;
 
-    // if coupling did not converge, reset to previously stored checkpoint
+    //if coupling did not converge, reset to previously stored checkpoint
     if (this->preciceParticipant_->requiresReadingCheckpoint()) {
       // set variables back to last checkpoint
       currentTime = this->loadCheckpoint();

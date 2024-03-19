@@ -2,6 +2,8 @@
 
 #include <Python.h> // has to be the first included header
 
+#include "control/precice/initialize.h"
+
 #include "specialized_solver/muscle_contraction_solver.h"
 
 #include "time_stepping_scheme/crank_nicolson.h"
@@ -14,7 +16,42 @@ namespace Control {
  * use precice surface coupling have to implement this interface.
  */
 template <typename NestedSolver>
-class PreciceAdapterNestedSolver : public Runnable {};
+class PreciceAdapterNestedSolver : public Runnable {
+    public:
+
+        virtual void preciceReadData()=0;
+        virtual void preciceWriteData()=0;
+
+        // void setNeumannBoundaryConditions(
+        // typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData
+        //   &preciceData)=0;
+        // void setDirichletBoundaryConditions(
+        // typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData
+        //   &preciceData)=0;
+    
+    protected:
+
+        void preciceReadData_impl(){};
+        void preciceWriteData_impl(){};
+
+        // void setNeumannBoundaryConditions_impl(
+        // typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData
+        //   &preciceData);
+        // void setDirichletBoundaryConditions_impl(
+        // typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData
+        //   &preciceData);
+
+        std::vector<double> displacementValues_; 
+        std::vector<double> velocityValues_; 
+        std::vector<double> tractionValues_; 
+        std::vector<Vec3> displacementVectors_; 
+        std::vector<Vec3> velocityVectors_;
+        std::vector<Vec3> tractionVectors_; 
+        std::vector<double> scalarValues_; 
+        std::vector<double> scalarValuesOfMesh_; 
+        std::vector<Vec3> geometryValues_; 
+
+};
 
 /** Partial specialization for tendon or pure mechanics solver in a coupling
  * scheme, muscle contraction solver (nonlinear elasticity with active stress)
@@ -34,6 +71,12 @@ public:
 
   //! get the function space of the nested solver, after it has been initialized
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
+
+  void preciceReadData() override{
+    this->preciceReadData_impl();}
+
+  void preciceWriteData() override{
+    this->preciceWriteData_impl();}
 
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
   //! values for all bottom or top nodes
