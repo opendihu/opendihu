@@ -24,7 +24,7 @@ public:
   //! initialize the object
   void initialize();
 
-protected:
+
 #ifdef HAVE_PRECICE
 
   using PreciceAdapterNestedSolver<NestedSolver>::FunctionSpace;
@@ -83,7 +83,7 @@ protected:
 
     bool average;
 
-    enum {
+    enum ReadWrite {
       ioRead,
       ioWrite
     } ioType; //< if this variable is to be written or read to other
