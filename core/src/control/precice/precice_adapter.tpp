@@ -69,6 +69,8 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
 
     // compute the time step width such that it fits in the remaining time in
     // the current time window
+    this->maximumPreciceTimestepSize_ =
+        this->preciceParticipant_->getMaxTimeStepSize();
     double timeStepWidth =
         std::min(this->maximumPreciceTimestepSize_, this->timeStepWidth_);
 
@@ -86,8 +88,6 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
     currentTime += timeStepWidth;
 
     // advance timestepping in precice
-    this->maximumPreciceTimestepSize_ =
-        this->preciceParticipant_->getMaxTimeStepSize();
     this->preciceParticipant_->advance(timeStepWidth);
 
     LOG(DEBUG) << "precice::advance(" << timeStepWidth
