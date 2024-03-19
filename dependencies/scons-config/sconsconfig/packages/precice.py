@@ -6,7 +6,7 @@ class precice(Package):
 
   def __init__(self, **kwargs):
     defaults = {
-        'download_url': 'https://github.com/precice/precice/archive/refs/tags/v3.0.0.zip',
+        'download_url': 'https://github.com/precice/precice/archive/refs/heads/develop.zip',
     }
     defaults.update(kwargs)
     super(precice, self).__init__(**defaults)
@@ -92,6 +92,7 @@ class precice(Package):
         'cd ${SOURCE_DIR} && mkdir -p build && cd build && '+ctx.env["cmake"]+' -DCMAKE_INSTALL_PREFIX=${PREFIX} \
           -DCMAKE_BUILD_TYPE=Release \
           -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
+          -DPRECICE_RELEASE_WITH_ASSERTIONS=ON \
           ..',
         'cd ${SOURCE_DIR}/build && make precice install'
       ])
@@ -122,6 +123,7 @@ class precice(Package):
         'cd ${SOURCE_DIR} && mkdir -p build && cd build && '+ctx.env["cmake"]+' -DCMAKE_INSTALL_PREFIX=${PREFIX} \
           -DCMAKE_BUILD_TYPE=Release \
           -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
+          -DPRECICE_RELEASE_WITH_ASSERTIONS=ON \
           -DLIBXML2_INCLUDE_DIR=${PREFIX}/include/libxml2 -DLIBXML2_LIBRARY=${PREFIX}/lib/libxml2.so \
           ..',
         'cd ${SOURCE_DIR}/build && make precice install'
