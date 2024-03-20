@@ -89,10 +89,11 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
     this->maximumPreciceTimestepSize_ =
         this->preciceParticipant_->getMaxTimeStepSize();
     double tol =1e-7;
-    if ((this->maximumPreciceTimestepSize_ - this->timeStepWidth)<tol){
-      double timeStepWidth = this->maximumPreciceTimestepSize_;
+    double timeStepWidth;
+    if ((this->maximumPreciceTimestepSize_ - this->timeStepWidth_)<tol){
+      timeStepWidth = this->maximumPreciceTimestepSize_;
     } else {
-    double timeStepWidth =
+      timeStepWidth =
         std::min(this->maximumPreciceTimestepSize_, this->timeStepWidth_);
     }
     // set time span in nested solver
