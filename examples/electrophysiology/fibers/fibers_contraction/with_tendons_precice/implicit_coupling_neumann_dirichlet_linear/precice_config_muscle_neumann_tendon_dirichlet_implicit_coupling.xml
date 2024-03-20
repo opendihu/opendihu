@@ -8,7 +8,6 @@
     <!--<sink type="file" output="debug.log" filter= "(%Severity% >= debug)" format="%Message%" enabled="true" />	-->
   </log>
 
-  <solver-interface dimensions="3">
     
     <!-- Data fields that are exchanged between the solvers -->
     <data:vector name="Displacement"/>
@@ -16,13 +15,13 @@
     <data:vector name="Traction"/>
 
     <!-- A common mesh that uses these data fields -->
-    <mesh name="TendonMeshTop">
+    <mesh name="TendonMeshTop" dimensions="3">
       <use-data name="Displacement"/>
       <use-data name="Velocity"/>
       <use-data name="Traction"/>
     </mesh>
 
-    <mesh name="MuscleMeshBottom">
+    <mesh name="MuscleMeshBottom" dimensions="3">
       <use-data name="Displacement"/>
       <use-data name="Velocity"/>
       <use-data name="Traction"/>
@@ -32,14 +31,14 @@
 
     <!-- Represents each solver using preCICE. In a coupled simulation, two participants have to be
          defined. The name of the participant has to match the name given on construction of the
-         precice::SolverInterface object used by the participant. -->
+         precice::Participant object used by the participant. -->
     
     <participant name="TendonSolver">
       
       <!-- Makes the named mesh available to the participant. Mesh is provided by the solver directly. -->
-      <use-mesh name="TendonMeshTop" provide="yes"/>
-      <use-mesh name="MuscleMeshBottom" from="MuscleSolver"/>
-      <export:vtk directory="precice-output" />
+      <provide-mesh name="TendonMeshTop" />
+      <receive-mesh name="MuscleMeshBottom" from="MuscleSolver"/>
+      <export:vtu directory="precice-output" />
       
       <!-- Define input/output of the solver, the mesh should be the own one.  -->
       <read-data  name="Displacement"  mesh="TendonMeshTop"/>
@@ -56,14 +55,9 @@ Using values:
 Result:
   s = 91.0456277631
 -->
-      <mapping:rbf-gaussian 
-        direction="read" 
-        from="MuscleMeshBottom" 
-        to="TendonMeshTop" 
-        constraint="consistent" 
-        timing="initial" 
-        shape-parameter="91.05"
-      />
+    <mapping:rbf direction="read" from="MuscleMeshBottom" to="TendonMeshTop" constraint="consistent"> 
+      <basis-function:gaussian shape-parameter="91.05" />
+    </mapping:rbf>
       
       <!--<mapping:nearest-neighbor direction="read" from="MuscleMeshBottom" to="TendonMeshTop" constraint="consistent" />-->
       <!-- rbf-compact-tps-c2 abgeschnittene splines, 3-5 Nachbarn im support radius--> 
@@ -78,14 +72,14 @@ Result:
     
     <participant name="MuscleSolver">
       <!-- Makes the named mesh available to the participant. Mesh is provided by the solver directly. -->
-      <use-mesh name="MuscleMeshBottom" provide="yes"/>
-      <use-mesh name="TendonMeshTop" from="TendonSolver"/>
+      <provide-mesh name="MuscleMeshBottom" />
+      <receive-mesh name="TendonMeshTop" from="TendonSolver"/>
       
       <!-- Define input/output of the solver, the mesh should be the own one. -->
       <write-data name="Displacement"  mesh="MuscleMeshBottom"/>
       <write-data name="Velocity"      mesh="MuscleMeshBottom"/>
       <read-data  name="Traction"      mesh="MuscleMeshBottom"/>
-      <export:vtk directory="precice-output" />
+      <export:vtu directory="precice-output" />
       
       <!-- map from TendonMeshTop to MuscleMeshBottom -->
       <!-- shape-parameter: 
@@ -114,15 +108,10 @@ Result:
         support-radius="0.1"  
       />  --><!-- spacing between nodes is 0.01 -->
       
-      <mapping:rbf-gaussian 
-        direction="read" 
-        from="TendonMeshTop" 
-        to="MuscleMeshBottom" 
-        constraint="consistent" 
-        timing="initial" 
-        shape-parameter="91.05"
-      />
-      
+    <mapping:rbf direction="read" from="TendonMeshTop" to="MuscleMeshBottom" constraint="consistent"> 
+      <basis-function:gaussian shape-parameter="91.05" />
+    </mapping:rbf>
+
       <!-- available mappings:
         rbf-thin-plate-splines
         rbf-multiquadrics
@@ -159,7 +148,7 @@ Result:
     </participant>
 
     <!-- Communication method, use TCP sockets, Change network to "ib0" on SuperMUC -->
-    <m2n:sockets from="TendonSolver" to="MuscleSolver" network="lo" />
+    <m2n:sockets acceptor="TendonSolver" connector="MuscleSolver" network="lo" />
 
     <!-- serial-implicit coupling scales only the displacements, which are transferred from muscle to tendon -->
     <!-- parallel-implicit coupling scales displacements and tractions -->
@@ -190,5 +179,4 @@ Result:
       <exchange data="Velocity"     mesh="MuscleMeshBottom" from="MuscleSolver" to="TendonSolver"/>  <!--initialize="true"-->
     </coupling-scheme:serial-implicit>
     
-  </solver-interface>
 </precice-configuration>

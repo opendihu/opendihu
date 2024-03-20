@@ -1,3 +1,5 @@
+case_name = "default"
+precice_config_file = "default"
 
 # scenario name for log file
 scenario_name = "muscle"

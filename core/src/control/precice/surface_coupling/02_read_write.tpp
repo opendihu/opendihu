@@ -12,7 +12,7 @@ template <typename NestedSolver>
 void PreciceAdapterReadWrite<NestedSolver>::preciceReadData() {
 
   LOG(DEBUG) << "read data from precice";
-
+  double preciceDt = this->preciceParticipant_->getMaxTimeStepSize();
   // loop over data
   for (typename PreciceAdapterInitialize<NestedSolver>::PreciceData
            &preciceData : this->preciceData_) {
@@ -27,28 +27,27 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceReadData() {
         velocityValues_.resize(nEntries);
 
         // get all data at once
-        this->preciceSolverInterface_->readBlockVectorData(
-            preciceData.preciceDataIdDisplacements,
-            preciceData.preciceMesh->nNodesLocal,
-            preciceData.preciceMesh->preciceVertexIds.data(),
-            displacementValues_.data());
+        this->preciceParticipant_->readData(
+            preciceData.preciceMesh->preciceMeshName,
+            preciceData.displacementsName,
+            preciceData.preciceMesh->preciceVertexIds, preciceDt,
+            displacementValues_);
 
-        this->preciceSolverInterface_->readBlockVectorData(
-            preciceData.preciceDataIdVelocities,
-            preciceData.preciceMesh->nNodesLocal,
-            preciceData.preciceMesh->preciceVertexIds.data(),
-            velocityValues_.data());
+        this->preciceParticipant_->readData(
+            preciceData.preciceMesh->preciceMeshName,
+            preciceData.velocitiesName,
+            preciceData.preciceMesh->preciceVertexIds, preciceDt,
+            velocityValues_);
 
         setDirichletBoundaryConditions(preciceData);
       }
       // if the data is traction
       else if (!preciceData.tractionName.empty()) {
         tractionValues_.resize(nEntries);
-        this->preciceSolverInterface_->readBlockVectorData(
-            preciceData.preciceDataIdTraction,
-            preciceData.preciceMesh->nNodesLocal,
-            preciceData.preciceMesh->preciceVertexIds.data(),
-            tractionValues_.data());
+        this->preciceParticipant_->readData(
+            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
+            preciceData.preciceMesh->preciceVertexIds, preciceDt,
+            tractionValues_);
 
         setNeumannBoundaryConditions(preciceData);
       } else {
@@ -349,18 +348,16 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceWriteData() {
           value *= this->scalingFactor_;
 
         // write displacement values in precice
-        this->preciceSolverInterface_->writeBlockVectorData(
-            preciceData.preciceDataIdDisplacements,
-            preciceData.preciceMesh->nNodesLocal,
-            preciceData.preciceMesh->preciceVertexIds.data(),
-            displacementValues_.data());
+        this->preciceParticipant_->writeData(
+            preciceData.preciceMesh->preciceMeshName,
+            preciceData.displacementsName,
+            preciceData.preciceMesh->preciceVertexIds, displacementValues_);
 
         // write velocity values in precice
-        this->preciceSolverInterface_->writeBlockVectorData(
-            preciceData.preciceDataIdVelocities,
-            preciceData.preciceMesh->nNodesLocal,
-            preciceData.preciceMesh->preciceVertexIds.data(),
-            velocityValues_.data());
+        this->preciceParticipant_->writeData(
+            preciceData.preciceMesh->preciceMeshName,
+            preciceData.velocitiesName,
+            preciceData.preciceMesh->preciceVertexIds, velocityValues_);
       }
       // if the data is traction
       else if (!preciceData.tractionName.empty() &&
@@ -390,11 +387,9 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceWriteData() {
           value *= -1;
         }
 
-        this->preciceSolverInterface_->writeBlockVectorData(
-            preciceData.preciceDataIdTraction,
-            preciceData.preciceMesh->nNodesLocal,
-            preciceData.preciceMesh->preciceVertexIds.data(),
-            tractionValues_.data());
+        this->preciceParticipant_->writeData(
+            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
+            preciceData.preciceMesh->preciceVertexIds, tractionValues_);
       } else if (!preciceData.tractionName.empty()) {
 
         LOG(INFO) << "Write non-averaged traction";
@@ -419,11 +414,9 @@ void PreciceAdapterReadWrite<NestedSolver>::preciceWriteData() {
           value *= -1;
         }
 
-        this->preciceSolverInterface_->writeBlockVectorData(
-            preciceData.preciceDataIdTraction,
-            preciceData.preciceMesh->nNodesLocal,
-            preciceData.preciceMesh->preciceVertexIds.data(),
-            tractionValues_.data());
+        this->preciceParticipant_->writeData(
+            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
+            preciceData.preciceMesh->preciceVertexIds, tractionValues_);
       } else {
         LOG(FATAL) << "Unknown precice data (write), none of displacements, "
                       "velocities or traction is set.";

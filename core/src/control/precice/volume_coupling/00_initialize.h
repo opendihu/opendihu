@@ -5,7 +5,7 @@
 #include "control/precice/volume_coupling/00_initialize.h"
 
 #ifdef HAVE_PRECICE
-#include "precice/SolverInterface.hpp"
+#include "precice/precice.hpp"
 #endif
 
 namespace Control {
@@ -34,8 +34,6 @@ protected:
   struct PreciceMesh {
     std::string preciceMeshName; //< name of the precice mesh as used in the
                                  // precice config XML file
-    int preciceMeshId; //< mesh ID of precice of the surface mesh that contains
-                       // all nodes
     std::vector<int>
         preciceVertexIds; //< the vertex ids in precice of the geometry values
     std::vector<dof_no_t> dofNosLocal; //< the local dof nos in the 3D mesh of
@@ -52,7 +50,6 @@ protected:
    */
   struct PreciceData {
     std::string preciceDataName; //< precice name of the variable, if any
-    int preciceDataId;           //< precice id of the variable
     std::string slotName; //< slot name as given in config, this is used to
                           // determine slotNo
     int slotNo;           //< slot no that corresponds to this field variable
@@ -97,9 +94,9 @@ protected:
       preciceMeshes_;                    //< all coupling meshes
   std::vector<PreciceData> preciceData_; //< all precice variables "data"
 
-  std::shared_ptr<precice::SolverInterface>
-      preciceSolverInterface_; //< the precice solver interface that makes all
-                               // preCICE functionality accessible
+  std::shared_ptr<precice::Participant>
+      preciceParticipant_; //< the precice solver interface that makes all
+                           // preCICE functionality accessible
 
 #endif
 

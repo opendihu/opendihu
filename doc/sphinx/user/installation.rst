@@ -26,7 +26,7 @@ We provide docker images on docker hub that contain the latest release as of Nov
 * ``maierbn/opendihu:2004``, ``maierbn/opendihu:1804``, ``maierbn/opendihu:1604``:
 
   * images based on Ubuntu 20.04, 18.04, and 16.04
-  * dependencies are installed (except precice), petsc only has standard functionality
+  * dependencies are installed (except preCICE), petsc only has standard functionality
   * the core is built in release target
   * examples are not yet built
 
@@ -97,7 +97,7 @@ The recommended way for the first installation is to change into the `opendihu` 
 
 Then, scons will download and install everything for a while. It runs the unit tests using 1, 2 and 6 processes. Then, it compiles all examples. As soon as the unit tests are being compiled, the installation has finished and you can abort the process. Or, you can wait for it to finish.
 
-If some of the dependencies were not found this is not a problem, e.g. if precice fails, you'll not be able to use precice but everything else still works.
+If some of the dependencies were not found this is not a problem, e.g. if preCICE fails, you'll not be able to use preCICE but everything else still works.
 
 You can also execute `make release` to only build the release target. This is enough if you don't aim at developing the C++ code.
 

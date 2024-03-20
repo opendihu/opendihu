@@ -1884,7 +1884,7 @@ fibers_contraction/with_tendons_precice
 .. figure:: examples/model_schematic_fibers_contraction_with_tendons_precice.svg
   :width: 100%
   
-This example uses precice to couple the muscle and tendon solvers. 
+This example uses preCICE to couple the muscle and tendon solvers. 
 The muscle material is incompressible hyperelastic. The tendon material is compressible hyperelastic. Either an isotropic linear Saint-Venant Kirchhoff material or the anisotropic tendon material is used.
 There are different scenarios with different material models and different coupling schemes.
 
@@ -1907,7 +1907,7 @@ Precice needs to be enabled in the `user-variables.scons.py` file. The example
 * **Only Tendon**
   
   This settings file is to test and debug the tendon material. A box that is fixed on the right and pulled to the left is simulated. The data from `this paper <https://www.sciencedirect.com/science/article/abs/pii/S0021929017300726?via%3Dihub>`_ can be reproduced, but adjusting the material parameters for all variants.
-  The geometry can be created by the script create_cuboid_meshes.sh (you have to read this file and make adjustments to the mesh sizes etc.). The precice adapter is disabled.
+  The geometry can be created by the script create_cuboid_meshes.sh (you have to read this file and make adjustments to the mesh sizes etc.). The preCICE adapter is disabled.
   Run as follows, adjust the geometry file as needed.
 
   .. code-block:: bash
@@ -1945,7 +1945,7 @@ Precice needs to be enabled in the `user-variables.scons.py` file. The example
     ./muscle_precice settings_muscle_neumann_dirichlet.py ramp.py  # (terminal 1)
     ./tendon_precice_dynamic settings_tendon_neumann_dirichlet.py  # (terminal 2)
 
-  The precice settings file is `precice_config_muscle_neumann_tendon_dirichlet.xml`.
+  The preCICE settings file is `precice_config_muscle_neumann_tendon_dirichlet.xml`.
 
   This does not converge, after some timesteps it will fail. This is because of the explicit timestepping and the choice that the muscle has the Neumann boundary conditions and the tendon has the Dirichlet boundary conditions.
   
@@ -1964,14 +1964,14 @@ Precice needs to be enabled in the `user-variables.scons.py` file. The example
     ./muscle_precice settings_muscle_dirichlet_neumann.py ramp.py  # (terminal 1)
     ./tendon_precice_dynamic settings_tendon_dirichlet_neumann.py  # (terminal 2)
 
-  The precice settings file is `precice_config_muscle_dirichlet_tendon_neumann.xml`.
+  The preCICE settings file is `precice_config_muscle_dirichlet_tendon_neumann.xml`.
   This scenario converges and works better than `Explicit Neumann-Dirichlet`.
   
   Note that there is a variant of this scenario in `dirichlet_neumann_linear` which uses a linear hyperelastic material for the tendon.
   
 * **Implicit Dirichlet-Neumann**
   
-  This is the same as explicit Dirichlet-Neumann scenario but this time with implicit coupling in precice.
+  This is the same as explicit Dirichlet-Neumann scenario but this time with implicit coupling in preCICE.
   
   .. code-block:: bash
     
@@ -1979,7 +1979,7 @@ Precice needs to be enabled in the `user-variables.scons.py` file. The example
     ./muscle_precice settings_muscle_implicit_dirichlet_neumann.py ramp.py  # (terminal 1)
     ./tendon_precice_dynamic settings_tendon_implicit_dirichlet_neumann.py  # (terminal 2)
 
-  The precice settings file is `precice_config_muscle_dirichlet_tendon_neumann.xml`. This scenario also works.
+  The preCICE settings file is `precice_config_muscle_dirichlet_tendon_neumann.xml`. This scenario also works.
   
 * **Linear Implicit Dirichlet-Neumann**
   
