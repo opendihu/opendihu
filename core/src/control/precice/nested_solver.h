@@ -30,11 +30,14 @@ class PreciceAdapterNestedSolver : public Runnable {
     
     protected:
 
-        void preciceReadData_impl();
-        void preciceWriteData_impl();
+        void preciceReadVolumeData();
+        void preciceWriteVolumeData();
 
-        void setNeumannBoundaryConditions_impl(typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData &preciceData);
-        void setDirichletBoundaryConditions_impl(typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData &preciceData);
+        void preciceReadSurfaceData();
+        void preciceWriteSurfaceData();
+
+        void setNeumannBoundaryConditions(typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData &preciceData);
+        void setDirichletBoundaryConditions(typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData &preciceData);
 
         std::vector<double> displacementValues_; 
         std::vector<double> velocityValues_; 
@@ -135,10 +138,10 @@ public:
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
 
     void preciceReadData() {
-    this->preciceReadData_impl();}
+    this->preciceReadSurfaceData();}
 
   void preciceWriteData() {
-    this->preciceWriteData_impl();}
+    this->preciceWriteSurfaceData();}
 
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
   //! values for all bottom or top nodes
@@ -209,10 +212,10 @@ public:
   //! get the function space of the nested solver, after it has been initialized
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
     void preciceReadData(){
-    this->preciceReadData_impl();}
+    this->preciceReadSurfaceData();}
 
   void preciceWriteData(){
-    this->preciceWriteData_impl();}
+    this->preciceWriteSurfaceData();}
 
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
   //! values for all bottom or top nodes
@@ -284,10 +287,10 @@ public:
       Material>::FunctionSpace>
   functionSpace(NestedSolverType &nestedSolver);
     void preciceReadData() {
-    this->preciceReadData_impl();}
+    this->preciceReadSurfaceData();}
 
   void preciceWriteData() {
-    this->preciceWriteData_impl();}
+    this->preciceWriteSurfaceData();}
 
   //! initialize dirichlet boundary conditions by adding prescribed values for
   //! all bottom or top nodes

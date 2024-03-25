@@ -5,9 +5,14 @@
 
 namespace Control {
 
+template <typename NestedSolver>
+void PreciceAdapterNestedSolver<NestedSolver>::preciceReadVolumeData(){}
 
 template <typename NestedSolver>
-void PreciceAdapterNestedSolver<NestedSolver>::preciceReadData_impl(){
+void PreciceAdapterNestedSolver<NestedSolver>::preciceWriteVolumeData(){}
+
+template <typename NestedSolver>
+void PreciceAdapterNestedSolver<NestedSolver>::preciceReadSurfaceData(){
     LOG(DEBUG) << "read data from precice";
     double preciceDt = this->preciceParticipant_->getMaxTimeStepSize();
     // loop over surface data
@@ -59,7 +64,7 @@ void PreciceAdapterNestedSolver<NestedSolver>::preciceReadData_impl(){
 };
 
 template <typename NestedSolver>
-void PreciceAdapterNestedSolver<NestedSolver>::preciceWriteData_impl(){
+void PreciceAdapterNestedSolver<NestedSolver>::preciceWriteSurfaceData(){
   // write data to precice
     LOG(DEBUG) << "write data to precice";
 
@@ -170,7 +175,7 @@ void PreciceAdapterNestedSolver<NestedSolver>::preciceWriteData_impl(){
 }
 
 template <typename NestedSolver>
-void PreciceAdapterNestedSolver<NestedSolver>::setNeumannBoundaryConditions_impl(typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData &preciceData){
+void PreciceAdapterNestedSolver<NestedSolver>::setNeumannBoundaryConditions(typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData &preciceData){
    using FunctionSpace =
                 typename PreciceAdapterNestedSolver<NestedSolver>::FunctionSpace;
             using ElementWithFacesType =
@@ -363,7 +368,7 @@ void PreciceAdapterNestedSolver<NestedSolver>::setNeumannBoundaryConditions_impl
 }
 
 template <typename NestedSolver>
-void PreciceAdapterNestedSolver<NestedSolver>::setDirichletBoundaryConditions_impl(typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData &preciceData){
+void PreciceAdapterNestedSolver<NestedSolver>::setDirichletBoundaryConditions(typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData &preciceData){
      std::vector<std::pair<global_no_t, std::array<double, 6>>>
                 newDirichletBCValues;
 
