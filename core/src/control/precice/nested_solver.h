@@ -70,6 +70,12 @@ public:
   //! get the function space of the nested solver, after it has been initialized
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
 
+  void preciceReadData() {
+    this->preciceReadVolumeData();}
+
+  void preciceWriteData() {
+    this->preciceWriteVolumeData();}
+
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
   //! values for all bottom or top nodes
   void addDirichletBoundaryConditions(
@@ -137,12 +143,12 @@ public:
   //! get the function space of the nested solver, after it has been initialized
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
 
-    void preciceReadData() {
-    this->preciceReadSurfaceData();}
+  void preciceReadData() {
+    this->preciceReadVolumeData();}
 
   void preciceWriteData() {
-    this->preciceWriteSurfaceData();}
-
+    this->preciceWriteVolumeData();}
+    
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
   //! values for all bottom or top nodes
   void addDirichletBoundaryConditions(

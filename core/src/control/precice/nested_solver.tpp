@@ -15,10 +15,9 @@ void PreciceAdapterNestedSolver<NestedSolver>::preciceReadVolumeData(){
       this->nestedSolver_.getSlotConnectorData();
 
   // loop over data
-  for (typename PreciceAdapterVolumeCouplingInitialize<
-           NestedSolver>::PreciceData &preciceData : this->preciceData_) {
-    if (preciceData.ioType == PreciceAdapterVolumeCouplingReadWrite<
-                                  NestedSolver>::PreciceData::ioRead) {
+  for (auto &preciceData : this->preciceVolumeData_) {
+    if (preciceData.ioType == PreciceAdapterInitialize<
+                                  NestedSolver>::PreciceVolumeData::ioRead) {
       int nEntries = preciceData.preciceMesh->nNodesLocal;
 
       if (preciceData.isGeometryField) {
@@ -104,10 +103,9 @@ void PreciceAdapterNestedSolver<NestedSolver>::preciceWriteVolumeData(){
       this->nestedSolver_.getSlotConnectorData();
 
   // loop over data
-  for (typename PreciceAdapterVolumeCouplingInitialize<
-           NestedSolver>::PreciceData &preciceData : this->preciceData_) {
-    if (preciceData.ioType == PreciceAdapterVolumeCouplingInitialize<
-                                  NestedSolver>::PreciceData::ioWrite) {
+  for (auto &preciceData : this->preciceVolumeData_) {
+    if (preciceData.ioType == PreciceAdapterInitialize<
+                                  NestedSolver>::PreciceVolumeData::ioWrite) {
       scalarValues_.clear();
 
       // get the mesh partition
