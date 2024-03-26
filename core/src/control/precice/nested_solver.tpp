@@ -1,5 +1,5 @@
 #include "control/precice/nested_solver.h"
-#include "control/precice/initialize.h"
+// #include "control/precice/initialize.h"
 
 #include <sstream>
 
@@ -54,10 +54,10 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::getTractionValues(
     NestedSolverType &nestedSolver, const std::vector<dof_no_t> &dofNosLocal,
     std::vector<double> &tractionValues) {}
 
-// template <typename T1>
-// Vec PreciceAdapterNestedSolver<
-//     FastMonodomainSolver<T1>>::currentState(NestedSolverType
-//                                                             &nestedSolver) {}
+template <typename T1>
+Vec PreciceAdapterNestedSolver<
+    FastMonodomainSolver<T1>>::currentState(NestedSolverType
+                                                            &nestedSolver) {}
 
 template <typename T1>
 std::shared_ptr<

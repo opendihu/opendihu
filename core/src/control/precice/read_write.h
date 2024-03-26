@@ -2,16 +2,19 @@
 
 #include <Python.h> // has to be the first included header
 
+#include "precice/precice.hpp"
+// #include "control/precice/initialize.h"
+
 namespace Control {
 
 class ReadWriteDataBase {
 public:
-  void preciceReadVolumeData();
-  void preciceWriteVolumeData();
+  void preciceReadVolumeData(std::shared_ptr<precice::Participant> &preciceParticipant);
+  void preciceWriteVolumeData(std::shared_ptr<precice::Participant> &preciceParticipant);
 
-  void preciceReadSurfaceData();
-  void preciceWriteSurfaceData();
-
+  void preciceReadSurfaceData(std::shared_ptr<precice::Participant> &preciceParticipant);
+  void preciceWriteSurfaceData(std::shared_ptr<precice::Participant> &preciceParticipant);
+ 
   // void setNeumannBoundaryConditions(typename
   // PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData &preciceData);
   // void setDirichletBoundaryConditions(typename

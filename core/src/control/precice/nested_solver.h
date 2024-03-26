@@ -37,14 +37,14 @@ public:
   //! get the function space of the nested solver, after it has been initialized
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
 
-  void preciceReadData() {
+  void preciceReadData(std::shared_ptr<precice::Participant> &preciceParticipant) {
     ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceReadVolumeData();
+    ReadWriteDataBase_.preciceReadVolumeData(preciceParticipant);
   }
 
-  void preciceWriteData() {
+  void preciceWriteData(std::shared_ptr<precice::Participant> &preciceParticipant) {
     ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceWriteVolumeData();
+    ReadWriteDataBase_.preciceWriteVolumeData(preciceParticipant);
   }
 
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
@@ -114,14 +114,14 @@ public:
   //! get the function space of the nested solver, after it has been initialized
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
 
-  void preciceReadData() {
+  void preciceReadData(std::shared_ptr<precice::Participant> &preciceParticipant) {
     ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceReadVolumeData();
+    ReadWriteDataBase_.preciceReadVolumeData(preciceParticipant);
   }
 
-  void preciceWriteData() {
+  void preciceWriteData(std::shared_ptr<precice::Participant> &preciceParticipant ) {
     ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceWriteVolumeData();
+    ReadWriteDataBase_.preciceWriteVolumeData(preciceParticipant);
   }
 
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
@@ -192,14 +192,14 @@ public:
 
   //! get the function space of the nested solver, after it has been initialized
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
-  void preciceReadData() {
+  void preciceReadData(std::shared_ptr<precice::Participant> &preciceParticipant) {
     ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceReadSurfaceData();
+    ReadWriteDataBase_.preciceReadSurfaceData(preciceParticipant);
   }
 
-  void preciceWriteData() {
+  void preciceWriteData(std::shared_ptr<precice::Participant> &preciceParticipant) {
     ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceWriteSurfaceData();
+    ReadWriteDataBase_.preciceWriteSurfaceData(preciceParticipant);
   }
 
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
@@ -271,14 +271,14 @@ public:
   std::shared_ptr<typename TimeSteppingScheme::DynamicHyperelasticitySolver<
       Material>::FunctionSpace>
   functionSpace(NestedSolverType &nestedSolver);
-  void preciceReadData() {
+  void preciceReadData(std::shared_ptr<precice::Participant> &preciceParticipant) {
     ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceReadSurfaceData();
+    ReadWriteDataBase_.preciceReadSurfaceData(preciceParticipant);
   }
 
-  void preciceWriteData() {
+  void preciceWriteData(std::shared_ptr<precice::Participant> &preciceParticipant) {
     ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceWriteSurfaceData();
+    ReadWriteDataBase_.preciceWriteSurfaceData(preciceParticipant);
   }
 
   //! initialize dirichlet boundary conditions by adding prescribed values for
@@ -351,14 +351,14 @@ public:
       Material>::FunctionSpace>
   functionSpace(NestedSolverType &nestedSolver);
 
-  void preciceReadData() {
+  void preciceReadData(std::shared_ptr<precice::Participant> &preciceParticipant) {
     ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceReadSurfaceData();
+    ReadWriteDataBase_.preciceReadSurfaceData(preciceParticipant);
   }
 
-  void preciceWriteData() {
+  void preciceWriteData(std::shared_ptr<precice::Participant> &preciceParticipant) {
     ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceWriteSurfaceData();
+    ReadWriteDataBase_.preciceWriteSurfaceData(preciceParticipant);
   }
   //! initialize dirichlet boundary conditions by adding prescribed values for
   //! all bottom or top nodes

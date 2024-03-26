@@ -20,7 +20,7 @@ public:
   //! constructor, gets the DihuContext object which contains all python
   //! settings
   PreciceAdapterInitialize(DihuContext context);
-  PreciceAdapterInitialize(){};
+  //PreciceAdapterInitialize(){};
 
   //! initialize the object
   void initialize();

@@ -65,7 +65,7 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
     }
 
     // read incoming values
-    this->preciceReadData();
+    this->preciceReadData(this->preciceParticipant_);
 
     // compute the time step width such that it fits in the remaining time in
     // the current time window
@@ -82,7 +82,7 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
     this->nestedSolver_.advanceTimeSpan(!this->outputOnlyConvergedTimeSteps_);
 
     // write outgoing data to precice
-    this->preciceWriteData();
+    this->preciceWriteData(this->preciceParticipant_);
 
     // increase current simulation time
     currentTime += timeStepWidth;
