@@ -20,10 +20,10 @@ public:
   //! constructor, gets the DihuContext object which contains all python
   //! settings
   PreciceAdapterInitialize(DihuContext context);
+  PreciceAdapterInitialize(){};
 
   //! initialize the object
   void initialize();
-
 
 #ifdef HAVE_PRECICE
 
@@ -53,17 +53,17 @@ public:
   };
 
   struct PreciceVolumeMesh {
-  std::string preciceMeshName; //< name of the precice mesh as used in the
-                                // precice config XML file
-  std::vector<int>
-      preciceVertexIds; //< the vertex ids in precice of the geometry values
-  std::vector<dof_no_t> dofNosLocal; //< the local dof nos in the 3D mesh of
-                                      // the surface mesh nodes
-  std::vector<double>
-      geometryValues;           //< the geometry values, i.e., node positions
-  int nNodesLocal;              //< local number of nodes
-  std::string opendihuMeshName; //< opendihu mesh name corresponding to the
-                                // precice mesh
+    std::string preciceMeshName; //< name of the precice mesh as used in the
+                                 // precice config XML file
+    std::vector<int>
+        preciceVertexIds; //< the vertex ids in precice of the geometry values
+    std::vector<dof_no_t> dofNosLocal; //< the local dof nos in the 3D mesh of
+                                       // the surface mesh nodes
+    std::vector<double>
+        geometryValues;           //< the geometry values, i.e., node positions
+    int nNodesLocal;              //< local number of nodes
+    std::string opendihuMeshName; //< opendihu mesh name corresponding to the
+                                  // precice mesh
   };
 
   /** a precice coupling participant to which the current solver is coupled to
@@ -101,28 +101,29 @@ public:
   };
 
   struct PreciceVolumeData {
-  std::string preciceDataName; //< precice name of the variable, if any
-  std::string slotName; //< slot name as given in config, this is used to
-                        // determine slotNo
-  int slotNo;           //< slot no that corresponds to this field variable
+    std::string preciceDataName; //< precice name of the variable, if any
+    std::string slotName; //< slot name as given in config, this is used to
+                          // determine slotNo
+    int slotNo;           //< slot no that corresponds to this field variable
 
-  std::string opendihuMeshName; //< opendihu mesh name that is used for the
-                                // geometry initialization
-  bool isGeometryField; //< if the corresponding field variable is a geometry
-                        // field
+    std::string opendihuMeshName; //< opendihu mesh name that is used for the
+                                  // geometry initialization
+    bool isGeometryField; //< if the corresponding field variable is a geometry
+                          // field
 
-  enum {
-    ioRead,
-    ioWrite
-  } ioType; //< if this variable is to be written or read to other
-            // participants over precice
+    enum {
+      ioRead,
+      ioWrite
+    } ioType; //< if this variable is to be written or read to other
+              // participants over precice
 
-  std::shared_ptr<PreciceVolumeMesh>
-      preciceMesh; //< the coupling mesh, this is derived from the option
-                    // preciceMeshName
+    std::shared_ptr<PreciceVolumeMesh>
+        preciceMesh; //< the coupling mesh, this is derived from the option
+                     // preciceMeshName
   };
 
-  //! parse the options in "preciceMeshes" and store in variable preciceSurfaceMeshes_
+  //! parse the options in "preciceMeshes" and store in variable
+  //! preciceSurfaceMeshes_
   void initializePreciceSurfaceMeshes();
 
   //! initialize all meshes in precice from the variable preciceSurfaceMeshes_
@@ -135,7 +136,7 @@ public:
   //! initialize Dirichlet boundary conditions at all dofs that will get some
   //! prescribed values during coupling
   void initializeDirichletBoundaryConditions();
-  
+
   //! parse the options in "preciceVolumeData" and initialize all variables in
   //! precice, store in variable preciceVolumeData_
   void initializePreciceVolumeData();
@@ -154,14 +155,16 @@ public:
   std::string preciceParticipantName_; //< name of the participant as given in
                                        // the precice config
   std::shared_ptr<precice::Participant>
-    preciceParticipant_; //< the precice solver interface that makes all
-                          // preCICE functionality accessible
+      preciceParticipant_; //< the precice solver interface that makes all
+                           // preCICE functionality accessible
   std::vector<std::shared_ptr<PreciceSurfaceMesh>>
-      preciceSurfaceMeshes_;                    //< all surface coupling meshes
+      preciceSurfaceMeshes_; //< all surface coupling meshes
   std::vector<std::shared_ptr<PreciceVolumeMesh>>
-      preciceVolumeMeshes_;                    //< all coupling meshes
-  std::vector<PreciceSurfaceData> preciceSurfaceData_; //< all surface precice variables "data"
-  std::vector<PreciceVolumeData> preciceVolumeData_; //< all precice variables "data"
+      preciceVolumeMeshes_; //< all coupling meshes
+  std::vector<PreciceSurfaceData>
+      preciceSurfaceData_; //< all surface precice variables "data"
+  std::vector<PreciceVolumeData>
+      preciceVolumeData_; //< all precice variables "data"
 
   std::shared_ptr<
       typename PreciceAdapterNestedSolver<NestedSolver>::FunctionSpace>

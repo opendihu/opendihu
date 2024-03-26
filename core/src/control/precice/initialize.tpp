@@ -89,12 +89,12 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
   preciceParticipant_ = std::make_shared<precice::Participant>(
       preciceParticipantName_, configFileName, rankNo, nRanks);
 
-  // parse the options in "preciceSurfaceMeshes" and initialize all meshes in precice,
-  // store in variable preciceSurfaceMeshes_
+  // parse the options in "preciceSurfaceMeshes" and initialize all meshes in
+  // precice, store in variable preciceSurfaceMeshes_
   initializePreciceSurfaceMeshes();
 
-  // parse the options in "preciceSurfaceData" and initialize all variables in precice,
-  // store in variable preciceSurfaceData_
+  // parse the options in "preciceSurfaceData" and initialize all variables in
+  // precice, store in variable preciceSurfaceData_
   initializePreciceSurfaceData();
 
   // initialize Dirichlet boundary conditions at all dofs that will get some
@@ -142,7 +142,8 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceMeshes() {
   for (int i = 0; i < list.size(); i++) {
     PythonConfig currentMeshConfig(preciceMeshConfig, i);
 
-    std::shared_ptr<PreciceSurfaceMesh> preciceMesh = std::make_shared<PreciceSurfaceMesh>();
+    std::shared_ptr<PreciceSurfaceMesh> preciceMesh =
+        std::make_shared<PreciceSurfaceMesh>();
 
     // parse name of mesh
     preciceMesh->preciceMeshName =
@@ -238,15 +239,16 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceData() {
 
     // find the mesh in the already parsed precice meshes
     typename std::vector<std::shared_ptr<PreciceSurfaceMesh>>::iterator iter =
-        std::find_if(
-            preciceSurfaceMeshes_.begin(), preciceSurfaceMeshes_.end(),
-            [&currentMeshName](std::shared_ptr<PreciceSurfaceMesh> preciceMesh) {
-              return preciceMesh->preciceMeshName == currentMeshName;
-            });
+        std::find_if(preciceSurfaceMeshes_.begin(), preciceSurfaceMeshes_.end(),
+                     [&currentMeshName](
+                         std::shared_ptr<PreciceSurfaceMesh> preciceMesh) {
+                       return preciceMesh->preciceMeshName == currentMeshName;
+                     });
 
     if (iter == preciceSurfaceMeshes_.end()) {
       std::stringstream s;
-      for (std::shared_ptr<PreciceSurfaceMesh> preciceMesh : preciceSurfaceMeshes_)
+      for (std::shared_ptr<PreciceSurfaceMesh> preciceMesh :
+           preciceSurfaceMeshes_)
         s << " \"" << preciceMesh->preciceMeshName << "\"";
       LOG(FATAL) << currentPreciceData << "[\"preciceMeshName\"] = \""
                  << currentMeshName
@@ -362,10 +364,12 @@ void PreciceAdapterInitialize<
   // at bottom or top
   for (PreciceSurfaceData &preciceData : preciceSurfaceData_) {
     if (preciceData.ioType == PreciceSurfaceData::ioRead &&
-        preciceData.boundaryConditionType == PreciceSurfaceData::bcTypeDirichlet) {
+        preciceData.boundaryConditionType ==
+            PreciceSurfaceData::bcTypeDirichlet) {
       if (preciceData.preciceMesh->face == PreciceSurfaceMesh::face2Minus) {
         elementIndicesZ.insert(0);
-      } else if (preciceData.preciceMesh->face == PreciceSurfaceMesh::face2Plus) {
+      } else if (preciceData.preciceMesh->face ==
+                 PreciceSurfaceMesh::face2Plus) {
         elementIndicesZ.insert(nElementsZ - 1);
       }
     }
@@ -403,8 +407,7 @@ void PreciceAdapterInitialize<
                                        dirichletBoundaryConditionElements);
 }
 template <typename NestedSolver>
-void PreciceAdapterInitialize<
-    NestedSolver>::initializePreciceVolumeData() {
+void PreciceAdapterInitialize<NestedSolver>::initializePreciceVolumeData() {
   // parse settings for coupling participants
   // loop over items of the key "preciceData"
   std::string settingsKey("preciceVolumeData");
@@ -431,8 +434,8 @@ void PreciceAdapterInitialize<
     // ...}
     PythonConfig currentPreciceData(preciceDataConfig, listIndex);
 
-    // create a new preciceData instance that will be added to preciceVolumeData_ at
-    // the end of this loop
+    // create a new preciceData instance that will be added to
+    // preciceVolumeData_ at the end of this loop
     PreciceVolumeData preciceData;
 
     // parse options
@@ -503,11 +506,13 @@ void PreciceAdapterInitialize<
       int nArrayItems = 1;
 
       // get the function space that is used to initialize the mapping
-      std::shared_ptr<typename NestedSolver::FunctionSpace> functionSpace = nullptr;
+      std::shared_ptr<typename NestedSolver::FunctionSpace> functionSpace =
+          nullptr;
       if (preciceData.opendihuMeshName != "") {
         functionSpace =
-            DihuContext::meshManager()->functionSpace<typename NestedSolver::FunctionSpace>(
-                preciceData.opendihuMeshName);
+            DihuContext::meshManager()
+                ->functionSpace<typename NestedSolver::FunctionSpace>(
+                    preciceData.opendihuMeshName);
         LOG(DEBUG) << "Using opendihu mesh with name \""
                    << preciceData.opendihuMeshName
                    << "\" to initialize precice mapping.";

@@ -4,7 +4,6 @@
 
 #include "interfaces/runnable.h"
 #include "control/precice/checkpoint.h"
-#include "control/precice/nested_solver.h"
 
 namespace Control {
 

@@ -7,8 +7,7 @@
 #include "time_stepping_scheme/crank_nicolson.h"
 #include "specialized_solver/fast_monodomain_solver/fast_monodomain_solver.h"
 
-#include "control/precice/initialize.h"
-
+#include "control/precice/read_write.h"
 
 namespace Control {
 
@@ -17,39 +16,8 @@ namespace Control {
  * use precice surface coupling have to implement this interface.
  */
 
-// Forward declaration, required for the anonymous enums
 template <typename NestedSolver>
-class PreciceAdapterInitialize;
-
-template <typename NestedSolver>
-class PreciceAdapterNestedSolver : public Runnable {
-    public:
-
-        void preciceReadData()=0;
-        void preciceWriteData()=0;
-    
-    protected:
-
-        void preciceReadVolumeData();
-        void preciceWriteVolumeData();
-
-        void preciceReadSurfaceData();
-        void preciceWriteSurfaceData();
-
-        void setNeumannBoundaryConditions(typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData &preciceData);
-        void setDirichletBoundaryConditions(typename PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData &preciceData);
-
-        std::vector<double> displacementValues_; 
-        std::vector<double> velocityValues_; 
-        std::vector<double> tractionValues_; 
-        std::vector<Vec3> displacementVectors_; 
-        std::vector<Vec3> velocityVectors_;
-        std::vector<Vec3> tractionVectors_; 
-        std::vector<double> scalarValues_; 
-        std::vector<double> scalarValuesOfMesh_; 
-        std::vector<Vec3> geometryValues_; 
-
-};
+class PreciceAdapterNestedSolver : public Runnable {};
 
 /** Partial specialization for tendon or pure mechanics solver in a coupling
  * scheme, muscle contraction solver (nonlinear elasticity with active stress)
@@ -61,8 +29,7 @@ public:
   typedef FastMonodomainSolver<T1> NestedSolverType;
 
   //! make the FunctionSpace of the NestedSolver class available
-  typedef
-      typename NestedSolverType::FunctionSpace FunctionSpace;
+  typedef typename NestedSolverType::FunctionSpace FunctionSpace;
 
   typedef typename SpatialDiscretization::DirichletBoundaryConditionsBase<
       FunctionSpace, 6>::ElementWithNodes ElementWithNodes;
@@ -71,10 +38,14 @@ public:
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
 
   void preciceReadData() {
-    this->preciceReadVolumeData();}
+    ReadWriteDataBase ReadWriteDataBase_;
+    ReadWriteDataBase_.preciceReadVolumeData();
+  }
 
   void preciceWriteData() {
-    this->preciceWriteVolumeData();}
+    ReadWriteDataBase ReadWriteDataBase_;
+    ReadWriteDataBase_.preciceWriteVolumeData();
+  }
 
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
   //! values for all bottom or top nodes
@@ -119,6 +90,7 @@ public:
 
   void reset(NestedSolverType &nestedSolver);
 
+protected:
   void saveFiberData(NestedSolverType &nestedSolver);
 
   void loadFiberData(NestedSolverType &nestedSolver);
@@ -134,8 +106,7 @@ public:
   typedef MuscleContractionSolver<T1, T2> NestedSolverType;
 
   //! make the FunctionSpace of the NestedSolver class available
-  typedef
-      typename NestedSolverType::FunctionSpace FunctionSpace;
+  typedef typename NestedSolverType::FunctionSpace FunctionSpace;
 
   typedef typename SpatialDiscretization::DirichletBoundaryConditionsBase<
       FunctionSpace, 6>::ElementWithNodes ElementWithNodes;
@@ -144,10 +115,14 @@ public:
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
 
   void preciceReadData() {
-    this->preciceReadVolumeData();}
+    ReadWriteDataBase ReadWriteDataBase_;
+    ReadWriteDataBase_.preciceReadVolumeData();
+  }
 
   void preciceWriteData() {
-    this->preciceWriteVolumeData();}
+    ReadWriteDataBase ReadWriteDataBase_;
+    ReadWriteDataBase_.preciceWriteVolumeData();
+  }
 
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
   //! values for all bottom or top nodes
@@ -217,11 +192,15 @@ public:
 
   //! get the function space of the nested solver, after it has been initialized
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
-    void preciceReadData(){
-    this->preciceReadSurfaceData();}
+  void preciceReadData() {
+    ReadWriteDataBase ReadWriteDataBase_;
+    ReadWriteDataBase_.preciceReadSurfaceData();
+  }
 
-  void preciceWriteData(){
-    this->preciceWriteSurfaceData();}
+  void preciceWriteData() {
+    ReadWriteDataBase ReadWriteDataBase_;
+    ReadWriteDataBase_.preciceWriteSurfaceData();
+  }
 
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
   //! values for all bottom or top nodes
@@ -292,11 +271,15 @@ public:
   std::shared_ptr<typename TimeSteppingScheme::DynamicHyperelasticitySolver<
       Material>::FunctionSpace>
   functionSpace(NestedSolverType &nestedSolver);
-    void preciceReadData() {
-    this->preciceReadSurfaceData();}
+  void preciceReadData() {
+    ReadWriteDataBase ReadWriteDataBase_;
+    ReadWriteDataBase_.preciceReadSurfaceData();
+  }
 
   void preciceWriteData() {
-    this->preciceWriteSurfaceData();}
+    ReadWriteDataBase ReadWriteDataBase_;
+    ReadWriteDataBase_.preciceWriteSurfaceData();
+  }
 
   //! initialize dirichlet boundary conditions by adding prescribed values for
   //! all bottom or top nodes
@@ -368,12 +351,15 @@ public:
       Material>::FunctionSpace>
   functionSpace(NestedSolverType &nestedSolver);
 
-      void preciceReadData() {
-    this->preciceReadSurfaceData();}
+  void preciceReadData() {
+    ReadWriteDataBase ReadWriteDataBase_;
+    ReadWriteDataBase_.preciceReadSurfaceData();
+  }
 
   void preciceWriteData() {
-    this->preciceWriteSurfaceData();}
-
+    ReadWriteDataBase ReadWriteDataBase_;
+    ReadWriteDataBase_.preciceWriteSurfaceData();
+  }
   //! initialize dirichlet boundary conditions by adding prescribed values for
   //! all bottom or top nodes
   void addDirichletBoundaryConditions(

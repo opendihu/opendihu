@@ -2,7 +2,7 @@
 
 #include <Python.h> // has to be the first included header
 
-#include "control/precice/read_write.h"
+#include "control/precice/initialize.h"
 
 namespace Control {
 
@@ -10,10 +10,10 @@ namespace Control {
  * Dirichlet boundary conditions.
  */
 template <typename NestedSolver>
-class PreciceAdapterCheckpoint : public PreciceAdapterReadWrite<NestedSolver> {
+class PreciceAdapterCheckpoint : public PreciceAdapterInitialize<NestedSolver> {
 public:
   //! constructor
-  using PreciceAdapterReadWrite<NestedSolver>::PreciceAdapterReadWrite;
+  using PreciceAdapterInitialize<NestedSolver>::PreciceAdapterInitialize;
 
   //! save the current state of the simulation to a checkpoint
   void saveCheckpoint(double currentTime);
