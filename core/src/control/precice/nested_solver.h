@@ -148,7 +148,7 @@ public:
 
   void preciceWriteData() {
     this->preciceWriteVolumeData();}
-    
+
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
   //! values for all bottom or top nodes
   void addDirichletBoundaryConditions(
@@ -367,6 +367,12 @@ public:
   std::shared_ptr<typename SpatialDiscretization::HyperelasticitySolver<
       Material>::FunctionSpace>
   functionSpace(NestedSolverType &nestedSolver);
+
+      void preciceReadData() {
+    this->preciceReadSurfaceData();}
+
+  void preciceWriteData() {
+    this->preciceWriteSurfaceData();}
 
   //! initialize dirichlet boundary conditions by adding prescribed values for
   //! all bottom or top nodes
