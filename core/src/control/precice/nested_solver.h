@@ -7,10 +7,17 @@
 #include "time_stepping_scheme/crank_nicolson.h"
 #include "specialized_solver/fast_monodomain_solver/fast_monodomain_solver.h"
 
-#include "control/precice/read_write.h"
+#include "precice/precice.hpp"
+#include "control/precice/initialize.h"
 
 namespace Control {
 
+// Forward declaration, required for the anonymous enums
+template <typename NestedSolver>
+class PreciceAdapterInitialize;
+
+// template <typename NestedSolver>
+// struct PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData;
 /** This is a base class of the precice adapter that contains functionality that
  * depends on the type of the nested solver. All solvers that should be able to
  * use precice surface coupling have to implement this interface.
@@ -25,6 +32,16 @@ class PreciceAdapterNestedSolver : public Runnable {};
 template <typename T1>
 class PreciceAdapterNestedSolver<FastMonodomainSolver<T1>> {
 public:
+
+  std::vector<double> displacementValues_;
+  std::vector<double> velocityValues_;
+  std::vector<double> tractionValues_;
+  std::vector<Vec3> displacementVectors_;
+  std::vector<Vec3> velocityVectors_;
+  std::vector<Vec3> tractionVectors_;
+  std::vector<double> scalarValues_;
+  std::vector<double> scalarValuesOfMesh_;
+  std::vector<Vec3> geometryValues_;
   //! define the type of the nested solver
   typedef FastMonodomainSolver<T1> NestedSolverType;
 
@@ -37,14 +54,102 @@ public:
   //! get the function space of the nested solver, after it has been initialized
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
 
-  void preciceReadData(std::shared_ptr<precice::Participant> &preciceParticipant) {
-    ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceReadVolumeData(preciceParticipant);
+  template<typename SurfaceDataVector, typename VolumeDataVector>
+  void preciceReadData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData) {
+    LOG(DEBUG) << "read data from precice";
+    double preciceDt = preciceParticipant->getMaxTimeStepSize();
+
+    using SlotConnectorDataType = typename
+    NestedSolverType::SlotConnectorDataType;
+    std::shared_ptr<SlotConnectorDataType> slotConnectorData =
+        nestedSolver.getSlotConnectorData();
+
+    // loop over data
+    for (auto &preciceData : preciceVolumeData) {
+      if (preciceData.ioType == PreciceAdapterInitialize<NestedSolverType>::PreciceVolumeData::ioRead)
+                                    {
+        int nEntries = preciceData.preciceMesh->nNodesLocal;
+
+        if (preciceData.isGeometryField) {
+          nEntries = preciceData.preciceMesh->nNodesLocal * 3;
+        }
+
+        // allocate temporary memory
+        scalarValues_.resize(nEntries);
+
+        // get all data at once
+        preciceParticipant->readData(
+            preciceData.preciceMesh->preciceMeshName,
+            preciceData.preciceDataName,
+            preciceData.preciceMesh->preciceVertexIds, preciceDt,
+            scalarValues_);
+
+        // get the mesh partition
+        std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase =
+            SlotConnectorDataHelper<SlotConnectorDataType>::getMeshPartitionBase(
+                slotConnectorData, preciceData.slotNo, 0);
+
+        int nDofsLocalWithoutGhosts =
+            meshPartitionBase->nDofsLocalWithoutGhosts();
+
+        // get the vector of values [0,1,...,nDofsLocalWithGhosts]
+        const std::vector<PetscInt> &dofNosLocalWithGhosts =
+            meshPartitionBase->dofNosLocal();
+        std::vector<PetscInt> dofNosLocalWithoutGhosts(
+            dofNosLocalWithGhosts.begin(),
+            dofNosLocalWithGhosts.begin() + nDofsLocalWithoutGhosts);
+
+        int nArrayItems =
+            SlotConnectorDataHelper<SlotConnectorDataType>::nArrayItems(
+                slotConnectorData,
+                preciceData.slotNo); // number of fibers if there are fibers
+
+        // store received data in field variable
+        if (preciceData.isGeometryField) {
+          // loop over fibers if there are any
+          for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
+            // fill the vector geometryValues_ with the geometry values of the
+            // current fiber or mesh
+            geometryValues_.resize(nDofsLocalWithoutGhosts);
+            for (int dofNoLocal = 0; dofNoLocal < nDofsLocalWithoutGhosts;
+                 dofNoLocal++) {
+              for (int componentNo = 0; componentNo < 3; componentNo++) {
+                geometryValues_[dofNoLocal][componentNo] =
+                    scalarValues_[3 * (arrayIndex * nDofsLocalWithoutGhosts +
+                                       dofNoLocal) +
+                                  componentNo];
+                //
+                std::cout<<geometryValues_[dofNoLocal][componentNo]<<std::endl;
+              }
+            }
+
+            SlotConnectorDataHelper<SlotConnectorDataType>::slotSetGeometryValues(
+                slotConnectorData, preciceData.slotNo, arrayIndex,
+                dofNosLocalWithoutGhosts, geometryValues_);
+          }
+        } else {
+          // loop over fibers if there are any
+          for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
+            // fill the vector geometryValues_ with the geometry values of the
+            // current fiber or mesh
+            scalarValuesOfMesh_.assign(
+                scalarValues_.begin() + arrayIndex * nDofsLocalWithoutGhosts,
+                scalarValues_.begin() +
+                    (arrayIndex + 1) * nDofsLocalWithoutGhosts);
+
+            SlotConnectorDataHelper<SlotConnectorDataType>::slotSetValues(
+                slotConnectorData, preciceData.slotNo, arrayIndex,
+                dofNosLocalWithoutGhosts, scalarValuesOfMesh_);
+          }
+        }
+      }
+    }
   }
 
-  void preciceWriteData(std::shared_ptr<precice::Participant> &preciceParticipant) {
-    ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceWriteVolumeData(preciceParticipant);
+  template<typename SurfaceDataVector, typename VolumeDataVector>
+  void preciceWriteData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData) {
+    // ReadWriteDataBase ReadWriteDataBase_;
+    // ReadWriteDataBase_.preciceWriteVolumeData(preciceParticipant);
   }
 
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
@@ -114,14 +219,16 @@ public:
   //! get the function space of the nested solver, after it has been initialized
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
 
-  void preciceReadData(std::shared_ptr<precice::Participant> &preciceParticipant) {
-    ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceReadVolumeData(preciceParticipant);
+  template<typename SurfaceDataVector, typename VolumeDataVector>
+  void preciceReadData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData) {
+    // ReadWriteDataBase ReadWriteDataBase_;
+    // ReadWriteDataBase_.preciceReadVolumeData(preciceParticipant);
   }
 
-  void preciceWriteData(std::shared_ptr<precice::Participant> &preciceParticipant ) {
-    ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceWriteVolumeData(preciceParticipant);
+  template<typename SurfaceDataVector, typename VolumeDataVector>
+  void preciceWriteData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData) {
+    // ReadWriteDataBase ReadWriteDataBase_;
+    // ReadWriteDataBase_.preciceWriteVolumeData(preciceParticipant);
   }
 
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
@@ -192,14 +299,17 @@ public:
 
   //! get the function space of the nested solver, after it has been initialized
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
-  void preciceReadData(std::shared_ptr<precice::Participant> &preciceParticipant) {
-    ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceReadSurfaceData(preciceParticipant);
+  
+  template<typename SurfaceDataVector, typename VolumeDataVector>
+  void preciceReadData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData) {
+    // ReadWriteDataBase ReadWriteDataBase_;
+    // ReadWriteDataBase_.preciceReadVolumeData(preciceParticipant);
   }
 
-  void preciceWriteData(std::shared_ptr<precice::Participant> &preciceParticipant) {
-    ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceWriteSurfaceData(preciceParticipant);
+  template<typename SurfaceDataVector, typename VolumeDataVector>
+  void preciceWriteData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData) {
+    // ReadWriteDataBase ReadWriteDataBase_;
+    // ReadWriteDataBase_.preciceWriteVolumeData(preciceParticipant);
   }
 
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
@@ -271,16 +381,18 @@ public:
   std::shared_ptr<typename TimeSteppingScheme::DynamicHyperelasticitySolver<
       Material>::FunctionSpace>
   functionSpace(NestedSolverType &nestedSolver);
-  void preciceReadData(std::shared_ptr<precice::Participant> &preciceParticipant) {
-    ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceReadSurfaceData(preciceParticipant);
+  
+  template<typename SurfaceDataVector, typename VolumeDataVector>
+  void preciceReadData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData) {
+    // ReadWriteDataBase ReadWriteDataBase_;
+    // ReadWriteDataBase_.preciceReadVolumeData(preciceParticipant);
   }
 
-  void preciceWriteData(std::shared_ptr<precice::Participant> &preciceParticipant) {
-    ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceWriteSurfaceData(preciceParticipant);
+  template<typename SurfaceDataVector, typename VolumeDataVector>
+  void preciceWriteData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData) {
+    // ReadWriteDataBase ReadWriteDataBase_;
+    // ReadWriteDataBase_.preciceWriteVolumeData(preciceParticipant);
   }
-
   //! initialize dirichlet boundary conditions by adding prescribed values for
   //! all bottom or top nodes
   void addDirichletBoundaryConditions(
@@ -351,14 +463,16 @@ public:
       Material>::FunctionSpace>
   functionSpace(NestedSolverType &nestedSolver);
 
-  void preciceReadData(std::shared_ptr<precice::Participant> &preciceParticipant) {
-    ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceReadSurfaceData(preciceParticipant);
+  template<typename SurfaceDataVector, typename VolumeDataVector>
+  void preciceReadData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData) {
+    // ReadWriteDataBase ReadWriteDataBase_;
+    // ReadWriteDataBase_.preciceReadVolumeData(preciceParticipant);
   }
 
-  void preciceWriteData(std::shared_ptr<precice::Participant> &preciceParticipant) {
-    ReadWriteDataBase ReadWriteDataBase_;
-    ReadWriteDataBase_.preciceWriteSurfaceData(preciceParticipant);
+  template<typename SurfaceDataVector, typename VolumeDataVector>
+  void preciceWriteData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData) {
+    // ReadWriteDataBase ReadWriteDataBase_;
+    // ReadWriteDataBase_.preciceWriteVolumeData(preciceParticipant);
   }
   //! initialize dirichlet boundary conditions by adding prescribed values for
   //! all bottom or top nodes
