@@ -13,8 +13,7 @@
 namespace Control {
 
 // Forward declaration, required for the anonymous enums
-template <typename NestedSolver>
-class PreciceAdapterInitialize;
+template <typename NestedSolver> class PreciceAdapterInitialize;
 
 // template <typename NestedSolver>
 // struct PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData;
@@ -32,7 +31,6 @@ class PreciceAdapterNestedSolver : public Runnable {};
 template <typename T1>
 class PreciceAdapterNestedSolver<FastMonodomainSolver<T1>> {
 public:
-
   std::vector<double> displacementValues_;
   std::vector<double> velocityValues_;
   std::vector<double> tractionValues_;
@@ -54,20 +52,25 @@ public:
   //! get the function space of the nested solver, after it has been initialized
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
 
-  template<typename SurfaceDataVector, typename VolumeDataVector>
-  void preciceReadData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData, DihuContext &context) {
+  template <typename SurfaceDataVector, typename VolumeDataVector>
+  void
+  preciceReadData(NestedSolverType &nestedSolver,
+                  std::shared_ptr<precice::Participant> &preciceParticipant,
+                  SurfaceDataVector &preciceSurfaceData,
+                  VolumeDataVector &preciceVolumeData, DihuContext &context) {
     LOG(DEBUG) << "read data from precice";
     double preciceDt = preciceParticipant->getMaxTimeStepSize();
 
-    using SlotConnectorDataType = typename
-    NestedSolverType::SlotConnectorDataType;
+    using SlotConnectorDataType =
+        typename NestedSolverType::SlotConnectorDataType;
     std::shared_ptr<SlotConnectorDataType> slotConnectorData =
         nestedSolver.getSlotConnectorData();
 
     // loop over data
     for (auto &preciceData : preciceVolumeData) {
-      if (preciceData.ioType == PreciceAdapterInitialize<NestedSolverType>::PreciceVolumeData::ioRead)
-                                    {
+      if (preciceData.ioType ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceVolumeData::ioRead) {
         int nEntries = preciceData.preciceMesh->nNodesLocal;
 
         if (preciceData.isGeometryField) {
@@ -78,16 +81,17 @@ public:
         scalarValues_.resize(nEntries);
 
         // get all data at once
-        preciceParticipant->readData(
-            preciceData.preciceMesh->preciceMeshName,
-            preciceData.preciceDataName,
-            preciceData.preciceMesh->preciceVertexIds, preciceDt,
-            scalarValues_);
+        preciceParticipant->readData(preciceData.preciceMesh->preciceMeshName,
+                                     preciceData.preciceDataName,
+                                     preciceData.preciceMesh->preciceVertexIds,
+                                     preciceDt, scalarValues_);
 
         // get the mesh partition
         std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase =
-            SlotConnectorDataHelper<SlotConnectorDataType>::getMeshPartitionBase(
-                slotConnectorData, preciceData.slotNo, 0);
+            SlotConnectorDataHelper<
+                SlotConnectorDataType>::getMeshPartitionBase(slotConnectorData,
+                                                             preciceData.slotNo,
+                                                             0);
 
         int nDofsLocalWithoutGhosts =
             meshPartitionBase->nDofsLocalWithoutGhosts();
@@ -119,13 +123,15 @@ public:
                                        dofNoLocal) +
                                   componentNo];
                 //
-                std::cout<<geometryValues_[dofNoLocal][componentNo]<<std::endl;
+                std::cout << geometryValues_[dofNoLocal][componentNo]
+                          << std::endl;
               }
             }
 
-            SlotConnectorDataHelper<SlotConnectorDataType>::slotSetGeometryValues(
-                slotConnectorData, preciceData.slotNo, arrayIndex,
-                dofNosLocalWithoutGhosts, geometryValues_);
+            SlotConnectorDataHelper<SlotConnectorDataType>::
+                slotSetGeometryValues(slotConnectorData, preciceData.slotNo,
+                                      arrayIndex, dofNosLocalWithoutGhosts,
+                                      geometryValues_);
           }
         } else {
           // loop over fibers if there are any
@@ -146,115 +152,127 @@ public:
     }
   }
 
-  template<typename SurfaceDataVector, typename VolumeDataVector>
-  void preciceWriteData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData, double scalingFactor) {
- // write data to precice
-  LOG(DEBUG) << "write data to precice";
+  template <typename SurfaceDataVector, typename VolumeDataVector>
+  void
+  preciceWriteData(NestedSolverType &nestedSolver,
+                   std::shared_ptr<precice::Participant> &preciceParticipant,
+                   SurfaceDataVector &preciceSurfaceData,
+                   VolumeDataVector &preciceVolumeData, double scalingFactor) {
+    // write data to precice
+    LOG(DEBUG) << "write data to precice";
 
-  using SlotConnectorDataType = typename NestedSolverType::SlotConnectorDataType;
-  std::shared_ptr<SlotConnectorDataType> slotConnectorData = nestedSolver.getSlotConnectorData();
+    using SlotConnectorDataType =
+        typename NestedSolverType::SlotConnectorDataType;
+    std::shared_ptr<SlotConnectorDataType> slotConnectorData =
+        nestedSolver.getSlotConnectorData();
 
-  // loop over data
-  for (auto &preciceData : preciceVolumeData) {
-    if (preciceData.ioType == PreciceAdapterInitialize<
-                                  NestedSolverType>::PreciceVolumeData::ioWrite) {
-      scalarValues_.clear();
+    // loop over data
+    for (auto &preciceData : preciceVolumeData) {
+      if (preciceData.ioType ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceVolumeData::ioWrite) {
+        scalarValues_.clear();
 
-      // get the mesh partition
-      std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase =
-          SlotConnectorDataHelper<SlotConnectorDataType>::getMeshPartitionBase(
-              slotConnectorData, preciceData.slotNo, 0);
+        // get the mesh partition
+        std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase =
+            SlotConnectorDataHelper<
+                SlotConnectorDataType>::getMeshPartitionBase(slotConnectorData,
+                                                             preciceData.slotNo,
+                                                             0);
 
-      int nDofsLocalWithoutGhosts =
-          meshPartitionBase->nDofsLocalWithoutGhosts();
+        int nDofsLocalWithoutGhosts =
+            meshPartitionBase->nDofsLocalWithoutGhosts();
 
-      // get the vector of values [0,1,...,nDofsLocalWithGhosts]
-      const std::vector<PetscInt> &dofNosLocalWithGhosts =
-          meshPartitionBase->dofNosLocal();
-      std::vector<PetscInt> dofNosLocalWithoutGhosts(
-          dofNosLocalWithGhosts.begin(),
-          dofNosLocalWithGhosts.begin() + nDofsLocalWithoutGhosts);
+        // get the vector of values [0,1,...,nDofsLocalWithGhosts]
+        const std::vector<PetscInt> &dofNosLocalWithGhosts =
+            meshPartitionBase->dofNosLocal();
+        std::vector<PetscInt> dofNosLocalWithoutGhosts(
+            dofNosLocalWithGhosts.begin(),
+            dofNosLocalWithGhosts.begin() + nDofsLocalWithoutGhosts);
 
-      int nArrayItems =
-          SlotConnectorDataHelper<SlotConnectorDataType>::nArrayItems(
-              slotConnectorData,
-              preciceData.slotNo); // number of fibers if there are fibers
+        int nArrayItems =
+            SlotConnectorDataHelper<SlotConnectorDataType>::nArrayItems(
+                slotConnectorData,
+                preciceData.slotNo); // number of fibers if there are fibers
 
-      // if it is a geometry field, get the node positions of a mesh
-      if (preciceData.isGeometryField) {
-        geometryValues_.clear();
+        // if it is a geometry field, get the node positions of a mesh
+        if (preciceData.isGeometryField) {
+          geometryValues_.clear();
 
-        // loop over fibers if there are any
-        for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
-          static std::vector<Vec3> geometryValuesFiber;
-          geometryValuesFiber.clear();
-          SlotConnectorDataHelper<SlotConnectorDataType>::slotGetGeometryValues(
-              slotConnectorData, preciceData.slotNo, arrayIndex,
-              dofNosLocalWithoutGhosts, geometryValuesFiber);
+          // loop over fibers if there are any
+          for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
+            static std::vector<Vec3> geometryValuesFiber;
+            geometryValuesFiber.clear();
+            SlotConnectorDataHelper<SlotConnectorDataType>::
+                slotGetGeometryValues(slotConnectorData, preciceData.slotNo,
+                                      arrayIndex, dofNosLocalWithoutGhosts,
+                                      geometryValuesFiber);
 
-          geometryValues_.insert(geometryValues_.end(),
-                                 geometryValuesFiber.begin(),
-                                 geometryValuesFiber.end());
+            geometryValues_.insert(geometryValues_.end(),
+                                   geometryValuesFiber.begin(),
+                                   geometryValuesFiber.end());
+          }
+          LOG(DEBUG) << "Using geometry field of opendihu meshes of "
+                     << nArrayItems << " array items (e.g., fibers).";
+
+          // transform to contiguous memory layout for precice
+          scalarValues_.resize(3 * geometryValues_.size());
+
+          for (int entryNo = 0; entryNo < geometryValues_.size(); entryNo++)
+            for (int componentNo = 0; componentNo < 3; componentNo++)
+              scalarValues_[3 * entryNo + componentNo] =
+                  geometryValues_[entryNo][componentNo];
+
+        } else {
+          // the data is a normal slot, no geometry field
+
+          // loop over fibers if there are any
+          for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
+            static std::vector<double> values;
+            values.clear();
+            // static void slotGetValues(std::shared_ptr<SlotConnectorDataType>
+            // slotConnectorData,
+            //   int slotNo, int arrayIndex, const std::vector<dof_no_t>
+            //   &dofNosLocal, std::vector<double> &values);
+            SlotConnectorDataHelper<SlotConnectorDataType>::slotGetValues(
+                slotConnectorData, preciceData.slotNo, arrayIndex,
+                dofNosLocalWithoutGhosts, values);
+            scalarValues_.insert(scalarValues_.end(), values.begin(),
+                                 values.end());
+
+            LOG(DEBUG) << "arrayIndex " << arrayIndex << ", add "
+                       << values.size()
+                       << " values, now number: " << scalarValues_.size();
+          }
         }
-        LOG(DEBUG) << "Using geometry field of opendihu meshes of "
-                   << nArrayItems << " array items (e.g., fibers).";
 
-        // transform to contiguous memory layout for precice
-        scalarValues_.resize(3 * geometryValues_.size());
+        // scale the values by a factor given in the config
+        for (double &value : scalarValues_)
+          value *= scalingFactor;
 
-        for (int entryNo = 0; entryNo < geometryValues_.size(); entryNo++)
-          for (int componentNo = 0; componentNo < 3; componentNo++)
-            scalarValues_[3 * entryNo + componentNo] =
-                geometryValues_[entryNo][componentNo];
-
-      } else {
-        // the data is a normal slot, no geometry field
-
-        // loop over fibers if there are any
-        for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
-          static std::vector<double> values;
-          values.clear();
-          // static void slotGetValues(std::shared_ptr<SlotConnectorDataType>
-          // slotConnectorData,
-          //   int slotNo, int arrayIndex, const std::vector<dof_no_t>
-          //   &dofNosLocal, std::vector<double> &values);
-          SlotConnectorDataHelper<SlotConnectorDataType>::slotGetValues(
-              slotConnectorData, preciceData.slotNo, arrayIndex,
-              dofNosLocalWithoutGhosts, values);
-          scalarValues_.insert(scalarValues_.end(), values.begin(),
-                               values.end());
-
-          LOG(DEBUG) << "arrayIndex " << arrayIndex << ", add " << values.size()
-                     << " values, now number: " << scalarValues_.size();
+        // check dim for scalarValues_
+        if (preciceData.isGeometryField) {
+          if (scalarValues_.size() != 3 * preciceData.preciceMesh->nNodesLocal)
+            LOG(FATAL) << "Wrong number of scalar values (isGeometryField): "
+                       << scalarValues_.size()
+                       << " != " << preciceData.preciceMesh->nNodesLocal
+                       << ", nArrayItems: " << nArrayItems;
+        } else {
+          if (scalarValues_.size() != preciceData.preciceMesh->nNodesLocal)
+            LOG(FATAL) << "Wrong number of scalar values: "
+                       << scalarValues_.size()
+                       << " != " << preciceData.preciceMesh->nNodesLocal
+                       << ", nArrayItems: " << nArrayItems;
         }
+
+        // write values in precice
+        preciceParticipant->writeData(preciceData.preciceMesh->preciceMeshName,
+                                      preciceData.preciceDataName,
+                                      preciceData.preciceMesh->preciceVertexIds,
+                                      scalarValues_);
       }
-
-      // scale the values by a factor given in the config
-      for (double &value : scalarValues_)
-        value *= scalingFactor;
-
-      // check dim for scalarValues_
-      if (preciceData.isGeometryField) {
-        if (scalarValues_.size() != 3 * preciceData.preciceMesh->nNodesLocal)
-          LOG(FATAL) << "Wrong number of scalar values (isGeometryField): "
-                     << scalarValues_.size()
-                     << " != " << preciceData.preciceMesh->nNodesLocal
-                     << ", nArrayItems: " << nArrayItems;
-      } else {
-        if (scalarValues_.size() != preciceData.preciceMesh->nNodesLocal)
-          LOG(FATAL) << "Wrong number of scalar values: "
-                     << scalarValues_.size()
-                     << " != " << preciceData.preciceMesh->nNodesLocal
-                     << ", nArrayItems: " << nArrayItems;
-      }
-
-      // write values in precice
-      preciceParticipant->writeData(
-          preciceData.preciceMesh->preciceMeshName, preciceData.preciceDataName,
-          preciceData.preciceMesh->preciceVertexIds, scalarValues_);
     }
-  }
-  LOG(DEBUG) << "write data to precice complete";
+    LOG(DEBUG) << "write data to precice complete";
   }
 
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
@@ -333,20 +351,25 @@ public:
   //! get the function space of the nested solver, after it has been initialized
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
 
-  template<typename SurfaceDataVector, typename VolumeDataVector>
-  void preciceReadData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData, DihuContext &context) {
+  template <typename SurfaceDataVector, typename VolumeDataVector>
+  void
+  preciceReadData(NestedSolverType &nestedSolver,
+                  std::shared_ptr<precice::Participant> &preciceParticipant,
+                  SurfaceDataVector &preciceSurfaceData,
+                  VolumeDataVector &preciceVolumeData, DihuContext &context) {
     LOG(DEBUG) << "read data from precice";
     double preciceDt = preciceParticipant->getMaxTimeStepSize();
 
-    using SlotConnectorDataType = typename
-    NestedSolverType::SlotConnectorDataType;
+    using SlotConnectorDataType =
+        typename NestedSolverType::SlotConnectorDataType;
     std::shared_ptr<SlotConnectorDataType> slotConnectorData =
         nestedSolver.getSlotConnectorData();
 
     // loop over data
     for (auto &preciceData : preciceVolumeData) {
-      if (preciceData.ioType == PreciceAdapterInitialize<NestedSolverType>::PreciceVolumeData::ioRead)
-                                    {
+      if (preciceData.ioType ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceVolumeData::ioRead) {
         int nEntries = preciceData.preciceMesh->nNodesLocal;
 
         if (preciceData.isGeometryField) {
@@ -357,16 +380,17 @@ public:
         scalarValues_.resize(nEntries);
 
         // get all data at once
-        preciceParticipant->readData(
-            preciceData.preciceMesh->preciceMeshName,
-            preciceData.preciceDataName,
-            preciceData.preciceMesh->preciceVertexIds, preciceDt,
-            scalarValues_);
+        preciceParticipant->readData(preciceData.preciceMesh->preciceMeshName,
+                                     preciceData.preciceDataName,
+                                     preciceData.preciceMesh->preciceVertexIds,
+                                     preciceDt, scalarValues_);
 
         // get the mesh partition
         std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase =
-            SlotConnectorDataHelper<SlotConnectorDataType>::getMeshPartitionBase(
-                slotConnectorData, preciceData.slotNo, 0);
+            SlotConnectorDataHelper<
+                SlotConnectorDataType>::getMeshPartitionBase(slotConnectorData,
+                                                             preciceData.slotNo,
+                                                             0);
 
         int nDofsLocalWithoutGhosts =
             meshPartitionBase->nDofsLocalWithoutGhosts();
@@ -398,13 +422,15 @@ public:
                                        dofNoLocal) +
                                   componentNo];
                 //
-                std::cout<<geometryValues_[dofNoLocal][componentNo]<<std::endl;
+                std::cout << geometryValues_[dofNoLocal][componentNo]
+                          << std::endl;
               }
             }
 
-            SlotConnectorDataHelper<SlotConnectorDataType>::slotSetGeometryValues(
-                slotConnectorData, preciceData.slotNo, arrayIndex,
-                dofNosLocalWithoutGhosts, geometryValues_);
+            SlotConnectorDataHelper<SlotConnectorDataType>::
+                slotSetGeometryValues(slotConnectorData, preciceData.slotNo,
+                                      arrayIndex, dofNosLocalWithoutGhosts,
+                                      geometryValues_);
           }
         } else {
           // loop over fibers if there are any
@@ -425,115 +451,127 @@ public:
     }
   }
 
-  template<typename SurfaceDataVector, typename VolumeDataVector>
-  void preciceWriteData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData, double scalingFactor) {
- // write data to precice
-  LOG(DEBUG) << "write data to precice";
+  template <typename SurfaceDataVector, typename VolumeDataVector>
+  void
+  preciceWriteData(NestedSolverType &nestedSolver,
+                   std::shared_ptr<precice::Participant> &preciceParticipant,
+                   SurfaceDataVector &preciceSurfaceData,
+                   VolumeDataVector &preciceVolumeData, double scalingFactor) {
+    // write data to precice
+    LOG(DEBUG) << "write data to precice";
 
-  using SlotConnectorDataType = typename NestedSolverType::SlotConnectorDataType;
-  std::shared_ptr<SlotConnectorDataType> slotConnectorData = nestedSolver.getSlotConnectorData();
+    using SlotConnectorDataType =
+        typename NestedSolverType::SlotConnectorDataType;
+    std::shared_ptr<SlotConnectorDataType> slotConnectorData =
+        nestedSolver.getSlotConnectorData();
 
-  // loop over data
-  for (auto &preciceData : preciceVolumeData) {
-    if (preciceData.ioType == PreciceAdapterInitialize<
-                                  NestedSolverType>::PreciceVolumeData::ioWrite) {
-      scalarValues_.clear();
+    // loop over data
+    for (auto &preciceData : preciceVolumeData) {
+      if (preciceData.ioType ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceVolumeData::ioWrite) {
+        scalarValues_.clear();
 
-      // get the mesh partition
-      std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase =
-          SlotConnectorDataHelper<SlotConnectorDataType>::getMeshPartitionBase(
-              slotConnectorData, preciceData.slotNo, 0);
+        // get the mesh partition
+        std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase =
+            SlotConnectorDataHelper<
+                SlotConnectorDataType>::getMeshPartitionBase(slotConnectorData,
+                                                             preciceData.slotNo,
+                                                             0);
 
-      int nDofsLocalWithoutGhosts =
-          meshPartitionBase->nDofsLocalWithoutGhosts();
+        int nDofsLocalWithoutGhosts =
+            meshPartitionBase->nDofsLocalWithoutGhosts();
 
-      // get the vector of values [0,1,...,nDofsLocalWithGhosts]
-      const std::vector<PetscInt> &dofNosLocalWithGhosts =
-          meshPartitionBase->dofNosLocal();
-      std::vector<PetscInt> dofNosLocalWithoutGhosts(
-          dofNosLocalWithGhosts.begin(),
-          dofNosLocalWithGhosts.begin() + nDofsLocalWithoutGhosts);
+        // get the vector of values [0,1,...,nDofsLocalWithGhosts]
+        const std::vector<PetscInt> &dofNosLocalWithGhosts =
+            meshPartitionBase->dofNosLocal();
+        std::vector<PetscInt> dofNosLocalWithoutGhosts(
+            dofNosLocalWithGhosts.begin(),
+            dofNosLocalWithGhosts.begin() + nDofsLocalWithoutGhosts);
 
-      int nArrayItems =
-          SlotConnectorDataHelper<SlotConnectorDataType>::nArrayItems(
-              slotConnectorData,
-              preciceData.slotNo); // number of fibers if there are fibers
+        int nArrayItems =
+            SlotConnectorDataHelper<SlotConnectorDataType>::nArrayItems(
+                slotConnectorData,
+                preciceData.slotNo); // number of fibers if there are fibers
 
-      // if it is a geometry field, get the node positions of a mesh
-      if (preciceData.isGeometryField) {
-        geometryValues_.clear();
+        // if it is a geometry field, get the node positions of a mesh
+        if (preciceData.isGeometryField) {
+          geometryValues_.clear();
 
-        // loop over fibers if there are any
-        for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
-          static std::vector<Vec3> geometryValuesFiber;
-          geometryValuesFiber.clear();
-          SlotConnectorDataHelper<SlotConnectorDataType>::slotGetGeometryValues(
-              slotConnectorData, preciceData.slotNo, arrayIndex,
-              dofNosLocalWithoutGhosts, geometryValuesFiber);
+          // loop over fibers if there are any
+          for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
+            static std::vector<Vec3> geometryValuesFiber;
+            geometryValuesFiber.clear();
+            SlotConnectorDataHelper<SlotConnectorDataType>::
+                slotGetGeometryValues(slotConnectorData, preciceData.slotNo,
+                                      arrayIndex, dofNosLocalWithoutGhosts,
+                                      geometryValuesFiber);
 
-          geometryValues_.insert(geometryValues_.end(),
-                                 geometryValuesFiber.begin(),
-                                 geometryValuesFiber.end());
+            geometryValues_.insert(geometryValues_.end(),
+                                   geometryValuesFiber.begin(),
+                                   geometryValuesFiber.end());
+          }
+          LOG(DEBUG) << "Using geometry field of opendihu meshes of "
+                     << nArrayItems << " array items (e.g., fibers).";
+
+          // transform to contiguous memory layout for precice
+          scalarValues_.resize(3 * geometryValues_.size());
+
+          for (int entryNo = 0; entryNo < geometryValues_.size(); entryNo++)
+            for (int componentNo = 0; componentNo < 3; componentNo++)
+              scalarValues_[3 * entryNo + componentNo] =
+                  geometryValues_[entryNo][componentNo];
+
+        } else {
+          // the data is a normal slot, no geometry field
+
+          // loop over fibers if there are any
+          for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
+            static std::vector<double> values;
+            values.clear();
+            // static void slotGetValues(std::shared_ptr<SlotConnectorDataType>
+            // slotConnectorData,
+            //   int slotNo, int arrayIndex, const std::vector<dof_no_t>
+            //   &dofNosLocal, std::vector<double> &values);
+            SlotConnectorDataHelper<SlotConnectorDataType>::slotGetValues(
+                slotConnectorData, preciceData.slotNo, arrayIndex,
+                dofNosLocalWithoutGhosts, values);
+            scalarValues_.insert(scalarValues_.end(), values.begin(),
+                                 values.end());
+
+            LOG(DEBUG) << "arrayIndex " << arrayIndex << ", add "
+                       << values.size()
+                       << " values, now number: " << scalarValues_.size();
+          }
         }
-        LOG(DEBUG) << "Using geometry field of opendihu meshes of "
-                   << nArrayItems << " array items (e.g., fibers).";
 
-        // transform to contiguous memory layout for precice
-        scalarValues_.resize(3 * geometryValues_.size());
+        // scale the values by a factor given in the config
+        for (double &value : scalarValues_)
+          value *= scalingFactor;
 
-        for (int entryNo = 0; entryNo < geometryValues_.size(); entryNo++)
-          for (int componentNo = 0; componentNo < 3; componentNo++)
-            scalarValues_[3 * entryNo + componentNo] =
-                geometryValues_[entryNo][componentNo];
-
-      } else {
-        // the data is a normal slot, no geometry field
-
-        // loop over fibers if there are any
-        for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
-          static std::vector<double> values;
-          values.clear();
-          // static void slotGetValues(std::shared_ptr<SlotConnectorDataType>
-          // slotConnectorData,
-          //   int slotNo, int arrayIndex, const std::vector<dof_no_t>
-          //   &dofNosLocal, std::vector<double> &values);
-          SlotConnectorDataHelper<SlotConnectorDataType>::slotGetValues(
-              slotConnectorData, preciceData.slotNo, arrayIndex,
-              dofNosLocalWithoutGhosts, values);
-          scalarValues_.insert(scalarValues_.end(), values.begin(),
-                               values.end());
-
-          LOG(DEBUG) << "arrayIndex " << arrayIndex << ", add " << values.size()
-                     << " values, now number: " << scalarValues_.size();
+        // check dim for scalarValues_
+        if (preciceData.isGeometryField) {
+          if (scalarValues_.size() != 3 * preciceData.preciceMesh->nNodesLocal)
+            LOG(FATAL) << "Wrong number of scalar values (isGeometryField): "
+                       << scalarValues_.size()
+                       << " != " << preciceData.preciceMesh->nNodesLocal
+                       << ", nArrayItems: " << nArrayItems;
+        } else {
+          if (scalarValues_.size() != preciceData.preciceMesh->nNodesLocal)
+            LOG(FATAL) << "Wrong number of scalar values: "
+                       << scalarValues_.size()
+                       << " != " << preciceData.preciceMesh->nNodesLocal
+                       << ", nArrayItems: " << nArrayItems;
         }
+
+        // write values in precice
+        preciceParticipant->writeData(preciceData.preciceMesh->preciceMeshName,
+                                      preciceData.preciceDataName,
+                                      preciceData.preciceMesh->preciceVertexIds,
+                                      scalarValues_);
       }
-
-      // scale the values by a factor given in the config
-      for (double &value : scalarValues_)
-        value *= scalingFactor;
-
-      // check dim for scalarValues_
-      if (preciceData.isGeometryField) {
-        if (scalarValues_.size() != 3 * preciceData.preciceMesh->nNodesLocal)
-          LOG(FATAL) << "Wrong number of scalar values (isGeometryField): "
-                     << scalarValues_.size()
-                     << " != " << preciceData.preciceMesh->nNodesLocal
-                     << ", nArrayItems: " << nArrayItems;
-      } else {
-        if (scalarValues_.size() != preciceData.preciceMesh->nNodesLocal)
-          LOG(FATAL) << "Wrong number of scalar values: "
-                     << scalarValues_.size()
-                     << " != " << preciceData.preciceMesh->nNodesLocal
-                     << ", nArrayItems: " << nArrayItems;
-      }
-
-      // write values in precice
-      preciceParticipant->writeData(
-          preciceData.preciceMesh->preciceMeshName, preciceData.preciceDataName,
-          preciceData.preciceMesh->preciceVertexIds, scalarValues_);
     }
-  }
-  LOG(DEBUG) << "write data to precice complete";
+    LOG(DEBUG) << "write data to precice complete";
   }
 
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
@@ -613,408 +651,429 @@ public:
 
   //! get the function space of the nested solver, after it has been initialized
   std::shared_ptr<FunctionSpace> functionSpace(NestedSolverType &nestedSolver);
-  
-  template<typename SurfaceDataVector, typename VolumeDataVector>
-  void preciceReadData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData, DihuContext &context ) {
-LOG(DEBUG) << "read data from precice";
-  double preciceDt = preciceParticipant->getMaxTimeStepSize();
-  // loop over data
-  for (auto &preciceData : preciceSurfaceData) {
-    if (preciceData.ioType ==
-        PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceData::ioRead) {
-      // allocate memory
-      int nEntries = preciceData.preciceMesh->nNodesLocal * 3;
 
-      // if the data is displacements and velocities
-      if (!preciceData.displacementsName.empty()) {
-        displacementValues_.resize(nEntries);
-        velocityValues_.resize(nEntries);
+  template <typename SurfaceDataVector, typename VolumeDataVector>
+  void
+  preciceReadData(NestedSolverType &nestedSolver,
+                  std::shared_ptr<precice::Participant> &preciceParticipant,
+                  SurfaceDataVector &preciceSurfaceData,
+                  VolumeDataVector &preciceVolumeData, DihuContext &context) {
+    LOG(DEBUG) << "read data from precice";
+    double preciceDt = preciceParticipant->getMaxTimeStepSize();
+    // loop over data
+    for (auto &preciceData : preciceSurfaceData) {
+      if (preciceData.ioType ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceSurfaceData::ioRead) {
+        // allocate memory
+        int nEntries = preciceData.preciceMesh->nNodesLocal * 3;
 
-        // get all data at once
-        preciceParticipant->readData(
-            preciceData.preciceMesh->preciceMeshName,
-            preciceData.displacementsName,
-            preciceData.preciceMesh->preciceVertexIds, preciceDt,
-            displacementValues_);
+        // if the data is displacements and velocities
+        if (!preciceData.displacementsName.empty()) {
+          displacementValues_.resize(nEntries);
+          velocityValues_.resize(nEntries);
 
-        preciceParticipant->readData(
-            preciceData.preciceMesh->preciceMeshName,
-            preciceData.velocitiesName,
-            preciceData.preciceMesh->preciceVertexIds, preciceDt,
-            velocityValues_);
+          // get all data at once
+          preciceParticipant->readData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.displacementsName,
+              preciceData.preciceMesh->preciceVertexIds, preciceDt,
+              displacementValues_);
 
-        setDirichletBoundaryConditions(preciceData, nestedSolver);
+          preciceParticipant->readData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.velocitiesName,
+              preciceData.preciceMesh->preciceVertexIds, preciceDt,
+              velocityValues_);
+
+          setDirichletBoundaryConditions(preciceData, nestedSolver);
+        }
+        // if the data is traction
+        else if (!preciceData.tractionName.empty()) {
+          tractionValues_.resize(nEntries);
+          preciceParticipant->readData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.tractionName,
+              preciceData.preciceMesh->preciceVertexIds, preciceDt,
+              tractionValues_);
+
+          setNeumannBoundaryConditions(preciceData, nestedSolver, context);
+        } else {
+          LOG(FATAL) << "Unknown precice data (read), none of displacements, "
+                        "velocities or traction is set.";
+        }
       }
-      // if the data is traction
-      else if (!preciceData.tractionName.empty()) {
-        tractionValues_.resize(nEntries);
-        preciceParticipant->readData(
-            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
-            preciceData.preciceMesh->preciceVertexIds, preciceDt,
-            tractionValues_);
+    };
+  }
 
-        setNeumannBoundaryConditions(preciceData, nestedSolver, context);
-      } else {
-        LOG(FATAL) << "Unknown precice data (read), none of displacements, "
-                      "velocities or traction is set.";
+  template <typename SurfaceDataVector, typename VolumeDataVector>
+  void
+  preciceWriteData(NestedSolverType &nestedSolver,
+                   std::shared_ptr<precice::Participant> &preciceParticipant,
+                   SurfaceDataVector &preciceSurfaceData,
+                   VolumeDataVector &preciceVolumeData, double scalingFactor) {
+    // write data to precice
+    LOG(DEBUG) << "write data to precice";
+
+    // loop over data
+    for (auto &preciceData : preciceSurfaceData) {
+      if (preciceData.ioType ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceSurfaceData::ioWrite) {
+        // if the data is displacements and velocities
+        if (!preciceData.displacementsName.empty()) {
+          // convert geometry values to precice data layout
+          displacementValues_.clear();
+          velocityValues_.clear();
+
+          this->getDisplacementVelocityValues(
+              nestedSolver, preciceData.preciceMesh->dofNosLocal,
+              displacementValues_, velocityValues_);
+
+#ifndef NDEBUG
+          LOG(DEBUG) << "write displacements data to precice: "
+                     << displacementValues_;
+#endif
+          // scale displacement and velocity values
+          for (double &value : displacementValues_)
+            value *= scalingFactor;
+
+          for (double &value : velocityValues_)
+            value *= scalingFactor;
+
+          // write displacement values in precice
+          preciceParticipant->writeData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.displacementsName,
+              preciceData.preciceMesh->preciceVertexIds, displacementValues_);
+
+          // write velocity values in precice
+          preciceParticipant->writeData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.velocitiesName,
+              preciceData.preciceMesh->preciceVertexIds, velocityValues_);
+        }
+        // if the data is traction
+        else if (!preciceData.tractionName.empty() &&
+                 preciceData.average == true) {
+          LOG(INFO) << "Write averaged traction";
+          // convert geometry values to precice data layout
+          tractionValues_.clear();
+          this->getTractionValues(nestedSolver,
+                                  preciceData.preciceMesh->dofNosLocal,
+                                  tractionValues_);
+          // average z-values of traction
+          double average_traction = 0.0;
+          for (int i = 2; i < tractionValues_.size(); i += 3) {
+            average_traction += tractionValues_[i];
+          }
+          average_traction /= (tractionValues_.size() / 3);
+          for (int i = 2; i < tractionValues_.size(); i += 3) {
+            tractionValues_[i] = average_traction;
+          }
+#ifndef NDEBUG
+          LOG(DEBUG) << "Write averaged-traction data to precice: "
+                     << tractionValues_[2];
+#endif
+          // scale traction values, they are always scaled by the factor of -1
+          for (double &value : tractionValues_) {
+            value *= scalingFactor;
+            value *= -1;
+          }
+
+          preciceParticipant->writeData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.tractionName,
+              preciceData.preciceMesh->preciceVertexIds, tractionValues_);
+        } else if (!preciceData.tractionName.empty()) {
+
+          LOG(INFO) << "Write non-averaged traction";
+
+          // convert geometry values to precice data layout
+          tractionValues_.clear();
+          this->getTractionValues(nestedSolver,
+                                  preciceData.preciceMesh->dofNosLocal,
+                                  tractionValues_);
+
+#ifndef NDEBUG
+          LOG(DEBUG) << "write traction data to precice: " << tractionValues_;
+          std::stringstream s;
+          for (int i = 2; i < tractionValues_.size(); i += 3) {
+            s << " " << tractionValues_[i];
+          }
+          LOG(DEBUG) << "z values of traction: " << s.str();
+#endif
+          // scale traction values, they are always scaled by the factor of -1
+          for (double &value : tractionValues_) {
+            value *= scalingFactor;
+            value *= -1;
+          }
+
+          preciceParticipant->writeData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.tractionName,
+              preciceData.preciceMesh->preciceVertexIds, tractionValues_);
+        } else {
+          LOG(FATAL) << "Unknown precice data (write), none of displacements, "
+                        "velocities or traction is set.";
+        }
       }
     }
-  };
+
+    LOG(DEBUG) << "write traction data to precice complete";
   }
 
-  template<typename SurfaceDataVector, typename VolumeDataVector>
-  void preciceWriteData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData, double scalingFactor) {
-  // write data to precice
-  LOG(DEBUG) << "write data to precice";
-
-  // loop over data
-  for (auto &preciceData : preciceSurfaceData) {
-    if (preciceData.ioType ==
-        PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceData::ioWrite) {
-      // if the data is displacements and velocities
-      if (!preciceData.displacementsName.empty()) {
-        // convert geometry values to precice data layout
-        displacementValues_.clear();
-        velocityValues_.clear();
-
-        this->getDisplacementVelocityValues(
-            nestedSolver, preciceData.preciceMesh->dofNosLocal,
-            displacementValues_, velocityValues_);
-
-#ifndef NDEBUG
-        LOG(DEBUG) << "write displacements data to precice: "
-                   << displacementValues_;
-#endif
-        // scale displacement and velocity values
-        for (double &value : displacementValues_)
-          value *= scalingFactor;
-
-        for (double &value : velocityValues_)
-          value *= scalingFactor;
-
-        // write displacement values in precice
-        preciceParticipant->writeData(
-            preciceData.preciceMesh->preciceMeshName,
-            preciceData.displacementsName,
-            preciceData.preciceMesh->preciceVertexIds, displacementValues_);
-
-        // write velocity values in precice
-        preciceParticipant->writeData(
-            preciceData.preciceMesh->preciceMeshName,
-            preciceData.velocitiesName,
-            preciceData.preciceMesh->preciceVertexIds, velocityValues_);
-      }
-      // if the data is traction
-      else if (!preciceData.tractionName.empty() &&
-               preciceData.average == true) {
-        LOG(INFO) << "Write averaged traction";
-        // convert geometry values to precice data layout
-        tractionValues_.clear();
-        this->getTractionValues(nestedSolver,
-                                preciceData.preciceMesh->dofNosLocal,
-                                tractionValues_);
-        // average z-values of traction
-        double average_traction = 0.0;
-        for (int i = 2; i < tractionValues_.size(); i += 3) {
-          average_traction += tractionValues_[i];
-        }
-        average_traction /= (tractionValues_.size() / 3);
-        for (int i = 2; i < tractionValues_.size(); i += 3) {
-          tractionValues_[i] = average_traction;
-        }
-#ifndef NDEBUG
-        LOG(DEBUG) << "Write averaged-traction data to precice: "
-                   << tractionValues_[2];
-#endif
-        // scale traction values, they are always scaled by the factor of -1
-        for (double &value : tractionValues_) {
-          value *= scalingFactor;
-          value *= -1;
-        }
-
-        preciceParticipant->writeData(
-            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
-            preciceData.preciceMesh->preciceVertexIds, tractionValues_);
-      } else if (!preciceData.tractionName.empty()) {
-
-        LOG(INFO) << "Write non-averaged traction";
-
-        // convert geometry values to precice data layout
-        tractionValues_.clear();
-        this->getTractionValues(nestedSolver,
-                                preciceData.preciceMesh->dofNosLocal,
-                                tractionValues_);
-
-#ifndef NDEBUG
-        LOG(DEBUG) << "write traction data to precice: " << tractionValues_;
-        std::stringstream s;
-        for (int i = 2; i < tractionValues_.size(); i += 3) {
-          s << " " << tractionValues_[i];
-        }
-        LOG(DEBUG) << "z values of traction: " << s.str();
-#endif
-        // scale traction values, they are always scaled by the factor of -1
-        for (double &value : tractionValues_) {
-          value *= scalingFactor;
-          value *= -1;
-        }
-
-        preciceParticipant->writeData(
-            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
-            preciceData.preciceMesh->preciceVertexIds, tractionValues_);
-      } else {
-        LOG(FATAL) << "Unknown precice data (write), none of displacements, "
-                      "velocities or traction is set.";
-      }
-    }
-  }
-
-  LOG(DEBUG) << "write traction data to precice complete";
-  }
-
-template<typename SurfaceData>
-void setDirichletBoundaryConditions(SurfaceData &preciceData, NestedSolverType &nestedSolver) {
-  std::vector<std::pair<global_no_t, std::array<double, 6>>>
-      newDirichletBCValues;
+  template <typename SurfaceData>
+  void setDirichletBoundaryConditions(SurfaceData &preciceData,
+                                      NestedSolverType &nestedSolver) {
+    std::vector<std::pair<global_no_t, std::array<double, 6>>>
+        newDirichletBCValues;
 
     auto functionSpace = this->functionSpace(nestedSolver);
 
-  // if this rank has no data, do not set any boundary conditions
-  if (preciceData.preciceMesh->nNodesLocal != 0) {
-    // loop over nodes
-    const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
-    const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
-    const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
+    // if this rank has no data, do not set any boundary conditions
+    if (preciceData.preciceMesh->nNodesLocal != 0) {
+      // loop over nodes
+      const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
+      const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
+      const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
 
-    // set node index in z direction for bottom surface
-    int nodeIndexZ = 0;
+      // set node index in z direction for bottom surface
+      int nodeIndexZ = 0;
 
-    // for top surface
-    if (preciceData.preciceMesh->face ==
-        PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
-      nodeIndexZ = nNodesZ - 1;
-    }
-
-    // loop over nodes to set the received values
-    newDirichletBCValues.reserve(nNodesX * nNodesY);
-    int valueIndex = 0;
-
-    // loop over nodes of surface mesh
-    for (int nodeIndexY = 0; nodeIndexY < nNodesY; nodeIndexY++) {
-      for (int nodeIndexX = 0; nodeIndexX < nNodesX;
-           nodeIndexX++, valueIndex++) {
-        node_no_t nodeNoLocal =
-            nodeIndexZ * nNodesX * nNodesY + nodeIndexY * nNodesX + nodeIndexX;
-
-        dof_no_t dofNoLocal = nodeNoLocal;
-        global_no_t dofNoGlobal =
-            functionSpace->meshPartition()->getDofNoGlobalPetsc(
-                dofNoLocal);
-
-        // assign received values to dirichlet bc vector of size 6
-        std::array<double, 6> newDirichletBCValue;
-
-        for (int i = 0; i < 3; i++) {
-          newDirichletBCValue[i] = displacementValues_[3 * valueIndex + i];
-          newDirichletBCValue[3 + i] = velocityValues_[3 * valueIndex + i];
-        }
-
-        newDirichletBCValues.push_back(
-            std::pair<global_no_t, std::array<double, 6>>(dofNoGlobal,
-                                                          newDirichletBCValue));
+      // for top surface
+      if (preciceData.preciceMesh->face ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
+        nodeIndexZ = nNodesZ - 1;
       }
-    }
 
-    LOG(DEBUG) << "read data from precice complete, displacement values: "
-               << displacementValues_
-               << ", velocityValues: " << velocityValues_;
-    LOG(DEBUG) << "read and set Dirichlet BC: " << newDirichletBCValues;
-  }
+      // loop over nodes to set the received values
+      newDirichletBCValues.reserve(nNodesX * nNodesY);
+      int valueIndex = 0;
 
-  //! set new dirichlet boundary condition values
-  this->updateDirichletBoundaryConditions(nestedSolver,
-                                          newDirichletBCValues);
-}
+      // loop over nodes of surface mesh
+      for (int nodeIndexY = 0; nodeIndexY < nNodesY; nodeIndexY++) {
+        for (int nodeIndexX = 0; nodeIndexX < nNodesX;
+             nodeIndexX++, valueIndex++) {
+          node_no_t nodeNoLocal = nodeIndexZ * nNodesX * nNodesY +
+                                  nodeIndexY * nNodesX + nodeIndexX;
 
-template<typename SurfaceData>
-void setNeumannBoundaryConditions(SurfaceData &preciceData, NestedSolverType &nestedSolver, DihuContext &context ){
-// set traction values as neumann boundary conditions
-  using FunctionSpace =
-      typename PreciceAdapterNestedSolver<NestedSolverType>::FunctionSpace;
-  using ElementWithFacesType =
-      typename SpatialDiscretization::NeumannBoundaryConditions<
-          FunctionSpace, Quadrature::Gauss<3>, 3>::ElementWithFaces;
+          dof_no_t dofNoLocal = nodeNoLocal;
+          global_no_t dofNoGlobal =
+              functionSpace->meshPartition()->getDofNoGlobalPetsc(dofNoLocal);
 
-  std::vector<ElementWithFacesType> neumannBoundaryConditionElements;
+          // assign received values to dirichlet bc vector of size 6
+          std::array<double, 6> newDirichletBCValue;
 
-  auto functionSpace = this->functionSpace(nestedSolver);
-
-
-  // if this rank has no data, do not set any boundary conditions
-  if (preciceData.preciceMesh->nNodesLocal != 0) {
-
-    const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
-    const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
-    const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
-
-    int nElementsX = functionSpace->meshPartition()->nElementsLocal(0);
-    int nElementsY = functionSpace->meshPartition()->nElementsLocal(1);
-    int nElementsZ = functionSpace->meshPartition()->nElementsLocal(2);
-
-    // set node and element indics in z direction for bottom surface
-    int nodeIndexZ = 0;
-    int elementalNodeIndexZ = 0;
-    int elementIndexZ = 0;
-
-    // for top surface
-    if (preciceData.preciceMesh->face ==
-        PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
-      nodeIndexZ = nNodesZ - 1;
-      elementIndexZ = nElementsZ - 1;
-      elementalNodeIndexZ = 2;
-    }
-
-    // loop over elements
-    for (int elementIndexY = 0; elementIndexY < nElementsY; elementIndexY++) {
-      for (int elementIndexX = 0; elementIndexX < nElementsX; elementIndexX++) {
-        ElementWithFacesType elementWithFaces;
-        element_no_t elementNoLocal = elementIndexZ * nElementsX * nElementsY +
-                                      elementIndexY * nElementsX +
-                                      elementIndexX;
-        elementWithFaces.elementNoLocal = elementNoLocal;
-
-        // set surface dofs
-        Mesh::face_t face = Mesh::face_t::face2Minus;
-        if (preciceData.preciceMesh->face ==
-            PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceMesh::face2Plus)
-          face = Mesh::face_t::face2Plus;
-
-        elementWithFaces.face = face;
-
-        // get dofs indices within the numbering of the volume element that
-        // correspond to the selected face
-        const int nDofsPerNode = FunctionSpace::nDofsPerNode();
-        const int nSurfaceDofs =
-            ::FunctionSpace::FunctionSpaceBaseDim<
-                2, typename FunctionSpace::BasisFunction>::nNodesPerElement() *
-            nDofsPerNode;
-        std::array<dof_no_t, nSurfaceDofs> surfaceDofs;
-        FunctionSpace::getFaceDofs(face, surfaceDofs);
-
-        elementWithFaces.surfaceDofs.assign(surfaceDofs.begin(),
-                                            surfaceDofs.end());
-
-        // loop over the nodes of the element
-        for (int elementalNodeIndexY = 0; elementalNodeIndexY < 3;
-             elementalNodeIndexY++) {
-          for (int elementalNodeIndexX = 0; elementalNodeIndexX < 3;
-               elementalNodeIndexX++) {
-            int elementalDofIndex = elementalNodeIndexZ * 9 +
-                                    elementalNodeIndexY * 3 +
-                                    elementalNodeIndexX;
-
-            dof_no_t dofNoLocal = functionSpace->getDofNo(
-                elementNoLocal, elementalDofIndex);
-
-            // only iterate over local dofs, the ghost dofs are not considered
-            // here (although it would be correct to communicate them with
-            // precice)
-            if (dofNoLocal >= functionSpace->nDofsLocalWithoutGhosts())
-              continue;
-
-            int valueIndex = dofNoLocal - nodeIndexZ * nNodesX * nNodesY;
-
-            LOG(DEBUG) << "(x,y,z)=(" << elementalNodeIndexX << ","
-                       << elementalNodeIndexY << "," << elementalNodeIndexZ
-                       << ") dofNoLocal " << dofNoLocal
-                       << ", valueIndex: " << valueIndex << "/"
-                       << tractionValues_.size() / 3;
-
-            assert(valueIndex >= 0);
-            if (valueIndex >= preciceData.preciceMesh->nNodesLocal) {
-              LOG(ERROR) << "valueIndex: " << valueIndex
-                         << ", dofNoLocal: " << dofNoLocal
-                         << ", nNodes: " << nNodesX << "," << nNodesY
-                         << ", nodeIndexZ: " << nodeIndexZ << ", nNodesLocal: "
-                         << preciceData.preciceMesh->nNodesLocal
-                         << " elementNoLocal: " << elementNoLocal
-                         << ", elementalDofIndex: " << elementalDofIndex
-                         << ", elementalNodeIndexZ: " << elementalNodeIndexZ
-                         << ", meshPartition: "
-                         << *functionSpace->meshPartition();
-            }
-            assert(valueIndex < preciceData.preciceMesh->nNodesLocal);
-
-            Vec3 traction;
-            for (int i = 0; i < 3; i++) {
-              traction[i] = tractionValues_[3 * valueIndex + i];
-            }
-
-            dof_no_t surfaceDof = elementalDofIndex;
-
-            // for top surface
-            if (preciceData.preciceMesh->face ==
-                PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
-              surfaceDof = 18 + elementalDofIndex;
-            }
-            elementWithFaces.dofVectors.push_back(
-                std::pair<dof_no_t, Vec3>(surfaceDof, traction));
-
-            // LOG(INFO) << "dofVectors: " << elementWithFaces.dofVectors << ",
-            // traction: " << traction;
+          for (int i = 0; i < 3; i++) {
+            newDirichletBCValue[i] = displacementValues_[3 * valueIndex + i];
+            newDirichletBCValue[3 + i] = velocityValues_[3 * valueIndex + i];
           }
+
+          newDirichletBCValues.push_back(
+              std::pair<global_no_t, std::array<double, 6>>(
+                  dofNoGlobal, newDirichletBCValue));
         }
-        neumannBoundaryConditionElements.push_back(elementWithFaces);
+      }
+
+      LOG(DEBUG) << "read data from precice complete, displacement values: "
+                 << displacementValues_
+                 << ", velocityValues: " << velocityValues_;
+      LOG(DEBUG) << "read and set Dirichlet BC: " << newDirichletBCValues;
+    }
+
+    //! set new dirichlet boundary condition values
+    this->updateDirichletBoundaryConditions(nestedSolver, newDirichletBCValues);
+  }
+
+  template <typename SurfaceData>
+  void setNeumannBoundaryConditions(SurfaceData &preciceData,
+                                    NestedSolverType &nestedSolver,
+                                    DihuContext &context) {
+    // set traction values as neumann boundary conditions
+    using FunctionSpace =
+        typename PreciceAdapterNestedSolver<NestedSolverType>::FunctionSpace;
+    using ElementWithFacesType =
+        typename SpatialDiscretization::NeumannBoundaryConditions<
+            FunctionSpace, Quadrature::Gauss<3>, 3>::ElementWithFaces;
+
+    std::vector<ElementWithFacesType> neumannBoundaryConditionElements;
+
+    auto functionSpace = this->functionSpace(nestedSolver);
+
+    // if this rank has no data, do not set any boundary conditions
+    if (preciceData.preciceMesh->nNodesLocal != 0) {
+
+      const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
+      const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
+      const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
+
+      int nElementsX = functionSpace->meshPartition()->nElementsLocal(0);
+      int nElementsY = functionSpace->meshPartition()->nElementsLocal(1);
+      int nElementsZ = functionSpace->meshPartition()->nElementsLocal(2);
+
+      // set node and element indics in z direction for bottom surface
+      int nodeIndexZ = 0;
+      int elementalNodeIndexZ = 0;
+      int elementIndexZ = 0;
+
+      // for top surface
+      if (preciceData.preciceMesh->face ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
+        nodeIndexZ = nNodesZ - 1;
+        elementIndexZ = nElementsZ - 1;
+        elementalNodeIndexZ = 2;
+      }
+
+      // loop over elements
+      for (int elementIndexY = 0; elementIndexY < nElementsY; elementIndexY++) {
+        for (int elementIndexX = 0; elementIndexX < nElementsX;
+             elementIndexX++) {
+          ElementWithFacesType elementWithFaces;
+          element_no_t elementNoLocal =
+              elementIndexZ * nElementsX * nElementsY +
+              elementIndexY * nElementsX + elementIndexX;
+          elementWithFaces.elementNoLocal = elementNoLocal;
+
+          // set surface dofs
+          Mesh::face_t face = Mesh::face_t::face2Minus;
+          if (preciceData.preciceMesh->face ==
+              PreciceAdapterInitialize<
+                  NestedSolverType>::PreciceSurfaceMesh::face2Plus)
+            face = Mesh::face_t::face2Plus;
+
+          elementWithFaces.face = face;
+
+          // get dofs indices within the numbering of the volume element that
+          // correspond to the selected face
+          const int nDofsPerNode = FunctionSpace::nDofsPerNode();
+          const int nSurfaceDofs =
+              ::FunctionSpace::FunctionSpaceBaseDim<
+                  2,
+                  typename FunctionSpace::BasisFunction>::nNodesPerElement() *
+              nDofsPerNode;
+          std::array<dof_no_t, nSurfaceDofs> surfaceDofs;
+          FunctionSpace::getFaceDofs(face, surfaceDofs);
+
+          elementWithFaces.surfaceDofs.assign(surfaceDofs.begin(),
+                                              surfaceDofs.end());
+
+          // loop over the nodes of the element
+          for (int elementalNodeIndexY = 0; elementalNodeIndexY < 3;
+               elementalNodeIndexY++) {
+            for (int elementalNodeIndexX = 0; elementalNodeIndexX < 3;
+                 elementalNodeIndexX++) {
+              int elementalDofIndex = elementalNodeIndexZ * 9 +
+                                      elementalNodeIndexY * 3 +
+                                      elementalNodeIndexX;
+
+              dof_no_t dofNoLocal =
+                  functionSpace->getDofNo(elementNoLocal, elementalDofIndex);
+
+              // only iterate over local dofs, the ghost dofs are not considered
+              // here (although it would be correct to communicate them with
+              // precice)
+              if (dofNoLocal >= functionSpace->nDofsLocalWithoutGhosts())
+                continue;
+
+              int valueIndex = dofNoLocal - nodeIndexZ * nNodesX * nNodesY;
+
+              LOG(DEBUG) << "(x,y,z)=(" << elementalNodeIndexX << ","
+                         << elementalNodeIndexY << "," << elementalNodeIndexZ
+                         << ") dofNoLocal " << dofNoLocal
+                         << ", valueIndex: " << valueIndex << "/"
+                         << tractionValues_.size() / 3;
+
+              assert(valueIndex >= 0);
+              if (valueIndex >= preciceData.preciceMesh->nNodesLocal) {
+                LOG(ERROR) << "valueIndex: " << valueIndex
+                           << ", dofNoLocal: " << dofNoLocal
+                           << ", nNodes: " << nNodesX << "," << nNodesY
+                           << ", nodeIndexZ: " << nodeIndexZ
+                           << ", nNodesLocal: "
+                           << preciceData.preciceMesh->nNodesLocal
+                           << " elementNoLocal: " << elementNoLocal
+                           << ", elementalDofIndex: " << elementalDofIndex
+                           << ", elementalNodeIndexZ: " << elementalNodeIndexZ
+                           << ", meshPartition: "
+                           << *functionSpace->meshPartition();
+              }
+              assert(valueIndex < preciceData.preciceMesh->nNodesLocal);
+
+              Vec3 traction;
+              for (int i = 0; i < 3; i++) {
+                traction[i] = tractionValues_[3 * valueIndex + i];
+              }
+
+              dof_no_t surfaceDof = elementalDofIndex;
+
+              // for top surface
+              if (preciceData.preciceMesh->face ==
+                  PreciceAdapterInitialize<
+                      NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
+                surfaceDof = 18 + elementalDofIndex;
+              }
+              elementWithFaces.dofVectors.push_back(
+                  std::pair<dof_no_t, Vec3>(surfaceDof, traction));
+
+              // LOG(INFO) << "dofVectors: " << elementWithFaces.dofVectors <<
+              // ", traction: " << traction;
+            }
+          }
+          neumannBoundaryConditionElements.push_back(elementWithFaces);
+        }
       }
     }
-  }
-  // create new Neumann BC object
-  using NeumannBoundaryConditionsType =
-      SpatialDiscretization::NeumannBoundaryConditions<FunctionSpace,
-                                                       Quadrature::Gauss<3>, 3>;
-  std::shared_ptr<NeumannBoundaryConditionsType> neumannBoundaryConditions =
-      std::make_shared<NeumannBoundaryConditionsType>(context);
-  neumannBoundaryConditions->initialize(functionSpace,
-                                        neumannBoundaryConditionElements);
-  neumannBoundaryConditions->setDeformationGradientField(
-      this->deformationGradientField(nestedSolver));
+    // create new Neumann BC object
+    using NeumannBoundaryConditionsType =
+        SpatialDiscretization::NeumannBoundaryConditions<
+            FunctionSpace, Quadrature::Gauss<3>, 3>;
+    std::shared_ptr<NeumannBoundaryConditionsType> neumannBoundaryConditions =
+        std::make_shared<NeumannBoundaryConditionsType>(context);
+    neumannBoundaryConditions->initialize(functionSpace,
+                                          neumannBoundaryConditionElements);
+    neumannBoundaryConditions->setDeformationGradientField(
+        this->deformationGradientField(nestedSolver));
 
 #ifndef NDEBUG
-  std::stringstream s;
-  for (int i = 0; i < neumannBoundaryConditionElements.size(); i++) {
-    s << "{el. " << neumannBoundaryConditionElements[i].elementNoLocal << ", \""
-      << Mesh::getString(neumannBoundaryConditionElements[i].face)
-      << "\", dofVectors: [";
-    for (int j = 0; j < neumannBoundaryConditionElements[i].dofVectors.size();
-         j++) {
-      s << "(" << neumannBoundaryConditionElements[i].dofVectors[j].first
-        << ": (";
-      for (int k = 0;
-           k < neumannBoundaryConditionElements[i].dofVectors[j].second.size();
-           k++) {
-        if (k != 0)
-          s << ",";
-        s << neumannBoundaryConditionElements[i].dofVectors[j].second[k];
+    std::stringstream s;
+    for (int i = 0; i < neumannBoundaryConditionElements.size(); i++) {
+      s << "{el. " << neumannBoundaryConditionElements[i].elementNoLocal
+        << ", \"" << Mesh::getString(neumannBoundaryConditionElements[i].face)
+        << "\", dofVectors: [";
+      for (int j = 0; j < neumannBoundaryConditionElements[i].dofVectors.size();
+           j++) {
+        s << "(" << neumannBoundaryConditionElements[i].dofVectors[j].first
+          << ": (";
+        for (int k = 0;
+             k <
+             neumannBoundaryConditionElements[i].dofVectors[j].second.size();
+             k++) {
+          if (k != 0)
+            s << ",";
+          s << neumannBoundaryConditionElements[i].dofVectors[j].second[k];
+        }
+        s << ")),";
       }
-      s << ")),";
+      s << "], surfaceDofs: ";
+      for (int j = 0;
+           j < neumannBoundaryConditionElements[i].surfaceDofs.size(); j++)
+        s << neumannBoundaryConditionElements[i].surfaceDofs[j] << ",";
+      s << "} ";
     }
-    s << "], surfaceDofs: ";
-    for (int j = 0; j < neumannBoundaryConditionElements[i].surfaceDofs.size();
-         j++)
-      s << neumannBoundaryConditionElements[i].surfaceDofs[j] << ",";
-    s << "} ";
-  }
-  LOG(DEBUG) << "read and set Neumann BC:\n" << s.str();
+    LOG(DEBUG) << "read and set Neumann BC:\n" << s.str();
 #endif
 
-  // set Neumann BCs in the static hyperelasticity of the
-  // TimeSteppingScheme::DynamicHyperelasticitySolver solver
-  this->updateNeumannBoundaryConditions(nestedSolver,
-                                        neumannBoundaryConditions);
+    // set Neumann BCs in the static hyperelasticity of the
+    // TimeSteppingScheme::DynamicHyperelasticitySolver solver
+    this->updateNeumannBoundaryConditions(nestedSolver,
+                                          neumannBoundaryConditions);
 
-  LOG(DEBUG) << "read data from precice complete, traction values: "
-             << tractionValues_;
-}
+    LOG(DEBUG) << "read data from precice complete, traction values: "
+               << tractionValues_;
+  }
   //! initialize dirichlet boundary conditions by adding new dofs and prescribed
   //! values for all bottom or top nodes
   void addDirichletBoundaryConditions(
@@ -1093,408 +1152,429 @@ public:
   std::shared_ptr<typename TimeSteppingScheme::DynamicHyperelasticitySolver<
       Material>::FunctionSpace>
   functionSpace(NestedSolverType &nestedSolver);
-  
-  template<typename SurfaceDataVector, typename VolumeDataVector>
-  void preciceReadData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData, DihuContext &context) {
-LOG(DEBUG) << "read data from precice";
-  double preciceDt = preciceParticipant->getMaxTimeStepSize();
-  // loop over data
-  for (auto &preciceData : preciceSurfaceData) {
-    if (preciceData.ioType ==
-        PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceData::ioRead) {
-      // allocate memory
-      int nEntries = preciceData.preciceMesh->nNodesLocal * 3;
 
-      // if the data is displacements and velocities
-      if (!preciceData.displacementsName.empty()) {
-        displacementValues_.resize(nEntries);
-        velocityValues_.resize(nEntries);
+  template <typename SurfaceDataVector, typename VolumeDataVector>
+  void
+  preciceReadData(NestedSolverType &nestedSolver,
+                  std::shared_ptr<precice::Participant> &preciceParticipant,
+                  SurfaceDataVector &preciceSurfaceData,
+                  VolumeDataVector &preciceVolumeData, DihuContext &context) {
+    LOG(DEBUG) << "read data from precice";
+    double preciceDt = preciceParticipant->getMaxTimeStepSize();
+    // loop over data
+    for (auto &preciceData : preciceSurfaceData) {
+      if (preciceData.ioType ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceSurfaceData::ioRead) {
+        // allocate memory
+        int nEntries = preciceData.preciceMesh->nNodesLocal * 3;
 
-        // get all data at once
-        preciceParticipant->readData(
-            preciceData.preciceMesh->preciceMeshName,
-            preciceData.displacementsName,
-            preciceData.preciceMesh->preciceVertexIds, preciceDt,
-            displacementValues_);
+        // if the data is displacements and velocities
+        if (!preciceData.displacementsName.empty()) {
+          displacementValues_.resize(nEntries);
+          velocityValues_.resize(nEntries);
 
-        preciceParticipant->readData(
-            preciceData.preciceMesh->preciceMeshName,
-            preciceData.velocitiesName,
-            preciceData.preciceMesh->preciceVertexIds, preciceDt,
-            velocityValues_);
+          // get all data at once
+          preciceParticipant->readData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.displacementsName,
+              preciceData.preciceMesh->preciceVertexIds, preciceDt,
+              displacementValues_);
 
-        setDirichletBoundaryConditions(preciceData, nestedSolver);
+          preciceParticipant->readData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.velocitiesName,
+              preciceData.preciceMesh->preciceVertexIds, preciceDt,
+              velocityValues_);
+
+          setDirichletBoundaryConditions(preciceData, nestedSolver);
+        }
+        // if the data is traction
+        else if (!preciceData.tractionName.empty()) {
+          tractionValues_.resize(nEntries);
+          preciceParticipant->readData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.tractionName,
+              preciceData.preciceMesh->preciceVertexIds, preciceDt,
+              tractionValues_);
+
+          setNeumannBoundaryConditions(preciceData, nestedSolver, context);
+        } else {
+          LOG(FATAL) << "Unknown precice data (read), none of displacements, "
+                        "velocities or traction is set.";
+        }
       }
-      // if the data is traction
-      else if (!preciceData.tractionName.empty()) {
-        tractionValues_.resize(nEntries);
-        preciceParticipant->readData(
-            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
-            preciceData.preciceMesh->preciceVertexIds, preciceDt,
-            tractionValues_);
-
-        setNeumannBoundaryConditions(preciceData, nestedSolver, context);
-      } else {
-        LOG(FATAL) << "Unknown precice data (read), none of displacements, "
-                      "velocities or traction is set.";
-      }
-    }
-  };
+    };
   }
 
-  template<typename SurfaceDataVector, typename VolumeDataVector>
-  void preciceWriteData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData, double scalingFactor) {
+  template <typename SurfaceDataVector, typename VolumeDataVector>
+  void
+  preciceWriteData(NestedSolverType &nestedSolver,
+                   std::shared_ptr<precice::Participant> &preciceParticipant,
+                   SurfaceDataVector &preciceSurfaceData,
+                   VolumeDataVector &preciceVolumeData, double scalingFactor) {
     // write data to precice
-  LOG(DEBUG) << "write data to precice";
+    LOG(DEBUG) << "write data to precice";
 
-  // loop over data
-  for (auto &preciceData : preciceSurfaceData) {
-    if (preciceData.ioType ==
-        PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceData::ioWrite) {
-      // if the data is displacements and velocities
-      if (!preciceData.displacementsName.empty()) {
-        // convert geometry values to precice data layout
-        displacementValues_.clear();
-        velocityValues_.clear();
+    // loop over data
+    for (auto &preciceData : preciceSurfaceData) {
+      if (preciceData.ioType ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceSurfaceData::ioWrite) {
+        // if the data is displacements and velocities
+        if (!preciceData.displacementsName.empty()) {
+          // convert geometry values to precice data layout
+          displacementValues_.clear();
+          velocityValues_.clear();
 
-        this->getDisplacementVelocityValues(
-            nestedSolver, preciceData.preciceMesh->dofNosLocal,
-            displacementValues_, velocityValues_);
-
-#ifndef NDEBUG
-        LOG(DEBUG) << "write displacements data to precice: "
-                   << displacementValues_;
-#endif
-        // scale displacement and velocity values
-        for (double &value : displacementValues_)
-          value *= scalingFactor;
-
-        for (double &value : velocityValues_)
-          value *= scalingFactor;
-
-        // write displacement values in precice
-        preciceParticipant->writeData(
-            preciceData.preciceMesh->preciceMeshName,
-            preciceData.displacementsName,
-            preciceData.preciceMesh->preciceVertexIds, displacementValues_);
-
-        // write velocity values in precice
-        preciceParticipant->writeData(
-            preciceData.preciceMesh->preciceMeshName,
-            preciceData.velocitiesName,
-            preciceData.preciceMesh->preciceVertexIds, velocityValues_);
-      }
-      // if the data is traction
-      else if (!preciceData.tractionName.empty() &&
-               preciceData.average == true) {
-        LOG(INFO) << "Write averaged traction";
-        // convert geometry values to precice data layout
-        tractionValues_.clear();
-        this->getTractionValues(nestedSolver,
-                                preciceData.preciceMesh->dofNosLocal,
-                                tractionValues_);
-        // average z-values of traction
-        double average_traction = 0.0;
-        for (int i = 2; i < tractionValues_.size(); i += 3) {
-          average_traction += tractionValues_[i];
-        }
-        average_traction /= (tractionValues_.size() / 3);
-        for (int i = 2; i < tractionValues_.size(); i += 3) {
-          tractionValues_[i] = average_traction;
-        }
-#ifndef NDEBUG
-        LOG(DEBUG) << "Write averaged-traction data to precice: "
-                   << tractionValues_[2];
-#endif
-        // scale traction values, they are always scaled by the factor of -1
-        for (double &value : tractionValues_) {
-          value *= scalingFactor;
-          value *= -1;
-        }
-
-        preciceParticipant->writeData(
-            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
-            preciceData.preciceMesh->preciceVertexIds, tractionValues_);
-      } else if (!preciceData.tractionName.empty()) {
-
-        LOG(INFO) << "Write non-averaged traction";
-
-        // convert geometry values to precice data layout
-        tractionValues_.clear();
-        this->getTractionValues(nestedSolver,
-                                preciceData.preciceMesh->dofNosLocal,
-                                tractionValues_);
+          this->getDisplacementVelocityValues(
+              nestedSolver, preciceData.preciceMesh->dofNosLocal,
+              displacementValues_, velocityValues_);
 
 #ifndef NDEBUG
-        LOG(DEBUG) << "write traction data to precice: " << tractionValues_;
-        std::stringstream s;
-        for (int i = 2; i < tractionValues_.size(); i += 3) {
-          s << " " << tractionValues_[i];
-        }
-        LOG(DEBUG) << "z values of traction: " << s.str();
+          LOG(DEBUG) << "write displacements data to precice: "
+                     << displacementValues_;
 #endif
-        // scale traction values, they are always scaled by the factor of -1
-        for (double &value : tractionValues_) {
-          value *= scalingFactor;
-          value *= -1;
-        }
+          // scale displacement and velocity values
+          for (double &value : displacementValues_)
+            value *= scalingFactor;
 
-        preciceParticipant->writeData(
-            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
-            preciceData.preciceMesh->preciceVertexIds, tractionValues_);
-      } else {
-        LOG(FATAL) << "Unknown precice data (write), none of displacements, "
-                      "velocities or traction is set.";
+          for (double &value : velocityValues_)
+            value *= scalingFactor;
+
+          // write displacement values in precice
+          preciceParticipant->writeData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.displacementsName,
+              preciceData.preciceMesh->preciceVertexIds, displacementValues_);
+
+          // write velocity values in precice
+          preciceParticipant->writeData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.velocitiesName,
+              preciceData.preciceMesh->preciceVertexIds, velocityValues_);
+        }
+        // if the data is traction
+        else if (!preciceData.tractionName.empty() &&
+                 preciceData.average == true) {
+          LOG(INFO) << "Write averaged traction";
+          // convert geometry values to precice data layout
+          tractionValues_.clear();
+          this->getTractionValues(nestedSolver,
+                                  preciceData.preciceMesh->dofNosLocal,
+                                  tractionValues_);
+          // average z-values of traction
+          double average_traction = 0.0;
+          for (int i = 2; i < tractionValues_.size(); i += 3) {
+            average_traction += tractionValues_[i];
+          }
+          average_traction /= (tractionValues_.size() / 3);
+          for (int i = 2; i < tractionValues_.size(); i += 3) {
+            tractionValues_[i] = average_traction;
+          }
+#ifndef NDEBUG
+          LOG(DEBUG) << "Write averaged-traction data to precice: "
+                     << tractionValues_[2];
+#endif
+          // scale traction values, they are always scaled by the factor of -1
+          for (double &value : tractionValues_) {
+            value *= scalingFactor;
+            value *= -1;
+          }
+
+          preciceParticipant->writeData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.tractionName,
+              preciceData.preciceMesh->preciceVertexIds, tractionValues_);
+        } else if (!preciceData.tractionName.empty()) {
+
+          LOG(INFO) << "Write non-averaged traction";
+
+          // convert geometry values to precice data layout
+          tractionValues_.clear();
+          this->getTractionValues(nestedSolver,
+                                  preciceData.preciceMesh->dofNosLocal,
+                                  tractionValues_);
+
+#ifndef NDEBUG
+          LOG(DEBUG) << "write traction data to precice: " << tractionValues_;
+          std::stringstream s;
+          for (int i = 2; i < tractionValues_.size(); i += 3) {
+            s << " " << tractionValues_[i];
+          }
+          LOG(DEBUG) << "z values of traction: " << s.str();
+#endif
+          // scale traction values, they are always scaled by the factor of -1
+          for (double &value : tractionValues_) {
+            value *= scalingFactor;
+            value *= -1;
+          }
+
+          preciceParticipant->writeData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.tractionName,
+              preciceData.preciceMesh->preciceVertexIds, tractionValues_);
+        } else {
+          LOG(FATAL) << "Unknown precice data (write), none of displacements, "
+                        "velocities or traction is set.";
+        }
       }
     }
+
+    LOG(DEBUG) << "write traction data to precice complete";
   }
 
-  LOG(DEBUG) << "write traction data to precice complete";
-  }
-
-template<typename SurfaceData>
-void setDirichletBoundaryConditions(SurfaceData &preciceData, NestedSolverType &nestedSolver) {
-  std::vector<std::pair<global_no_t, std::array<double, 6>>>
-      newDirichletBCValues;
+  template <typename SurfaceData>
+  void setDirichletBoundaryConditions(SurfaceData &preciceData,
+                                      NestedSolverType &nestedSolver) {
+    std::vector<std::pair<global_no_t, std::array<double, 6>>>
+        newDirichletBCValues;
 
     auto functionSpace = this->functionSpace(nestedSolver);
 
-  // if this rank has no data, do not set any boundary conditions
-  if (preciceData.preciceMesh->nNodesLocal != 0) {
-    // loop over nodes
-    const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
-    const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
-    const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
+    // if this rank has no data, do not set any boundary conditions
+    if (preciceData.preciceMesh->nNodesLocal != 0) {
+      // loop over nodes
+      const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
+      const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
+      const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
 
-    // set node index in z direction for bottom surface
-    int nodeIndexZ = 0;
+      // set node index in z direction for bottom surface
+      int nodeIndexZ = 0;
 
-    // for top surface
-    if (preciceData.preciceMesh->face ==
-        PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
-      nodeIndexZ = nNodesZ - 1;
-    }
-
-    // loop over nodes to set the received values
-    newDirichletBCValues.reserve(nNodesX * nNodesY);
-    int valueIndex = 0;
-
-    // loop over nodes of surface mesh
-    for (int nodeIndexY = 0; nodeIndexY < nNodesY; nodeIndexY++) {
-      for (int nodeIndexX = 0; nodeIndexX < nNodesX;
-           nodeIndexX++, valueIndex++) {
-        node_no_t nodeNoLocal =
-            nodeIndexZ * nNodesX * nNodesY + nodeIndexY * nNodesX + nodeIndexX;
-
-        dof_no_t dofNoLocal = nodeNoLocal;
-        global_no_t dofNoGlobal =
-            functionSpace->meshPartition()->getDofNoGlobalPetsc(
-                dofNoLocal);
-
-        // assign received values to dirichlet bc vector of size 6
-        std::array<double, 6> newDirichletBCValue;
-
-        for (int i = 0; i < 3; i++) {
-          newDirichletBCValue[i] = displacementValues_[3 * valueIndex + i];
-          newDirichletBCValue[3 + i] = velocityValues_[3 * valueIndex + i];
-        }
-
-        newDirichletBCValues.push_back(
-            std::pair<global_no_t, std::array<double, 6>>(dofNoGlobal,
-                                                          newDirichletBCValue));
+      // for top surface
+      if (preciceData.preciceMesh->face ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
+        nodeIndexZ = nNodesZ - 1;
       }
-    }
 
-    LOG(DEBUG) << "read data from precice complete, displacement values: "
-               << displacementValues_
-               << ", velocityValues: " << velocityValues_;
-    LOG(DEBUG) << "read and set Dirichlet BC: " << newDirichletBCValues;
-  }
+      // loop over nodes to set the received values
+      newDirichletBCValues.reserve(nNodesX * nNodesY);
+      int valueIndex = 0;
 
-  //! set new dirichlet boundary condition values
-  this->updateDirichletBoundaryConditions(nestedSolver,
-                                          newDirichletBCValues);
-}
+      // loop over nodes of surface mesh
+      for (int nodeIndexY = 0; nodeIndexY < nNodesY; nodeIndexY++) {
+        for (int nodeIndexX = 0; nodeIndexX < nNodesX;
+             nodeIndexX++, valueIndex++) {
+          node_no_t nodeNoLocal = nodeIndexZ * nNodesX * nNodesY +
+                                  nodeIndexY * nNodesX + nodeIndexX;
 
-  template<typename SurfaceData>
-void setNeumannBoundaryConditions(SurfaceData &preciceData, NestedSolverType &nestedSolver, DihuContext &context ){
-// set traction values as neumann boundary conditions
-  using FunctionSpace =
-      typename PreciceAdapterNestedSolver<NestedSolverType>::FunctionSpace;
-  using ElementWithFacesType =
-      typename SpatialDiscretization::NeumannBoundaryConditions<
-          FunctionSpace, Quadrature::Gauss<3>, 3>::ElementWithFaces;
+          dof_no_t dofNoLocal = nodeNoLocal;
+          global_no_t dofNoGlobal =
+              functionSpace->meshPartition()->getDofNoGlobalPetsc(dofNoLocal);
 
-  std::vector<ElementWithFacesType> neumannBoundaryConditionElements;
+          // assign received values to dirichlet bc vector of size 6
+          std::array<double, 6> newDirichletBCValue;
 
-  auto functionSpace = this->functionSpace(nestedSolver);
-
-
-  // if this rank has no data, do not set any boundary conditions
-  if (preciceData.preciceMesh->nNodesLocal != 0) {
-
-    const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
-    const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
-    const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
-
-    int nElementsX = functionSpace->meshPartition()->nElementsLocal(0);
-    int nElementsY = functionSpace->meshPartition()->nElementsLocal(1);
-    int nElementsZ = functionSpace->meshPartition()->nElementsLocal(2);
-
-    // set node and element indics in z direction for bottom surface
-    int nodeIndexZ = 0;
-    int elementalNodeIndexZ = 0;
-    int elementIndexZ = 0;
-
-    // for top surface
-    if (preciceData.preciceMesh->face ==
-        PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
-      nodeIndexZ = nNodesZ - 1;
-      elementIndexZ = nElementsZ - 1;
-      elementalNodeIndexZ = 2;
-    }
-
-    // loop over elements
-    for (int elementIndexY = 0; elementIndexY < nElementsY; elementIndexY++) {
-      for (int elementIndexX = 0; elementIndexX < nElementsX; elementIndexX++) {
-        ElementWithFacesType elementWithFaces;
-        element_no_t elementNoLocal = elementIndexZ * nElementsX * nElementsY +
-                                      elementIndexY * nElementsX +
-                                      elementIndexX;
-        elementWithFaces.elementNoLocal = elementNoLocal;
-
-        // set surface dofs
-        Mesh::face_t face = Mesh::face_t::face2Minus;
-        if (preciceData.preciceMesh->face ==
-            PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceMesh::face2Plus)
-          face = Mesh::face_t::face2Plus;
-
-        elementWithFaces.face = face;
-
-        // get dofs indices within the numbering of the volume element that
-        // correspond to the selected face
-        const int nDofsPerNode = FunctionSpace::nDofsPerNode();
-        const int nSurfaceDofs =
-            ::FunctionSpace::FunctionSpaceBaseDim<
-                2, typename FunctionSpace::BasisFunction>::nNodesPerElement() *
-            nDofsPerNode;
-        std::array<dof_no_t, nSurfaceDofs> surfaceDofs;
-        FunctionSpace::getFaceDofs(face, surfaceDofs);
-
-        elementWithFaces.surfaceDofs.assign(surfaceDofs.begin(),
-                                            surfaceDofs.end());
-
-        // loop over the nodes of the element
-        for (int elementalNodeIndexY = 0; elementalNodeIndexY < 3;
-             elementalNodeIndexY++) {
-          for (int elementalNodeIndexX = 0; elementalNodeIndexX < 3;
-               elementalNodeIndexX++) {
-            int elementalDofIndex = elementalNodeIndexZ * 9 +
-                                    elementalNodeIndexY * 3 +
-                                    elementalNodeIndexX;
-
-            dof_no_t dofNoLocal = functionSpace->getDofNo(
-                elementNoLocal, elementalDofIndex);
-
-            // only iterate over local dofs, the ghost dofs are not considered
-            // here (although it would be correct to communicate them with
-            // precice)
-            if (dofNoLocal >= functionSpace->nDofsLocalWithoutGhosts())
-              continue;
-
-            int valueIndex = dofNoLocal - nodeIndexZ * nNodesX * nNodesY;
-
-            LOG(DEBUG) << "(x,y,z)=(" << elementalNodeIndexX << ","
-                       << elementalNodeIndexY << "," << elementalNodeIndexZ
-                       << ") dofNoLocal " << dofNoLocal
-                       << ", valueIndex: " << valueIndex << "/"
-                       << tractionValues_.size() / 3;
-
-            assert(valueIndex >= 0);
-            if (valueIndex >= preciceData.preciceMesh->nNodesLocal) {
-              LOG(ERROR) << "valueIndex: " << valueIndex
-                         << ", dofNoLocal: " << dofNoLocal
-                         << ", nNodes: " << nNodesX << "," << nNodesY
-                         << ", nodeIndexZ: " << nodeIndexZ << ", nNodesLocal: "
-                         << preciceData.preciceMesh->nNodesLocal
-                         << " elementNoLocal: " << elementNoLocal
-                         << ", elementalDofIndex: " << elementalDofIndex
-                         << ", elementalNodeIndexZ: " << elementalNodeIndexZ
-                         << ", meshPartition: "
-                         << *functionSpace->meshPartition();
-            }
-            assert(valueIndex < preciceData.preciceMesh->nNodesLocal);
-
-            Vec3 traction;
-            for (int i = 0; i < 3; i++) {
-              traction[i] = tractionValues_[3 * valueIndex + i];
-            }
-
-            dof_no_t surfaceDof = elementalDofIndex;
-
-            // for top surface
-            if (preciceData.preciceMesh->face ==
-                PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
-              surfaceDof = 18 + elementalDofIndex;
-            }
-            elementWithFaces.dofVectors.push_back(
-                std::pair<dof_no_t, Vec3>(surfaceDof, traction));
-
-            // LOG(INFO) << "dofVectors: " << elementWithFaces.dofVectors << ",
-            // traction: " << traction;
+          for (int i = 0; i < 3; i++) {
+            newDirichletBCValue[i] = displacementValues_[3 * valueIndex + i];
+            newDirichletBCValue[3 + i] = velocityValues_[3 * valueIndex + i];
           }
+
+          newDirichletBCValues.push_back(
+              std::pair<global_no_t, std::array<double, 6>>(
+                  dofNoGlobal, newDirichletBCValue));
         }
-        neumannBoundaryConditionElements.push_back(elementWithFaces);
+      }
+
+      LOG(DEBUG) << "read data from precice complete, displacement values: "
+                 << displacementValues_
+                 << ", velocityValues: " << velocityValues_;
+      LOG(DEBUG) << "read and set Dirichlet BC: " << newDirichletBCValues;
+    }
+
+    //! set new dirichlet boundary condition values
+    this->updateDirichletBoundaryConditions(nestedSolver, newDirichletBCValues);
+  }
+
+  template <typename SurfaceData>
+  void setNeumannBoundaryConditions(SurfaceData &preciceData,
+                                    NestedSolverType &nestedSolver,
+                                    DihuContext &context) {
+    // set traction values as neumann boundary conditions
+    using FunctionSpace =
+        typename PreciceAdapterNestedSolver<NestedSolverType>::FunctionSpace;
+    using ElementWithFacesType =
+        typename SpatialDiscretization::NeumannBoundaryConditions<
+            FunctionSpace, Quadrature::Gauss<3>, 3>::ElementWithFaces;
+
+    std::vector<ElementWithFacesType> neumannBoundaryConditionElements;
+
+    auto functionSpace = this->functionSpace(nestedSolver);
+
+    // if this rank has no data, do not set any boundary conditions
+    if (preciceData.preciceMesh->nNodesLocal != 0) {
+
+      const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
+      const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
+      const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
+
+      int nElementsX = functionSpace->meshPartition()->nElementsLocal(0);
+      int nElementsY = functionSpace->meshPartition()->nElementsLocal(1);
+      int nElementsZ = functionSpace->meshPartition()->nElementsLocal(2);
+
+      // set node and element indics in z direction for bottom surface
+      int nodeIndexZ = 0;
+      int elementalNodeIndexZ = 0;
+      int elementIndexZ = 0;
+
+      // for top surface
+      if (preciceData.preciceMesh->face ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
+        nodeIndexZ = nNodesZ - 1;
+        elementIndexZ = nElementsZ - 1;
+        elementalNodeIndexZ = 2;
+      }
+
+      // loop over elements
+      for (int elementIndexY = 0; elementIndexY < nElementsY; elementIndexY++) {
+        for (int elementIndexX = 0; elementIndexX < nElementsX;
+             elementIndexX++) {
+          ElementWithFacesType elementWithFaces;
+          element_no_t elementNoLocal =
+              elementIndexZ * nElementsX * nElementsY +
+              elementIndexY * nElementsX + elementIndexX;
+          elementWithFaces.elementNoLocal = elementNoLocal;
+
+          // set surface dofs
+          Mesh::face_t face = Mesh::face_t::face2Minus;
+          if (preciceData.preciceMesh->face ==
+              PreciceAdapterInitialize<
+                  NestedSolverType>::PreciceSurfaceMesh::face2Plus)
+            face = Mesh::face_t::face2Plus;
+
+          elementWithFaces.face = face;
+
+          // get dofs indices within the numbering of the volume element that
+          // correspond to the selected face
+          const int nDofsPerNode = FunctionSpace::nDofsPerNode();
+          const int nSurfaceDofs =
+              ::FunctionSpace::FunctionSpaceBaseDim<
+                  2,
+                  typename FunctionSpace::BasisFunction>::nNodesPerElement() *
+              nDofsPerNode;
+          std::array<dof_no_t, nSurfaceDofs> surfaceDofs;
+          FunctionSpace::getFaceDofs(face, surfaceDofs);
+
+          elementWithFaces.surfaceDofs.assign(surfaceDofs.begin(),
+                                              surfaceDofs.end());
+
+          // loop over the nodes of the element
+          for (int elementalNodeIndexY = 0; elementalNodeIndexY < 3;
+               elementalNodeIndexY++) {
+            for (int elementalNodeIndexX = 0; elementalNodeIndexX < 3;
+                 elementalNodeIndexX++) {
+              int elementalDofIndex = elementalNodeIndexZ * 9 +
+                                      elementalNodeIndexY * 3 +
+                                      elementalNodeIndexX;
+
+              dof_no_t dofNoLocal =
+                  functionSpace->getDofNo(elementNoLocal, elementalDofIndex);
+
+              // only iterate over local dofs, the ghost dofs are not considered
+              // here (although it would be correct to communicate them with
+              // precice)
+              if (dofNoLocal >= functionSpace->nDofsLocalWithoutGhosts())
+                continue;
+
+              int valueIndex = dofNoLocal - nodeIndexZ * nNodesX * nNodesY;
+
+              LOG(DEBUG) << "(x,y,z)=(" << elementalNodeIndexX << ","
+                         << elementalNodeIndexY << "," << elementalNodeIndexZ
+                         << ") dofNoLocal " << dofNoLocal
+                         << ", valueIndex: " << valueIndex << "/"
+                         << tractionValues_.size() / 3;
+
+              assert(valueIndex >= 0);
+              if (valueIndex >= preciceData.preciceMesh->nNodesLocal) {
+                LOG(ERROR) << "valueIndex: " << valueIndex
+                           << ", dofNoLocal: " << dofNoLocal
+                           << ", nNodes: " << nNodesX << "," << nNodesY
+                           << ", nodeIndexZ: " << nodeIndexZ
+                           << ", nNodesLocal: "
+                           << preciceData.preciceMesh->nNodesLocal
+                           << " elementNoLocal: " << elementNoLocal
+                           << ", elementalDofIndex: " << elementalDofIndex
+                           << ", elementalNodeIndexZ: " << elementalNodeIndexZ
+                           << ", meshPartition: "
+                           << *functionSpace->meshPartition();
+              }
+              assert(valueIndex < preciceData.preciceMesh->nNodesLocal);
+
+              Vec3 traction;
+              for (int i = 0; i < 3; i++) {
+                traction[i] = tractionValues_[3 * valueIndex + i];
+              }
+
+              dof_no_t surfaceDof = elementalDofIndex;
+
+              // for top surface
+              if (preciceData.preciceMesh->face ==
+                  PreciceAdapterInitialize<
+                      NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
+                surfaceDof = 18 + elementalDofIndex;
+              }
+              elementWithFaces.dofVectors.push_back(
+                  std::pair<dof_no_t, Vec3>(surfaceDof, traction));
+
+              // LOG(INFO) << "dofVectors: " << elementWithFaces.dofVectors <<
+              // ", traction: " << traction;
+            }
+          }
+          neumannBoundaryConditionElements.push_back(elementWithFaces);
+        }
       }
     }
-  }
-  // create new Neumann BC object
-  using NeumannBoundaryConditionsType =
-      SpatialDiscretization::NeumannBoundaryConditions<FunctionSpace,
-                                                       Quadrature::Gauss<3>, 3>;
-  std::shared_ptr<NeumannBoundaryConditionsType> neumannBoundaryConditions =
-      std::make_shared<NeumannBoundaryConditionsType>(context);
-  neumannBoundaryConditions->initialize(functionSpace,
-                                        neumannBoundaryConditionElements);
-  neumannBoundaryConditions->setDeformationGradientField(
-      this->deformationGradientField(nestedSolver));
+    // create new Neumann BC object
+    using NeumannBoundaryConditionsType =
+        SpatialDiscretization::NeumannBoundaryConditions<
+            FunctionSpace, Quadrature::Gauss<3>, 3>;
+    std::shared_ptr<NeumannBoundaryConditionsType> neumannBoundaryConditions =
+        std::make_shared<NeumannBoundaryConditionsType>(context);
+    neumannBoundaryConditions->initialize(functionSpace,
+                                          neumannBoundaryConditionElements);
+    neumannBoundaryConditions->setDeformationGradientField(
+        this->deformationGradientField(nestedSolver));
 
 #ifndef NDEBUG
-  std::stringstream s;
-  for (int i = 0; i < neumannBoundaryConditionElements.size(); i++) {
-    s << "{el. " << neumannBoundaryConditionElements[i].elementNoLocal << ", \""
-      << Mesh::getString(neumannBoundaryConditionElements[i].face)
-      << "\", dofVectors: [";
-    for (int j = 0; j < neumannBoundaryConditionElements[i].dofVectors.size();
-         j++) {
-      s << "(" << neumannBoundaryConditionElements[i].dofVectors[j].first
-        << ": (";
-      for (int k = 0;
-           k < neumannBoundaryConditionElements[i].dofVectors[j].second.size();
-           k++) {
-        if (k != 0)
-          s << ",";
-        s << neumannBoundaryConditionElements[i].dofVectors[j].second[k];
+    std::stringstream s;
+    for (int i = 0; i < neumannBoundaryConditionElements.size(); i++) {
+      s << "{el. " << neumannBoundaryConditionElements[i].elementNoLocal
+        << ", \"" << Mesh::getString(neumannBoundaryConditionElements[i].face)
+        << "\", dofVectors: [";
+      for (int j = 0; j < neumannBoundaryConditionElements[i].dofVectors.size();
+           j++) {
+        s << "(" << neumannBoundaryConditionElements[i].dofVectors[j].first
+          << ": (";
+        for (int k = 0;
+             k <
+             neumannBoundaryConditionElements[i].dofVectors[j].second.size();
+             k++) {
+          if (k != 0)
+            s << ",";
+          s << neumannBoundaryConditionElements[i].dofVectors[j].second[k];
+        }
+        s << ")),";
       }
-      s << ")),";
+      s << "], surfaceDofs: ";
+      for (int j = 0;
+           j < neumannBoundaryConditionElements[i].surfaceDofs.size(); j++)
+        s << neumannBoundaryConditionElements[i].surfaceDofs[j] << ",";
+      s << "} ";
     }
-    s << "], surfaceDofs: ";
-    for (int j = 0; j < neumannBoundaryConditionElements[i].surfaceDofs.size();
-         j++)
-      s << neumannBoundaryConditionElements[i].surfaceDofs[j] << ",";
-    s << "} ";
-  }
-  LOG(DEBUG) << "read and set Neumann BC:\n" << s.str();
+    LOG(DEBUG) << "read and set Neumann BC:\n" << s.str();
 #endif
 
-  // set Neumann BCs in the static hyperelasticity of the
-  // TimeSteppingScheme::DynamicHyperelasticitySolver solver
-  this->updateNeumannBoundaryConditions(nestedSolver,
-                                        neumannBoundaryConditions);
+    // set Neumann BCs in the static hyperelasticity of the
+    // TimeSteppingScheme::DynamicHyperelasticitySolver solver
+    this->updateNeumannBoundaryConditions(nestedSolver,
+                                          neumannBoundaryConditions);
 
-  LOG(DEBUG) << "read data from precice complete, traction values: "
-             << tractionValues_;
-}
+    LOG(DEBUG) << "read data from precice complete, traction values: "
+               << tractionValues_;
+  }
   //! initialize dirichlet boundary conditions by adding prescribed values for
   //! all bottom or top nodes
   void addDirichletBoundaryConditions(
@@ -1574,407 +1654,428 @@ public:
       Material>::FunctionSpace>
   functionSpace(NestedSolverType &nestedSolver);
 
-  template<typename SurfaceDataVector, typename VolumeDataVector>
-  void preciceReadData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData, DihuContext &context) {
-LOG(DEBUG) << "read data from precice";
-  double preciceDt = preciceParticipant->getMaxTimeStepSize();
-  // loop over data
-  for (auto &preciceData : preciceSurfaceData) {
-    if (preciceData.ioType ==
-        PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceData::ioRead) {
-      // allocate memory
-      int nEntries = preciceData.preciceMesh->nNodesLocal * 3;
+  template <typename SurfaceDataVector, typename VolumeDataVector>
+  void
+  preciceReadData(NestedSolverType &nestedSolver,
+                  std::shared_ptr<precice::Participant> &preciceParticipant,
+                  SurfaceDataVector &preciceSurfaceData,
+                  VolumeDataVector &preciceVolumeData, DihuContext &context) {
+    LOG(DEBUG) << "read data from precice";
+    double preciceDt = preciceParticipant->getMaxTimeStepSize();
+    // loop over data
+    for (auto &preciceData : preciceSurfaceData) {
+      if (preciceData.ioType ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceSurfaceData::ioRead) {
+        // allocate memory
+        int nEntries = preciceData.preciceMesh->nNodesLocal * 3;
 
-      // if the data is displacements and velocities
-      if (!preciceData.displacementsName.empty()) {
-        displacementValues_.resize(nEntries);
-        velocityValues_.resize(nEntries);
+        // if the data is displacements and velocities
+        if (!preciceData.displacementsName.empty()) {
+          displacementValues_.resize(nEntries);
+          velocityValues_.resize(nEntries);
 
-        // get all data at once
-        preciceParticipant->readData(
-            preciceData.preciceMesh->preciceMeshName,
-            preciceData.displacementsName,
-            preciceData.preciceMesh->preciceVertexIds, preciceDt,
-            displacementValues_);
+          // get all data at once
+          preciceParticipant->readData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.displacementsName,
+              preciceData.preciceMesh->preciceVertexIds, preciceDt,
+              displacementValues_);
 
-        preciceParticipant->readData(
-            preciceData.preciceMesh->preciceMeshName,
-            preciceData.velocitiesName,
-            preciceData.preciceMesh->preciceVertexIds, preciceDt,
-            velocityValues_);
+          preciceParticipant->readData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.velocitiesName,
+              preciceData.preciceMesh->preciceVertexIds, preciceDt,
+              velocityValues_);
 
-        setDirichletBoundaryConditions(preciceData, nestedSolver);
+          setDirichletBoundaryConditions(preciceData, nestedSolver);
+        }
+        // if the data is traction
+        else if (!preciceData.tractionName.empty()) {
+          tractionValues_.resize(nEntries);
+          preciceParticipant->readData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.tractionName,
+              preciceData.preciceMesh->preciceVertexIds, preciceDt,
+              tractionValues_);
+
+          setNeumannBoundaryConditions(preciceData, nestedSolver, context);
+        } else {
+          LOG(FATAL) << "Unknown precice data (read), none of displacements, "
+                        "velocities or traction is set.";
+        }
       }
-      // if the data is traction
-      else if (!preciceData.tractionName.empty()) {
-        tractionValues_.resize(nEntries);
-        preciceParticipant->readData(
-            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
-            preciceData.preciceMesh->preciceVertexIds, preciceDt,
-            tractionValues_);
+    };
+  }
 
-        setNeumannBoundaryConditions(preciceData, nestedSolver, context);
-      } else {
-        LOG(FATAL) << "Unknown precice data (read), none of displacements, "
-                      "velocities or traction is set.";
+  template <typename SurfaceDataVector, typename VolumeDataVector>
+  void
+  preciceWriteData(NestedSolverType &nestedSolver,
+                   std::shared_ptr<precice::Participant> &preciceParticipant,
+                   SurfaceDataVector &preciceSurfaceData,
+                   VolumeDataVector &preciceVolumeData, double scalingFactor) {
+    // write data to precice
+    LOG(DEBUG) << "write data to precice";
+
+    // loop over data
+    for (auto &preciceData : preciceSurfaceData) {
+      if (preciceData.ioType ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceSurfaceData::ioWrite) {
+        // if the data is displacements and velocities
+        if (!preciceData.displacementsName.empty()) {
+          // convert geometry values to precice data layout
+          displacementValues_.clear();
+          velocityValues_.clear();
+
+          this->getDisplacementVelocityValues(
+              nestedSolver, preciceData.preciceMesh->dofNosLocal,
+              displacementValues_, velocityValues_);
+
+#ifndef NDEBUG
+          LOG(DEBUG) << "write displacements data to precice: "
+                     << displacementValues_;
+#endif
+          // scale displacement and velocity values
+          for (double &value : displacementValues_)
+            value *= scalingFactor;
+
+          for (double &value : velocityValues_)
+            value *= scalingFactor;
+
+          // write displacement values in precice
+          preciceParticipant->writeData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.displacementsName,
+              preciceData.preciceMesh->preciceVertexIds, displacementValues_);
+
+          // write velocity values in precice
+          preciceParticipant->writeData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.velocitiesName,
+              preciceData.preciceMesh->preciceVertexIds, velocityValues_);
+        }
+        // if the data is traction
+        else if (!preciceData.tractionName.empty() &&
+                 preciceData.average == true) {
+          LOG(INFO) << "Write averaged traction";
+          // convert geometry values to precice data layout
+          tractionValues_.clear();
+          this->getTractionValues(nestedSolver,
+                                  preciceData.preciceMesh->dofNosLocal,
+                                  tractionValues_);
+          // average z-values of traction
+          double average_traction = 0.0;
+          for (int i = 2; i < tractionValues_.size(); i += 3) {
+            average_traction += tractionValues_[i];
+          }
+          average_traction /= (tractionValues_.size() / 3);
+          for (int i = 2; i < tractionValues_.size(); i += 3) {
+            tractionValues_[i] = average_traction;
+          }
+#ifndef NDEBUG
+          LOG(DEBUG) << "Write averaged-traction data to precice: "
+                     << tractionValues_[2];
+#endif
+          // scale traction values, they are always scaled by the factor of -1
+          for (double &value : tractionValues_) {
+            value *= scalingFactor;
+            value *= -1;
+          }
+
+          preciceParticipant->writeData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.tractionName,
+              preciceData.preciceMesh->preciceVertexIds, tractionValues_);
+        } else if (!preciceData.tractionName.empty()) {
+
+          LOG(INFO) << "Write non-averaged traction";
+
+          // convert geometry values to precice data layout
+          tractionValues_.clear();
+          this->getTractionValues(nestedSolver,
+                                  preciceData.preciceMesh->dofNosLocal,
+                                  tractionValues_);
+
+#ifndef NDEBUG
+          LOG(DEBUG) << "write traction data to precice: " << tractionValues_;
+          std::stringstream s;
+          for (int i = 2; i < tractionValues_.size(); i += 3) {
+            s << " " << tractionValues_[i];
+          }
+          LOG(DEBUG) << "z values of traction: " << s.str();
+#endif
+          // scale traction values, they are always scaled by the factor of -1
+          for (double &value : tractionValues_) {
+            value *= scalingFactor;
+            value *= -1;
+          }
+
+          preciceParticipant->writeData(
+              preciceData.preciceMesh->preciceMeshName,
+              preciceData.tractionName,
+              preciceData.preciceMesh->preciceVertexIds, tractionValues_);
+        } else {
+          LOG(FATAL) << "Unknown precice data (write), none of displacements, "
+                        "velocities or traction is set.";
+        }
       }
     }
-  };
+
+    LOG(DEBUG) << "write traction data to precice complete";
   }
 
-  template<typename SurfaceDataVector, typename VolumeDataVector>
-  void preciceWriteData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData, double scalingFactor) {
-  // write data to precice
-  LOG(DEBUG) << "write data to precice";
-
-  // loop over data
-  for (auto &preciceData : preciceSurfaceData) {
-    if (preciceData.ioType ==
-        PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceData::ioWrite) {
-      // if the data is displacements and velocities
-      if (!preciceData.displacementsName.empty()) {
-        // convert geometry values to precice data layout
-        displacementValues_.clear();
-        velocityValues_.clear();
-
-        this->getDisplacementVelocityValues(
-            nestedSolver, preciceData.preciceMesh->dofNosLocal,
-            displacementValues_, velocityValues_);
-
-#ifndef NDEBUG
-        LOG(DEBUG) << "write displacements data to precice: "
-                   << displacementValues_;
-#endif
-        // scale displacement and velocity values
-        for (double &value : displacementValues_)
-          value *= scalingFactor;
-
-        for (double &value : velocityValues_)
-          value *= scalingFactor;
-
-        // write displacement values in precice
-        preciceParticipant->writeData(
-            preciceData.preciceMesh->preciceMeshName,
-            preciceData.displacementsName,
-            preciceData.preciceMesh->preciceVertexIds, displacementValues_);
-
-        // write velocity values in precice
-        preciceParticipant->writeData(
-            preciceData.preciceMesh->preciceMeshName,
-            preciceData.velocitiesName,
-            preciceData.preciceMesh->preciceVertexIds, velocityValues_);
-      }
-      // if the data is traction
-      else if (!preciceData.tractionName.empty() &&
-               preciceData.average == true) {
-        LOG(INFO) << "Write averaged traction";
-        // convert geometry values to precice data layout
-        tractionValues_.clear();
-        this->getTractionValues(nestedSolver,
-                                preciceData.preciceMesh->dofNosLocal,
-                                tractionValues_);
-        // average z-values of traction
-        double average_traction = 0.0;
-        for (int i = 2; i < tractionValues_.size(); i += 3) {
-          average_traction += tractionValues_[i];
-        }
-        average_traction /= (tractionValues_.size() / 3);
-        for (int i = 2; i < tractionValues_.size(); i += 3) {
-          tractionValues_[i] = average_traction;
-        }
-#ifndef NDEBUG
-        LOG(DEBUG) << "Write averaged-traction data to precice: "
-                   << tractionValues_[2];
-#endif
-        // scale traction values, they are always scaled by the factor of -1
-        for (double &value : tractionValues_) {
-          value *= scalingFactor;
-          value *= -1;
-        }
-
-        preciceParticipant->writeData(
-            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
-            preciceData.preciceMesh->preciceVertexIds, tractionValues_);
-      } else if (!preciceData.tractionName.empty()) {
-
-        LOG(INFO) << "Write non-averaged traction";
-
-        // convert geometry values to precice data layout
-        tractionValues_.clear();
-        this->getTractionValues(nestedSolver,
-                                preciceData.preciceMesh->dofNosLocal,
-                                tractionValues_);
-
-#ifndef NDEBUG
-        LOG(DEBUG) << "write traction data to precice: " << tractionValues_;
-        std::stringstream s;
-        for (int i = 2; i < tractionValues_.size(); i += 3) {
-          s << " " << tractionValues_[i];
-        }
-        LOG(DEBUG) << "z values of traction: " << s.str();
-#endif
-        // scale traction values, they are always scaled by the factor of -1
-        for (double &value : tractionValues_) {
-          value *= scalingFactor;
-          value *= -1;
-        }
-
-        preciceParticipant->writeData(
-            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
-            preciceData.preciceMesh->preciceVertexIds, tractionValues_);
-      } else {
-        LOG(FATAL) << "Unknown precice data (write), none of displacements, "
-                      "velocities or traction is set.";
-      }
-    }
-  }
-
-  LOG(DEBUG) << "write traction data to precice complete";
-  }
-
-  template<typename SurfaceData>
-void setDirichletBoundaryConditions(SurfaceData &preciceData, NestedSolverType &nestedSolver) {
-  std::vector<std::pair<global_no_t, std::array<double, 6>>>
-      newDirichletBCValues;
+  template <typename SurfaceData>
+  void setDirichletBoundaryConditions(SurfaceData &preciceData,
+                                      NestedSolverType &nestedSolver) {
+    std::vector<std::pair<global_no_t, std::array<double, 6>>>
+        newDirichletBCValues;
 
     auto functionSpace = this->functionSpace(nestedSolver);
 
-  // if this rank has no data, do not set any boundary conditions
-  if (preciceData.preciceMesh->nNodesLocal != 0) {
-    // loop over nodes
-    const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
-    const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
-    const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
+    // if this rank has no data, do not set any boundary conditions
+    if (preciceData.preciceMesh->nNodesLocal != 0) {
+      // loop over nodes
+      const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
+      const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
+      const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
 
-    // set node index in z direction for bottom surface
-    int nodeIndexZ = 0;
+      // set node index in z direction for bottom surface
+      int nodeIndexZ = 0;
 
-    // for top surface
-    if (preciceData.preciceMesh->face ==
-        PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
-      nodeIndexZ = nNodesZ - 1;
-    }
-
-    // loop over nodes to set the received values
-    newDirichletBCValues.reserve(nNodesX * nNodesY);
-    int valueIndex = 0;
-
-    // loop over nodes of surface mesh
-    for (int nodeIndexY = 0; nodeIndexY < nNodesY; nodeIndexY++) {
-      for (int nodeIndexX = 0; nodeIndexX < nNodesX;
-           nodeIndexX++, valueIndex++) {
-        node_no_t nodeNoLocal =
-            nodeIndexZ * nNodesX * nNodesY + nodeIndexY * nNodesX + nodeIndexX;
-
-        dof_no_t dofNoLocal = nodeNoLocal;
-        global_no_t dofNoGlobal =
-            functionSpace->meshPartition()->getDofNoGlobalPetsc(
-                dofNoLocal);
-
-        // assign received values to dirichlet bc vector of size 6
-        std::array<double, 6> newDirichletBCValue;
-
-        for (int i = 0; i < 3; i++) {
-          newDirichletBCValue[i] = displacementValues_[3 * valueIndex + i];
-          newDirichletBCValue[3 + i] = velocityValues_[3 * valueIndex + i];
-        }
-
-        newDirichletBCValues.push_back(
-            std::pair<global_no_t, std::array<double, 6>>(dofNoGlobal,
-                                                          newDirichletBCValue));
+      // for top surface
+      if (preciceData.preciceMesh->face ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
+        nodeIndexZ = nNodesZ - 1;
       }
-    }
 
-    LOG(DEBUG) << "read data from precice complete, displacement values: "
-               << displacementValues_
-               << ", velocityValues: " << velocityValues_;
-    LOG(DEBUG) << "read and set Dirichlet BC: " << newDirichletBCValues;
-  }
+      // loop over nodes to set the received values
+      newDirichletBCValues.reserve(nNodesX * nNodesY);
+      int valueIndex = 0;
 
-  //! set new dirichlet boundary condition values
-  this->updateDirichletBoundaryConditions(nestedSolver,
-                                          newDirichletBCValues);
-}
+      // loop over nodes of surface mesh
+      for (int nodeIndexY = 0; nodeIndexY < nNodesY; nodeIndexY++) {
+        for (int nodeIndexX = 0; nodeIndexX < nNodesX;
+             nodeIndexX++, valueIndex++) {
+          node_no_t nodeNoLocal = nodeIndexZ * nNodesX * nNodesY +
+                                  nodeIndexY * nNodesX + nodeIndexX;
 
-  template<typename SurfaceData>
-void setNeumannBoundaryConditions(SurfaceData &preciceData, NestedSolverType &nestedSolver, DihuContext &context ){
-// set traction values as neumann boundary conditions
-  using FunctionSpace =
-      typename PreciceAdapterNestedSolver<NestedSolverType>::FunctionSpace;
-  using ElementWithFacesType =
-      typename SpatialDiscretization::NeumannBoundaryConditions<
-          FunctionSpace, Quadrature::Gauss<3>, 3>::ElementWithFaces;
+          dof_no_t dofNoLocal = nodeNoLocal;
+          global_no_t dofNoGlobal =
+              functionSpace->meshPartition()->getDofNoGlobalPetsc(dofNoLocal);
 
-  std::vector<ElementWithFacesType> neumannBoundaryConditionElements;
+          // assign received values to dirichlet bc vector of size 6
+          std::array<double, 6> newDirichletBCValue;
 
-  auto functionSpace = this->functionSpace(nestedSolver);
-
-
-  // if this rank has no data, do not set any boundary conditions
-  if (preciceData.preciceMesh->nNodesLocal != 0) {
-
-    const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
-    const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
-    const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
-
-    int nElementsX = functionSpace->meshPartition()->nElementsLocal(0);
-    int nElementsY = functionSpace->meshPartition()->nElementsLocal(1);
-    int nElementsZ = functionSpace->meshPartition()->nElementsLocal(2);
-
-    // set node and element indics in z direction for bottom surface
-    int nodeIndexZ = 0;
-    int elementalNodeIndexZ = 0;
-    int elementIndexZ = 0;
-
-    // for top surface
-    if (preciceData.preciceMesh->face ==
-        PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
-      nodeIndexZ = nNodesZ - 1;
-      elementIndexZ = nElementsZ - 1;
-      elementalNodeIndexZ = 2;
-    }
-
-    // loop over elements
-    for (int elementIndexY = 0; elementIndexY < nElementsY; elementIndexY++) {
-      for (int elementIndexX = 0; elementIndexX < nElementsX; elementIndexX++) {
-        ElementWithFacesType elementWithFaces;
-        element_no_t elementNoLocal = elementIndexZ * nElementsX * nElementsY +
-                                      elementIndexY * nElementsX +
-                                      elementIndexX;
-        elementWithFaces.elementNoLocal = elementNoLocal;
-
-        // set surface dofs
-        Mesh::face_t face = Mesh::face_t::face2Minus;
-        if (preciceData.preciceMesh->face ==
-            PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceMesh::face2Plus)
-          face = Mesh::face_t::face2Plus;
-
-        elementWithFaces.face = face;
-
-        // get dofs indices within the numbering of the volume element that
-        // correspond to the selected face
-        const int nDofsPerNode = FunctionSpace::nDofsPerNode();
-        const int nSurfaceDofs =
-            ::FunctionSpace::FunctionSpaceBaseDim<
-                2, typename FunctionSpace::BasisFunction>::nNodesPerElement() *
-            nDofsPerNode;
-        std::array<dof_no_t, nSurfaceDofs> surfaceDofs;
-        FunctionSpace::getFaceDofs(face, surfaceDofs);
-
-        elementWithFaces.surfaceDofs.assign(surfaceDofs.begin(),
-                                            surfaceDofs.end());
-
-        // loop over the nodes of the element
-        for (int elementalNodeIndexY = 0; elementalNodeIndexY < 3;
-             elementalNodeIndexY++) {
-          for (int elementalNodeIndexX = 0; elementalNodeIndexX < 3;
-               elementalNodeIndexX++) {
-            int elementalDofIndex = elementalNodeIndexZ * 9 +
-                                    elementalNodeIndexY * 3 +
-                                    elementalNodeIndexX;
-
-            dof_no_t dofNoLocal = functionSpace->getDofNo(
-                elementNoLocal, elementalDofIndex);
-
-            // only iterate over local dofs, the ghost dofs are not considered
-            // here (although it would be correct to communicate them with
-            // precice)
-            if (dofNoLocal >= functionSpace->nDofsLocalWithoutGhosts())
-              continue;
-
-            int valueIndex = dofNoLocal - nodeIndexZ * nNodesX * nNodesY;
-
-            LOG(DEBUG) << "(x,y,z)=(" << elementalNodeIndexX << ","
-                       << elementalNodeIndexY << "," << elementalNodeIndexZ
-                       << ") dofNoLocal " << dofNoLocal
-                       << ", valueIndex: " << valueIndex << "/"
-                       << tractionValues_.size() / 3;
-
-            assert(valueIndex >= 0);
-            if (valueIndex >= preciceData.preciceMesh->nNodesLocal) {
-              LOG(ERROR) << "valueIndex: " << valueIndex
-                         << ", dofNoLocal: " << dofNoLocal
-                         << ", nNodes: " << nNodesX << "," << nNodesY
-                         << ", nodeIndexZ: " << nodeIndexZ << ", nNodesLocal: "
-                         << preciceData.preciceMesh->nNodesLocal
-                         << " elementNoLocal: " << elementNoLocal
-                         << ", elementalDofIndex: " << elementalDofIndex
-                         << ", elementalNodeIndexZ: " << elementalNodeIndexZ
-                         << ", meshPartition: "
-                         << *functionSpace->meshPartition();
-            }
-            assert(valueIndex < preciceData.preciceMesh->nNodesLocal);
-
-            Vec3 traction;
-            for (int i = 0; i < 3; i++) {
-              traction[i] = tractionValues_[3 * valueIndex + i];
-            }
-
-            dof_no_t surfaceDof = elementalDofIndex;
-
-            // for top surface
-            if (preciceData.preciceMesh->face ==
-                PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
-              surfaceDof = 18 + elementalDofIndex;
-            }
-            elementWithFaces.dofVectors.push_back(
-                std::pair<dof_no_t, Vec3>(surfaceDof, traction));
-
-            // LOG(INFO) << "dofVectors: " << elementWithFaces.dofVectors << ",
-            // traction: " << traction;
+          for (int i = 0; i < 3; i++) {
+            newDirichletBCValue[i] = displacementValues_[3 * valueIndex + i];
+            newDirichletBCValue[3 + i] = velocityValues_[3 * valueIndex + i];
           }
+
+          newDirichletBCValues.push_back(
+              std::pair<global_no_t, std::array<double, 6>>(
+                  dofNoGlobal, newDirichletBCValue));
         }
-        neumannBoundaryConditionElements.push_back(elementWithFaces);
+      }
+
+      LOG(DEBUG) << "read data from precice complete, displacement values: "
+                 << displacementValues_
+                 << ", velocityValues: " << velocityValues_;
+      LOG(DEBUG) << "read and set Dirichlet BC: " << newDirichletBCValues;
+    }
+
+    //! set new dirichlet boundary condition values
+    this->updateDirichletBoundaryConditions(nestedSolver, newDirichletBCValues);
+  }
+
+  template <typename SurfaceData>
+  void setNeumannBoundaryConditions(SurfaceData &preciceData,
+                                    NestedSolverType &nestedSolver,
+                                    DihuContext &context) {
+    // set traction values as neumann boundary conditions
+    using FunctionSpace =
+        typename PreciceAdapterNestedSolver<NestedSolverType>::FunctionSpace;
+    using ElementWithFacesType =
+        typename SpatialDiscretization::NeumannBoundaryConditions<
+            FunctionSpace, Quadrature::Gauss<3>, 3>::ElementWithFaces;
+
+    std::vector<ElementWithFacesType> neumannBoundaryConditionElements;
+
+    auto functionSpace = this->functionSpace(nestedSolver);
+
+    // if this rank has no data, do not set any boundary conditions
+    if (preciceData.preciceMesh->nNodesLocal != 0) {
+
+      const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
+      const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
+      const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
+
+      int nElementsX = functionSpace->meshPartition()->nElementsLocal(0);
+      int nElementsY = functionSpace->meshPartition()->nElementsLocal(1);
+      int nElementsZ = functionSpace->meshPartition()->nElementsLocal(2);
+
+      // set node and element indics in z direction for bottom surface
+      int nodeIndexZ = 0;
+      int elementalNodeIndexZ = 0;
+      int elementIndexZ = 0;
+
+      // for top surface
+      if (preciceData.preciceMesh->face ==
+          PreciceAdapterInitialize<
+              NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
+        nodeIndexZ = nNodesZ - 1;
+        elementIndexZ = nElementsZ - 1;
+        elementalNodeIndexZ = 2;
+      }
+
+      // loop over elements
+      for (int elementIndexY = 0; elementIndexY < nElementsY; elementIndexY++) {
+        for (int elementIndexX = 0; elementIndexX < nElementsX;
+             elementIndexX++) {
+          ElementWithFacesType elementWithFaces;
+          element_no_t elementNoLocal =
+              elementIndexZ * nElementsX * nElementsY +
+              elementIndexY * nElementsX + elementIndexX;
+          elementWithFaces.elementNoLocal = elementNoLocal;
+
+          // set surface dofs
+          Mesh::face_t face = Mesh::face_t::face2Minus;
+          if (preciceData.preciceMesh->face ==
+              PreciceAdapterInitialize<
+                  NestedSolverType>::PreciceSurfaceMesh::face2Plus)
+            face = Mesh::face_t::face2Plus;
+
+          elementWithFaces.face = face;
+
+          // get dofs indices within the numbering of the volume element that
+          // correspond to the selected face
+          const int nDofsPerNode = FunctionSpace::nDofsPerNode();
+          const int nSurfaceDofs =
+              ::FunctionSpace::FunctionSpaceBaseDim<
+                  2,
+                  typename FunctionSpace::BasisFunction>::nNodesPerElement() *
+              nDofsPerNode;
+          std::array<dof_no_t, nSurfaceDofs> surfaceDofs;
+          FunctionSpace::getFaceDofs(face, surfaceDofs);
+
+          elementWithFaces.surfaceDofs.assign(surfaceDofs.begin(),
+                                              surfaceDofs.end());
+
+          // loop over the nodes of the element
+          for (int elementalNodeIndexY = 0; elementalNodeIndexY < 3;
+               elementalNodeIndexY++) {
+            for (int elementalNodeIndexX = 0; elementalNodeIndexX < 3;
+                 elementalNodeIndexX++) {
+              int elementalDofIndex = elementalNodeIndexZ * 9 +
+                                      elementalNodeIndexY * 3 +
+                                      elementalNodeIndexX;
+
+              dof_no_t dofNoLocal =
+                  functionSpace->getDofNo(elementNoLocal, elementalDofIndex);
+
+              // only iterate over local dofs, the ghost dofs are not considered
+              // here (although it would be correct to communicate them with
+              // precice)
+              if (dofNoLocal >= functionSpace->nDofsLocalWithoutGhosts())
+                continue;
+
+              int valueIndex = dofNoLocal - nodeIndexZ * nNodesX * nNodesY;
+
+              LOG(DEBUG) << "(x,y,z)=(" << elementalNodeIndexX << ","
+                         << elementalNodeIndexY << "," << elementalNodeIndexZ
+                         << ") dofNoLocal " << dofNoLocal
+                         << ", valueIndex: " << valueIndex << "/"
+                         << tractionValues_.size() / 3;
+
+              assert(valueIndex >= 0);
+              if (valueIndex >= preciceData.preciceMesh->nNodesLocal) {
+                LOG(ERROR) << "valueIndex: " << valueIndex
+                           << ", dofNoLocal: " << dofNoLocal
+                           << ", nNodes: " << nNodesX << "," << nNodesY
+                           << ", nodeIndexZ: " << nodeIndexZ
+                           << ", nNodesLocal: "
+                           << preciceData.preciceMesh->nNodesLocal
+                           << " elementNoLocal: " << elementNoLocal
+                           << ", elementalDofIndex: " << elementalDofIndex
+                           << ", elementalNodeIndexZ: " << elementalNodeIndexZ
+                           << ", meshPartition: "
+                           << *functionSpace->meshPartition();
+              }
+              assert(valueIndex < preciceData.preciceMesh->nNodesLocal);
+
+              Vec3 traction;
+              for (int i = 0; i < 3; i++) {
+                traction[i] = tractionValues_[3 * valueIndex + i];
+              }
+
+              dof_no_t surfaceDof = elementalDofIndex;
+
+              // for top surface
+              if (preciceData.preciceMesh->face ==
+                  PreciceAdapterInitialize<
+                      NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
+                surfaceDof = 18 + elementalDofIndex;
+              }
+              elementWithFaces.dofVectors.push_back(
+                  std::pair<dof_no_t, Vec3>(surfaceDof, traction));
+
+              // LOG(INFO) << "dofVectors: " << elementWithFaces.dofVectors <<
+              // ", traction: " << traction;
+            }
+          }
+          neumannBoundaryConditionElements.push_back(elementWithFaces);
+        }
       }
     }
-  }
-  // create new Neumann BC object
-  using NeumannBoundaryConditionsType =
-      SpatialDiscretization::NeumannBoundaryConditions<FunctionSpace,
-                                                       Quadrature::Gauss<3>, 3>;
-  std::shared_ptr<NeumannBoundaryConditionsType> neumannBoundaryConditions =
-      std::make_shared<NeumannBoundaryConditionsType>(context);
-  neumannBoundaryConditions->initialize(functionSpace,
-                                        neumannBoundaryConditionElements);
-  neumannBoundaryConditions->setDeformationGradientField(
-      this->deformationGradientField(nestedSolver));
+    // create new Neumann BC object
+    using NeumannBoundaryConditionsType =
+        SpatialDiscretization::NeumannBoundaryConditions<
+            FunctionSpace, Quadrature::Gauss<3>, 3>;
+    std::shared_ptr<NeumannBoundaryConditionsType> neumannBoundaryConditions =
+        std::make_shared<NeumannBoundaryConditionsType>(context);
+    neumannBoundaryConditions->initialize(functionSpace,
+                                          neumannBoundaryConditionElements);
+    neumannBoundaryConditions->setDeformationGradientField(
+        this->deformationGradientField(nestedSolver));
 
 #ifndef NDEBUG
-  std::stringstream s;
-  for (int i = 0; i < neumannBoundaryConditionElements.size(); i++) {
-    s << "{el. " << neumannBoundaryConditionElements[i].elementNoLocal << ", \""
-      << Mesh::getString(neumannBoundaryConditionElements[i].face)
-      << "\", dofVectors: [";
-    for (int j = 0; j < neumannBoundaryConditionElements[i].dofVectors.size();
-         j++) {
-      s << "(" << neumannBoundaryConditionElements[i].dofVectors[j].first
-        << ": (";
-      for (int k = 0;
-           k < neumannBoundaryConditionElements[i].dofVectors[j].second.size();
-           k++) {
-        if (k != 0)
-          s << ",";
-        s << neumannBoundaryConditionElements[i].dofVectors[j].second[k];
+    std::stringstream s;
+    for (int i = 0; i < neumannBoundaryConditionElements.size(); i++) {
+      s << "{el. " << neumannBoundaryConditionElements[i].elementNoLocal
+        << ", \"" << Mesh::getString(neumannBoundaryConditionElements[i].face)
+        << "\", dofVectors: [";
+      for (int j = 0; j < neumannBoundaryConditionElements[i].dofVectors.size();
+           j++) {
+        s << "(" << neumannBoundaryConditionElements[i].dofVectors[j].first
+          << ": (";
+        for (int k = 0;
+             k <
+             neumannBoundaryConditionElements[i].dofVectors[j].second.size();
+             k++) {
+          if (k != 0)
+            s << ",";
+          s << neumannBoundaryConditionElements[i].dofVectors[j].second[k];
+        }
+        s << ")),";
       }
-      s << ")),";
+      s << "], surfaceDofs: ";
+      for (int j = 0;
+           j < neumannBoundaryConditionElements[i].surfaceDofs.size(); j++)
+        s << neumannBoundaryConditionElements[i].surfaceDofs[j] << ",";
+      s << "} ";
     }
-    s << "], surfaceDofs: ";
-    for (int j = 0; j < neumannBoundaryConditionElements[i].surfaceDofs.size();
-         j++)
-      s << neumannBoundaryConditionElements[i].surfaceDofs[j] << ",";
-    s << "} ";
-  }
-  LOG(DEBUG) << "read and set Neumann BC:\n" << s.str();
+    LOG(DEBUG) << "read and set Neumann BC:\n" << s.str();
 #endif
 
-  // set Neumann BCs in the static hyperelasticity of the
-  // TimeSteppingScheme::DynamicHyperelasticitySolver solver
-  this->updateNeumannBoundaryConditions(nestedSolver,
-                                        neumannBoundaryConditions);
+    // set Neumann BCs in the static hyperelasticity of the
+    // TimeSteppingScheme::DynamicHyperelasticitySolver solver
+    this->updateNeumannBoundaryConditions(nestedSolver,
+                                          neumannBoundaryConditions);
 
-  LOG(DEBUG) << "read data from precice complete, traction values: "
-             << tractionValues_;
-}
+    LOG(DEBUG) << "read data from precice complete, traction values: "
+               << tractionValues_;
+  }
   //! initialize dirichlet boundary conditions by adding prescribed values for
   //! all bottom or top nodes
   void addDirichletBoundaryConditions(

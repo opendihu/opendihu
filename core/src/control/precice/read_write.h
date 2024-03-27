@@ -9,12 +9,16 @@ namespace Control {
 
 class ReadWriteDataBase {
 public:
-  void preciceReadVolumeData(std::shared_ptr<precice::Participant> &preciceParticipant);
-  void preciceWriteVolumeData(std::shared_ptr<precice::Participant> &preciceParticipant);
+  void preciceReadVolumeData(
+      std::shared_ptr<precice::Participant> &preciceParticipant);
+  void preciceWriteVolumeData(
+      std::shared_ptr<precice::Participant> &preciceParticipant);
 
-  void preciceReadSurfaceData(std::shared_ptr<precice::Participant> &preciceParticipant);
-  void preciceWriteSurfaceData(std::shared_ptr<precice::Participant> &preciceParticipant);
- 
+  void preciceReadSurfaceData(
+      std::shared_ptr<precice::Participant> &preciceParticipant);
+  void preciceWriteSurfaceData(
+      std::shared_ptr<precice::Participant> &preciceParticipant);
+
   // void setNeumannBoundaryConditions(typename
   // PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData &preciceData);
   // void setDirichletBoundaryConditions(typename

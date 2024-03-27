@@ -55,9 +55,8 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::getTractionValues(
     std::vector<double> &tractionValues) {}
 
 template <typename T1>
-Vec PreciceAdapterNestedSolver<
-    FastMonodomainSolver<T1>>::currentState(NestedSolverType
-                                                            &nestedSolver) {}
+Vec PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::currentState(
+    NestedSolverType &nestedSolver) {}
 
 template <typename T1>
 std::shared_ptr<
