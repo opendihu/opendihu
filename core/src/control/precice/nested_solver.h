@@ -664,8 +664,112 @@ LOG(DEBUG) << "read data from precice";
 
   template<typename SurfaceDataVector, typename VolumeDataVector>
   void preciceWriteData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData, double scalingFactor) {
-    // ReadWriteDataBase ReadWriteDataBase_;
-    // ReadWriteDataBase_.preciceWriteVolumeData(preciceParticipant);
+  // write data to precice
+  LOG(DEBUG) << "write data to precice";
+
+  // loop over data
+  for (auto &preciceData : preciceSurfaceData) {
+    if (preciceData.ioType ==
+        PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceData::ioWrite) {
+      // if the data is displacements and velocities
+      if (!preciceData.displacementsName.empty()) {
+        // convert geometry values to precice data layout
+        displacementValues_.clear();
+        velocityValues_.clear();
+
+        this->getDisplacementVelocityValues(
+            nestedSolver, preciceData.preciceMesh->dofNosLocal,
+            displacementValues_, velocityValues_);
+
+#ifndef NDEBUG
+        LOG(DEBUG) << "write displacements data to precice: "
+                   << displacementValues_;
+#endif
+        // scale displacement and velocity values
+        for (double &value : displacementValues_)
+          value *= scalingFactor;
+
+        for (double &value : velocityValues_)
+          value *= scalingFactor;
+
+        // write displacement values in precice
+        preciceParticipant->writeData(
+            preciceData.preciceMesh->preciceMeshName,
+            preciceData.displacementsName,
+            preciceData.preciceMesh->preciceVertexIds, displacementValues_);
+
+        // write velocity values in precice
+        preciceParticipant->writeData(
+            preciceData.preciceMesh->preciceMeshName,
+            preciceData.velocitiesName,
+            preciceData.preciceMesh->preciceVertexIds, velocityValues_);
+      }
+      // if the data is traction
+      else if (!preciceData.tractionName.empty() &&
+               preciceData.average == true) {
+        LOG(INFO) << "Write averaged traction";
+        // convert geometry values to precice data layout
+        tractionValues_.clear();
+        this->getTractionValues(nestedSolver,
+                                preciceData.preciceMesh->dofNosLocal,
+                                tractionValues_);
+        // average z-values of traction
+        double average_traction = 0.0;
+        for (int i = 2; i < tractionValues_.size(); i += 3) {
+          average_traction += tractionValues_[i];
+        }
+        average_traction /= (tractionValues_.size() / 3);
+        for (int i = 2; i < tractionValues_.size(); i += 3) {
+          tractionValues_[i] = average_traction;
+        }
+#ifndef NDEBUG
+        LOG(DEBUG) << "Write averaged-traction data to precice: "
+                   << tractionValues_[2];
+#endif
+        // scale traction values, they are always scaled by the factor of -1
+        for (double &value : tractionValues_) {
+          value *= scalingFactor;
+          value *= -1;
+        }
+
+        preciceParticipant->writeData(
+            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
+            preciceData.preciceMesh->preciceVertexIds, tractionValues_);
+      } else if (!preciceData.tractionName.empty()) {
+
+        LOG(INFO) << "Write non-averaged traction";
+
+        // convert geometry values to precice data layout
+        tractionValues_.clear();
+        this->getTractionValues(nestedSolver,
+                                preciceData.preciceMesh->dofNosLocal,
+                                tractionValues_);
+
+#ifndef NDEBUG
+        LOG(DEBUG) << "write traction data to precice: " << tractionValues_;
+        std::stringstream s;
+        for (int i = 2; i < tractionValues_.size(); i += 3) {
+          s << " " << tractionValues_[i];
+        }
+        LOG(DEBUG) << "z values of traction: " << s.str();
+#endif
+        // scale traction values, they are always scaled by the factor of -1
+        for (double &value : tractionValues_) {
+          value *= scalingFactor;
+          value *= -1;
+        }
+
+        preciceParticipant->writeData(
+            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
+            preciceData.preciceMesh->preciceVertexIds, tractionValues_);
+      } else {
+        LOG(FATAL) << "Unknown precice data (write), none of displacements, "
+                      "velocities or traction is set.";
+      }
+    }
+  }
+
+  LOG(DEBUG) << "write traction data to precice complete";
   }
 
 template<typename SurfaceData>
@@ -1040,8 +1144,112 @@ LOG(DEBUG) << "read data from precice";
 
   template<typename SurfaceDataVector, typename VolumeDataVector>
   void preciceWriteData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData, double scalingFactor) {
-    // ReadWriteDataBase ReadWriteDataBase_;
-    // ReadWriteDataBase_.preciceWriteVolumeData(preciceParticipant);
+    // write data to precice
+  LOG(DEBUG) << "write data to precice";
+
+  // loop over data
+  for (auto &preciceData : preciceSurfaceData) {
+    if (preciceData.ioType ==
+        PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceData::ioWrite) {
+      // if the data is displacements and velocities
+      if (!preciceData.displacementsName.empty()) {
+        // convert geometry values to precice data layout
+        displacementValues_.clear();
+        velocityValues_.clear();
+
+        this->getDisplacementVelocityValues(
+            nestedSolver, preciceData.preciceMesh->dofNosLocal,
+            displacementValues_, velocityValues_);
+
+#ifndef NDEBUG
+        LOG(DEBUG) << "write displacements data to precice: "
+                   << displacementValues_;
+#endif
+        // scale displacement and velocity values
+        for (double &value : displacementValues_)
+          value *= scalingFactor;
+
+        for (double &value : velocityValues_)
+          value *= scalingFactor;
+
+        // write displacement values in precice
+        preciceParticipant->writeData(
+            preciceData.preciceMesh->preciceMeshName,
+            preciceData.displacementsName,
+            preciceData.preciceMesh->preciceVertexIds, displacementValues_);
+
+        // write velocity values in precice
+        preciceParticipant->writeData(
+            preciceData.preciceMesh->preciceMeshName,
+            preciceData.velocitiesName,
+            preciceData.preciceMesh->preciceVertexIds, velocityValues_);
+      }
+      // if the data is traction
+      else if (!preciceData.tractionName.empty() &&
+               preciceData.average == true) {
+        LOG(INFO) << "Write averaged traction";
+        // convert geometry values to precice data layout
+        tractionValues_.clear();
+        this->getTractionValues(nestedSolver,
+                                preciceData.preciceMesh->dofNosLocal,
+                                tractionValues_);
+        // average z-values of traction
+        double average_traction = 0.0;
+        for (int i = 2; i < tractionValues_.size(); i += 3) {
+          average_traction += tractionValues_[i];
+        }
+        average_traction /= (tractionValues_.size() / 3);
+        for (int i = 2; i < tractionValues_.size(); i += 3) {
+          tractionValues_[i] = average_traction;
+        }
+#ifndef NDEBUG
+        LOG(DEBUG) << "Write averaged-traction data to precice: "
+                   << tractionValues_[2];
+#endif
+        // scale traction values, they are always scaled by the factor of -1
+        for (double &value : tractionValues_) {
+          value *= scalingFactor;
+          value *= -1;
+        }
+
+        preciceParticipant->writeData(
+            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
+            preciceData.preciceMesh->preciceVertexIds, tractionValues_);
+      } else if (!preciceData.tractionName.empty()) {
+
+        LOG(INFO) << "Write non-averaged traction";
+
+        // convert geometry values to precice data layout
+        tractionValues_.clear();
+        this->getTractionValues(nestedSolver,
+                                preciceData.preciceMesh->dofNosLocal,
+                                tractionValues_);
+
+#ifndef NDEBUG
+        LOG(DEBUG) << "write traction data to precice: " << tractionValues_;
+        std::stringstream s;
+        for (int i = 2; i < tractionValues_.size(); i += 3) {
+          s << " " << tractionValues_[i];
+        }
+        LOG(DEBUG) << "z values of traction: " << s.str();
+#endif
+        // scale traction values, they are always scaled by the factor of -1
+        for (double &value : tractionValues_) {
+          value *= scalingFactor;
+          value *= -1;
+        }
+
+        preciceParticipant->writeData(
+            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
+            preciceData.preciceMesh->preciceVertexIds, tractionValues_);
+      } else {
+        LOG(FATAL) << "Unknown precice data (write), none of displacements, "
+                      "velocities or traction is set.";
+      }
+    }
+  }
+
+  LOG(DEBUG) << "write traction data to precice complete";
   }
 
 template<typename SurfaceData>
@@ -1416,8 +1624,112 @@ LOG(DEBUG) << "read data from precice";
 
   template<typename SurfaceDataVector, typename VolumeDataVector>
   void preciceWriteData(NestedSolverType &nestedSolver, std::shared_ptr<precice::Participant> &preciceParticipant, SurfaceDataVector &preciceSurfaceData, VolumeDataVector &preciceVolumeData, double scalingFactor) {
-    // ReadWriteDataBase ReadWriteDataBase_;
-    // ReadWriteDataBase_.preciceWriteVolumeData(preciceParticipant);
+  // write data to precice
+  LOG(DEBUG) << "write data to precice";
+
+  // loop over data
+  for (auto &preciceData : preciceSurfaceData) {
+    if (preciceData.ioType ==
+        PreciceAdapterInitialize<NestedSolverType>::PreciceSurfaceData::ioWrite) {
+      // if the data is displacements and velocities
+      if (!preciceData.displacementsName.empty()) {
+        // convert geometry values to precice data layout
+        displacementValues_.clear();
+        velocityValues_.clear();
+
+        this->getDisplacementVelocityValues(
+            nestedSolver, preciceData.preciceMesh->dofNosLocal,
+            displacementValues_, velocityValues_);
+
+#ifndef NDEBUG
+        LOG(DEBUG) << "write displacements data to precice: "
+                   << displacementValues_;
+#endif
+        // scale displacement and velocity values
+        for (double &value : displacementValues_)
+          value *= scalingFactor;
+
+        for (double &value : velocityValues_)
+          value *= scalingFactor;
+
+        // write displacement values in precice
+        preciceParticipant->writeData(
+            preciceData.preciceMesh->preciceMeshName,
+            preciceData.displacementsName,
+            preciceData.preciceMesh->preciceVertexIds, displacementValues_);
+
+        // write velocity values in precice
+        preciceParticipant->writeData(
+            preciceData.preciceMesh->preciceMeshName,
+            preciceData.velocitiesName,
+            preciceData.preciceMesh->preciceVertexIds, velocityValues_);
+      }
+      // if the data is traction
+      else if (!preciceData.tractionName.empty() &&
+               preciceData.average == true) {
+        LOG(INFO) << "Write averaged traction";
+        // convert geometry values to precice data layout
+        tractionValues_.clear();
+        this->getTractionValues(nestedSolver,
+                                preciceData.preciceMesh->dofNosLocal,
+                                tractionValues_);
+        // average z-values of traction
+        double average_traction = 0.0;
+        for (int i = 2; i < tractionValues_.size(); i += 3) {
+          average_traction += tractionValues_[i];
+        }
+        average_traction /= (tractionValues_.size() / 3);
+        for (int i = 2; i < tractionValues_.size(); i += 3) {
+          tractionValues_[i] = average_traction;
+        }
+#ifndef NDEBUG
+        LOG(DEBUG) << "Write averaged-traction data to precice: "
+                   << tractionValues_[2];
+#endif
+        // scale traction values, they are always scaled by the factor of -1
+        for (double &value : tractionValues_) {
+          value *= scalingFactor;
+          value *= -1;
+        }
+
+        preciceParticipant->writeData(
+            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
+            preciceData.preciceMesh->preciceVertexIds, tractionValues_);
+      } else if (!preciceData.tractionName.empty()) {
+
+        LOG(INFO) << "Write non-averaged traction";
+
+        // convert geometry values to precice data layout
+        tractionValues_.clear();
+        this->getTractionValues(nestedSolver,
+                                preciceData.preciceMesh->dofNosLocal,
+                                tractionValues_);
+
+#ifndef NDEBUG
+        LOG(DEBUG) << "write traction data to precice: " << tractionValues_;
+        std::stringstream s;
+        for (int i = 2; i < tractionValues_.size(); i += 3) {
+          s << " " << tractionValues_[i];
+        }
+        LOG(DEBUG) << "z values of traction: " << s.str();
+#endif
+        // scale traction values, they are always scaled by the factor of -1
+        for (double &value : tractionValues_) {
+          value *= scalingFactor;
+          value *= -1;
+        }
+
+        preciceParticipant->writeData(
+            preciceData.preciceMesh->preciceMeshName, preciceData.tractionName,
+            preciceData.preciceMesh->preciceVertexIds, tractionValues_);
+      } else {
+        LOG(FATAL) << "Unknown precice data (write), none of displacements, "
+                      "velocities or traction is set.";
+      }
+    }
+  }
+
+  LOG(DEBUG) << "write traction data to precice complete";
   }
 
   template<typename SurfaceData>
