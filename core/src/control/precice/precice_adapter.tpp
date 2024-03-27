@@ -42,6 +42,22 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
     return;
   }
 
+  // initialize
+  if (this->preciceParticipant_->requiresInitialData()) {
+    this->preciceWriteData(this->nestedSolver_, this->preciceParticipant_,
+                           this->preciceSurfaceData_, this->preciceVolumeData_,
+                           this->scalingFactor_);
+  }
+  this->preciceParticipant_->initialize();
+  this->maximumPreciceTimestepSize_ =
+      this->preciceParticipant_->getMaxTimeStepSize();
+
+  LOG(DEBUG) << "precice initialization done, dt: "
+             << this->maximumPreciceTimestepSize_ << ","
+             << this->timeStepWidth_;
+
+  this->initialized_ = true;
+
   // assert that precice is properly initialized and the interface is available
   assert(this->preciceParticipant_);
 
