@@ -52,7 +52,7 @@ In order to use the code for development or for more efficient runs, it is neces
 
 .. code-block:: bash
 
-  git clone https://github.com/maierbn/opendihu
+  git clone https://github.com/opendihu/opendihu
 
 The `develop` branch contains the latest version. You can also check out the `releases <https://github.com/maierbn/opendihu/releases>`_.
 
