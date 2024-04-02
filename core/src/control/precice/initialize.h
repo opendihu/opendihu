@@ -139,7 +139,11 @@ public:
 
   //! parse the options in "preciceVolumeData" and initialize all variables in
   //! precice, store in variable preciceVolumeData_
-  void initializePreciceVolumeData();
+  // void initializePreciceVolumeData();
+
+  //! parse the options in "preciceVolumeData" and initialize all variables in
+  //! precice, store in variable preciceVolumeData_
+  // void initializePreciceVolumeMeshes();
 #endif
 
   DihuContext context_; //< object that contains the python config for the
