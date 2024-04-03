@@ -59,7 +59,7 @@ public:
       PythonConfig &specificSettings, NestedSolverType &nestedSolver,
       std::shared_ptr<precice::Participant> &preciceParticipant,
       std::vector<PreciceVolumeData> &preciceVolumeData,
-      std::vector<PreciceVolumeMesh> &preciceVolumeMeshes) {
+      std::vector<std::shared_ptr<PreciceVolumeMesh>> &preciceVolumeMeshes) {
     // parse settings for coupling participants
     // loop over items of the key "preciceData"
     std::string settingsKey("preciceVolumeData");
@@ -149,7 +149,7 @@ public:
       // if the mesh is not in preciceVolumeMeshes, create it and add it to
       // preciceVolumeMeshes
       if (iter == preciceVolumeMeshes.end()) {
-        LOG(DEBUG) << "mesh was not yet initialized.";
+        //   LOG(DEBUG) << "mesh was not yet initialized.";
 
         // create new precice mesh object
         std::shared_ptr<PreciceVolumeMesh> preciceMesh =
@@ -374,7 +374,7 @@ public:
       // store preciceData to vector
       preciceVolumeData.push_back(preciceData);
     }
-  }
+  };
 
   template <typename SurfaceDataVector, typename VolumeDataVector>
   void
