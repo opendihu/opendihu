@@ -32,6 +32,17 @@ else:
     print("Warning: There is no variables file, e.g:\n ./tendon ../settings_tendon.py tendon.py\n")
   exit(0)
 
+variables.meshes = { # create 3D mechanics mesh
+    "tendonMesh3D": {
+        "nElements":            [variables.el_x, variables.el_y, variables.el_z],
+        "physicalExtent":       [variables.ex_x, variables.ex_y, variables.ex_z],
+        "physicalOffset":       [0, 0, -4.0],
+        "logKey":               "mesh3D",
+        "inputMeshIsGlobal":    True,
+        "nRanks":               n_ranks
+    }
+}
+
 # define config
 config = {
   "scenarioName":                   variables.scenario_name,      # scenario name to identify the simulation runs in the log file
