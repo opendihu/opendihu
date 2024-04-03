@@ -44,10 +44,13 @@ meshes = { # create 3D mechanics mesh
 }
 # boundary conditions
 # -------------------
-divideNeumannBoundaryConditionValuesByTotalArea = False
-elasticity_dirichlet_bc = {}
-elasticity_neumann_bc = []
-meshes = {}
+# Boundary conditions
+dirichlet_bc = {} # fix z=0 with dirichlet boundary conditions
+for x in range(bs_x):
+    for y in range(bs_y):
+        dirichlet_bc[x + y*bs_x] = [0.0, 0.0, 0.0, None, None, None]
+
+neumann_bc = []
 
 # mechanics solvers settings
 # --------------------------

@@ -40,16 +40,16 @@ meshes = { # create 3D mechanics mesh
 
 # Boundary conditions
 dirichlet_bc = {} # fix z=0 with dirichlet boundary conditions
-for x in range(bs_x):
-    for y in range(bs_y):
-        dirichlet_bc[x + y*bs_x] = [0.0, 0.0, 0.0, None, None, None]
+# for x in range(bs_x):
+#     for y in range(bs_y):
+#         dirichlet_bc[x + y*bs_x] = [0.0, 0.0, 0.0, None, None, None]
 
 neumann_bc = [] # add pulling force to z=el_z with neumann boundary conditions
-neumann_force = 0
-for x in range(el_x):
-    for y in range(el_y):
-        neumann_bc += [{
-            "element": x + y*el_x + (el_z-1)*el_y*el_x, 
-            "constantVector": [0, 0, neumann_force], 
-            "face": "2+"
-        }]
+# neumann_force = 0
+# for x in range(el_x):
+#     for y in range(el_y):
+#         neumann_bc += [{
+#             "element": x + y*el_x + (el_z-1)*el_y*el_x, 
+#             "constantVector": [0, 0, neumann_force], 
+#             "face": "2+"
+#         }]

@@ -32,16 +32,6 @@ else:
     print("Warning: There is no variables file, e.g:\n ./tendon ../settings_tendon.py tendon.py\n")
   exit(0)
 
-variables.meshes = { # create 3D mechanics mesh
-    "tendonMesh3D": {
-        "nElements":            [variables.el_x, variables.el_y, variables.el_z],
-        "physicalExtent":       [variables.ex_x, variables.ex_y, variables.ex_z],
-        "physicalOffset":       [0, 0, -4.0],
-        "logKey":               "mesh3D",
-        "inputMeshIsGlobal":    True,
-        "nRanks":               n_ranks
-    }
-}
 
 # define config
 config = {
@@ -125,8 +115,8 @@ config = {
       "nNonlinearSolveCalls":       1,                            # how often the nonlinear solve should be called
       
       # boundary and initial conditions
-      "dirichletBoundaryConditions": variables.elasticity_dirichlet_bc,   # the initial Dirichlet boundary conditions that define values for displacements u and velocity v
-      "neumannBoundaryConditions": variables.elasticity_neumann_bc,     # Neumann boundary conditions that define traction forces on surfaces of elements
+      "dirichletBoundaryConditions": variables.dirichlet_bc,   # the initial Dirichlet boundary conditions that define values for displacements u and velocity v
+      "neumannBoundaryConditions": variables.neumann_bc,     # Neumann boundary conditions that define traction forces on surfaces of elements
       "divideNeumannBoundaryConditionValuesByTotalArea": False,    # if the initial values for the dynamic nonlinear problem should be computed by extrapolating the previous displacements and velocities
       "updateDirichletBoundaryConditionsFunction": None, #update_dirichlet_bc,   # function that updates the dirichlet BCs while the simulation is running
       "updateDirichletBoundaryConditionsFunctionCallInterval": 1,         # stide every which step the update function should be called, 1 means every time step
