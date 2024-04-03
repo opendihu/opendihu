@@ -87,6 +87,26 @@ config = {
         "isGeometryField":  False
        }
     ],
+    "preciceSurfaceMeshes": [                                      # the precice meshes get created as the top or bottom surface of the main geometry mesh of the nested solver
+      {
+        "preciceMeshName":      "SurfaceMuscleMesh",            # precice name of the 2D coupling mesh
+        "face":                 "2-",                       # face of the 3D mesh where the 2D mesh is located, "2-" = bottom, "2+" = top
+      }   
+    ],
+    "preciceSurfaceData": [  
+      {
+        "mode":                 "read-displacements-velocities",   # mode is one of "read-displacements-velocities", "read-traction", "write-displacements-velocities", "write-traction"
+        "preciceMeshName":      "SurfaceMuscleMesh",                    # name of the precice coupling surface mesh, as given in the precice xml settings file
+        "displacementsName":    "Displacement",                     # name of the displacements "data", i.e. field variable, as given in the precice xml settings file
+        "velocitiesName":       "Velocity",                     # name of the velocities "data", i.e. field variable, as given in the precice xml settings file
+
+      },
+      {
+        "mode":                 "write-traction",                    # mode is one of "read-displacements-velocities", "read-traction", "write-displacements-velocities", "write-traction"
+        "preciceMeshName":      "SurfaceMuscleMesh",                    # name of the precice coupling surface mesh, as given in the precice xml settings 
+        "tractionName":         "Traction",                         # name of the traction "data", i.e. field variable, as given in the precice xml settings file
+      }
+    ],
 
     "MuscleContractionSolver": {
       "Pmax":                         variables.pmax,
@@ -103,7 +123,7 @@ config = {
         {
           "format":             "Paraview",
           "outputInterval":     int(1.0 / variables.dt_3D * variables.output_interval),
-          "filename":           "out/" + variables.scenario_name + "/muscle",
+          "filename":           "out/" + variables.scenario_name + "/muscle_mechanics",
           "fileNumbering":      "incremental", 
           "binary":             True,
           "fixedFormat":        False,

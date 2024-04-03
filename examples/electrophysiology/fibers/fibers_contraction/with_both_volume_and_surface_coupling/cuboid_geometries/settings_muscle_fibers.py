@@ -165,7 +165,7 @@ config = {
                 {
                   "format":         "Paraview",
                   "outputInterval": int(1.0 / variables.dt_splitting * variables.output_interval),
-                  "filename":       "out/"+ variables.scenario_name + "/fibers",
+                  "filename":       "out/"+ variables.scenario_name + "/muscle_fibers",
                   "fileNumbering":  "incremental",
                   "binary":         True,
                   "fixedFormat":    False,
