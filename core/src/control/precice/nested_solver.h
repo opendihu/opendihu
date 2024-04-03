@@ -382,7 +382,7 @@ public:
                   std::shared_ptr<precice::Participant> &preciceParticipant,
                   SurfaceDataVector &preciceSurfaceData,
                   VolumeDataVector &preciceVolumeData, DihuContext &context) {
-    LOG(DEBUG) << "read data from precice";
+    LOG(DEBUG) << "read volume data from precice";
     double preciceDt = preciceParticipant->getMaxTimeStepSize();
 
     using SlotConnectorDataType =
@@ -727,7 +727,7 @@ public:
                  << ", slotName: \"" << preciceData.slotName << "\".";
 
       if (preciceData.slotName == "") {
-        preciceData.slotNo = slotNo;
+        preciceData.slotNo = slotNo;core/src/control/precice/nested_solver.h
         LOG(DEBUG) << "Using slotNo " << slotNo
                    << " because slotName was not given.";
       } else {
@@ -1004,7 +1004,8 @@ public:
                   std::shared_ptr<precice::Participant> &preciceParticipant,
                   SurfaceDataVector &preciceSurfaceData,
                   VolumeDataVector &preciceVolumeData, DihuContext &context) {
-    LOG(DEBUG) << "read data from precice";
+    
+    LOG(DEBUG) << "read volume data from precice";
     double preciceDt = preciceParticipant->getMaxTimeStepSize();
 
     using SlotConnectorDataType =
@@ -1314,7 +1315,7 @@ public:
                   std::shared_ptr<precice::Participant> &preciceParticipant,
                   SurfaceDataVector &preciceSurfaceData,
                   VolumeDataVector &preciceVolumeData, DihuContext &context) {
-    LOG(DEBUG) << "read data from precice";
+    LOG(DEBUG) << "read surface data from precice";
     double preciceDt = preciceParticipant->getMaxTimeStepSize();
     // loop over data
     for (auto &preciceData : preciceSurfaceData) {
@@ -1607,7 +1608,7 @@ public:
           const int nDofsPerNode = FunctionSpace::nDofsPerNode();
           const int nSurfaceDofs =
               ::FunctionSpace::FunctionSpaceBaseDim<
-                  2,
+              core/src/control/precice/nested_solver.h    2,
                   typename FunctionSpace::BasisFunction>::nNodesPerElement() *
               nDofsPerNode;
           std::array<dof_no_t, nSurfaceDofs> surfaceDofs;
@@ -1715,7 +1716,7 @@ public:
       }
       s << "], surfaceDofs: ";
       for (int j = 0;
-           j < neumannBoundaryConditionElements[i].surfaceDofs.size(); j++)
+           j <core/src/control/precice/nested_solver.h neumannBoundaryConditionElements[i].surfaceDofs.size(); j++)
         s << neumannBoundaryConditionElements[i].surfaceDofs[j] << ",";
       s << "} ";
     }
@@ -1824,7 +1825,7 @@ public:
                   std::shared_ptr<precice::Participant> &preciceParticipant,
                   SurfaceDataVector &preciceSurfaceData,
                   VolumeDataVector &preciceVolumeData, DihuContext &context) {
-    LOG(DEBUG) << "read data from precice";
+    LOG(DEBUG) << "read surface data from precice";
     double preciceDt = preciceParticipant->getMaxTimeStepSize();
     // loop over data
     for (auto &preciceData : preciceSurfaceData) {
@@ -1840,7 +1841,7 @@ public:
           velocityValues_.resize(nEntries);
 
           // get all data at once
-          preciceParticipant->readData(
+          preccore/src/control/precice/nested_solver.hiceParticipant->readData(
               preciceData.preciceMesh->preciceMeshName,
               preciceData.displacementsName,
               preciceData.preciceMesh->preciceVertexIds, preciceDt,
@@ -1914,7 +1915,7 @@ public:
               preciceData.preciceMesh->preciceVertexIds, displacementValues_);
 
           // write velocity values in precice
-          preciceParticipant->writeData(
+          preccore/src/control/precice/nested_solver.hiceParticipant->writeData(
               preciceData.preciceMesh->preciceMeshName,
               preciceData.velocitiesName,
               preciceData.preciceMesh->preciceVertexIds, velocityValues_);
@@ -1991,7 +1992,7 @@ public:
 
   template <typename SurfaceData>
   void setDirichletBoundaryConditions(SurfaceData &preciceData,
-                                      NestedSolverType &nestedSolver) {
+              core/src/control/precice/nested_solver.h                        NestedSolverType &nestedSolver) {
     std::vector<std::pair<global_no_t, std::array<double, 6>>>
         newDirichletBCValues;
 
@@ -2334,7 +2335,7 @@ public:
                   std::shared_ptr<precice::Participant> &preciceParticipant,
                   SurfaceDataVector &preciceSurfaceData,
                   VolumeDataVector &preciceVolumeData, DihuContext &context) {
-    LOG(DEBUG) << "read data from precice";
+    LOG(DEBUG) << "read surface data from precice";
     double preciceDt = preciceParticipant->getMaxTimeStepSize();
     // loop over data
     for (auto &preciceData : preciceSurfaceData) {
