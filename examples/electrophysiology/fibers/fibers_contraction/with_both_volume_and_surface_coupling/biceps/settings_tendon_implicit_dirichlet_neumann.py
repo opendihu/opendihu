@@ -238,7 +238,7 @@ config = {
     "timestepWidth":            1,                          # coupling time step width, must match the value in the precice config
     "couplingEnabled":          True,                       # if the precice coupling is enabled, if not, it simply calls the nested solver, for debugging
     "preciceConfigFilename":    "../precice_config.xml",    # the preCICE configuration file
-    "preciceParticipantName":   "TendonSolver",             # name of the own precice participant, has to match the name given in the precice xml config file
+    "preciceParticipantName":   "BottomTendon",             # name of the own precice participant, has to match the name given in the precice xml config file
     "preciceSurfaceMeshes": [                                      # the precice meshes get created as the top or bottom surface of the main geometry mesh of the nested solver
       {
         "preciceMeshName":      "TendonMeshTop",            # precice name of the 2D coupling mesh

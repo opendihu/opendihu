@@ -55,7 +55,7 @@
     <provide-mesh name="MuscleMeshBottom"/>
     <provide-mesh name="MuscleContractionMesh"/>
     <receive-mesh name="PartitionedFibersMesh" from="PartitionedFibers"/>
-    <receive-mesh name="TendonMeshTop" from="TendonSolver"/>
+    <receive-mesh name="TendonMeshTop" from="BottomTendon"/>
     
     <read-data  name="Displacement"  mesh="MuscleMeshBottom"/>
     <read-data  name="Velocity"      mesh="MuscleMeshBottom"/>
@@ -94,7 +94,7 @@
   </participant>
 
   <m2n:sockets acceptor="PartitionedFibers" connector="MuscleContraction" network="lo" />
-  <m2n:sockets acceptor="MuscleContraction" connector="TendonSolver" network="lo" />
+  <m2n:sockets acceptor="MuscleContraction" connector="BottomTendon" network="lo" />
 
   <coupling-scheme:serial-explicit>
     <participants first="PartitionedFibers" second="MuscleContraction"/>
@@ -107,7 +107,7 @@
   
 
   <coupling-scheme:parallel-implicit>
-    <participants second="TendonSolver" first="MuscleContraction"/>
+    <participants second="BottomTendon" first="MuscleContraction"/>
     <max-time value="1000.0"/>           
     <time-window-size value="1e-1"/>   
     
@@ -124,8 +124,8 @@
       <time-windows-reused value="15"/>
     </acceleration:IQN-ILS>
     
-    <exchange data="Displacement"    mesh="TendonMeshTop"    from="TendonSolver" to="MuscleContraction"/>
-    <exchange data="Velocity"        mesh="TendonMeshTop"    from="TendonSolver" to="MuscleContraction"/>
-    <exchange data="Traction"        mesh="MuscleMeshBottom" from="MuscleContraction" to="TendonSolver"/>  
+    <exchange data="Displacement"    mesh="TendonMeshTop"    from="BottomTendon" to="MuscleContraction"/>
+    <exchange data="Velocity"        mesh="TendonMeshTop"    from="BottomTendon" to="MuscleContraction"/>
+    <exchange data="Traction"        mesh="MuscleMeshBottom" from="MuscleContraction" to="BottomTendon"/>  
   </coupling-scheme:parallel-implicit>
 </precice-configuration>
