@@ -7,6 +7,7 @@
 
 namespace Control {
 
+#ifdef HAVE_PRECICE
 template <typename NestedSolver>
 void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceReadData() {
 
@@ -214,5 +215,6 @@ void PreciceAdapterVolumeCouplingReadWrite<NestedSolver>::preciceWriteData() {
   }
   LOG(DEBUG) << "write data to precice complete";
 }
+#endif
 
 } // namespace Control
