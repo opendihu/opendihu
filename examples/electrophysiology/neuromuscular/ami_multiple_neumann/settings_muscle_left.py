@@ -171,7 +171,7 @@ config = {
         "face":                 "2+",                       # face of the 3D mesh where the 2D mesh is located, "2-" = left, "2+" = right (z-coordinate)
       }
     ],
-    "preciceData": [
+    "preciceSurfaceData": [
       {
         "mode":                 "read-displacements-velocities",    # mode is one of "read-displacements-velocities", "read-traction", "write-displacements-velocities", "write-traction"
         "preciceMeshName":      "MuscleMeshLeft",                 # name of the precice coupling surface mesh, as given in the precice xml settings file
