@@ -127,7 +127,7 @@ config = {
       "couplingEnabled":          True,                       # if the precice coupling is enabled, if not, it simply calls the nested solver, for debugging
       "preciceConfigFilename":    variables.precice_file,    # the preCICE configuration file
       "preciceParticipantName":   "MuscleSolverRight",             # name of the own precice participant, has to match the name given in the precice xml config file
-      "preciceMeshes": [                                      # the precice meshes get created as the top or bottom surface of the main geometry mesh of the nested solver
+      "preciceSurfaceMeshes": [                                      # the precice meshes get created as the top or bottom surface of the main geometry mesh of the nested solver
         {
           "preciceMeshName":      "MuscleMeshRight",            # precice name of the 2D coupling mesh
           "face":                 "2-",                       # face of the 3D mesh where the 2D mesh is located, "2-" = bottom, "2+" = top

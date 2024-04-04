@@ -234,7 +234,7 @@ config = {
     "scalingFactor":            1,                          # a factor to scale the exchanged data, prior to communication
     "couplingEnabled":          False,                      # if the precice coupling is enable, if not it is simply the normal solver (for debugging)
     "endTimeIfCouplingDisabled": variables.end_time,        # if "couplingEnabled" is set to False, use this end time for the simulation
-    "preciceMeshes": [                                      # the precice meshes get created as the top or bottom surface of the main geometry mesh of the nested solver
+    "preciceSurfaceMeshes": [                                      # the precice meshes get created as the top or bottom surface of the main geometry mesh of the nested solver
       {
         "preciceMeshName":      "MuscleMeshBottom",         # precice name of the 2D coupling mesh
         "face":                 "2-",                       # face of the 3D mesh where the 2D mesh is located, "2-" = bottom, "2+" = top
