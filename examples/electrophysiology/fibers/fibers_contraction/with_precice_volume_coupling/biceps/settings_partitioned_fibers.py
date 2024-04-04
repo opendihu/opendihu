@@ -160,7 +160,7 @@ config = {
       "dumpFormat":         "matlab",
     },
   },
-  "PreciceAdapterVolumeCoupling": {
+  "PreciceAdapter": {
     "timeStepOutputInterval":   100,                        # interval in which to display current timestep and time in console
     "timestepWidth":            1,                          # coupling time step width, must match the value in the precice config
     "couplingEnabled":          True,                       # if the precice coupling is enabled, if not, it simply calls the nested solver, for debugging

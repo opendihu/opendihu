@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
   DihuContext settings(argc, argv);
 
   // define problem
-  Control::PreciceAdapterVolumeCoupling<FastMonodomainSolver< // a wrapper that
+  Control::PreciceAdapter<FastMonodomainSolver< // a wrapper that
                                                               // improves
                                                               // performance of
                                                               // multidomain
