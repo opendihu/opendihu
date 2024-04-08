@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+
+<precice-configuration>
+  <!-- format for console output of precice -->
+  <log>
+    <sink type="stream" output="stdout"  filter='(%Severity% >= debug) and (not (%Function% = "advance"))' format="\033[0;33m%Rank% [precice]\033[0m %ColorizedSeverity%\033[0;33m%Message%\033[0m" enabled="true" />
+    <!--<sink type="stream" output="stdout"  filter='%Severity% >= debug' format="\033[0;33m%Rank% [precice]\033[0m %ColorizedSeverity%\033[0;33m%Message%\033[0m" enabled="true" />-->
+    <!--<sink type="file" output="debug.log" filter= "(%Severity% >= debug)" format="%Message%" enabled="true" />	-->
+  </log>
+    
+  <!-- Data fields that are exchanged between the solvers -->
+  <data:vector name="Displacement"/>
+  <data:vector name="Velocity"/>
+  <data:vector name="Traction"/>
+
+  <!-- A common mesh that uses these data fields -->
+  <mesh name="TendonMeshTop" dimensions="3">
+    <use-data name="Displacement"/>
+    <use-data name="Velocity"/>
+    <use-data name="Traction"/>
+  </mesh>
+
+  <mesh name="MuscleMeshBottom" dimensions="3">
+    <use-data name="Displacement"/>
+    <use-data name="Velocity"/>
+    <use-data name="Traction"/>
+  </mesh>
+  
+  <participant name="MuscleSolver">
+    <provide-mesh name="MuscleMeshBottom"/>
+    <receive-mesh name="TendonMeshTop" from="TendonSolver"/>
+    
+    <read-data  name="Displacement"  mesh="MuscleMeshBottom"/>
+    <read-data  name="Velocity"      mesh="MuscleMeshBottom"/>
+    <write-data name="Traction"      mesh="MuscleMeshBottom"/>
+    <export:vtu directory="precice-output" />
+    
+    <mapping:rbf 
+      direction="read" 
+      from="TendonMeshTop" 
+      to="MuscleMeshBottom" 
+      constraint="consistent">
+      <basis-function:gaussian shape-parameter="91.05" />
+    </mapping:rbf>
+    
+  </participant>
+
+  <participant name="TendonSolver">
+    
+    <provide-mesh name="TendonMeshTop"/>
+    <receive-mesh name="MuscleMeshBottom" from="MuscleSolver"/>
+    <export:vtu directory="precice-output" />
+    
+    <write-data name="Displacement"  mesh="TendonMeshTop"/>
+    <write-data name="Velocity"      mesh="TendonMeshTop"/>
+    <read-data  name="Traction"      mesh="TendonMeshTop"/>
+
+    <mapping:rbf 
+      direction="read" 
+      from="MuscleMeshBottom" 
+      to="TendonMeshTop" 
+      constraint="consistent">
+      <basis-function:gaussian shape-parameter="50" />
+    </mapping:rbf> 
+  
+  </participant>
+  
+  <m2n:sockets acceptor="MuscleSolver" connector="TendonSolver" network="lo" />
+
+  <!-- serial-implicit coupling scales only the displacements, which are transferred from muscle to tendon -->
+  <!-- parallel-implicit coupling scales displacements and tractions -->
+  <coupling-scheme:serial-implicit>
+    <participants second="TendonSolver" first="MuscleSolver"/>
+    <max-time value="2000.0"/>           <!-- end time of the whole simulation -->
+    <time-window-size value="1"/>   <!-- timestep width for coupling -->
+    <max-iterations value="30" />
+
+    <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonMeshTop" />
+    <relative-convergence-measure limit="0.1" data="Traction" mesh="MuscleMeshBottom" />
+
+    <acceleration:IQN-ILS>
+      <data name="Displacement" mesh="TendonMeshTop"/>
+      <!-- <data name="Traction" mesh="MuscleMeshBottom"/> -->
+      <preconditioner type="residual-sum"/>
+      <filter type="QR1" limit="1e-2"/>
+      <initial-relaxation value="0.4"/>
+      <max-used-iterations value="40"/>
+      <time-windows-reused value="15"/>
+    </acceleration:IQN-ILS>
+    
+    <exchange data="Displacement"    mesh="TendonMeshTop"    from="TendonSolver" to="MuscleSolver"/>
+    <exchange data="Velocity"        mesh="TendonMeshTop"    from="TendonSolver" to="MuscleSolver"/>
+    <exchange data="Traction"        mesh="MuscleMeshBottom" from="MuscleSolver" to="TendonSolver"/>  <!--initialize="true"-->
+  </coupling-scheme:serial-implicit>
+    
+</precice-configuration>

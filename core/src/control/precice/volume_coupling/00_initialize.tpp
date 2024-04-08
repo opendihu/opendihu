@@ -96,7 +96,7 @@ void PreciceAdapterVolumeCouplingInitialize<NestedSolver>::initialize() {
   // << std::endl;
 
   // initialize interface to precice
-  preciceSolverInterface_ = std::make_shared<precice::SolverInterface>(
+  preciceParticipant_ = std::make_shared<precice::Participant>(
       preciceParticipantName_, configFileName, rankNo, nRanks);
 
   // parse the options in "preciceData" and initialize all variables in precice,
@@ -106,13 +106,14 @@ void PreciceAdapterVolumeCouplingInitialize<NestedSolver>::initialize() {
   // parse scalingFactor from settings
   scalingFactor_ = this->specificSettings_.getOptionDouble("scalingFactor", 1);
 
-  // determine maximum timestep size
-  maximumPreciceTimestepSize_ = std::max(maximumPreciceTimestepSize_,
-                                         preciceSolverInterface_->initialize());
-  LOG(DEBUG) << "precice initialization done, dt: "
-             << maximumPreciceTimestepSize_ << "," << timeStepWidth_;
+  // preciceParticipant_->initialize();
+  // // determine maximum timestep size
+  // maximumPreciceTimestepSize_ = preciceParticipant_->getMaxTimeStepSize();
 
-  initialized_ = true;
+  // LOG(DEBUG) << "precice initialization done, dt: "
+  //            << maximumPreciceTimestepSize_ << "," << timeStepWidth_;
+
+  // initialized_ = true;
 
 #else
   LOG(FATAL) << "Failed to initialize PreciceAdapterVolumeCoupling because "
@@ -198,23 +199,15 @@ void PreciceAdapterVolumeCouplingInitialize<
     }
 
     // parse the mesh
-    std::string preciceMeshName =
+    std::string currentMeshName =
         currentPreciceData.getOptionString("preciceMeshName", "");
-    int preciceMeshId = preciceSolverInterface_->getMeshID(preciceMeshName);
 
-    LOG(DEBUG) << "parse item " << listIndex
-               << " of \"preciceData\", isGeometryField: "
-               << preciceData.isGeometryField
-               << ", opendihuMeshName: " << preciceData.opendihuMeshName
-               << ", preciceMeshName: " << preciceMeshName
-               << ", preciceMeshId: " << preciceMeshId;
-
-    // find the mesh among the already parsed precice meshes
+    // find the mesh in the already parsed precice meshes
     typename std::vector<std::shared_ptr<PreciceMesh>>::iterator iter =
         std::find_if(
             preciceMeshes_.begin(), preciceMeshes_.end(),
-            [&preciceMeshId](std::shared_ptr<PreciceMesh> preciceMesh) {
-              return preciceMesh->preciceMeshId == preciceMeshId;
+            [&currentMeshName](std::shared_ptr<PreciceMesh> preciceMesh) {
+              return preciceMesh->preciceMeshName == currentMeshName;
             });
 
     // if the mesh is not in preciceMeshes_, create it and add it to
@@ -225,7 +218,7 @@ void PreciceAdapterVolumeCouplingInitialize<
       // create new precice mesh object
       std::shared_ptr<PreciceMesh> preciceMesh =
           std::make_shared<PreciceMesh>();
-      preciceMesh->preciceMeshName = preciceMeshName;
+      preciceMesh->preciceMeshName = currentMeshName;
 
       std::vector<Vec3> geometryValues;
       int nArrayItems = 1;
@@ -321,20 +314,13 @@ void PreciceAdapterVolumeCouplingInitialize<
         LOG(FATAL) << "size mismatch: " << geometryValuesContiguous.size()
                    << "!=" << preciceMesh->nNodesLocal * 3;
 
-      // get precice id from precice config
-      preciceMesh->preciceMeshId =
-          preciceSolverInterface_->getMeshID(preciceMesh->preciceMeshName);
-
       // resize buffer for vertex ids
       preciceMesh->preciceVertexIds.resize(preciceMesh->nNodesLocal);
 
       // give the node positions to precice and get the vertex ids
-      // void precice::SolverInterface::setMeshVertices(int meshID, int size,
-      // const double *positions, int *ids)
-      preciceSolverInterface_->setMeshVertices(
-          preciceMesh->preciceMeshId, preciceMesh->nNodesLocal,
-          geometryValuesContiguous.data(),
-          preciceMesh->preciceVertexIds.data());
+      preciceParticipant_->setMeshVertices(preciceMesh->preciceMeshName,
+                                           geometryValuesContiguous,
+                                           preciceMesh->preciceVertexIds);
 
       // store newly created mesh in preciceData
       preciceData.preciceMesh = preciceMesh;
@@ -352,8 +338,7 @@ void PreciceAdapterVolumeCouplingInitialize<
                 << " fibers/compartments)";
       LOG(INFO) << message.str() << ".";
     } else {
-      LOG(DEBUG) << "Use existing precice mesh with preciceMeshId "
-                 << preciceMeshId;
+      LOG(DEBUG) << "Use existing precice mesh " << currentMeshName;
       preciceData.preciceMesh = *iter;
     }
 
@@ -371,10 +356,6 @@ void PreciceAdapterVolumeCouplingInitialize<
     // parse variable name
     preciceData.preciceDataName =
         currentPreciceData.getOptionString("preciceDataName", "variable");
-
-    // get precice data id
-    preciceData.preciceDataId = preciceSolverInterface_->getDataID(
-        preciceData.preciceDataName, preciceData.preciceMesh->preciceMeshId);
 
     // increment slotNo, this value is used for slots that are not identified by
     // slotName in the config

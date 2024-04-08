@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<precice-configuration>
+  <!-- format for console output of precice -->
+  <log>
+    <sink type="stream" output="stdout"  filter='(%Severity% >= debug) and (not (%Function% = "advance"))' format="\033[0;33m%Rank% [precice]\033[0m %ColorizedSeverity%\033[0;33m%Message%\033[0m" enabled="true" />
+  </log>
+
+  <data:vector name="Velocity"/>
+  <data:vector name="Displacement"/>
+  <data:vector name="Traction"/>
+
+
+  <mesh name="TendonMesh" dimensions="3">
+      <use-data name="Displacement"/>
+      <use-data name="Velocity"/>
+      <use-data name="Traction"/>
+  </mesh>
+
+  <mesh name="MuscleMesh" dimensions="3">
+      <use-data name="Displacement"/>
+      <use-data name="Velocity"/>
+      <use-data name="Traction"/>
+  </mesh>
+
+  <participant name="TendonSolver"> 
+    <provide-mesh name="TendonMesh"/>
+    <receive-mesh name="MuscleMesh" from="MuscleSolver"/>
+
+    <write-data name="Displacement"  mesh="TendonMesh"/>
+    <write-data name="Velocity"  mesh="TendonMesh"/>
+    <read-data  name="Traction"      mesh="TendonMesh"/>
+
+    <mapping:nearest-neighbor direction="read" from="MuscleMesh" to="TendonMesh" constraint="consistent"/>
+
+    <export:vtu directory="preCICE-output" /> 
+  </participant>
+
+  <participant name="MuscleSolver">
+    <provide-mesh name="MuscleMesh"/>
+    <receive-mesh name="TendonMesh" from="TendonSolver"/>
+
+    <read-data  name="Displacement"  mesh="MuscleMesh"/>
+    <read-data  name="Velocity"  mesh="MuscleMesh"/>
+    <write-data name="Traction"      mesh="MuscleMesh"/>
+
+    <mapping:nearest-neighbor direction="read" from="TendonMesh" to="MuscleMesh" constraint="consistent"/>
+    <export:vtu directory="preCICE-output"/>
+  </participant>
+
+  <m2n:sockets acceptor="TendonSolver" connector="MuscleSolver" network="lo" />
+
+  <coupling-scheme:serial-explicit>
+    <participants first="MuscleSolver" second="TendonSolver"/>
+    
+    <max-time value="20.0"/>          
+    <time-window-size value="0.01"/>  
+
+    <exchange data="Displacement" mesh="TendonMesh" from="TendonSolver" to="MuscleSolver"/>  
+    <exchange data="Velocity" mesh="TendonMesh" from="TendonSolver" to="MuscleSolver"/>  
+    <exchange data="Traction" mesh="MuscleMesh" from="MuscleSolver" to="TendonSolver"/>  
+  </coupling-scheme:serial-explicit>
+
+</precice-configuration>

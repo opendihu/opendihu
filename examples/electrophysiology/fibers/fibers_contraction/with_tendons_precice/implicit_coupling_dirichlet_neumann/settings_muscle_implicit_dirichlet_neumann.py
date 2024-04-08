@@ -39,7 +39,9 @@ else:
 
 # define command line arguments
 parser = argparse.ArgumentParser(description='muscle')
-parser.add_argument('--scenario_name',                       help='The name to identify this run in the log.',   default=variables.scenario_name)
+parser.add_argument('--case_name',                       help='The name to identify this run in the log.',   default=variables.case_name)
+parser.add_argument('--precice_config_file',                       help='The name to identify this run in the log.',   default=variables.precice_config_file)
+parser.add_argument('--scenario_name',                       help='The name to identify this participant in the log.',   default=variables.scenario_name)
 parser.add_argument('--n_subdomains', nargs=3,               help='Number of subdomains in x,y,z direction.',    type=int)
 parser.add_argument('--n_subdomains_x', '-x',                help='Number of subdomains in x direction.',        type=int, default=variables.n_subdomains_x)
 parser.add_argument('--n_subdomains_y', '-y',                help='Number of subdomains in y direction.',        type=int, default=variables.n_subdomains_y)
@@ -189,7 +191,7 @@ config = {
   "PreciceAdapter": {        # precice adapter for muscle
     "timeStepOutputInterval":   100,                        # interval in which to display current timestep and time in console
     "timestepWidth":            1,                          # coupling time step width, must match the value in the precice config
-    "preciceConfigFilename":    "precice_config_muscle_dirichlet_tendon_neumann_implicit_coupling.xml",    # the preCICE configuration file
+    "preciceConfigFilename":    variables.precice_config_file,    # the preCICE configuration file
     "preciceParticipantName":   "MuscleSolver",             # name of the own precice participant, has to match the name given in the precice xml config file
     "preciceMeshes": [                                      # the precice meshes get created as the top or bottom surface of the main geometry mesh of the nested solver
       {
@@ -292,7 +294,7 @@ config = {
                         "stimulationLogFilename":                 "out/stimulation.log",                          # a file that will contain the times of stimulations
                       },      
                       "OutputWriter" : [
-                        {"format": "Paraview", "outputInterval": 1, "filename": "out/" + variables.scenario_name + "/0D_states({},{})".format(fiber_in_subdomain_coordinate_x,fiber_in_subdomain_coordinate_y), "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
+                        {"format": "Paraview", "outputInterval": 1, "filename": "out/" + variables.case_name + '/' + variables.scenario_name+ "/0D_states({},{})".format(fiber_in_subdomain_coordinate_x,fiber_in_subdomain_coordinate_y), "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
                       ] if variables.states_output else []
                       
                     },
@@ -377,7 +379,7 @@ config = {
                       "additionalArgument":  fiber_no,         # a custom argument to the fieldVariables callback functions, this will be passed on as the last argument
                       
                       "OutputWriter" : [
-                        {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_fibers), "filename": "out/" + variables.scenario_name + "/prescribed_fibers", "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
+                        {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_fibers), "filename": "out/" + variables.case_name + '/' + variables.scenario_name+ "/prescribed_fibers", "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
                       ]
                     },      
                   } for fiber_in_subdomain_coordinate_y in range(n_fibers_in_subdomain_y(subdomain_coordinate_y)) \
@@ -387,7 +389,7 @@ config = {
                           
                   #"OutputWriter" : variables.output_writer_fibers,
                   "OutputWriter": [
-                    {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_fibers), "filename": "out/" + variables.scenario_name + "/fibers", "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
+                    {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_fibers), "filename": "out/" + variables.case_name + '/' + variables.scenario_name+ "/fibers", "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
                   ]
                 }
               },
@@ -413,7 +415,7 @@ config = {
           "Pmax":                         variables.pmax,            # maximum PK2 active stress
           "slotNames":                    [],                        # names of the data connector slots
           "OutputWriter" : [
-            {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_3D), "filename": "out/" + variables.scenario_name + "/mechanics_3D", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+            {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_3D), "filename": "out/" + variables.case_name + '/' + variables.scenario_name+ "/mechanics_3D", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
           ],
           "mapGeometryToMeshes":          [],                        # the mesh names of the meshes that will get the geometry transferred
           "dynamic":                      True,                      # if the dynamic solid mechanics solver should be used, else it computes the quasi-static problem
@@ -459,14 +461,14 @@ config = {
             "extrapolateInitialGuess":     True,                                # if the initial values for the dynamic nonlinear problem should be computed by extrapolating the previous displacements and velocities
             "constantBodyForce":           variables.constant_body_force,       # a constant force that acts on the whole body, e.g. for gravity
             
-            "dirichletOutputFilename":     "out/"+variables.scenario_name+"/dirichlet_boundary_conditions_muscle",    # filename for a vtp file that contains the Dirichlet boundary condition nodes and their values, set to None to disable
+            "dirichletOutputFilename":     "out/" + variables.case_name + '/' + variables.scenario_name + "/dirichlet_boundary_conditions_muscle",    # filename for a vtp file that contains the Dirichlet boundary condition nodes and their values, set to None to disable
             
             # define which file formats should be written
             # 1. main output writer that writes output files using the quadratic elements function space. Writes displacements, velocities and PK2 stresses.
             "OutputWriter" : [
               
               # Paraview files
-              #{"format": "Paraview", "outputInterval": 1, "filename": "out/"+variables.scenario_name+"/u", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+              #{"format": "Paraview", "outputInterval": 1, "filename": "out/"+ variables.scenarioio_name+"/u", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
               
               # Python callback function "postprocess"
               #{"format": "PythonCallback", "outputInterval": 1, "callback": postprocess, "onlyNodalValues":True, "filename": ""},
@@ -474,14 +476,14 @@ config = {
             # 2. additional output writer that writes also the hydrostatic pressure
             "pressure": {   # output files for pressure function space (linear elements), contains pressure values, as well as displacements and velocities
               "OutputWriter" : [
-                #{"format": "Paraview", "outputInterval": 1, "filename": "out/"+variables.scenario_name+"/p", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+                #{"format": "Paraview", "outputInterval": 1, "filename": "out/"+ variables.scenarioio_name+"/p", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
               ]
             },
             # 3. additional output writer that writes virtual work terms
             "dynamic": {    # output of the dynamic solver, has additional virtual work values 
               "OutputWriter" : [   # output files for displacements function space (quadratic elements)
                 #{"format": "Paraview", "outputInterval": int(output_interval/dt), "filename": "out/dynamic", "binary": False, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
-                {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_3D), "filename": "out/"+variables.scenario_name+"/virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+                {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_3D), "filename": "out/" + variables.case_name + '/' + variables.scenario_name +"/virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
               ],
             },
             # 4. output writer for debugging, outputs files after each load increment, the geometry is not changed but u and v are written
