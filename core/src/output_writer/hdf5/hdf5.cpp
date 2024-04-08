@@ -8,7 +8,7 @@ HDF5::HDF5(DihuContext context, PythonConfig settings,
 }
 
 //! constructor, initialize nPoints and nCells to 0
-HDF5::VTKPiece::VTKPiece() {
+HDF5::Piece::Piece() {
   properties.nPointsLocal = 0;
   properties.nCellsLocal = 0;
   properties.nPointsGlobal = 0;
@@ -18,7 +18,7 @@ HDF5::VTKPiece::VTKPiece() {
 
 //! assign the correct values to firstScalarName and firstVectorName, only if
 //! properties has been set
-void HDF5::VTKPiece::setVTKValues() {
+void HDF5::Piece::setVTKValues() {
   // set values for firstScalarName and firstVectorName from the values in
   // pointDataArrays
   for (auto pointDataArray : properties.pointDataArrays) {
@@ -63,107 +63,4 @@ hid_t HDF5::openHDF5File(const char *filename, bool mpiio) {
     return fileID;
   }
 }
-
-herr_t HDF5::writeAttrInt(hid_t fileID, const char *key, int32_t value) {
-  std::array<hsize_t, 1> dims = {1};
-  std::array<int32_t, 1> data = {value};
-  hid_t dspace = H5Screate_simple(1, dims.data(), nullptr);
-  if (dspace < 0) {
-    return dspace;
-  }
-  hid_t attr =
-      H5Acreate(fileID, key, H5T_STD_I32BE, dspace, H5P_DEFAULT, H5P_DEFAULT);
-  if (attr < 0) {
-    // ignore error here, everything is lost anyway at this point in time
-    H5Sclose(dspace);
-    return attr;
-  }
-  herr_t err = H5Awrite(attr, H5T_NATIVE_INT, data.data());
-  if (err < 0) {
-    return err;
-  }
-  err = H5Aclose(attr);
-  if (err < 0) {
-    return err;
-  }
-  err = H5Sclose(dspace);
-  if (err < 0) {
-    return err;
-  }
-
-  return 0;
-}
-
-herr_t HDF5::writeAttrDouble(hid_t fileID, const char *key, double value) {
-  std::array<hsize_t, 1> dims = {1};
-  std::array<double, 1> data = {value};
-  hid_t dspace = H5Screate_simple(1, dims.data(), nullptr);
-  if (dspace < 0) {
-    return dspace;
-  }
-  hid_t attr =
-      H5Acreate(fileID, key, H5T_IEEE_F64BE, dspace, H5P_DEFAULT, H5P_DEFAULT);
-  if (attr < 0) {
-    // ignore error here, everything is lost anyway at this point in time
-    H5Sclose(dspace);
-    return attr;
-  }
-  herr_t err = H5Awrite(attr, H5T_NATIVE_DOUBLE, data.data());
-  if (err < 0) {
-    return err;
-  }
-  err = H5Aclose(attr);
-  if (err < 0) {
-    return err;
-  }
-  err = H5Sclose(dspace);
-  if (err < 0) {
-    return err;
-  }
-
-  return 0;
-}
-
-herr_t HDF5::writeAttrString(hid_t fileID, const char *key,
-                             const std::string &value) {
-  hid_t filetype = H5Tcopy(H5T_FORTRAN_S1);
-  herr_t err = H5Tset_size(filetype, value.length());
-  if (err < 0) {
-    return err;
-  }
-
-  hid_t memtype = H5Tcopy(H5T_C_S1); // Datatype ID
-  err = H5Tset_size(memtype, value.length() + 1);
-  if (err < 0) {
-    return err;
-  }
-
-  std::array<hsize_t, 1> dims = {1};
-  hid_t dspace = H5Screate_simple(1, dims.data(), nullptr);
-  if (dspace < 0) {
-    return dspace;
-  }
-  hid_t attr =
-      H5Acreate(fileID, key, filetype, dspace, H5P_DEFAULT, H5P_DEFAULT);
-  if (attr < 0) {
-    // ignore error here, everything is lost anyway at this point in time
-    H5Sclose(dspace);
-    return attr;
-  }
-  err = H5Awrite(attr, memtype, value.c_str());
-  if (err < 0) {
-    return err;
-  }
-  err = H5Aclose(attr);
-  if (err < 0) {
-    return err;
-  }
-  err = H5Sclose(dspace);
-  if (err < 0) {
-    return err;
-  }
-
-  return 0;
-}
-
 } // namespace OutputWriter

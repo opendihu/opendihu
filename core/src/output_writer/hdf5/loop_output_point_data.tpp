@@ -47,9 +47,11 @@ outputPointData(hid_t fileID, CurrentFieldVariableType currentFieldVariable,
   // if mesh name is the specified meshName
   if (currentFieldVariable->functionSpace()->meshName() == meshName &&
       !currentFieldVariable->isGeometryField()) {
-    HDF5Utils::writeFieldVariable<
+    herr_t err = HDF5Utils::writeFieldVariable<
         typename CurrentFieldVariableType::element_type>(fileID,
                                                          *currentFieldVariable);
+    assert(err >= 0);
+    (void)err;
   }
 
   return false; // do not break iteration

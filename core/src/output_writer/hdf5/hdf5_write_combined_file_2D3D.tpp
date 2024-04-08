@@ -66,32 +66,32 @@ void HDF5::writeCombinedUnstructuredGridFile(
       bool combineMesh = true;
 
       // check if mesh can be merged into previous meshes
-      if (!vtkPiece3D_.properties.pointDataArrays
+      if (!piece3D_.properties.pointDataArrays
                .empty()) // if properties are already assigned by an earlier
                          // mesh
       {
-        if (vtkPiece3D_.properties.pointDataArrays.size() !=
+        if (piece3D_.properties.pointDataArrays.size() !=
             polyDataPropertiesForMesh.pointDataArrays.size()) {
           LOG(DEBUG) << "Mesh " << meshName << " cannot be combined with "
-                     << vtkPiece3D_.meshNamesCombinedMeshes
+                     << piece3D_.meshNamesCombinedMeshes
                      << ". Number of field variables mismatches for "
                      << meshName << " (is "
                      << polyDataPropertiesForMesh.pointDataArrays.size()
                      << " instead of "
-                     << vtkPiece3D_.properties.pointDataArrays.size() << ")";
+                     << piece3D_.properties.pointDataArrays.size() << ")";
           combineMesh = false;
         } else {
           for (int j = 0; j < polyDataPropertiesForMesh.pointDataArrays.size();
                j++) {
-            if (vtkPiece3D_.properties.pointDataArrays[j].name !=
+            if (piece3D_.properties.pointDataArrays[j].name !=
                 polyDataPropertiesForMesh.pointDataArrays[j]
                     .name) // if the name of the jth field variable is different
             {
               LOG(DEBUG) << "Mesh " << meshName << " cannot be combined with "
-                         << vtkPiece3D_.meshNamesCombinedMeshes
+                         << piece3D_.meshNamesCombinedMeshes
                          << ". Field variable names mismatch for " << meshName
                          << " (there is \""
-                         << vtkPiece3D_.properties.pointDataArrays[j].name
+                         << piece3D_.properties.pointDataArrays[j].name
                          << "\" instead of \""
                          << polyDataPropertiesForMesh.pointDataArrays[j].name
                          << "\")";
@@ -102,62 +102,62 @@ void HDF5::writeCombinedUnstructuredGridFile(
 
         if (combineMesh) {
           VLOG(1) << "Combine mesh " << meshName << " with "
-                  << vtkPiece3D_.meshNamesCombinedMeshes << ", add "
+                  << piece3D_.meshNamesCombinedMeshes << ", add "
                   << polyDataPropertiesForMesh.nPointsLocal << " points, "
                   << polyDataPropertiesForMesh.nCellsLocal << " elements to "
-                  << vtkPiece3D_.properties.nPointsLocal << " points, "
-                  << vtkPiece3D_.properties.nCellsLocal << " elements";
+                  << piece3D_.properties.nPointsLocal << " points, "
+                  << piece3D_.properties.nCellsLocal << " elements";
 
-          vtkPiece3D_.properties.nPointsLocal +=
+          piece3D_.properties.nPointsLocal +=
               polyDataPropertiesForMesh.nPointsLocal;
-          vtkPiece3D_.properties.nCellsLocal +=
+          piece3D_.properties.nCellsLocal +=
               polyDataPropertiesForMesh.nCellsLocal;
 
-          vtkPiece3D_.properties.nPointsGlobal +=
+          piece3D_.properties.nPointsGlobal +=
               polyDataPropertiesForMesh.nPointsGlobal;
-          vtkPiece3D_.properties.nCellsGlobal +=
+          piece3D_.properties.nCellsGlobal +=
               polyDataPropertiesForMesh.nCellsGlobal;
-          vtkPiece3D_.setVTKValues();
+          piece3D_.setVTKValues();
         }
       } else {
         VLOG(1) << "this is the first " << targetDimensionality << "D mesh";
 
         // properties are not yet assigned
-        vtkPiece3D_.properties = polyDataPropertiesForMesh; // store properties
-        vtkPiece3D_.setVTKValues();
+        piece3D_.properties = polyDataPropertiesForMesh; // store properties
+        piece3D_.setVTKValues();
       }
 
       VLOG(1) << "combineMesh: " << combineMesh;
       if (combineMesh) {
         // if the mesh is not yet present in meshNamesCombinedMeshes, add it
-        if (vtkPiece3D_.meshNamesCombinedMeshes.find(meshName) ==
-            vtkPiece3D_.meshNamesCombinedMeshes.end()) {
-          vtkPiece3D_.meshNamesCombinedMeshes.insert(meshName);
-          vtkPiece3D_.meshNamesCombinedMeshesVector.push_back(meshName);
+        if (piece3D_.meshNamesCombinedMeshes.find(meshName) ==
+            piece3D_.meshNamesCombinedMeshes.end()) {
+          piece3D_.meshNamesCombinedMeshes.insert(meshName);
+          piece3D_.meshNamesCombinedMeshesVector.push_back(meshName);
         }
       }
     }
 
-    LOG(DEBUG) << "vtkPiece3D_: meshNamesCombinedMeshes: "
-               << vtkPiece3D_.meshNamesCombinedMeshes
-               << ", properties: " << vtkPiece3D_.properties
-               << ", firstScalarName: " << vtkPiece3D_.firstScalarName
-               << ", firstVectorName: " << vtkPiece3D_.firstVectorName;
+    LOG(DEBUG) << "piece3D_: meshNamesCombinedMeshes: "
+               << piece3D_.meshNamesCombinedMeshes
+               << ", properties: " << piece3D_.properties
+               << ", firstScalarName: " << piece3D_.firstScalarName
+               << ", firstVectorName: " << piece3D_.firstVectorName;
 
     Control::PerformanceMeasurement::stop("durationHDF52D3DInit");
   }
 
   // write combined mesh
-  if (!vtkPiece3D_.meshNamesCombinedMeshes.empty()) {
+  if (!piece3D_.meshNamesCombinedMeshes.empty()) {
     const PolyDataPropertiesForMesh &polyDataPropertiesForMesh =
-        vtkPiece3D_.properties;
+        piece3D_.properties;
 
     VLOG(1) << "polyDataPropertiesForMesh combined: "
             << polyDataPropertiesForMesh;
 
     // if the meshes have the right dimensionality (2D or 3D)
-    if (vtkPiece3D_.properties.dimensionality == targetDimensionality) {
-      meshNames = vtkPiece3D_.meshNamesCombinedMeshes;
+    if (piece3D_.properties.dimensionality == targetDimensionality) {
+      meshNames = piece3D_.meshNamesCombinedMeshes;
 
       hid_t groupID = H5Gcreate(fileID, targetDimStr, H5P_DEFAULT, H5P_DEFAULT,
                                 H5P_DEFAULT);
@@ -165,15 +165,15 @@ void HDF5::writeCombinedUnstructuredGridFile(
 
       // write actual file
       writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
-          groupID, fieldVariables, vtkPiece3D_.properties,
+          groupID, fieldVariables, piece3D_.properties,
           meshPropertiesUnstructuredGridFile_,
-          vtkPiece3D_.meshNamesCombinedMeshesVector, meshPropertiesInitialized);
+          piece3D_.meshNamesCombinedMeshesVector, meshPropertiesInitialized);
       herr_t err = H5Gclose(groupID);
       assert(err >= 0);
       (void)err; // err is unsed in release mode, silence warning with this
     } else {
-      VLOG(1) << "skip meshes " << vtkPiece3D_.meshNamesCombinedMeshes
-              << " because " << vtkPiece3D_.properties.dimensionality
+      VLOG(1) << "skip meshes " << piece3D_.meshNamesCombinedMeshes
+              << " because " << piece3D_.properties.dimensionality
               << " != " << targetDimensionality;
     }
   }
