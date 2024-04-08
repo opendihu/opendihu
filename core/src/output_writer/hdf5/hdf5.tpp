@@ -5,8 +5,8 @@
 
 namespace OutputWriter {
 template <typename DataType>
-void HDF5::write(DataType &data, int timeStepNo, double currentTime,
-                 int callCountIncrement) {
+void HDF5::write(DataType &data, const char *filename, int timeStepNo,
+                 double currentTime, int callCountIncrement) {
   // check if output should be written in this timestep and prepare filename
   if (!Generic::prepareWrite(data, timeStepNo, currentTime,
                              callCountIncrement)) {
@@ -19,33 +19,41 @@ void HDF5::write(DataType &data, int timeStepNo, double currentTime,
   std::set<std::string> combined3DMeshes;
 
   if (combineFiles_) {
-    // determine filename, broadcast from rank 0
-    std::stringstream filename;
-    filename << this->filenameBaseWithNo_ << "_c.h5";
-    int filenameLength = filename.str().length();
+    hid_t fileID;
+    if (!filename) {
+      // determine filename, broadcast from rank 0
+      std::stringstream filename;
+      filename << this->filenameBaseWithNo_ << "_c.h5";
+      int filenameLength = filename.str().length();
 
-    // broadcast length of filename
-    MPIUtility::handleReturnValue(
-        MPI_Bcast(&filenameLength, 1, MPI_INT, 0,
-                  this->rankSubset_->mpiCommunicator()),
-        "MPI_Bcast");
+      // broadcast length of filename
+      MPIUtility::handleReturnValue(
+          MPI_Bcast(&filenameLength, 1, MPI_INT, 0,
+                    this->rankSubset_->mpiCommunicator()),
+          "MPI_Bcast");
 
-    std::vector<char> receiveBuffer(filenameLength + 1, char(0));
-    strcpy(receiveBuffer.data(), filename.str().c_str());
-    MPIUtility::handleReturnValue(
-        MPI_Bcast(receiveBuffer.data(), filenameLength, MPI_CHAR, 0,
-                  this->rankSubset_->mpiCommunicator()),
-        "MPI_Bcast");
-    LOG(DEBUG) << "open HDF5 file using MPI IO \"" << receiveBuffer.data()
-               << "\".";
-    hid_t fileID = openHDF5File(receiveBuffer.data(), true);
+      std::vector<char> receiveBuffer(filenameLength + 1, char(0));
+      strcpy(receiveBuffer.data(), filename.str().c_str());
+      MPIUtility::handleReturnValue(
+          MPI_Bcast(receiveBuffer.data(), filenameLength, MPI_CHAR, 0,
+                    this->rankSubset_->mpiCommunicator()),
+          "MPI_Bcast");
+      LOG(DEBUG) << "open HDF5 file using MPI IO \"" << receiveBuffer.data()
+                 << "\".";
+      fileID = openHDF5File(receiveBuffer.data(), true);
+    } else {
+      fileID = openHDF5File(filename, true);
+    }
+
     herr_t err;
-    err = HDF5Utils::writeAttr<const std::string &>(fileID, "version",
-                                                    DihuContext::versionText());
-    assert(err >= 0);
-    err = HDF5Utils::writeAttr<const std::string &>(fileID, "meta",
-                                                    DihuContext::metaText());
-    assert(err >= 0);
+    if (writeMeta_) {
+      err = HDF5Utils::writeAttr<const std::string &>(
+          fileID, "version", DihuContext::versionText());
+      assert(err >= 0);
+      err = HDF5Utils::writeAttr<const std::string &>(fileID, "meta",
+                                                      DihuContext::metaText());
+      assert(err >= 0);
+    }
     err = HDF5Utils::writeAttr(fileID, "currentTime", this->currentTime_);
     assert(err >= 0);
     err = HDF5Utils::writeAttr(fileID, "timeStepNo", this->timeStepNo_);
@@ -119,16 +127,22 @@ void HDF5::write(DataType &data, int timeStepNo, double currentTime,
   if (meshesToOutput.size() > 0) {
     // extract filename base
     std::stringstream s;
-    s << this->filename_ << "_p.h5";
+    if (!filename) {
+      s << filename << "p";
+    } else {
+      s << this->filename_ << "_p.h5";
+    }
 
     hid_t fileID = openHDF5File(s.str().c_str(), true);
     herr_t err;
-    err = HDF5Utils::writeAttr<const std::string &>(fileID, "version",
-                                                    DihuContext::versionText());
-    assert(err >= 0);
-    err = HDF5Utils::writeAttr<const std::string &>(fileID, "meta",
-                                                    DihuContext::metaText());
-    assert(err >= 0);
+    if (writeMeta_) {
+      err = HDF5Utils::writeAttr<const std::string &>(
+          fileID, "version", DihuContext::versionText());
+      assert(err >= 0);
+      err = HDF5Utils::writeAttr<const std::string &>(fileID, "meta",
+                                                      DihuContext::metaText());
+      assert(err >= 0);
+    }
     err = HDF5Utils::writeAttr(fileID, "currentTime", this->currentTime_);
     assert(err >= 0);
     err = HDF5Utils::writeAttr(fileID, "timeStepNo", this->timeStepNo_);

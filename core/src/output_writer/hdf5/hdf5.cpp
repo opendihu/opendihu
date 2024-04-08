@@ -5,6 +5,7 @@ HDF5::HDF5(DihuContext context, PythonConfig settings,
            std::shared_ptr<Partition::RankSubset> rankSubset)
     : Generic(context, settings, rankSubset) {
   combineFiles_ = settings.getOptionBool("combineFiles", false);
+  writeMeta_ = settings.getOptionBool("writeMeta", true);
 }
 
 //! constructor, initialize nPoints and nCells to 0
@@ -15,6 +16,9 @@ HDF5::Piece::Piece() {
   properties.nCellsGlobal = 0;
   properties.dimensionality = 0;
 }
+
+void HDF5::setCombineFiles(bool v) { combineFiles_ = v; }
+void HDF5::setWriteMeta(bool v) { writeMeta_ = v; }
 
 //! assign the correct values to firstScalarName and firstVectorName, only if
 //! properties has been set

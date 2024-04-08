@@ -15,7 +15,8 @@ public:
   //! write out solution to file, if timeStepNo is not -1, this value will be
   //! part of the filename
   template <typename DataType>
-  void write(DataType &data, int timeStepNo = -1, double currentTime = -1,
+  void write(DataType &data, const char *filename = nullptr,
+             int timeStepNo = -1, double currentTime = -1,
              int callCountIncrement = 1);
 
   //! write all 1D field variables into a group. This is uses MPI IO.
@@ -36,6 +37,11 @@ public:
   void writeCombinedUnstructuredGridFile(
       hid_t fileID, const FieldVariablesForOutputWriterType &fieldVariables,
       std::set<std::string> &combinedMeshesOut, bool output3DMeshes);
+
+  //! Enable or disable combine files option
+  void setCombineFiles(bool v);
+  //! Enable or disable write meta option
+  void setWriteMeta(bool v);
 
 protected:
   /** one Piece is the file output. It is created from one or multiple opendihu
@@ -92,6 +98,7 @@ private:
       std::vector<std::string> meshNames, bool meshPropertiesInitialized);
 
   bool combineFiles_; //< if set everything is combined into a single file
+  bool writeMeta_;    //< if set, additional metadata is written to attributes
 
   std::map<std::string, PolyDataPropertiesForMesh>
       meshPropertiesPolyDataFile_; //< mesh information for a data file, for 1D

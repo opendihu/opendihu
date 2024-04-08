@@ -76,7 +76,7 @@ void Manager::writeOutput(DataType &problemData, int timeStepNo,
 
       std::shared_ptr<HDF5> writer =
           std::static_pointer_cast<HDF5>(outputWriter);
-      writer->write<DataType>(problemData, timeStepNo, currentTime,
+      writer->write<DataType>(problemData, nullptr, timeStepNo, currentTime,
                               callCountIncrement);
 
       Control::PerformanceMeasurement::stop("durationWriteOutputHDF5");
