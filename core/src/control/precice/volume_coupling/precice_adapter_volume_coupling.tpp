@@ -88,13 +88,13 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
     // the current time window
     this->maximumPreciceTimestepSize_ =
         this->preciceParticipant_->getMaxTimeStepSize();
-    double tol =1e-7;
+    double tol = 1e-7;
     double timeStepWidth;
-    if ((this->maximumPreciceTimestepSize_ - this->timeStepWidth_)<tol){
+    if ((this->maximumPreciceTimestepSize_ - this->timeStepWidth_) < tol) {
       timeStepWidth = this->maximumPreciceTimestepSize_;
     } else {
       timeStepWidth =
-        std::min(this->maximumPreciceTimestepSize_, this->timeStepWidth_);
+          std::min(this->maximumPreciceTimestepSize_, this->timeStepWidth_);
     }
     // set time span in nested solver
     this->nestedSolver_.setTimeSpan(currentTime, currentTime + timeStepWidth);
@@ -108,7 +108,6 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
 
     // increase current simulation time
     currentTime += timeStepWidth;
-
 
     // advance timestepping in precice
     this->preciceParticipant_->advance(timeStepWidth);
