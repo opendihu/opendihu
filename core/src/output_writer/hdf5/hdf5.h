@@ -72,7 +72,7 @@ protected:
                                 bool output3DMeshes, const char *dsname);
 
 private:
-  hid_t openHDF5File(const char *filename);
+  hid_t openHDF5File(const char *filename, bool mpiio);
 
   // TODO: make into template function
   herr_t writeAttrInt(hid_t fileID, const char *key, int value);
@@ -89,9 +89,6 @@ private:
           &meshPropertiesUnstructuredGridFile,
       std::vector<std::string> meshNames, bool meshPropertiesInitialized);
 
-  bool onlyNodalValues_; //< if only nodal values should be output, this omits
-                         // the derivative values for Hermite ansatz functions,
-                         // for Lagrange functions it has no effect
   bool combineFiles_;
 
   std::map<std::string, PolyDataPropertiesForMesh>
@@ -122,6 +119,29 @@ private:
       nPointsPreviousRanks3D_; //< sum of number of points on other processes
                                // with lower rank no., for vtu file
 };
+
+namespace HDF5Utils {
+template <typename T>
+static void writeSimpleVec(hid_t fileID, const std::vector<T> &data,
+                           const char *dsname);
+template <>
+void writeSimpleVec<int32_t>(hid_t fileID, const std::vector<int32_t> &data,
+                             const char *dsname);
+template <>
+void writeSimpleVec<double>(hid_t fileID, const std::vector<double> &data,
+                            const char *dsname);
+
+//! write the given field variable as VTK <DataArray> element to file, if
+//! onlyParallelDatasetElement write the <PDataArray> element
+template <typename FieldVariableType>
+static void writeFieldVariable(hid_t fileID, FieldVariableType &fieldVariable);
+
+//! write the a field variable indicating which ranks own which portion of the
+//! domain as DataSet element to file
+template <typename FieldVariableType>
+static void writePartitionFieldVariable(hid_t fileID,
+                                        FieldVariableType &geometryField);
+} // namespace HDF5Utils
 } // namespace OutputWriter
 
 #include "output_writer/hdf5/hdf5.tpp"

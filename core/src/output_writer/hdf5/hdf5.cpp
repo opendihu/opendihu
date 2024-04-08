@@ -4,7 +4,6 @@ namespace OutputWriter {
 HDF5::HDF5(DihuContext context, PythonConfig settings,
            std::shared_ptr<Partition::RankSubset> rankSubset)
     : Generic(context, settings, rankSubset) {
-  onlyNodalValues_ = settings.getOptionBool("onlyNodalValues", true);
   combineFiles_ = settings.getOptionBool("combineFiles", false);
 }
 
@@ -41,22 +40,28 @@ void HDF5::writeCombinedTypesVector(hid_t fileID, int nValues,
   }
 }
 
-hid_t HDF5::openHDF5File(const char *filename) {
-  hid_t plist = H5Pcreate(H5P_FILE_ACCESS);
-  herr_t err;
-  err = H5Pset_fapl_mpio(plist, MPI_COMM_WORLD, MPI_INFO_NULL);
-  assert(err >= 0);
-  err = H5Pset_all_coll_metadata_ops(plist, true);
-  assert(err >= 0);
-  err = H5Pset_coll_metadata_write(plist, true);
-  assert(err >= 0);
+hid_t HDF5::openHDF5File(const char *filename, bool mpiio) {
+  if (mpiio) {
+    hid_t plist = H5Pcreate(H5P_FILE_ACCESS);
+    herr_t err;
+    err = H5Pset_fapl_mpio(plist, MPI_COMM_WORLD, MPI_INFO_NULL);
+    assert(err >= 0);
+    err = H5Pset_all_coll_metadata_ops(plist, true);
+    assert(err >= 0);
+    err = H5Pset_coll_metadata_write(plist, true);
+    assert(err >= 0);
 
-  hid_t fileID = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, plist);
-  assert(fileID >= 0);
-  err = H5Pclose(plist);
-  assert(err >= 0);
+    hid_t fileID = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, plist);
+    assert(fileID >= 0);
+    err = H5Pclose(plist);
+    assert(err >= 0);
 
-  return fileID;
+    return fileID;
+  } else {
+    hid_t fileID = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+    assert(fileID >= 0);
+    return fileID;
+  }
 }
 
 herr_t HDF5::writeAttrInt(hid_t fileID, const char *key, int32_t value) {
