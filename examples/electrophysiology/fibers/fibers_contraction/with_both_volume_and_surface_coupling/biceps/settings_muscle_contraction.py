@@ -198,7 +198,7 @@ config = {
       "enableForceLengthRelation":    True,                      # if the factor f_l(λ_f) modeling the force-length relation (as in Heidlauf2013) should be multiplied. Set to false if this relation is already considered in the CellML model.
       "lambdaDotScalingFactor":       1.0,                       # scaling factor for the output of the lambda dot slot, i.e. the contraction velocity. Use this to scale the unit-less quantity to, e.g., micrometers per millisecond for the subcellular model.
       "slotNames":                    ["lambda", "ldot", "gamma", "T"],   # names of the data connector slots
-      "dynamic":                      False,                     # if the dynamic formulation with velocity or the quasi-static formulation is computed
+      "dynamic":                      True,                     # if the dynamic formulation with velocity or the quasi-static formulation is computed
       
       "OutputWriter" : [
         {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep), "filename": "out/" + variables.scenario_name + "/mechanics", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},

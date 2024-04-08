@@ -368,21 +368,15 @@ ny = (my-1)//2
 nz = (mz-1)//2
 
 # set Dirichlet BC at top nodes for elasticity problem, fix muscle at top
+# set Dirichlet BC at top nodes for linear elasticity problem, fix muscle at top
 variables.elasticity_dirichlet_bc = {}
 for j in range(my):
   for i in range(mx):
-    variables.elasticity_dirichlet_bc[(mz-1)*mx*my + j*mx + i] = [None,None,0.0,None,None,None]
-  
-# fix edge
-for i in range(mx):
-  variables.elasticity_dirichlet_bc[(mz-1)*mx*my + 0*mx + i] = [0.0,None,0.0,None,None,None]
-  
-# fix corner completely
-variables.elasticity_dirichlet_bc[(mz-1)*mx*my + 0] = [0.0,0.0,0.0,None,None,None]
+    variables.elasticity_dirichlet_bc[(mz-1)*mx*my + j*mx + i] = [0.0,0.0,0.0,0.0,0.0,0.0]
 
 # Neumann BC at bottom nodes, traction downwards
-variables.elasticity_neumann_bc = [{"element": 0*nx*ny + j*nx + i, "constantVector": variables.bottom_traction, "face": "2-"} for j in range(ny) for i in range(nx)]
-#variables.elasticity_neumann_bc = []
+#variables.elasticity_neumann_bc = [{"element": 0*nx*ny + j*nx + i, "constantVector": variables.bottom_traction, "face": "2-"} for j in range(ny) for i in range(nx)]
+variables.elasticity_neumann_bc = []
 
 #print("bottom_traction={}\n elasticity_neumann_bc={}".format(variables.bottom_traction,variables.elasticity_neumann_bc))
 
