@@ -68,6 +68,8 @@
       <basis-function:compact-polynomial-c6 support-radius="0.1" />
     </mapping:rbf> 
 
+    <mapping:nearest-neighbor direction="read" from="TendonMeshTop" to="MuscleMeshBottom" constraint="consistent"/>
+
     <export:vtu directory="precice-output" />
 
   </participant>
