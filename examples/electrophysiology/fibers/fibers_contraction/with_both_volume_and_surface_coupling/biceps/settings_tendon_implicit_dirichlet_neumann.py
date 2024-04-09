@@ -43,10 +43,6 @@ variables.force = 1000.0       # [N]
 
 print("expected stress: {} N/cm^2 = {} MPa".format(variables.force, variables.force * 1e-2))
 
-variables.dt_elasticity = 0.01      # [ms] time step width for elasticity
-variables.end_time      = 10     # [ms] simulation time
-variables.is_bottom_tendon = True        # whether the tendon is at the bottom (negative z-direction), this is important for the boundary conditions
-
 # input mesh file
 
 load_fiber_data = False             # If the fiber geometry data should be loaded completely in the python script. If True, this reads the binary file and assigns the node positions in the config. If False, the C++ code will read the binary file and only extract the local node positions. This is more performant for highly parallel runs.
@@ -109,20 +105,6 @@ node_positions = variables.meshes["3Dmesh_quadratic"]["nodePositions"]
 
 # set Dirichlet BC, fix one end
 variables.elasticity_dirichlet_bc = {}
-k = mz-1
-
-# fix z value on the whole x-y-plane
-for j in range(my):
-  for i in range(mx):
-    variables.elasticity_dirichlet_bc[k*mx*my + j*mx + i] = [None,None,0.0,None,None,None]
-
-# fix left edge 
-for j in range(my):
-  variables.elasticity_dirichlet_bc[k*mx*my + j*mx + 0][0] = 0.0
-  
-# fix front edge 
-for i in range(mx):
-  variables.elasticity_dirichlet_bc[k*mx*my + 0*mx + i][1] = 0.0
        
 # set Neumann BC, set traction at the end of the tendon that is attached to the muscle
 k = 0
@@ -136,7 +118,7 @@ print("nRanks: ",variables.meshes["3Dmesh_quadratic"]["nRanks"])
 
 
 config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyperelasticitySolver"
-  "timeStepWidth":              variables.dt_elasticity,      # time step width 
+  "timeStepWidth":              variables.dt_3D,      # time step width 
   "endTime":                    variables.end_time,           # end time of the simulation time span    
   "durationLogKey":             "duration_mechanics",         # key to find duration of this solver in the log file
   "timeStepOutputInterval":     1,                            # how often the current time step should be printed to console
