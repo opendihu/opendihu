@@ -66,8 +66,6 @@ variables.material_parameters = [lambd, mu]
 variables.constant_body_force = (0,0,-9.81e-4)   # [cm/ms^2], gravity constant for the body force
 variables.force = 100.0           # [N] pulling force to the bottom 
 
-variables.dt_elasticity = 1      # [ms] time step width for elasticity
-variables.end_time      = 20000   # [ms] simulation time
 variables.scenario_name = "tendon_bottom"
 variables.is_bottom_tendon = True        # whether the tendon is at the bottom (negative z-direction), this is important for the boundary conditions
 variables.output_timestep_3D = 50  # [ms] output timestep
@@ -378,7 +376,7 @@ def postprocess(result):
   store_rotated_ulna(current_time)
 
 config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyperelasticitySolver"
-  "timeStepWidth":              variables.dt_elasticity,      # time step width 
+  "timeStepWidth":              variables.dt_3D,      # time step width 
   "endTime":                    variables.end_time,           # end time of the simulation time span    
   "durationLogKey":             "duration_mechanics",         # key to find duration of this solver in the log file
   "timeStepOutputInterval":     1,                            # how often the current time step should be printed to console
@@ -451,7 +449,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "OutputWriter" : [
     
     # Paraview files
-    {"format": "Paraview", "outputInterval": int(1./variables.dt_elasticity*variables.output_timestep_3D), "filename": "out/tendon_bottom", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+    {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_3D), "filename": "out/tendon_bottom", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
     
     # Python callback function "postprocess"
     {"format": "PythonCallback", "outputInterval": 1, "callback": postprocess, "onlyNodalValues":True, "filename": "", "fileNumbering": "incremental"},
@@ -465,7 +463,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   # 3. additional output writer that writes virtual work terms
   "dynamic": {    # output of the dynamic solver, has additional virtual work values 
     "OutputWriter" : [   # output files for displacements function space (quadratic elements)
-      {"format": "Paraview", "outputInterval": int(1./variables.dt_elasticity*variables.output_timestep_3D), "filename": "out/tendon_bottom_virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+      {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_3D), "filename": "out/tendon_bottom_virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
       #{"format": "Paraview", "outputInterval": 1, "filename": "out/"+variables.scenario_name+"/virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
     ],
   },
