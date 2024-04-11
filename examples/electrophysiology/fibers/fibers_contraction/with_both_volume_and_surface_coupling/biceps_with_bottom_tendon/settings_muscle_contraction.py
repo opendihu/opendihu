@@ -269,7 +269,14 @@ config = {
             #{"format": "Paraview", "outputInterval": int(output_interval/dt), "filename": "out/dynamic", "binary": False, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True},
             #{"format": "Paraview", "outputInterval": 1, "filename": "out/dynamic", "binary": False, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True},
           ],
-        }
+        },
+        # 4. output writer for debugging, outputs files after each load increment, the geometry is not changed but u and v are written
+        "LoadIncrements": {   
+          "OutputWriter" : [
+            #{"format": "Paraview", "outputInterval": 1, "filename": "out/load_increment_", "binary": False, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True},
+          ]
+        },
+      
       },
       
       # the mechanics solver for the static problem (if "dynamic": False)
@@ -338,7 +345,7 @@ config = {
             #{"format": "Paraview", "outputInterval": 1, "filename": "out/dynamic", "binary": False, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True},
           ],
         },
-        # output writer for debugging, outputs files after each load increment, the geometry is not changed but u and v are written
+        # 4. output writer for debugging, outputs files after each load increment, the geometry is not changed but u and v are written
         "LoadIncrements": {   
           "OutputWriter" : [
             #{"format": "Paraview", "outputInterval": 1, "filename": "out/load_increment_", "binary": False, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True},
