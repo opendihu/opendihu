@@ -4,7 +4,7 @@
 #include <fstream>
 
 #include "control/types.h"
-//#include "data_management/data.h"
+// #include "data_management/data.h"
 #include "output_writer/loop_collect_mesh_names.h"
 #include "control/dihu_context.h"
 
@@ -19,11 +19,11 @@ public:
           std::shared_ptr<Partition::RankSubset> rankSubset = nullptr);
 
   //! virtual destructor to allow dynamic_pointer_cast
-  virtual ~Generic();
+  virtual ~Generic() = default;
 
   //! open file given by filename and provided an ofstream variable, create
   //! directory if necessary
-  static void openFile(std::ofstream &file, std::string filename,
+  static void openFile(std::ofstream &file, const std::string &filename,
                        bool append = false);
 
   //! append rank no in the format ".001" to str
