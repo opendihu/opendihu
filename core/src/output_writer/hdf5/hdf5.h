@@ -3,7 +3,7 @@
 #include <hdf5.h>
 
 #include "output_writer/generic.h"
-#include "output_writer/paraview/poly_data_properties_for_mesh.h"
+#include "output_writer/poly_data_properties_for_mesh.h"
 
 namespace OutputWriter {
 class HDF5 : public Generic {

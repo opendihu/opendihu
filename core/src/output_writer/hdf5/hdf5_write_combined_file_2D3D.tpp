@@ -2,7 +2,9 @@
 
 #include "easylogging++.h"
 
-#include "output_writer/paraview/loop_collect_mesh_properties.h"
+#include "output_writer/loop_collect_mesh_properties.h"
+#include "output_writer/loop_get_nodal_values.h"
+#include "output_writer/loop_get_geometry_field_nodal_values.h"
 #include "control/diagnostic_tool/performance_measurement.h"
 
 namespace OutputWriter {
@@ -24,8 +26,7 @@ void HDF5::writeCombinedUnstructuredGridFile(
 
     // collect the size data that is needed to compute offsets for parallel file
     // output
-    ParaviewLoopOverTuple::loopCollectMeshProperties<
-        FieldVariablesForOutputWriterType>(
+    LoopOverTuple::loopCollectMeshProperties<FieldVariablesForOutputWriterType>(
         fieldVariables, meshPropertiesUnstructuredGridFile_, meshNamesVector);
 
     Control::PerformanceMeasurement::stop("durationHDF53DInit");
@@ -535,7 +536,7 @@ void HDF5::writeCombinedUnstructuredGridFile(
 
   // collect all data for the field variables, organized by field variable names
   std::map<std::string, std::vector<double>> fieldVariableValues;
-  ParaviewLoopOverTuple::loopGetNodalValues<FieldVariablesForOutputWriterType>(
+  LoopOverTuple::loopGetNodalValues<FieldVariablesForOutputWriterType>(
       fieldVariables, meshNamesSet, fieldVariableValues);
 
   if (!meshPropertiesInitialized) {
@@ -609,7 +610,7 @@ void HDF5::writeCombinedUnstructuredGridFile(
 
   // collect all data for the geometry field variable
   std::vector<double> geometryFieldValues;
-  ParaviewLoopOverTuple::loopGetGeometryFieldNodalValues<
+  LoopOverTuple::loopGetGeometryFieldNodalValues<
       FieldVariablesForOutputWriterType>(fieldVariables, meshNamesSet,
                                          geometryFieldValues);
 

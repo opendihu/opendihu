@@ -5,6 +5,8 @@
 
 #include <cstdlib>
 
+#include "output_writer/poly_data_properties_for_mesh.h"
+
 /** The functions in this file model a loop over the elements of a tuple, as it
  * occurs as FieldVariablesForOutputWriterType in all data_management classes.
  *  (Because the types inside the tuple are static and fixed at compile-time, a
@@ -16,16 +18,15 @@
  * std::shared_ptr<FieldVariable> or
  * std::vector<std::shared_ptr<FieldVariable>>.
  *
- *  Get all nodal values of all field variables in the meshes given in
- * meshNames. The output variable is a vector of the data for the field
- * variables (values[fieldVariableNo][entryNo]). The components of the field
- * variable are interleaved (x y z x y z ...) as needed in the paraview output
- * files.
+ *  Collect all field variable names of field variable with > 1 components into
+ * vectors and all scalar field variable names into scalars.
  */
 
 namespace OutputWriter {
 
-namespace ParaviewLoopOverTuple {
+namespace LoopOverTuple {
+
+using ::OutputWriter::PolyDataPropertiesForMesh;
 
 /** Static recursive loop from 0 to number of entries in the tuple
  *  Stopping criterion
@@ -33,9 +34,10 @@ namespace ParaviewLoopOverTuple {
 template <typename FieldVariablesForOutputWriterType, int i = 0>
 inline typename std::enable_if<
     i == std::tuple_size<FieldVariablesForOutputWriterType>::value, void>::type
-loopGetNodalValues(const FieldVariablesForOutputWriterType &fieldVariables,
-                   std::set<std::string> meshNames,
-                   std::map<std::string, std::vector<double>> &values) {}
+loopCollectMeshProperties(
+    const FieldVariablesForOutputWriterType &fieldVariables,
+    std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
+    std::vector<std::string> &meshNamesVector) {}
 
 /** Static recursive loop from 0 to number of entries in the tuple
  * Loop body
@@ -43,27 +45,30 @@ loopGetNodalValues(const FieldVariablesForOutputWriterType &fieldVariables,
 template <typename FieldVariablesForOutputWriterType, int i = 0>
     inline typename std::enable_if <
     i<std::tuple_size<FieldVariablesForOutputWriterType>::value, void>::type
-    loopGetNodalValues(const FieldVariablesForOutputWriterType &fieldVariables,
-                       std::set<std::string> meshNames,
-                       std::map<std::string, std::vector<double>> &values);
+    loopCollectMeshProperties(
+        const FieldVariablesForOutputWriterType &fieldVariables,
+        std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
+        std::vector<std::string> &meshNamesVector);
 
 /** Loop body for a vector element
  */
 template <typename VectorType, typename FieldVariablesForOutputWriterType>
 typename std::enable_if<TypeUtility::isVector<VectorType>::value, bool>::type
-getNodalValues(VectorType currentFieldVariableGradient,
-               const FieldVariablesForOutputWriterType &fieldVariables,
-               std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values);
+collectMeshProperties(
+    VectorType currentFieldVariableGradient,
+    const FieldVariablesForOutputWriterType &fieldVariables,
+    std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
+    std::vector<std::string> &meshNamesVector, int i);
 
 /** Loop body for a tuple element
  */
 template <typename VectorType, typename FieldVariablesForOutputWriterType>
 typename std::enable_if<TypeUtility::isTuple<VectorType>::value, bool>::type
-getNodalValues(VectorType currentFieldVariableGradient,
-               const FieldVariablesForOutputWriterType &fieldVariables,
-               std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values);
+collectMeshProperties(
+    VectorType currentFieldVariableGradient,
+    const FieldVariablesForOutputWriterType &fieldVariables,
+    std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
+    std::vector<std::string> &meshNamesVector, int i);
 
 /**  Loop body for a pointer element
  */
@@ -74,10 +79,11 @@ typename std::enable_if<
         !TypeUtility::isVector<CurrentFieldVariableType>::value &&
         !Mesh::isComposite<CurrentFieldVariableType>::value,
     bool>::type
-getNodalValues(CurrentFieldVariableType currentFieldVariable,
-               const FieldVariablesForOutputWriterType &fieldVariables,
-               std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values);
+collectMeshProperties(
+    CurrentFieldVariableType currentFieldVariable,
+    const FieldVariablesForOutputWriterType &fieldVariables,
+    std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
+    std::vector<std::string> &meshNamesVector, int i);
 
 /** Loop body for a field variables with Mesh::CompositeOfDimension<D>
  */
@@ -85,13 +91,13 @@ template <typename CurrentFieldVariableType,
           typename FieldVariablesForOutputWriterType>
 typename std::enable_if<Mesh::isComposite<CurrentFieldVariableType>::value,
                         bool>::type
-getNodalValues(CurrentFieldVariableType currentFieldVariable,
-               const FieldVariablesForOutputWriterType &fieldVariables,
-               std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values);
+collectMeshProperties(
+    CurrentFieldVariableType currentFieldVariable,
+    const FieldVariablesForOutputWriterType &fieldVariables,
+    std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
+    std::vector<std::string> &meshNamesVector, int i);
 
-} // namespace ParaviewLoopOverTuple
-
+} // namespace LoopOverTuple
 } // namespace OutputWriter
 
-#include "output_writer/paraview/loop_get_nodal_values.tpp"
+#include "output_writer/loop_collect_mesh_properties.tpp"
