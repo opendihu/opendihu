@@ -62,6 +62,10 @@ args, other_args = parser.parse_known_args(args=sys.argv[:-2], namespace=variabl
 if len(other_args) != 0 and rank_no == 0:
     print("Warning: These arguments were not parsed by the settings python file\n  " + "\n  ".join(other_args), file=sys.stderr)
 
+# set title of terminal
+title = "muscle_mechanics"
+print('\33]0;{}\a'.format(title), end='', flush=True)
+
 # initialize some dependend variables
 if variables.n_subdomains is not None:
   variables.n_subdomains_x = variables.n_subdomains[0]

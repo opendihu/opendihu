@@ -35,7 +35,6 @@ else:
   exit(0)
 
 
-import variables              # file variables.py, defines default values for all parameters, you can set the parameters there
 from create_partitioned_meshes_for_settings import *   # file create_partitioned_meshes_for_settings with helper functions about own subdomain
 
 # set title of terminal

@@ -15,8 +15,7 @@ int main(int argc, char *argv[]) {
   DihuContext settings(argc, argv);
 
   // define problem
-  Control::PreciceAdapter<MuscleContractionSolver<>> problem(
-      settings);
+  Control::PreciceAdapter<MuscleContractionSolver<>> problem(settings);
 
   // run problem
   problem.run();

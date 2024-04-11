@@ -16,10 +16,10 @@ int main(int argc, char *argv[]) {
 
   // define problem
   Control::PreciceAdapter<FastMonodomainSolver< // a wrapper that
-                                                              // improves
-                                                              // performance of
-                                                              // multidomain
-      Control::MultipleInstances<                             // fibers
+                                                // improves
+                                                // performance of
+                                                // multidomain
+      Control::MultipleInstances<               // fibers
           OperatorSplitting::Strang<
               Control::MultipleInstances<TimeSteppingScheme::Heun< // fiber
                                                                    // reaction
