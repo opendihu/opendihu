@@ -625,6 +625,7 @@ void HDF5::writeCombinedUnstructuredGridFile(
 
   Control::PerformanceMeasurement::start("durationHDF53DWrite");
 
+  herr_t err;
   // write field variables
   for (PolyDataPropertiesForMesh::DataArrayName &pointDataArray :
        polyDataPropertiesForMesh.pointDataArrays) {
@@ -634,15 +635,21 @@ void HDF5::writeCombinedUnstructuredGridFile(
     // write values
     // for partitioning, convert float values to integer values for output
     bool writeFloatsAsInt = pointDataArray.name == "partitioning";
-    writeCombinedValuesVector(fileID, fieldVariableValues[pointDataArray.name],
-                              pointDataArray.name.c_str(), writeFloatsAsInt);
+    err = writeCombinedValuesVector(
+        fileID, fieldVariableValues[pointDataArray.name],
+        pointDataArray.name.c_str(), writeFloatsAsInt);
+    assert(err >= 0);
   }
 
-  writeCombinedValuesVector(fileID, geometryFieldValues, "geometry");
-  writeCombinedValuesVector(fileID, connectivityValues, "connectivity");
-  writeCombinedValuesVector(fileID, offsetValues, "offsets");
-  writeCombinedTypesVector(fileID, polyDataPropertiesForMesh.nCellsGlobal,
-                           output3DMeshes, "types");
+  err = writeCombinedValuesVector(fileID, geometryFieldValues, "geometry");
+  assert(err >= 0);
+  err = writeCombinedValuesVector(fileID, connectivityValues, "connectivity");
+  assert(err >= 0);
+  err = writeCombinedValuesVector(fileID, offsetValues, "offsets");
+  assert(err >= 0);
+  err = writeCombinedTypesVector(fileID, polyDataPropertiesForMesh.nCellsGlobal,
+                                 output3DMeshes, "types");
+  assert(err >= 0);
 
   Control::PerformanceMeasurement::stop("durationHDF53DWrite");
 }

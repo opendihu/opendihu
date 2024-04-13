@@ -75,14 +75,14 @@ protected:
   //! write the values vector combined to the file, correctly encoded,
   //! identifier is an id to access cached values
   template <typename T>
-  void writeCombinedValuesVector(hid_t fileID, const std::vector<T> &values,
-                                 const char *dsname,
-                                 bool writeFloatsAsInt = false);
+  herr_t writeCombinedValuesVector(hid_t fileID, const std::vector<T> &values,
+                                   const char *dsname,
+                                   bool writeFloatsAsInt = false);
 
   //! write a vector containing nValues "12" (if output3DMeshes) or "9" (if
   //! !output3DMeshes) values for the types for an unstructured grid
-  void writeCombinedTypesVector(hid_t fileHandle, int nValues,
-                                bool output3DMeshes, const char *dsname);
+  herr_t writeCombinedTypesVector(hid_t fileHandle, int nValues,
+                                  bool output3DMeshes, const char *dsname);
 
 private:
   //! open a HDF5 file with a given filename
@@ -150,15 +150,19 @@ herr_t writeAttr<const std::string &>(hid_t fileID, const char *key,
 //! write a dataset with a specific name to a given fileID
 template <typename T>
 static herr_t writeSimpleVec(hid_t fileID, const std::vector<T> &data,
-                             const char *dsname);
+                             std::string dsname);
 //! write a dataset(vec<int32_t>) with a specific name to a given fileID
 template <>
 herr_t writeSimpleVec<int32_t>(hid_t fileID, const std::vector<int32_t> &data,
-                               const char *dsname);
+                               std::string dsname);
+//! write a dataset(vec<float>) with a specific name to a given fileID
+template <>
+herr_t writeSimpleVec<float>(hid_t fileID, const std::vector<float> &data,
+                             std::string dsname);
 //! write a dataset(vec<double>) with a specific name to a given fileID
 template <>
 herr_t writeSimpleVec<double>(hid_t fileID, const std::vector<double> &data,
-                              const char *dsname);
+                              std::string dsname);
 
 //! write the given field variable to a given fileID
 template <typename FieldVariableType>

@@ -251,6 +251,7 @@ void HDF5::writePolyDataFile(
       H5Gcreate(fileID, "1D", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   assert(groupID >= 0);
 
+  herr_t err;
   // write field variables
   for (PolyDataPropertiesForMesh::DataArrayName &pointDataArray :
        piece1D_.properties.pointDataArrays) {
@@ -260,17 +261,21 @@ void HDF5::writePolyDataFile(
     // write values
     // for partitioning, convert float values to integer values for output
     bool writeFloatsAsInt = pointDataArray.name == "partitioning";
-    writeCombinedValuesVector(groupID, fieldVariableValues[pointDataArray.name],
-                              pointDataArray.name.c_str(), writeFloatsAsInt);
+    err = writeCombinedValuesVector(
+        groupID, fieldVariableValues[pointDataArray.name],
+        pointDataArray.name.c_str(), writeFloatsAsInt);
+    assert(err >= 0);
   }
 
-  writeCombinedValuesVector(groupID, geometryFieldValues, "geometry");
-  writeCombinedValuesVector(groupID, connectivityValues, "connectivity");
-  writeCombinedValuesVector(groupID, offsetValues, "offsets");
-
-  herr_t err = H5Gclose(groupID);
+  err = writeCombinedValuesVector(groupID, geometryFieldValues, "geometry");
   assert(err >= 0);
-  (void)err; // err is unsed in release mode, silence warning with this
+  err = writeCombinedValuesVector(groupID, connectivityValues, "connectivity");
+  assert(err >= 0);
+  err = writeCombinedValuesVector(groupID, offsetValues, "offsets");
+  assert(err >= 0);
+
+  err = H5Gclose(groupID);
+  assert(err >= 0);
   Control::PerformanceMeasurement::stop("durationHDF51DWrite");
 }
 } // namespace OutputWriter

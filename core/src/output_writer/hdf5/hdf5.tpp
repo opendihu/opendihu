@@ -175,9 +175,9 @@ template <typename T> herr_t writeAttr(hid_t fileID, const char *key, T value) {
 
 template <>
 herr_t writeAttr<int32_t>(hid_t fileID, const char *key, int32_t value) {
-  std::array<hsize_t, 1> dims = {1};
+  hsize_t dims = 1;
   std::array<int32_t, 1> data = {value};
-  hid_t dspace = H5Screate_simple(1, dims.data(), nullptr);
+  hid_t dspace = H5Screate_simple(1, &dims, nullptr);
   if (dspace < 0) {
     return dspace;
   }
@@ -205,9 +205,9 @@ herr_t writeAttr<int32_t>(hid_t fileID, const char *key, int32_t value) {
 }
 template <>
 herr_t writeAttr<double>(hid_t fileID, const char *key, double value) {
-  std::array<hsize_t, 1> dims = {1};
+  hsize_t dims = 1;
   std::array<double, 1> data = {value};
-  hid_t dspace = H5Screate_simple(1, dims.data(), nullptr);
+  hid_t dspace = H5Screate_simple(1, &dims, nullptr);
   if (dspace < 0) {
     return dspace;
   }
@@ -248,8 +248,8 @@ herr_t writeAttr<const std::string &>(hid_t fileID, const char *key,
     return err;
   }
 
-  std::array<hsize_t, 1> dims = {1};
-  hid_t dspace = H5Screate_simple(1, dims.data(), nullptr);
+  hsize_t dims = 1;
+  hid_t dspace = H5Screate_simple(1, &dims, nullptr);
   if (dspace < 0) {
     return dspace;
   }
@@ -280,24 +280,38 @@ herr_t writeAttr<const std::string &>(hid_t fileID, const char *key,
 
 template <typename T>
 herr_t writeSimpleVec(hid_t fileID, const std::vector<T> &data,
-                      const char *dsname) {
+                      std::string dsname) {
   assert(false);
   return 0;
 }
 
 template <>
 herr_t writeSimpleVec<int32_t>(hid_t fileID, const std::vector<int32_t> &data,
-                               const char *dsname) {
+                               std::string dsname) {
   herr_t err;
-  std::array<hsize_t, 1> dims = {data.size()};
-  hid_t dspace = H5Screate_simple(1, dims.data(), nullptr);
+  hsize_t dims = data.size();
+  hid_t dspace = H5Screate_simple(1, &dims, nullptr);
   if (dspace < 0) {
     return dspace;
   }
-  hid_t dset = H5Dcreate(fileID, dsname, H5T_STD_I32BE, dspace, H5P_DEFAULT,
-                         H5P_DEFAULT, H5P_DEFAULT);
+  hid_t plist = H5Pcreate(H5P_DATASET_XFER);
+  if (plist < 0) {
+    H5Sclose(dspace);
+    return plist;
+  }
+  err = H5Pset_dxpl_mpio(plist, H5FD_MPIO_COLLECTIVE);
+  if (err < 0) {
+    H5Pclose(plist);
+    H5Sclose(dspace);
+    return err;
+  }
+
+  std::replace(dsname.begin(), dsname.end(), '/', '|');
+  hid_t dset = H5Dcreate(fileID, dsname.c_str(), H5T_STD_I32BE, dspace,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   if (dset < 0) {
     // ignore error here, everything is lost anyway at this point in time
+    H5Pclose(plist);
     H5Sclose(dspace);
     return dset;
   }
@@ -305,6 +319,7 @@ herr_t writeSimpleVec<int32_t>(hid_t fileID, const std::vector<int32_t> &data,
                  data.data());
   if (err < 0) {
     H5Dclose(dset);
+    H5Pclose(plist);
     H5Sclose(dspace);
     return err;
   }
@@ -313,7 +328,10 @@ herr_t writeSimpleVec<int32_t>(hid_t fileID, const std::vector<int32_t> &data,
   if (err < 0) {
     return err;
   }
-
+  err = H5Pclose(plist);
+  if (err < 0) {
+    return err;
+  }
   err = H5Sclose(dspace);
   if (err < 0) {
     return err;
@@ -324,25 +342,38 @@ herr_t writeSimpleVec<int32_t>(hid_t fileID, const std::vector<int32_t> &data,
 
 template <>
 herr_t writeSimpleVec<double>(hid_t fileID, const std::vector<double> &data,
-                              const char *dsname) {
+                              std::string dsname) {
   herr_t err;
-  std::array<hsize_t, 1> dims = {data.size()};
-  hid_t dspace = H5Screate_simple(1, dims.data(), nullptr);
+  hsize_t dims = data.size();
+  hid_t dspace = H5Screate_simple(1, &dims, nullptr);
   if (dspace < 0) {
     return dspace;
   }
+  hid_t plist = H5Pcreate(H5P_DATASET_XFER);
+  if (plist < 0) {
+    H5Sclose(dspace);
+    return plist;
+  }
+  err = H5Pset_dxpl_mpio(plist, H5FD_MPIO_COLLECTIVE);
+  if (err < 0) {
+    H5Pclose(plist);
+    H5Sclose(dspace);
+    return err;
+  }
 
-  hid_t dset = H5Dcreate(fileID, dsname, H5T_IEEE_F64BE, dspace, H5P_DEFAULT,
-                         H5P_DEFAULT, H5P_DEFAULT);
+  std::replace(dsname.begin(), dsname.end(), '/', '|');
+  hid_t dset = H5Dcreate(fileID, dsname.c_str(), H5T_IEEE_F64BE, dspace,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   if (dset < 0) {
     // ignore error here, everything is lost anyway at this point in time
+    H5Pclose(plist);
     H5Sclose(dspace);
     return dset;
   }
-  err = H5Dwrite(dset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT,
-                 data.data());
+  err = H5Dwrite(dset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, plist, data.data());
   if (err < 0) {
     H5Dclose(dset);
+    H5Pclose(plist);
     H5Sclose(dspace);
     return err;
   }
@@ -350,7 +381,63 @@ herr_t writeSimpleVec<double>(hid_t fileID, const std::vector<double> &data,
   if (err < 0) {
     return err;
   }
+  err = H5Pclose(plist);
+  if (err < 0) {
+    return err;
+  }
+  err = H5Sclose(dspace);
+  if (err < 0) {
+    return err;
+  }
 
+  return 0;
+}
+
+template <>
+herr_t writeSimpleVec<float>(hid_t fileID, const std::vector<float> &data,
+                             std::string dsname) {
+  herr_t err;
+  hsize_t dims = data.size();
+  hid_t dspace = H5Screate_simple(1, &dims, nullptr);
+  if (dspace < 0) {
+    return dspace;
+  }
+  hid_t plist = H5Pcreate(H5P_DATASET_XFER);
+  if (plist < 0) {
+    H5Sclose(dspace);
+    return plist;
+  }
+  err = H5Pset_dxpl_mpio(plist, H5FD_MPIO_COLLECTIVE);
+  if (err < 0) {
+    H5Pclose(plist);
+    H5Sclose(dspace);
+    return err;
+  }
+
+  std::replace(dsname.begin(), dsname.end(), '/', '|');
+  hid_t dset = H5Dcreate(fileID, dsname.c_str(), H5T_IEEE_F32BE, dspace,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  if (dset < 0) {
+    // ignore error here, everything is lost anyway at this point in time
+    H5Pclose(plist);
+    H5Sclose(dspace);
+    return dset;
+  }
+  err = H5Dwrite(dset, H5T_NATIVE_FLOAT, H5S_ALL, H5S_ALL, plist, data.data());
+  if (err < 0) {
+    H5Dclose(dset);
+    H5Pclose(plist);
+    H5Sclose(dspace);
+    return err;
+  }
+  err = H5Dclose(dset);
+  if (err < 0) {
+    return err;
+  }
+  err = H5Pclose(plist);
+  if (err < 0) {
+    return err;
+  }
   err = H5Sclose(dspace);
   if (err < 0) {
     return err;
@@ -427,8 +514,10 @@ herr_t writeFieldVariable(hid_t fileID, FieldVariableType &fieldVariable) {
     return dspace;
   }
 
-  hid_t dset = H5Dcreate(fileID, fieldVariable.name().c_str(), H5T_STD_I32BE,
-                         dspace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  std::string dsname = fieldVariable.name();
+  std::replace(dsname.begin(), dsname.end(), '/', '|');
+  hid_t dset = H5Dcreate(fileID, dsname.c_str(), H5T_STD_I32BE, dspace,
+                         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   if (dset < 0) {
     // ignore error here, everything is lost anyway at this point in time
     H5Sclose(dspace);
