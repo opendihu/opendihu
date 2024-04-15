@@ -315,8 +315,7 @@ herr_t writeSimpleVec<int32_t>(hid_t fileID, const std::vector<int32_t> &data,
     H5Sclose(dspace);
     return dset;
   }
-  err = H5Dwrite(dset, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT,
-                 data.data());
+  err = H5Dwrite(dset, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, plist, data.data());
   if (err < 0) {
     H5Dclose(dset);
     H5Pclose(plist);
@@ -513,6 +512,17 @@ herr_t writeFieldVariable(hid_t fileID, FieldVariableType &fieldVariable) {
   if (dspace < 0) {
     return dspace;
   }
+  hid_t plist = H5Pcreate(H5P_DATASET_XFER);
+  if (plist < 0) {
+    H5Sclose(dspace);
+    return plist;
+  }
+  err = H5Pset_dxpl_mpio(plist, H5FD_MPIO_COLLECTIVE);
+  if (err < 0) {
+    H5Pclose(plist);
+    H5Sclose(dspace);
+    return err;
+  }
 
   std::string dsname = fieldVariable.name();
   std::replace(dsname.begin(), dsname.end(), '/', '|');
@@ -520,13 +530,14 @@ herr_t writeFieldVariable(hid_t fileID, FieldVariableType &fieldVariable) {
                          H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   if (dset < 0) {
     // ignore error here, everything is lost anyway at this point in time
+    H5Pclose(plist);
     H5Sclose(dspace);
     return dset;
   }
-  err = H5Dwrite(dset, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT,
-                 values.data());
+  err = H5Dwrite(dset, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, plist, values.data());
   if (err < 0) {
     H5Dclose(dset);
+    H5Pclose(plist);
     H5Sclose(dspace);
     return err;
   }
@@ -534,7 +545,10 @@ herr_t writeFieldVariable(hid_t fileID, FieldVariableType &fieldVariable) {
   if (err < 0) {
     return err;
   }
-
+  err = H5Pclose(plist);
+  if (err < 0) {
+    return err;
+  }
   err = H5Sclose(dspace);
   if (err < 0) {
     return err;
