@@ -182,7 +182,7 @@ herr_t writeAttr<int32_t>(hid_t fileID, const char *key, int32_t value) {
     return dspace;
   }
   hid_t attr =
-      H5Acreate(fileID, key, H5T_STD_I32BE, dspace, H5P_DEFAULT, H5P_DEFAULT);
+      H5Acreate(fileID, key, H5T_STD_I32LE, dspace, H5P_DEFAULT, H5P_DEFAULT);
   if (attr < 0) {
     // ignore error here, everything is lost anyway at this point in time
     H5Sclose(dspace);
@@ -212,7 +212,7 @@ herr_t writeAttr<double>(hid_t fileID, const char *key, double value) {
     return dspace;
   }
   hid_t attr =
-      H5Acreate(fileID, key, H5T_IEEE_F64BE, dspace, H5P_DEFAULT, H5P_DEFAULT);
+      H5Acreate(fileID, key, H5T_IEEE_F64LE, dspace, H5P_DEFAULT, H5P_DEFAULT);
   if (attr < 0) {
     // ignore error here, everything is lost anyway at this point in time
     H5Sclose(dspace);
@@ -307,7 +307,7 @@ herr_t writeSimpleVec<int32_t>(hid_t fileID, const std::vector<int32_t> &data,
   }
 
   std::replace(dsname.begin(), dsname.end(), '/', '|');
-  hid_t dset = H5Dcreate(fileID, dsname.c_str(), H5T_STD_I32BE, dspace,
+  hid_t dset = H5Dcreate(fileID, dsname.c_str(), H5T_STD_I32LE, dspace,
                          H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   if (dset < 0) {
     // ignore error here, everything is lost anyway at this point in time
@@ -361,7 +361,7 @@ herr_t writeSimpleVec<double>(hid_t fileID, const std::vector<double> &data,
   }
 
   std::replace(dsname.begin(), dsname.end(), '/', '|');
-  hid_t dset = H5Dcreate(fileID, dsname.c_str(), H5T_IEEE_F64BE, dspace,
+  hid_t dset = H5Dcreate(fileID, dsname.c_str(), H5T_IEEE_F64LE, dspace,
                          H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   if (dset < 0) {
     // ignore error here, everything is lost anyway at this point in time
@@ -526,7 +526,7 @@ herr_t writeFieldVariable(hid_t fileID, FieldVariableType &fieldVariable) {
 
   std::string dsname = fieldVariable.name();
   std::replace(dsname.begin(), dsname.end(), '/', '|');
-  hid_t dset = H5Dcreate(fileID, dsname.c_str(), H5T_STD_I32BE, dspace,
+  hid_t dset = H5Dcreate(fileID, dsname.c_str(), H5T_STD_I32LE, dspace,
                          H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   if (dset < 0) {
     // ignore error here, everything is lost anyway at this point in time
