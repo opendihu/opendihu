@@ -33,14 +33,14 @@ void HDF5::Piece::setVTKValues() {
   }
 }
 
-herr_t HDF5::writeCombinedTypesVector(hid_t fileID, int nValues,
+herr_t HDF5::writeCombinedTypesVector(hid_t fileID, uint64_t nValues,
                                       bool output3DMeshes, const char *dsname) {
   if (output3DMeshes) {
-    std::vector<int> values(nValues, 12);
-    return writeCombinedValuesVector(fileID, values, dsname);
+    std::vector<int32_t> values(nValues, 12);
+    return HDF5Utils::writeSimpleVec<int32_t>(fileID, values, dsname);
   } else {
-    std::vector<int> values(nValues, 9);
-    return writeCombinedValuesVector(fileID, values, dsname);
+    std::vector<int32_t> values(nValues, 9);
+    return HDF5Utils::writeSimpleVec<int32_t>(fileID, values, dsname);
   }
 }
 

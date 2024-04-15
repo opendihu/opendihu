@@ -72,16 +72,9 @@ protected:
     void setVTKValues();
   };
 
-  //! write the values vector combined to the file, correctly encoded,
-  //! identifier is an id to access cached values
-  template <typename T>
-  herr_t writeCombinedValuesVector(hid_t fileID, const std::vector<T> &values,
-                                   const char *dsname,
-                                   bool writeFloatsAsInt = false);
-
   //! write a vector containing nValues "12" (if output3DMeshes) or "9" (if
   //! !output3DMeshes) values for the types for an unstructured grid
-  herr_t writeCombinedTypesVector(hid_t fileHandle, int nValues,
+  herr_t writeCombinedTypesVector(hid_t fileHandle, uint64_t nValues,
                                   bool output3DMeshes, const char *dsname);
 
 private:
@@ -147,22 +140,24 @@ template <>
 herr_t writeAttr<const std::string &>(hid_t fileID, const char *key,
                                       const std::string &value);
 
+//! write a dataset with a specific name to a given fileID with a specific
+//! typeId and memTypeId
+template <int32_t rank>
+herr_t writeVector(hid_t fileID, const void *data, const std::string &dsname,
+                   const hsize_t dims[], hid_t typeId, hid_t memTypeId);
+
 //! write a dataset with a specific name to a given fileID
 template <typename T>
 static herr_t writeSimpleVec(hid_t fileID, const std::vector<T> &data,
-                             std::string dsname);
+                             const std::string &dsname);
 //! write a dataset(vec<int32_t>) with a specific name to a given fileID
 template <>
 herr_t writeSimpleVec<int32_t>(hid_t fileID, const std::vector<int32_t> &data,
-                               std::string dsname);
-//! write a dataset(vec<float>) with a specific name to a given fileID
-template <>
-herr_t writeSimpleVec<float>(hid_t fileID, const std::vector<float> &data,
-                             std::string dsname);
+                               const std::string &dsname);
 //! write a dataset(vec<double>) with a specific name to a given fileID
 template <>
 herr_t writeSimpleVec<double>(hid_t fileID, const std::vector<double> &data,
-                              std::string dsname);
+                              const std::string &dsname);
 
 //! write the given field variable to a given fileID
 template <typename FieldVariableType>
@@ -178,6 +173,5 @@ static herr_t writePartitionFieldVariable(hid_t fileID,
 } // namespace OutputWriter
 
 #include "output_writer/hdf5/hdf5.tpp"
-#include "output_writer/hdf5/hdf5_write_combined_values.tpp"
 #include "output_writer/hdf5/hdf5_write_combined_file_1D.tpp"
 #include "output_writer/hdf5/hdf5_write_combined_file_2D3D.tpp"

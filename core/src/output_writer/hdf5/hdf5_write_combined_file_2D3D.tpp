@@ -632,20 +632,32 @@ void HDF5::writeCombinedUnstructuredGridFile(
     assert(fieldVariableValues.find(pointDataArray.name) !=
            fieldVariableValues.end());
 
+    const std::vector<double> &dataToWrite =
+        fieldVariableValues[pointDataArray.name];
     // write values
     // for partitioning, convert float values to integer values for output
-    bool writeFloatsAsInt = pointDataArray.name == "partitioning";
-    err = writeCombinedValuesVector(
-        fileID, fieldVariableValues[pointDataArray.name],
-        pointDataArray.name.c_str(), writeFloatsAsInt);
+    if (pointDataArray.name == "partitioning") {
+      std::vector<int32_t> newVals(dataToWrite.size());
+
+      for (const auto &v : dataToWrite) {
+        newVals.push_back((int32_t)(round(v)));
+      }
+      err = HDF5Utils::writeSimpleVec<int32_t>(fileID, newVals,
+                                               pointDataArray.name.c_str());
+    } else {
+      err = HDF5Utils::writeSimpleVec<double>(fileID, dataToWrite,
+                                              pointDataArray.name.c_str());
+    }
     assert(err >= 0);
   }
 
-  err = writeCombinedValuesVector(fileID, geometryFieldValues, "geometry");
+  err = HDF5Utils::writeSimpleVec<double>(fileID, geometryFieldValues,
+                                          "geometry");
   assert(err >= 0);
-  err = writeCombinedValuesVector(fileID, connectivityValues, "connectivity");
+  err = HDF5Utils::writeSimpleVec<int32_t>(fileID, connectivityValues,
+                                           "connectivity");
   assert(err >= 0);
-  err = writeCombinedValuesVector(fileID, offsetValues, "offsets");
+  err = HDF5Utils::writeSimpleVec<int32_t>(fileID, offsetValues, "offsets");
   assert(err >= 0);
   err = writeCombinedTypesVector(fileID, polyDataPropertiesForMesh.nCellsGlobal,
                                  output3DMeshes, "types");
