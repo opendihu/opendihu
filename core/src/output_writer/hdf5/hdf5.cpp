@@ -68,4 +68,25 @@ hid_t HDF5::openHDF5File(const char *filename, bool mpiio) {
     return fileID;
   }
 }
+
+namespace HDF5Utils {
+std::pair<int, int> __getMemSpace(hsize_t len, int32_t ownRank,
+                                  int32_t worldSize) {
+  if (worldSize > len) {
+    return std::make_pair(len, len);
+  }
+
+  if (len % worldSize == 0) {
+    int d = len / worldSize;
+    return std::make_pair(d, d);
+  } else {
+    int32_t split = (len / worldSize);
+    if (ownRank == (worldSize - 1)) {
+      return std::make_pair((len - (split * worldSize)) + split, split);
+    } else {
+      return std::make_pair(split, split);
+    }
+  }
+}
+} // namespace HDF5Utils
 } // namespace OutputWriter

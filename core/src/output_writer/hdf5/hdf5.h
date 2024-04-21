@@ -140,11 +140,15 @@ template <>
 herr_t writeAttr<const std::string &>(hid_t fileID, const char *key,
                                       const std::string &value);
 
+std::pair<int, int> __getMemSpace(hsize_t len, int32_t ownRank,
+                                  int32_t worldSize);
+
 //! write a dataset with a specific name to a given fileID with a specific
 //! typeId and memTypeId
-template <int32_t rank>
+template <size_t RANK>
 herr_t writeVector(hid_t fileID, const void *data, const std::string &dsname,
-                   const hsize_t dims[], hid_t typeId, hid_t memTypeId);
+                   const std::array<hsize_t, RANK> &dims, hid_t typeId,
+                   hid_t memTypeId, size_t dsize);
 
 //! write a dataset with a specific name to a given fileID
 template <typename T>
