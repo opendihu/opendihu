@@ -11,6 +11,7 @@ build_release_with_debug_info
 out
 out.py
 .kdev4
+*.kdev4
 **/*.pyc
 **/*.aux
 **/*.log
