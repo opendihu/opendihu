@@ -210,7 +210,7 @@ def rotation_matrix(angle):
 
 call_count = 0
 ulna_series_files = []
-ulna_stl_filename = os.path.join(os.getcwd(),"cm_left_ulna.stl")
+ulna_stl_filename = os.path.join(os.getcwd(),"../cm_left_ulna.stl")
 stl_mesh = None
 try:
   stl_mesh = mesh.Mesh.from_file(ulna_stl_filename)

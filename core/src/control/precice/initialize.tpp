@@ -82,9 +82,17 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
   outputOnlyConvergedTimeSteps_ = this->specificSettings_.getOptionBool(
       "outputOnlyConvergedTimeSteps", true);
 
-  int rankNo = functionSpace_->meshPartition()->rankSubset()->ownRankNo();
-  int nRanks = functionSpace_->meshPartition()->rankSubset()->size();
+  //int rankNo = functionSpace_->meshPartition()->rankSubset()->ownRankNo();
+  //int nRanks = functionSpace_->meshPartition()->rankSubset()->size();
 
+  // get the union of all MPI ranks that occur for any fiber
+  std::shared_ptr<Partition::RankSubset> rankSubset =
+      this->context_.partitionManager()->rankSubsetForCollectiveOperations();
+  int rankNo = rankSubset->ownRankNo();
+  int nRanks = rankSubset->size();
+  LOG(INFO) << "rankNo = " << rankNo;
+  LOG(INFO) << "nRanks = " << nRanks;
+  
   // initialize interface to precice for the bottom surface mesh
   preciceParticipant_ = std::make_shared<precice::Participant>(
       preciceParticipantName_, configFileName, rankNo, nRanks);
