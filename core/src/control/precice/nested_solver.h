@@ -381,8 +381,7 @@ public:
   preciceReadData(NestedSolverType &nestedSolver,
                   std::shared_ptr<precice::Participant> &preciceParticipant,
                   SurfaceDataVector &preciceSurfaceData,
-                  VolumeDataVector &preciceVolumeData,
-                  std::vector<int> &dofNoLocalVector, DihuContext &context) {
+                  VolumeDataVector &preciceVolumeData, DihuContext &context) {
     LOG(DEBUG) << "read volume data from precice";
     double preciceDt = preciceParticipant->getMaxTimeStepSize();
 
@@ -1004,8 +1003,7 @@ public:
   preciceReadData(NestedSolverType &nestedSolver,
                   std::shared_ptr<precice::Participant> &preciceParticipant,
                   SurfaceDataVector &preciceSurfaceData,
-                  VolumeDataVector &preciceVolumeData,
-                  std::vector<int> &dofNoLocalVector, DihuContext &context) {
+                  VolumeDataVector &preciceVolumeData, DihuContext &context) {
 
     LOG(DEBUG) << "read volume data from precice";
     double preciceDt = preciceParticipant->getMaxTimeStepSize();
@@ -1127,8 +1125,7 @@ public:
               preciceData.preciceMesh->preciceVertexIds, preciceDt,
               velocityValues_);
 
-          setDirichletBoundaryConditions(preciceData, dofNoLocalVector,
-                                         nestedSolver);
+          setDirichletBoundaryConditions(preciceData, nestedSolver);
         }
         // if the data is traction
         else if (!preciceData.tractionName.empty()) {
@@ -1382,7 +1379,6 @@ public:
 
   template <typename SurfaceData>
   void setDirichletBoundaryConditions(SurfaceData &preciceData,
-                                      std::vector<int> &dofNoLocalVector,
                                       NestedSolverType &nestedSolver) {
     std::vector<std::pair<global_no_t, std::array<double, 6>>>
         newDirichletBCValues;
@@ -1411,7 +1407,8 @@ public:
       int valueIndex = 0;
 
       // loop over nodes of surface mesh
-      for (const int &dofNoLocal : preciceData.preciceMesh->selectedDofNosLocal) {
+      for (const int &dofNoLocal :
+           preciceData.preciceMesh->selectedDofNosLocal) {
         global_no_t dofNoGlobal =
             functionSpace->meshPartition()->getDofNoGlobalPetsc(dofNoLocal);
         // assign received values to dirichlet bc vector of size 6
@@ -1422,10 +1419,10 @@ public:
           newDirichletBCValue[3 + i] = velocityValues_[3 * dofNoLocal + i];
         }
 
-        if (preciceData.preciceMesh->preciceMeshName == "MuscleMeshTopA"){
+        if (preciceData.preciceMesh->preciceMeshName == "MuscleMeshTopA") {
           newDirichletBCValue[2] = 0.01;
         }
-        if (preciceData.preciceMesh->preciceMeshName == "MuscleMeshTopB"){
+        if (preciceData.preciceMesh->preciceMeshName == "MuscleMeshTopB") {
           newDirichletBCValue[2] = 0.04;
         }
 
@@ -1723,8 +1720,7 @@ public:
   preciceReadData(NestedSolverType &nestedSolver,
                   std::shared_ptr<precice::Participant> &preciceParticipant,
                   SurfaceDataVector &preciceSurfaceData,
-                  VolumeDataVector &preciceVolumeData,
-                  std::vector<int> &dofNoLocalVector, DihuContext &context) {
+                  VolumeDataVector &preciceVolumeData, DihuContext &context) {
     LOG(DEBUG) << "read surface data from precice";
     double preciceDt = preciceParticipant->getMaxTimeStepSize();
     // loop over data
@@ -1753,8 +1749,7 @@ public:
               preciceData.preciceMesh->preciceVertexIds, preciceDt,
               velocityValues_);
 
-          setDirichletBoundaryConditions(preciceData, dofNoLocalVector,
-                                         nestedSolver);
+          setDirichletBoundaryConditions(preciceData, nestedSolver);
         }
         // if the data is traction
         else if (!preciceData.tractionName.empty()) {
@@ -1893,7 +1888,6 @@ public:
 
   template <typename SurfaceData>
   void setDirichletBoundaryConditions(SurfaceData &preciceData,
-                                      std::vector<int> &dofNoLocalVector,
                                       NestedSolverType &nestedSolver) {
     std::vector<std::pair<global_no_t, std::array<double, 6>>>
         newDirichletBCValues;
@@ -2236,8 +2230,7 @@ public:
   preciceReadData(NestedSolverType &nestedSolver,
                   std::shared_ptr<precice::Participant> &preciceParticipant,
                   SurfaceDataVector &preciceSurfaceData,
-                  VolumeDataVector &preciceVolumeData,
-                  std::vector<int> &dofNoLocalVector, DihuContext &context) {
+                  VolumeDataVector &preciceVolumeData, DihuContext &context) {
     LOG(DEBUG) << "read surface data from precice";
     double preciceDt = preciceParticipant->getMaxTimeStepSize();
     // loop over data
@@ -2266,8 +2259,7 @@ public:
               preciceData.preciceMesh->preciceVertexIds, preciceDt,
               velocityValues_);
 
-          setDirichletBoundaryConditions(preciceData, dofNoLocalVector,
-                                         nestedSolver);
+          setDirichletBoundaryConditions(preciceData, nestedSolver);
         }
         // if the data is traction
         else if (!preciceData.tractionName.empty()) {
@@ -2406,7 +2398,6 @@ public:
 
   template <typename SurfaceData>
   void setDirichletBoundaryConditions(SurfaceData &preciceData,
-                                      std::vector<int> &dofNoLocal,
                                       NestedSolverType &nestedSolver) {
     std::vector<std::pair<global_no_t, std::array<double, 6>>>
         newDirichletBCValues;
@@ -2749,8 +2740,7 @@ public:
   preciceReadData(NestedSolverType &nestedSolver,
                   std::shared_ptr<precice::Participant> &preciceParticipant,
                   SurfaceDataVector &preciceSurfaceData,
-                  VolumeDataVector &preciceVolumeData,
-                  std::vector<int> &dofNoLocalVector, DihuContext &context) {
+                  VolumeDataVector &preciceVolumeData, DihuContext &context) {
     LOG(DEBUG) << "read surface data from precice";
     double preciceDt = preciceParticipant->getMaxTimeStepSize();
     // loop over data
@@ -2779,8 +2769,7 @@ public:
               preciceData.preciceMesh->preciceVertexIds, preciceDt,
               velocityValues_);
 
-          setDirichletBoundaryConditions(preciceData, dofNoLocalVector,
-                                         nestedSolver);
+          setDirichletBoundaryConditions(preciceData, nestedSolver);
         }
         // if the data is traction
         else if (!preciceData.tractionName.empty()) {
@@ -2919,7 +2908,6 @@ public:
 
   template <typename SurfaceData>
   void setDirichletBoundaryConditions(SurfaceData &preciceData,
-                                      std::vector<int> &dofNoLocalVector,
                                       NestedSolverType &nestedSolver) {
     std::vector<std::pair<global_no_t, std::array<double, 6>>>
         newDirichletBCValues;

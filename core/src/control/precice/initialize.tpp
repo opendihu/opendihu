@@ -237,7 +237,10 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceMeshes() {
             if (inTopA(geometryValuesSurface[3 * surfaceDofNo],
                        geometryValuesSurface[3 * surfaceDofNo + 1],
                        geometryValuesSurface[3 * surfaceDofNo + 2])) {
-              std::cout<<"Top A"<< geometryValuesSurface[3 * surfaceDofNo]<< "  y "<<geometryValuesSurface[3 * surfaceDofNo+1]<<"  z "<< geometryValuesSurface[3 * surfaceDofNo+2]<<std::endl;
+              std::cout << "Top A" << geometryValuesSurface[3 * surfaceDofNo]
+                        << "  y " << geometryValuesSurface[3 * surfaceDofNo + 1]
+                        << "  z " << geometryValuesSurface[3 * surfaceDofNo + 2]
+                        << std::endl;
               preciceMesh->selectedDofNosLocal.push_back(dofNoLocal);
             }
 
@@ -245,7 +248,10 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceMeshes() {
             if (!inTopA(geometryValuesSurface[3 * surfaceDofNo],
                         geometryValuesSurface[3 * surfaceDofNo + 1],
                         geometryValuesSurface[3 * surfaceDofNo + 2])) {
-                        std::cout<<"Top B"<< geometryValuesSurface[3 * surfaceDofNo]<< "  y "<<geometryValuesSurface[3 * surfaceDofNo+1]<<"  z "<< geometryValuesSurface[3 * surfaceDofNo+2]<<std::endl;
+              std::cout << "Top B" << geometryValuesSurface[3 * surfaceDofNo]
+                        << "  y " << geometryValuesSurface[3 * surfaceDofNo + 1]
+                        << "  z " << geometryValuesSurface[3 * surfaceDofNo + 2]
+                        << std::endl;
               preciceMesh->selectedDofNosLocal.push_back(dofNoLocal);
             }
           } else {

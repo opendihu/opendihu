@@ -166,8 +166,6 @@ public:
   std::vector<PreciceVolumeData>
       preciceVolumeData_; //< all precice variables "data"
 
-  std::vector<int> dofNoLocalVector_;
-
   std::shared_ptr<
       typename PreciceAdapterNestedSolver<NestedSolver>::FunctionSpace>
       functionSpace_; //< the function space of the nested solver
