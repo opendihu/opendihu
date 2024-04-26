@@ -237,17 +237,19 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceMeshes() {
             if (inTopA(geometryValuesSurface[3 * surfaceDofNo],
                        geometryValuesSurface[3 * surfaceDofNo + 1],
                        geometryValuesSurface[3 * surfaceDofNo + 2])) {
-              dofNoLocalVector_.push_back(dofNoLocal);
+              std::cout<<"Top A"<< geometryValuesSurface[3 * surfaceDofNo]<< "  y "<<geometryValuesSurface[3 * surfaceDofNo+1]<<"  z "<< geometryValuesSurface[3 * surfaceDofNo+2]<<std::endl;
+              preciceMesh->selectedDofNosLocal.push_back(dofNoLocal);
             }
 
           } else if (preciceMesh->preciceMeshName == "MuscleMeshTopB") {
             if (!inTopA(geometryValuesSurface[3 * surfaceDofNo],
                         geometryValuesSurface[3 * surfaceDofNo + 1],
                         geometryValuesSurface[3 * surfaceDofNo + 2])) {
-              dofNoLocalVector_.push_back(dofNoLocal);
+                        std::cout<<"Top B"<< geometryValuesSurface[3 * surfaceDofNo]<< "  y "<<geometryValuesSurface[3 * surfaceDofNo+1]<<"  z "<< geometryValuesSurface[3 * surfaceDofNo+2]<<std::endl;
+              preciceMesh->selectedDofNosLocal.push_back(dofNoLocal);
             }
           } else {
-            dofNoLocalVector_.push_back(dofNoLocal);
+            preciceMesh->selectedDofNosLocal.push_back(dofNoLocal);
           }
         }
       }

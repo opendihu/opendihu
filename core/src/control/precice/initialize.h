@@ -40,6 +40,7 @@ public:
         preciceVertexIds; //< the vertex ids in precice of the geometry values
     std::vector<dof_no_t> dofNosLocal; //< the local dof nos in the 3D mesh of
                                        // the surface mesh nodes
+    std::vector<dof_no_t> selectedDofNosLocal;
     std::vector<double>
         geometryValuesSurface; //< the geometry values, i.e., node positions
 

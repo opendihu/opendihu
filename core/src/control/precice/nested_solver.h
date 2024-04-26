@@ -1411,7 +1411,7 @@ public:
       int valueIndex = 0;
 
       // loop over nodes of surface mesh
-      for (const int &dofNoLocal : dofNoLocalVector) {
+      for (const int &dofNoLocal : preciceData.preciceMesh->selectedDofNosLocal) {
         global_no_t dofNoGlobal =
             functionSpace->meshPartition()->getDofNoGlobalPetsc(dofNoLocal);
         // assign received values to dirichlet bc vector of size 6
@@ -1420,6 +1420,13 @@ public:
         for (int i = 0; i < 3; i++) {
           newDirichletBCValue[i] = displacementValues_[3 * dofNoLocal + i];
           newDirichletBCValue[3 + i] = velocityValues_[3 * dofNoLocal + i];
+        }
+
+        if (preciceData.preciceMesh->preciceMeshName == "MuscleMeshTopA"){
+          newDirichletBCValue[2] = 0.01;
+        }
+        if (preciceData.preciceMesh->preciceMeshName == "MuscleMeshTopB"){
+          newDirichletBCValue[2] = 0.04;
         }
 
         newDirichletBCValues.push_back(
