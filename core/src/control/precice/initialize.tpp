@@ -15,6 +15,28 @@ PreciceAdapterInitialize<NestedSolver>::PreciceAdapterInitialize(
 }
 
 template <typename NestedSolver>
+bool PreciceAdapterInitialize<NestedSolver>::inTopA(const double x,
+                                                    const double y,
+                                                    const double z) {
+  double planeX = 10.019566831165198, planeY = 17.85257919747023,
+         planeZ = -37.500429089326744; // Point on the plane
+  double normalX = 0.9989900836636769, normalY = -0.04480513952143465,
+         normalZ = -0.0033633635106413177; // Normal vector to the plane
+
+  // Compute the vector from point on plane to the point in question
+  double vx = x - planeX;
+  double vy = y - planeY;
+  double vz = z - planeZ;
+
+  // Calculate dot product of this vector with the normal vector of the plane
+  double d = vx * normalX + vy * normalY + vz * normalZ;
+
+  // If d > 0, the point is on the right side of the plane (where 'right' is in
+  // the direction of the normal vector)
+  return d > 0;
+}
+
+template <typename NestedSolver>
 void PreciceAdapterInitialize<NestedSolver>::initialize() {
 #ifdef HAVE_PRECICE
 
@@ -82,8 +104,8 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
   outputOnlyConvergedTimeSteps_ = this->specificSettings_.getOptionBool(
       "outputOnlyConvergedTimeSteps", true);
 
-  //int rankNo = functionSpace_->meshPartition()->rankSubset()->ownRankNo();
-  //int nRanks = functionSpace_->meshPartition()->rankSubset()->size();
+  // int rankNo = functionSpace_->meshPartition()->rankSubset()->ownRankNo();
+  // int nRanks = functionSpace_->meshPartition()->rankSubset()->size();
 
   // get the union of all MPI ranks that occur for any fiber
   std::shared_ptr<Partition::RankSubset> rankSubset =
@@ -92,7 +114,7 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
   int nRanks = rankSubset->size();
   LOG(INFO) << "rankNo = " << rankNo;
   LOG(INFO) << "nRanks = " << nRanks;
-  
+
   // initialize interface to precice for the bottom surface mesh
   preciceParticipant_ = std::make_shared<precice::Participant>(
       preciceParticipantName_, configFileName, rankNo, nRanks);
@@ -206,8 +228,26 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceMeshes() {
           preciceMesh->dofNosLocal[surfaceDofNo] = dofNoLocal;
 
           for (int i = 0; i < 3; i++) {
+
             geometryValuesSurface[3 * surfaceDofNo + i] =
                 geometryValues[dofNoLocal][i];
+          }
+
+          if (preciceMesh->preciceMeshName == "MuscleMeshTopA") {
+            if (inTopA(geometryValuesSurface[3 * surfaceDofNo],
+                       geometryValuesSurface[3 * surfaceDofNo + 1],
+                       geometryValuesSurface[3 * surfaceDofNo + 2])) {
+              dofNoLocalVector_.push_back(dofNoLocal);
+            }
+
+          } else if (preciceMesh->preciceMeshName == "MuscleMeshTopB") {
+            if (!inTopA(geometryValuesSurface[3 * surfaceDofNo],
+                        geometryValuesSurface[3 * surfaceDofNo + 1],
+                        geometryValuesSurface[3 * surfaceDofNo + 2])) {
+              dofNoLocalVector_.push_back(dofNoLocal);
+            }
+          } else {
+            dofNoLocalVector_.push_back(dofNoLocal);
           }
         }
       }

@@ -137,6 +137,8 @@ public:
   //! prescribed values during coupling
   void initializeDirichletBoundaryConditions();
 
+  bool inTopA(const double x, const double y, const double z);
+
 #endif
 
   DihuContext context_; //< object that contains the python config for the
@@ -162,6 +164,8 @@ public:
       preciceSurfaceData_; //< all surface precice variables "data"
   std::vector<PreciceVolumeData>
       preciceVolumeData_; //< all precice variables "data"
+
+  std::vector<int> dofNoLocalVector_;
 
   std::shared_ptr<
       typename PreciceAdapterNestedSolver<NestedSolver>::FunctionSpace>
