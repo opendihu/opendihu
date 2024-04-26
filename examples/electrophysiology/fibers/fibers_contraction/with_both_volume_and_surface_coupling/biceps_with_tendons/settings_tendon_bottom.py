@@ -68,7 +68,7 @@ variables.force = 100.0           # [N] pulling force to the bottom
 
 variables.scenario_name = "tendon_bottom"
 variables.is_bottom_tendon = True        # whether the tendon is at the bottom (negative z-direction), this is important for the boundary conditions
-variables.output_timestep_3D = 50  # [ms] output timestep
+variables.output_timestep_3D = 1  # [ms] output timestep
 
 # input mesh file
 fiber_file = "../../../../../input/left_biceps_brachii_tendon1.bin"        # bottom tendon
@@ -449,7 +449,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "OutputWriter" : [
     
     # Paraview files
-    {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_3D), "filename": "out/tendon_bottom", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+    {"format": "Paraview", "outputInterval": variables.dt_3D, "filename": "out/tendon_bottom", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
     
     # Python callback function "postprocess"
     {"format": "PythonCallback", "outputInterval": 1, "callback": postprocess, "onlyNodalValues":True, "filename": "", "fileNumbering": "incremental"},

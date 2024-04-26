@@ -232,7 +232,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   # 3. additional output writer that writes virtual work terms
   "dynamic": {    # output of the dynamic solver, has additional virtual work values 
     "OutputWriter" : [   # output files for displacements function space (quadratic elements)
-      {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_3D), "filename": "out/tendon_top_b_virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+      {"format": "Paraview", "outputInterval": variables.dt_3D, "filename": "out/tendon_top_b_virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
       #{"format": "Paraview", "outputInterval": 1, "filename": "out/"+variables.scenario_name+"/virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
     ],
   },
