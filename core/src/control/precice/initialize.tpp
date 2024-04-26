@@ -15,7 +15,7 @@ PreciceAdapterInitialize<NestedSolver>::PreciceAdapterInitialize(
 }
 
 template <typename NestedSolver>
-bool PreciceAdapterInitialize<NestedSolver>::inTopA(const double x,
+bool PreciceAdapterInitialize<NestedSolver>::inMuscleMeshTopA(const double x,
                                                     const double y,
                                                     const double z) {
   double planeX = 10.019566831165198, planeY = 17.85257919747023,
@@ -33,7 +33,7 @@ bool PreciceAdapterInitialize<NestedSolver>::inTopA(const double x,
 
   // If d > 0, the point is on the right side of the plane (where 'right' is in
   // the direction of the normal vector)
-  return d > 0;
+  return d < 0;
 }
 
 template <typename NestedSolver>
@@ -234,7 +234,7 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceMeshes() {
           }
 
           if (preciceMesh->preciceMeshName == "MuscleMeshTopA") {
-            if (inTopA(geometryValuesSurface[3 * surfaceDofNo],
+            if (inMuscleMeshTopA(geometryValuesSurface[3 * surfaceDofNo],
                        geometryValuesSurface[3 * surfaceDofNo + 1],
                        geometryValuesSurface[3 * surfaceDofNo + 2])) {
               std::cout << "Top A" << geometryValuesSurface[3 * surfaceDofNo]
@@ -245,7 +245,7 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceMeshes() {
             }
 
           } else if (preciceMesh->preciceMeshName == "MuscleMeshTopB") {
-            if (!inTopA(geometryValuesSurface[3 * surfaceDofNo],
+            if (!inMuscleMeshTopA(geometryValuesSurface[3 * surfaceDofNo],
                         geometryValuesSurface[3 * surfaceDofNo + 1],
                         geometryValuesSurface[3 * surfaceDofNo + 2])) {
               std::cout << "Top B" << geometryValuesSurface[3 * surfaceDofNo]

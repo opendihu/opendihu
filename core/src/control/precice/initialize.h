@@ -138,7 +138,7 @@ public:
   //! prescribed values during coupling
   void initializeDirichletBoundaryConditions();
 
-  bool inTopA(const double x, const double y, const double z);
+  bool inMuscleMeshTopA(const double x, const double y, const double z);
 
 #endif
 
