@@ -1419,13 +1419,6 @@ public:
           newDirichletBCValue[3 + i] = velocityValues_[3 * dofNoLocal + i];
         }
 
-        if (preciceData.preciceMesh->preciceMeshName == "MuscleMeshTopA") {
-          newDirichletBCValue[2] = 0.01;
-        }
-        if (preciceData.preciceMesh->preciceMeshName == "MuscleMeshTopB") {
-          newDirichletBCValue[2] = 0.04;
-        }
-
         newDirichletBCValues.push_back(
             std::pair<global_no_t, std::array<double, 6>>(dofNoGlobal,
                                                           newDirichletBCValue));

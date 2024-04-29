@@ -16,8 +16,8 @@ PreciceAdapterInitialize<NestedSolver>::PreciceAdapterInitialize(
 
 template <typename NestedSolver>
 bool PreciceAdapterInitialize<NestedSolver>::inMuscleMeshTopA(const double x,
-                                                    const double y,
-                                                    const double z) {
+                                                              const double y,
+                                                              const double z) {
   double planeX = 10.019566831165198, planeY = 17.85257919747023,
          planeZ = -37.500429089326744; // Point on the plane
   double normalX = 0.9989900836636769, normalY = -0.04480513952143465,
@@ -235,23 +235,26 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceMeshes() {
 
           if (preciceMesh->preciceMeshName == "MuscleMeshTopA") {
             if (inMuscleMeshTopA(geometryValuesSurface[3 * surfaceDofNo],
-                       geometryValuesSurface[3 * surfaceDofNo + 1],
-                       geometryValuesSurface[3 * surfaceDofNo + 2])) {
-              std::cout << "Top A" << geometryValuesSurface[3 * surfaceDofNo]
-                        << "  y " << geometryValuesSurface[3 * surfaceDofNo + 1]
-                        << "  z " << geometryValuesSurface[3 * surfaceDofNo + 2]
-                        << std::endl;
+                                 geometryValuesSurface[3 * surfaceDofNo + 1],
+                                 geometryValuesSurface[3 * surfaceDofNo + 2])) {
+              LOG(DEBUG) << "Top A" << geometryValuesSurface[3 * surfaceDofNo]
+                         << "  y "
+                         << geometryValuesSurface[3 * surfaceDofNo + 1]
+                         << "  z "
+                         << geometryValuesSurface[3 * surfaceDofNo + 2];
               preciceMesh->selectedDofNosLocal.push_back(dofNoLocal);
             }
 
           } else if (preciceMesh->preciceMeshName == "MuscleMeshTopB") {
-            if (!inMuscleMeshTopA(geometryValuesSurface[3 * surfaceDofNo],
-                        geometryValuesSurface[3 * surfaceDofNo + 1],
-                        geometryValuesSurface[3 * surfaceDofNo + 2])) {
-              std::cout << "Top B" << geometryValuesSurface[3 * surfaceDofNo]
-                        << "  y " << geometryValuesSurface[3 * surfaceDofNo + 1]
-                        << "  z " << geometryValuesSurface[3 * surfaceDofNo + 2]
-                        << std::endl;
+            if (!inMuscleMeshTopA(
+                    geometryValuesSurface[3 * surfaceDofNo],
+                    geometryValuesSurface[3 * surfaceDofNo + 1],
+                    geometryValuesSurface[3 * surfaceDofNo + 2])) {
+              LOG(DEBUG) << "Top B" << geometryValuesSurface[3 * surfaceDofNo]
+                         << "  y "
+                         << geometryValuesSurface[3 * surfaceDofNo + 1]
+                         << "  z "
+                         << geometryValuesSurface[3 * surfaceDofNo + 2];
               preciceMesh->selectedDofNosLocal.push_back(dofNoLocal);
             }
           } else {
