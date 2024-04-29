@@ -237,7 +237,7 @@ config = {
       "dynamic":                      True,                     # if the dynamic formulation with velocity or the quasi-static formulation is computed
       
       "OutputWriter" : [
-        {"format": "Paraview", "outputInterval": variables.dt_3D, "filename": "out/" + variables.scenario_name + "/mechanics", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+        {"format": "Paraview", "outputInterval": variables.output_timestep, "filename": "out/mechanics", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
       ],
       
       # the mechanics solver for the dynamic problem (if "dynamic": True)

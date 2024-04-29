@@ -58,7 +58,7 @@ dt_0D = 2.5e-5                      # [ms] timestep width of ODEs (2e-3)
 dt_1D = 2.5e-5                      # [ms] timestep width of diffusion (4e-3)
 dt_splitting = 2.5e-5               # [ms] overall timestep width of strang splitting (4e-3)
 dt_3D = 1e-1                         # [ms] time step width of coupling, when 3D should be performed, also sampling time of monopolar EMG, this has to be the same value as in the precice_config.xml
-output_timestep = 1.0                # [ms] timestep for output files, 5.0
+output_timestep = dt_3D                # [ms] timestep for output files, 5.0
 output_timestep_fibers = output_timestep   # [ms] timestep for fiber output
 output_timestep_big = 1.0            # [ms] timestep for output big files of 3D EMG, 100
 
