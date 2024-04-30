@@ -150,11 +150,17 @@
       <basis-function:compact-polynomial-c6 support-radius="0.1" />
     </mapping:rbf> 
 
-    <mapping:nearest-neighbor direction="read" from="TendonBottomMesh" to="MuscleMeshBottom" constraint="consistent"/>
+    <mapping:rbf direction="read" from="TendonBottomMesh" to="MuscleMeshBottom" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf> 
 
-    <mapping:nearest-neighbor direction="read" from="TendonTopAMesh" to="MuscleMeshTopA" constraint="consistent"/>
+    <mapping:rbf direction="read" from="TendonTopAMesh" to="MuscleMeshTopA" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf> 
 
-    <mapping:nearest-neighbor direction="read" from="TendonTopBMesh" to="MuscleMeshTopB" constraint="consistent"/>
+    <mapping:rbf direction="read" from="TendonTopBMesh" to="MuscleMeshTopB" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf> 
 
     <export:vtu directory="precice-output" />
 
