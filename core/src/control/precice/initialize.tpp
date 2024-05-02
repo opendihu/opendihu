@@ -237,12 +237,13 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceMeshes() {
             if (inMuscleMeshTopA(geometryValuesSurface[3 * surfaceDofNo],
                                  geometryValuesSurface[3 * surfaceDofNo + 1],
                                  geometryValuesSurface[3 * surfaceDofNo + 2])) {
-              LOG(DEBUG) << "Top A" << geometryValuesSurface[3 * surfaceDofNo]
-                         << "  y "
+              LOG(DEBUG) << "Mesh MuscleMeshTopA has surfaceDofNo = "
+                         << surfaceDofNo << ", with coordinates x = "
+                         << geometryValuesSurface[3 * surfaceDofNo] << ", y = "
                          << geometryValuesSurface[3 * surfaceDofNo + 1]
-                         << "  z "
+                         << ",  z = "
                          << geometryValuesSurface[3 * surfaceDofNo + 2];
-              preciceMesh->selectedDofNosLocal.push_back(dofNoLocal);
+              preciceMesh->selectedDofNosLocal.push_back(surfaceDofNo);
             }
 
           } else if (preciceMesh->preciceMeshName == "MuscleMeshTopB") {
@@ -250,15 +251,16 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceMeshes() {
                     geometryValuesSurface[3 * surfaceDofNo],
                     geometryValuesSurface[3 * surfaceDofNo + 1],
                     geometryValuesSurface[3 * surfaceDofNo + 2])) {
-              LOG(DEBUG) << "Top B" << geometryValuesSurface[3 * surfaceDofNo]
-                         << "  y "
+              LOG(DEBUG) << "Mesh MuscleMeshTopB has surfaceDofNo = "
+                         << surfaceDofNo << ", with coordinates x = "
+                         << geometryValuesSurface[3 * surfaceDofNo] << ", y = "
                          << geometryValuesSurface[3 * surfaceDofNo + 1]
-                         << "  z "
+                         << ",  z = "
                          << geometryValuesSurface[3 * surfaceDofNo + 2];
-              preciceMesh->selectedDofNosLocal.push_back(dofNoLocal);
+              preciceMesh->selectedDofNosLocal.push_back(surfaceDofNo);
             }
           } else {
-            preciceMesh->selectedDofNosLocal.push_back(dofNoLocal);
+            preciceMesh->selectedDofNosLocal.push_back(surfaceDofNo);
           }
         }
       }

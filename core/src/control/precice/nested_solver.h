@@ -1388,27 +1388,29 @@ public:
     // if this rank has no data, do not set any boundary conditions
     if (preciceData.preciceMesh->nNodesLocal != 0) {
       // loop over nodes
-      const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
-      const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
-      const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
+      // const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
+      // const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
+      // const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
 
-      // set node index in z direction for bottom surface
-      int nodeIndexZ = 0;
+      // // set node index in z direction for bottom surface
+      // int nodeIndexZ = 0;
 
-      // for top surface
-      if (preciceData.preciceMesh->face ==
-          PreciceAdapterInitialize<
-              NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
-        nodeIndexZ = nNodesZ - 1;
-      }
+      // // for top surface
+      // if (preciceData.preciceMesh->face ==
+      //     PreciceAdapterInitialize<
+      //         NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
+      //   nodeIndexZ = nNodesZ - 1;
+      // }
 
-      // loop over nodes to set the received values
-      newDirichletBCValues.reserve(nNodesX * nNodesY);
-      int valueIndex = 0;
+      // // loop over nodes to set the received values
+      // newDirichletBCValues.reserve(nNodesX * nNodesY);
+      // int valueIndex = 0;
 
-      // loop over nodes of surface mesh
+      // loop over selected nodes of surface mesh
       for (const int &dofNoLocal :
            preciceData.preciceMesh->selectedDofNosLocal) {
+        LOG(DEBUG) << "In mesh: " << preciceData.preciceMesh->preciceMeshName
+                   << ", node = " << dofNoLocal;
         global_no_t dofNoGlobal =
             functionSpace->meshPartition()->getDofNoGlobalPetsc(dofNoLocal);
         // assign received values to dirichlet bc vector of size 6
@@ -1890,47 +1892,40 @@ public:
     // if this rank has no data, do not set any boundary conditions
     if (preciceData.preciceMesh->nNodesLocal != 0) {
       // loop over nodes
-      const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
-      const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
-      const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
+      // const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
+      // const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
+      // const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
 
-      // set node index in z direction for bottom surface
-      int nodeIndexZ = 0;
+      // // set node index in z direction for bottom surface
+      // int nodeIndexZ = 0;
 
-      // for top surface
-      if (preciceData.preciceMesh->face ==
-          PreciceAdapterInitialize<
-              NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
-        nodeIndexZ = nNodesZ - 1;
-      }
+      // // for top surface
+      // if (preciceData.preciceMesh->face ==
+      //     PreciceAdapterInitialize<
+      //         NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
+      //   nodeIndexZ = nNodesZ - 1;
+      // }
 
-      // loop over nodes to set the received values
-      newDirichletBCValues.reserve(nNodesX * nNodesY);
-      int valueIndex = 0;
+      // // loop over nodes to set the received values
+      // newDirichletBCValues.reserve(nNodesX * nNodesY);
+      // int valueIndex = 0;
 
-      // loop over nodes of surface mesh
-      for (int nodeIndexY = 0; nodeIndexY < nNodesY; nodeIndexY++) {
-        for (int nodeIndexX = 0; nodeIndexX < nNodesX;
-             nodeIndexX++, valueIndex++) {
-          node_no_t nodeNoLocal = nodeIndexZ * nNodesX * nNodesY +
-                                  nodeIndexY * nNodesX + nodeIndexX;
+      // loop over selected nodes of surface mesh
+      for (const int &dofNoLocal :
+           preciceData.preciceMesh->selectedDofNosLocal) {
+        global_no_t dofNoGlobal =
+            functionSpace->meshPartition()->getDofNoGlobalPetsc(dofNoLocal);
+        // assign received values to dirichlet bc vector of size 6
+        std::array<double, 6> newDirichletBCValue;
 
-          dof_no_t dofNoLocal = nodeNoLocal;
-          global_no_t dofNoGlobal =
-              functionSpace->meshPartition()->getDofNoGlobalPetsc(dofNoLocal);
-
-          // assign received values to dirichlet bc vector of size 6
-          std::array<double, 6> newDirichletBCValue;
-
-          for (int i = 0; i < 3; i++) {
-            newDirichletBCValue[i] = displacementValues_[3 * valueIndex + i];
-            newDirichletBCValue[3 + i] = velocityValues_[3 * valueIndex + i];
-          }
-
-          newDirichletBCValues.push_back(
-              std::pair<global_no_t, std::array<double, 6>>(
-                  dofNoGlobal, newDirichletBCValue));
+        for (int i = 0; i < 3; i++) {
+          newDirichletBCValue[i] = displacementValues_[3 * dofNoLocal + i];
+          newDirichletBCValue[3 + i] = velocityValues_[3 * dofNoLocal + i];
         }
+
+        newDirichletBCValues.push_back(
+            std::pair<global_no_t, std::array<double, 6>>(dofNoGlobal,
+                                                          newDirichletBCValue));
       }
 
       LOG(DEBUG) << "read data from precice complete, displacement values: "
