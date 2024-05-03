@@ -1387,38 +1387,27 @@ public:
 
     // if this rank has no data, do not set any boundary conditions
     if (preciceData.preciceMesh->nNodesLocal != 0) {
-      // loop over nodes
-      // const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
-      // const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
-      // const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
-
-      // // set node index in z direction for bottom surface
-      // int nodeIndexZ = 0;
-
-      // // for top surface
-      // if (preciceData.preciceMesh->face ==
-      //     PreciceAdapterInitialize<
-      //         NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
-      //   nodeIndexZ = nNodesZ - 1;
-      // }
-
-      // // loop over nodes to set the received values
-      // newDirichletBCValues.reserve(nNodesX * nNodesY);
-      // int valueIndex = 0;
 
       // loop over selected nodes of surface mesh
-      for (const int &dofNoLocal :
+      for (const int &surfaceDofNoLocal :
            preciceData.preciceMesh->selectedDofNosLocal) {
         LOG(DEBUG) << "In mesh: " << preciceData.preciceMesh->preciceMeshName
-                   << ", node = " << dofNoLocal;
+                   << ", surfaceDofNosLocal = " << surfaceDofNoLocal
+                   << "and dofNosLocal ="
+                   << preciceData.preciceMesh->dofNosLocal[surfaceDofNoLocal];
+
+        dof_no_t dofNoLocal =
+            preciceData.preciceMesh->dofNosLocal[surfaceDofNoLocal];
         global_no_t dofNoGlobal =
             functionSpace->meshPartition()->getDofNoGlobalPetsc(dofNoLocal);
         // assign received values to dirichlet bc vector of size 6
         std::array<double, 6> newDirichletBCValue;
 
         for (int i = 0; i < 3; i++) {
-          newDirichletBCValue[i] = displacementValues_[3 * dofNoLocal + i];
-          newDirichletBCValue[3 + i] = velocityValues_[3 * dofNoLocal + i];
+          newDirichletBCValue[i] =
+              displacementValues_[3 * surfaceDofNoLocal + i];
+          newDirichletBCValue[3 + i] =
+              velocityValues_[3 * surfaceDofNoLocal + i];
         }
 
         newDirichletBCValues.push_back(
@@ -1891,36 +1880,27 @@ public:
 
     // if this rank has no data, do not set any boundary conditions
     if (preciceData.preciceMesh->nNodesLocal != 0) {
-      // loop over nodes
-      // const int nNodesX = functionSpace->nNodesLocalWithoutGhosts(0);
-      // const int nNodesY = functionSpace->nNodesLocalWithoutGhosts(1);
-      // const int nNodesZ = functionSpace->nNodesLocalWithoutGhosts(2);
-
-      // // set node index in z direction for bottom surface
-      // int nodeIndexZ = 0;
-
-      // // for top surface
-      // if (preciceData.preciceMesh->face ==
-      //     PreciceAdapterInitialize<
-      //         NestedSolverType>::PreciceSurfaceMesh::face2Plus) {
-      //   nodeIndexZ = nNodesZ - 1;
-      // }
-
-      // // loop over nodes to set the received values
-      // newDirichletBCValues.reserve(nNodesX * nNodesY);
-      // int valueIndex = 0;
 
       // loop over selected nodes of surface mesh
-      for (const int &dofNoLocal :
+      for (const int &surfaceDofNoLocal :
            preciceData.preciceMesh->selectedDofNosLocal) {
+        LOG(DEBUG) << "In mesh: " << preciceData.preciceMesh->preciceMeshName
+                   << ", surfaceDofNosLocal = " << surfaceDofNoLocal
+                   << "and dofNosLocal ="
+                   << preciceData.preciceMesh->dofNosLocal[surfaceDofNoLocal];
+
+        dof_no_t dofNoLocal =
+            preciceData.preciceMesh->dofNosLocal[surfaceDofNoLocal];
         global_no_t dofNoGlobal =
             functionSpace->meshPartition()->getDofNoGlobalPetsc(dofNoLocal);
         // assign received values to dirichlet bc vector of size 6
         std::array<double, 6> newDirichletBCValue;
 
         for (int i = 0; i < 3; i++) {
-          newDirichletBCValue[i] = displacementValues_[3 * dofNoLocal + i];
-          newDirichletBCValue[3 + i] = velocityValues_[3 * dofNoLocal + i];
+          newDirichletBCValue[i] =
+              displacementValues_[3 * surfaceDofNoLocal + i];
+          newDirichletBCValue[3 + i] =
+              velocityValues_[3 * surfaceDofNoLocal + i];
         }
 
         newDirichletBCValues.push_back(

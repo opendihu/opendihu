@@ -252,7 +252,8 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceMeshes() {
                     geometryValuesSurface[3 * surfaceDofNo + 1],
                     geometryValuesSurface[3 * surfaceDofNo + 2])) {
               LOG(DEBUG) << "Mesh MuscleMeshTopB has surfaceDofNo = "
-                         << surfaceDofNo << ", with coordinates x = "
+                         << surfaceDofNo << ", and dofNoLocal = " << dofNoLocal
+                         << ", with coordinates x = "
                          << geometryValuesSurface[3 * surfaceDofNo] << ", y = "
                          << geometryValuesSurface[3 * surfaceDofNo + 1]
                          << ",  z = "
@@ -261,6 +262,13 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceMeshes() {
             }
           } else {
             preciceMesh->selectedDofNosLocal.push_back(surfaceDofNo);
+            LOG(DEBUG) << "MeshBottom has surfaceDofNo = " << surfaceDofNo
+                       << ", and dofNoLocal = " << dofNoLocal
+                       << ", with coordinates x = "
+                       << geometryValuesSurface[3 * surfaceDofNo] << ", y = "
+                       << geometryValuesSurface[3 * surfaceDofNo + 1]
+                       << ",  z = "
+                       << geometryValuesSurface[3 * surfaceDofNo + 2];
           }
         }
       }
