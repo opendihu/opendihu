@@ -75,7 +75,7 @@
       <basis-function:gaussian shape-parameter="50" />
     </mapping:rbf> 
   
-    <export:vtu directory="precice-output" />
+    <export:vtu directory="precice-output" every-n-time-windows="10"/>
 
   </participant>
 
@@ -96,11 +96,11 @@
       <basis-function:gaussian shape-parameter="50" />
     </mapping:rbf> 
   
-    <export:vtu directory="precice-output" />
+    <export:vtu directory="precice-output" every-n-time-windows="10"/>
 
   </participant>
 
-    <participant name="TendonTopB">
+  <participant name="TendonTopB">
 
     <provide-mesh name="TendonTopBMesh"/>
     <receive-mesh name="MuscleMeshTopB" from="MuscleMechanics"/>
@@ -117,7 +117,7 @@
       <basis-function:gaussian shape-parameter="50" />
     </mapping:rbf> 
   
-    <export:vtu directory="precice-output" />
+    <export:vtu directory="precice-output" every-n-time-windows="10"/>
 
   </participant>
   
@@ -162,7 +162,7 @@
       <basis-function:compact-polynomial-c4 support-radius="8" />
     </mapping:rbf> 
 
-    <export:vtu directory="precice-output" />
+    <export:vtu directory="precice-output" every-n-time-windows="10"/>
 
   </participant>
 
@@ -178,7 +178,8 @@
       <basis-function:compact-polynomial-c6 support-radius="0.5" />
     </mapping:rbf>
 
-    <export:vtu directory="precice-output" />
+    <export:vtu directory="precice-output" every-n-time-windows="10"/>
+    <intra-comm:sockets/>
 
   </participant>
 
@@ -189,7 +190,7 @@
 
   <coupling-scheme:serial-explicit>
     <participants first="MuscleFibers" second="MuscleMechanics"/>
-    <max-time value="150.0"/>           
+    <max-time value="1.0"/>           
     <time-window-size value="0.1"/>   
     
     <exchange data="Gamma"    mesh="MuscleFibersMesh" from="MuscleFibers" to="MuscleMechanics"/>
@@ -202,9 +203,9 @@
     <participant name="TendonTopA"/>
     <participant name="TendonTopB"/>
     
-    <max-time value="150.0"/>           <!-- end time of the whole simulation -->
+    <max-time value="1.0"/>           <!-- end time of the whole simulation -->
     <time-window-size value="0.1"/>   <!-- timestep width for coupling -->
-    <max-iterations value="100" />
+    <max-iterations value="1" />
     
     <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonBottomMesh" />
     <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonTopAMesh" />
