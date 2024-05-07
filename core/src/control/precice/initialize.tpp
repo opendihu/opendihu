@@ -420,62 +420,65 @@ void PreciceAdapterInitialize<
       typename SpatialDiscretization::DirichletBoundaryConditionsBase<
           typename PreciceAdapterNestedSolver<NestedSolver>::FunctionSpace,
           6>::ElementWithNodes;
+  if (!preciceSurfaceData_.empty()) {
 
-  // initialize dirichlet boundary conditions, set all Dirichlet boundary
-  // condition values that will be needed later to vector (0,0,0)
-  std::vector<ElementWithNodesType> dirichletBoundaryConditionElements;
+    // initialize dirichlet boundary conditions, set all Dirichlet boundary
+    // condition values that will be needed later to vector (0,0,0)
+    std::vector<ElementWithNodesType> dirichletBoundaryConditionElements;
 
-  int nElementsX = functionSpace_->meshPartition()->nElementsLocal(0);
-  int nElementsY = functionSpace_->meshPartition()->nElementsLocal(1);
-  int nElementsZ = functionSpace_->meshPartition()->nElementsLocal(2);
+    int nElementsX = functionSpace_->meshPartition()->nElementsLocal(0);
+    int nElementsY = functionSpace_->meshPartition()->nElementsLocal(1);
+    int nElementsZ = functionSpace_->meshPartition()->nElementsLocal(2);
 
-  std::set<int> elementIndicesZ;
+    std::set<int> elementIndicesZ;
 
-  // loop over precice field variables to be transferred, collect surface meshes
-  // at bottom or top
-  for (PreciceSurfaceData &preciceData : preciceSurfaceData_) {
-    if (preciceData.ioType == PreciceSurfaceData::ioRead &&
-        preciceData.boundaryConditionType ==
-            PreciceSurfaceData::bcTypeDirichlet) {
-      if (preciceData.preciceMesh->face == PreciceSurfaceMesh::face2Minus) {
-        elementIndicesZ.insert(0);
-      } else if (preciceData.preciceMesh->face ==
-                 PreciceSurfaceMesh::face2Plus) {
-        elementIndicesZ.insert(nElementsZ - 1);
-      }
-    }
-  }
-
-  // for either or both of top and bottom surface coupling mesh
-  for (int elementIndexZ : elementIndicesZ) {
-    int indexZ = 0;
-    if (elementIndexZ > 0)
-      indexZ = 2;
-
-    // loop over elements
-    for (int elementIndexY = 0; elementIndexY < nElementsY; elementIndexY++) {
-      for (int elementIndexX = 0; elementIndexX < nElementsX; elementIndexX++) {
-        ElementWithNodesType elementWithNodes;
-        elementWithNodes.elementNoLocal =
-            elementIndexZ * nElementsX * nElementsY +
-            elementIndexY * nElementsX + elementIndexX;
-
-        for (int indexY = 0; indexY < 3; indexY++) {
-          for (int indexX = 0; indexX < 3; indexX++) {
-            int elementalDofIndex = indexZ * 9 + indexY * 3 + indexX;
-            elementWithNodes.elementalDofIndex.insert(std::pair<int, VecD<6>>(
-                elementalDofIndex, VecD<6>{0, 0, 0, 0, 0, 0}));
-          }
+    // loop over precice field variables to be transferred, collect surface
+    // meshes at bottom or top
+    for (PreciceSurfaceData &preciceData : preciceSurfaceData_) {
+      if (preciceData.ioType == PreciceSurfaceData::ioRead &&
+          preciceData.boundaryConditionType ==
+              PreciceSurfaceData::bcTypeDirichlet) {
+        if (preciceData.preciceMesh->face == PreciceSurfaceMesh::face2Minus) {
+          elementIndicesZ.insert(0);
+        } else if (preciceData.preciceMesh->face ==
+                   PreciceSurfaceMesh::face2Plus) {
+          elementIndicesZ.insert(nElementsZ - 1);
         }
-        dirichletBoundaryConditionElements.push_back(elementWithNodes);
       }
     }
-  }
 
-  // add dirichlet bc values for all nodes that will get a prescribed value
-  // during coupling
-  this->addDirichletBoundaryConditions(nestedSolver_,
-                                       dirichletBoundaryConditionElements);
+    // for either or both of top and bottom surface coupling mesh
+    for (int elementIndexZ : elementIndicesZ) {
+      int indexZ = 0;
+      if (elementIndexZ > 0)
+        indexZ = 2;
+
+      // loop over elements
+      for (int elementIndexY = 0; elementIndexY < nElementsY; elementIndexY++) {
+        for (int elementIndexX = 0; elementIndexX < nElementsX;
+             elementIndexX++) {
+          ElementWithNodesType elementWithNodes;
+          elementWithNodes.elementNoLocal =
+              elementIndexZ * nElementsX * nElementsY +
+              elementIndexY * nElementsX + elementIndexX;
+
+          for (int indexY = 0; indexY < 3; indexY++) {
+            for (int indexX = 0; indexX < 3; indexX++) {
+              int elementalDofIndex = indexZ * 9 + indexY * 3 + indexX;
+              elementWithNodes.elementalDofIndex.insert(std::pair<int, VecD<6>>(
+                  elementalDofIndex, VecD<6>{0, 0, 0, 0, 0, 0}));
+            }
+          }
+          dirichletBoundaryConditionElements.push_back(elementWithNodes);
+        }
+      }
+    }
+
+    // add dirichlet bc values for all nodes that will get a prescribed value
+    // during coupling
+    this->addDirichletBoundaryConditions(nestedSolver_,
+                                         dirichletBoundaryConditionElements);
+  }
 }
 
 #endif
