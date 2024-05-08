@@ -67,12 +67,8 @@
     <write-data name="Velocity"      mesh="TendonBottomMesh"/>
     <read-data  name="Traction"      mesh="TendonBottomMesh"/>
 
-    <mapping:rbf 
-      direction="read" 
-      from="MuscleMeshBottom" 
-      to="TendonBottomMesh" 
-      constraint="consistent">
-      <basis-function:gaussian shape-parameter="50" />
+    <mapping:rbf direction="read" from="MuscleMeshBottom" to="TendonBottomMesh" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
     </mapping:rbf> 
   
     <export:vtu directory="precice-output" every-n-time-windows="10"/>
@@ -88,13 +84,9 @@
     <write-data name="Velocity"      mesh="TendonTopAMesh"/>
     <read-data  name="Traction"      mesh="TendonTopAMesh"/>
 
-    <mapping:rbf 
-      direction="read" 
-      from="MuscleMeshTopA" 
-      to="TendonTopAMesh" 
-      constraint="consistent">
-      <basis-function:gaussian shape-parameter="50" />
-    </mapping:rbf> 
+    <mapping:rbf direction="read" from="MuscleMeshTopA" to="MuscleTopAMesh" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf>  
   
     <export:vtu directory="precice-output" every-n-time-windows="10"/>
 
@@ -109,14 +101,10 @@
     <write-data name="Velocity"      mesh="TendonTopBMesh"/>
     <read-data  name="Traction"      mesh="TendonTopBMesh"/>
 
-    <mapping:rbf 
-      direction="read" 
-      from="MuscleMeshTopB" 
-      to="TendonTopBMesh" 
-      constraint="consistent">
-      <basis-function:gaussian shape-parameter="50" />
-    </mapping:rbf> 
-  
+    <mapping:rbf direction="read" from="MuscleMeshTopB" to="MuscleTopBMesh" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf>  
+
     <export:vtu directory="precice-output" every-n-time-windows="10"/>
 
   </participant>
@@ -179,7 +167,6 @@
     </mapping:rbf>
 
     <export:vtu directory="precice-output" every-n-time-windows="10"/>
-    <intra-comm:sockets/>
 
   </participant>
 
