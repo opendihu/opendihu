@@ -84,7 +84,7 @@
     <write-data name="Velocity"      mesh="TendonTopAMesh"/>
     <read-data  name="Traction"      mesh="TendonTopAMesh"/>
 
-    <mapping:rbf direction="read" from="MuscleMeshTopA" to="MuscleTopAMesh" constraint="consistent">
+    <mapping:rbf direction="read" from="MuscleMeshTopA" to="TendonTopAMesh" constraint="consistent">
       <basis-function:compact-polynomial-c4 support-radius="8" />
     </mapping:rbf>  
   
@@ -101,7 +101,7 @@
     <write-data name="Velocity"      mesh="TendonTopBMesh"/>
     <read-data  name="Traction"      mesh="TendonTopBMesh"/>
 
-    <mapping:rbf direction="read" from="MuscleMeshTopB" to="MuscleTopBMesh" constraint="consistent">
+    <mapping:rbf direction="read" from="MuscleMeshTopB" to="TendonTopBMesh" constraint="consistent">
       <basis-function:compact-polynomial-c4 support-radius="8" />
     </mapping:rbf>  
 
