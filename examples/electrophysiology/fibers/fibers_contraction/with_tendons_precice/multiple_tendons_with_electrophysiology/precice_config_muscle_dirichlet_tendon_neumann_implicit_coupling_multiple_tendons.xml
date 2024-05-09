@@ -166,10 +166,10 @@
     <time-window-size value="0.1"/>   <!-- timestep width for coupling -->
     <max-iterations value="25" />
     
-    <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonMeshTop" />
+    <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonBottomMesh" />
     <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonTopAMesh" />
     <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonTopBMesh" />
-    <relative-convergence-measure limit="0.01" data="Velocity" mesh="TendonMeshTop" />
+    <relative-convergence-measure limit="0.01" data="Velocity" mesh="TendonBottomMesh" />
     <relative-convergence-measure limit="0.01" data="Velocity" mesh="TendonTopAMesh" />
     <relative-convergence-measure limit="0.01" data="Velocity" mesh="TendonTopBMesh" />
     <relative-convergence-measure limit="0.1" data="Traction" mesh="MuscleMeshBottom" />
@@ -177,10 +177,10 @@
     <relative-convergence-measure limit="0.1" data="Traction" mesh="MuscleMeshTopB" />
     
     <acceleration:IQN-ILS>
-      <data name="Displacement" mesh="TendonMeshTop"/>
+      <data name="Displacement" mesh="TendonBottomMesh"/>
       <data name="Displacement" mesh="TendonTopAMesh"/>
       <data name="Displacement" mesh="TendonTopBMesh"/>
-      <data name="Velocity" mesh="TendonMeshTop"/>
+      <data name="Velocity" mesh="TendonBottomMesh"/>
       <data name="Velocity" mesh="TendonTopAMesh"/>
       <data name="Velocity" mesh="TendonTopBMesh"/>
       <data name="Traction" mesh="MuscleMeshBottom"/>
@@ -193,8 +193,8 @@
       <time-windows-reused value="15"/>
     </acceleration:IQN-ILS>
 
-    <exchange data="Displacement"    mesh="TendonMeshTop"      from="TendonBottom" to="Muscle"/>
-    <exchange data="Velocity"        mesh="TendonMeshTop"      from="TendonBottom" to="Muscle"/>
+    <exchange data="Displacement"    mesh="TendonBottomMesh"      from="TendonBottom" to="Muscle"/>
+    <exchange data="Velocity"        mesh="TendonBottomMesh"      from="TendonBottom" to="Muscle"/>
     <exchange data="Traction"        mesh="MuscleMeshBottom"   from="Muscle"       to="TendonBottom"/>
     
     <exchange data="Displacement"    mesh="TendonTopAMesh"  from="TendonTopA"   to="Muscle"/>
