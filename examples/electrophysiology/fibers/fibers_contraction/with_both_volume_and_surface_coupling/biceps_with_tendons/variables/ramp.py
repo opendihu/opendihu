@@ -54,12 +54,12 @@ motor_units = [
 # note: negative start time is the same as zero, it is just there for debugging. Delete the minus signs to get a ramp
 
 end_time = 100                      # [ms] end time of the simulation
-dt_0D = 2.5e-5                      # [ms] timestep width of ODEs (2e-3)
-dt_1D = 2.5e-5                      # [ms] timestep width of diffusion (4e-3)
-dt_splitting = 2.5e-5               # [ms] overall timestep width of strang splitting (4e-3)
+dt_0D = 2e-4                      # [ms] timestep width of ODEs (2e-3)
+dt_1D = 4e-4                      # [ms] timestep width of diffusion (4e-3)
+dt_splitting = 4e-4              # [ms] overall timestep width of strang splitting (4e-3)
 dt_3D = 1e-1                         # [ms] time step width of coupling, when 3D should be performed, also sampling time of monopolar EMG, this has to be the same value as in the precice_config.xml
 output_timestep = 10               # [ms] timestep for output files, 5.0
-output_timestep_fibers = output_timestep   # [ms] timestep for fiber output
+output_timestep_fibers = int(dt_3D/dt_splitting)*output_timestep   # [ms] timestep for fiber output
 output_timestep_big = 1.0            # [ms] timestep for output big files of 3D EMG, 100
 
 
