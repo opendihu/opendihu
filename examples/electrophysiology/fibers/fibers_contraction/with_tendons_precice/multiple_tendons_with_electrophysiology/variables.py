@@ -1,9 +1,33 @@
 # This file contains internal values of create_partitioned_meshes_for_settings.py 
 # that need to be persistent for the helper function to work
+case_name = "case1"
 
 debug_output = False                # verbose output in this python script, for debugging the domain decomposition
 
-dt_elasticity = 1e-3
+
+# tendon material parameters
+rho = 10          # [1e-4 kg/cm^3] 10 = density of the muscle (density of water)
+
+# material parameters for Saint Venant-Kirchhoff material
+# https://www.researchgate.net/publication/230248067_Bulk_Modulus
+
+youngs_modulus = 7e4        # [N/cm^2 = 10kPa]  
+shear_modulus = 3e4
+
+lambd = shear_modulus*(youngs_modulus - 2*shear_modulus) / (3*shear_modulus - youngs_modulus)  # Lamé parameter lambda
+mu = shear_modulus       # Lamé parameter mu or G (shear modulus)
+
+material_parameters = [lambd, mu]
+
+constant_body_force = (0,0,-9.81e-4)   # [cm/ms^2], gravity constant for the body force
+force = 100.0           # [N] pulling force to the bottom 
+
+
+# time parameters
+dt_elasticity = 0.1      # [ms] time step width for elasticity
+end_time      = 200.0   # [ms] simulation time
+output_timestep_3D = 10  # [ms] output timestep
+
 
 # further internal variables
 n_fibers_total = None

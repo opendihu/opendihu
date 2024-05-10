@@ -16,40 +16,13 @@ import json
 title = "tendon_bottom"
 print('\33]0;{}\a'.format(title), end='', flush=True)
 
-# material parameters
-# --------------------
-# quantities in mechanics unit system
-variables.rho = 10          # [1e-4 kg/cm^3] 10 = density of the muscle (density of water)
 
-# material parameters for Saint Venant-Kirchhoff material
-# https://www.researchgate.net/publication/230248067_Bulk_Modulus
-
-youngs_modulus = 7e4        # [N/cm^2 = 10kPa]  
-shear_modulus = 3e4
-
-#youngs_modulus*=1e-3
-#shear_modulus*=1e-3
-
-lambd = shear_modulus*(youngs_modulus - 2*shear_modulus) / (3*shear_modulus - youngs_modulus)  # Lamé parameter lambda
-mu = shear_modulus       # Lamé parameter mu or G (shear modulus)
-
-variables.material_parameters = [lambd, mu]
-
-variables.constant_body_force = (0,0,-9.81e-4)   # [cm/ms^2], gravity constant for the body force
-variables.force = 100.0           # [N] pulling force to the bottom 
-
-variables.dt_elasticity = 1      # [ms] time step width for elasticity
-variables.end_time      = 20000   # [ms] simulation time
 variables.scenario_name = "tendon_bottom"
 variables.is_bottom_tendon = True        # whether the tendon is at the bottom (negative z-direction), this is important for the boundary conditions
-variables.output_timestep_3D = 50  # [ms] output timestep
 
 # input mesh file
 fiber_file = "../../../../input/left_biceps_brachii_tendon1.bin"        # bottom tendon
-#fiber_file = "../../../../input/left_biceps_brachii_tendon2a.bin"
-#fiber_file = "../../../../input/left_biceps_brachii_tendon2b.bin"
-#fiber_file = "../../../../input/left_biceps_brachii_7x7fibers.bin"
-#fiber_file = "../../../../input/left_biceps_brachii_7x7fibers.bin"
+
 
 load_fiber_data = False             # If the fiber geometry data should be loaded completely in the python script. If True, this reads the binary file and assigns the node positions in the config. If False, the C++ code will read the binary file and only extract the local node positions. This is more performant for highly parallel runs.
 
@@ -423,7 +396,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "OutputWriter" : [
     
     # Paraview files
-    {"format": "Paraview", "outputInterval": int(1./variables.dt_elasticity*variables.output_timestep_3D), "filename": "out/tendon_bottom", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+    {"format": "Paraview", "outputInterval": variables.output_timestep_3D, "filename": "out/" + variables.case_name + "/tendon_bottom", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
     
     # Python callback function "postprocess"
     {"format": "PythonCallback", "outputInterval": 1, "callback": postprocess, "onlyNodalValues":True, "filename": "", "fileNumbering": "incremental"},
@@ -437,7 +410,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   # 3. additional output writer that writes virtual work terms
   "dynamic": {    # output of the dynamic solver, has additional virtual work values 
     "OutputWriter" : [   # output files for displacements function space (quadratic elements)
-      {"format": "Paraview", "outputInterval": int(1./variables.dt_elasticity*variables.output_timestep_3D), "filename": "out/tendon_bottom_virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+      #{"format": "Paraview", "outputInterval": int(1./variables.dt_elasticity*variables.output_timestep_3D), "filename": "out/tendon_bottom_virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
       #{"format": "Paraview", "outputInterval": 1, "filename": "out/"+variables.scenario_name+"/virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
     ],
   },

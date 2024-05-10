@@ -40,10 +40,6 @@ else:
     print("Error: no variables file was specified, e.g:\n ./biceps_contraction ../settings_biceps_contraction.py ramp.py")
   exit(0)
 
-# -------------- begin user parameters ----------------
-variables.output_timestep_3D = 50     #[ms] output timestep of mechanics
-variables.output_timestep_fibers = 50 # [ms] output timestep of fibers
-# -------------- end user parameters ----------------
 
 # define command line arguments
 mbool = lambda x:bool(distutils.util.strtobool(x))   # function to parse bool arguments
@@ -338,7 +334,7 @@ config = {
                         "stimulationLogFilename":                 "out/stimulation.log",                          # a file that will contain the times of stimulations
                       },      
                       "OutputWriter" : [
-                        {"format": "Paraview", "outputInterval": 1, "filename": "out/" + variables.scenario_name + "/0D_states({},{})".format(fiber_in_subdomain_coordinate_x,fiber_in_subdomain_coordinate_y), "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
+                        # {"format": "Paraview", "outputInterval": 1, "filename": "out/" + variables.scenario_name + "/0D_states({},{})".format(fiber_in_subdomain_coordinate_x,fiber_in_subdomain_coordinate_y), "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
                       ] if variables.states_output else []
                       
                     },
@@ -389,7 +385,7 @@ config = {
                         for fiber_no in [get_fiber_no(subdomain_coordinate_x, subdomain_coordinate_y, fiber_in_subdomain_coordinate_x, fiber_in_subdomain_coordinate_y)] \
                           for motor_unit_no in [get_motor_unit_no(fiber_no)]],
                   "OutputWriter": [
-                    {"format": "Paraview", "outputInterval": int(1/variables.dt_splitting*variables.output_timestep_fibers), "filename": "out/fibers", "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
+                    {"format": "Paraview", "outputInterval": variables.output_timestep_fibers, "filename": "out/" + variables.case_name + "/fibers", "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
                   ],
                 },
               },
@@ -466,7 +462,7 @@ config = {
           "lambdaDotScalingFactor":       variables.lambda_dot_scaling_factor,     # scaling factor for the output of the lambda dot slot, i.e. the contraction velocity. Use this to scale the unit-less quantity to, e.g., micrometers per millisecond for the subcellular model.
           "slotNames":                    ["lambda", "ldot", "gamma", "T"],   # names of the data connector slots
           "OutputWriter" : [
-            {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_3D), "filename": "out/muscle_3D", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+            {"format": "Paraview", "outputInterval":variables.output_timestep_3D, "filename": "out/" + variables.case_name + "/muscle_3D", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
           ],
           "mapGeometryToMeshes":          [],                        # the mesh names of the meshes that will get the geometry transferred
           "dynamic":                      True,                      # if the dynamic solid mechanics solver should be used, else it computes the quasi-static problem
@@ -539,7 +535,7 @@ config = {
             "dynamic": {    # output of the dynamic solver, has additional virtual work values 
               "OutputWriter" : [   # output files for displacements function space (quadratic elements)
                 #{"format": "Paraview", "outputInterval": int(output_interval/dt), "filename": "out/dynamic", "binary": False, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
-                {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_3D), "filename": "out/muscle_virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+                # {"format": "Paraview", "outputInterval": variables.output_timestep_3D, "filename": "out/muscle_virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
               ],
             },
             # 4. output writer for debugging, outputs files after each load increment, the geometry is not changed but u and v are written
