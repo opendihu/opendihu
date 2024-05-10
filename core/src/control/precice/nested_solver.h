@@ -447,8 +447,6 @@ public:
                                        dofNoLocal) +
                                   componentNo];
                 //
-                std::cout << geometryValues_[dofNoLocal][componentNo]
-                          << std::endl;
               }
             }
 
@@ -1070,8 +1068,6 @@ public:
                                        dofNoLocal) +
                                   componentNo];
                 //
-                std::cout << geometryValues_[dofNoLocal][componentNo]
-                          << std::endl;
               }
             }
 
