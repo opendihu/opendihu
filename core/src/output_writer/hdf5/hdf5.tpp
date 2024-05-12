@@ -27,7 +27,7 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variable,
   std::set<std::string> combined3DMeshes;
 
   if (combineFiles_) {
-    hid_t fileID;
+    std::unique_ptr<HDF5Utils::File> file;
     if (!filename) {
       // determine filename, broadcast from rank 0
       std::stringstream filename;
@@ -46,25 +46,21 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variable,
           MPI_Bcast(receiveBuffer.data(), filenameLength, MPI_CHAR, 0,
                     this->rankSubset_->mpiCommunicator()),
           "MPI_Bcast");
-      LOG(DEBUG) << "open HDF5 file using MPI IO \"" << receiveBuffer.data()
-                 << "\".";
-      fileID = openHDF5File(receiveBuffer.data(), true);
+      file = std::make_unique<HDF5Utils::File>(receiveBuffer.data(), true);
     } else {
-      fileID = openHDF5File(filename, true);
+      file = std::make_unique<HDF5Utils::File>(filename, true);
     }
 
     herr_t err;
     if (writeMeta_) {
-      err = HDF5Utils::writeAttr<const std::string &>(
-          fileID, "version", DihuContext::versionText());
+      err = file->writeAttrStr("version", DihuContext::versionText());
       assert(err >= 0);
-      err = HDF5Utils::writeAttr<const std::string &>(fileID, "meta",
-                                                      DihuContext::metaText());
+      err = file->writeAttrStr("meta", DihuContext::metaText());
       assert(err >= 0);
     }
-    err = HDF5Utils::writeAttr(fileID, "currentTime", this->currentTime_);
+    err = file->writeAttrDouble("currentTime", this->currentTime_);
     assert(err >= 0);
-    err = HDF5Utils::writeAttr(fileID, "timeStepNo", this->timeStepNo_);
+    err = file->writeAttrInt("timeStepNo", this->timeStepNo_);
     assert(err >= 0);
 
     Control::PerformanceMeasurement::start("durationHDF51D");
@@ -74,27 +70,33 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variable,
                       typeid(FieldVariablesForOutputWriterType).name());
 
     // create a PolyData file that combines all 1D meshes into one file
-    writePolyDataFile<FieldVariablesForOutputWriterType>(fileID, variable,
-                                                         combined1DMeshes);
+    {
+      HDF5Utils::Group group = file->newGroup("1D");
+      writePolyDataFile<FieldVariablesForOutputWriterType>(group, variable,
+                                                           combined1DMeshes);
+    }
 
     Control::PerformanceMeasurement::stop("durationHDF51D");
     Control::PerformanceMeasurement::start("durationHDF53D");
 
     // create an UnstructuredMesh file that combines all 3D meshes into one file
-    writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
-        fileID, variable, combined3DMeshes, true);
+    {
+      HDF5Utils::Group group = file->newGroup("3D");
+      writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
+          group, variable, combined3DMeshes, true);
+    }
 
     Control::PerformanceMeasurement::stop("durationHDF53D");
     Control::PerformanceMeasurement::start("durationHDF52D");
 
     // create an UnstructuredMesh file that combines all 2D meshes into one file
-    writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
-        fileID, variable, combined2DMeshes, false);
+    {
+      HDF5Utils::Group group = file->newGroup("2D");
+      writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
+          group, variable, combined2DMeshes, false);
+    }
 
     Control::PerformanceMeasurement::stop("durationHDF52D");
-
-    err = H5Fclose(fileID);
-    assert(err >= 0);
   }
 
   // output normal files, parallel or if combineFiles_, only the 2D and 3D
@@ -135,32 +137,24 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variable,
       s << this->filename_ << "_p.h5";
     }
 
-    hid_t fileID = openHDF5File(s.str().c_str(), false);
+    HDF5Utils::File file = HDF5Utils::File(s.str().c_str(), false);
     herr_t err;
     if (writeMeta_) {
-      err = HDF5Utils::writeAttr<const std::string &>(
-          fileID, "version", DihuContext::versionText());
+      err = file.writeAttrStr("version", DihuContext::versionText());
       assert(err >= 0);
-      err = HDF5Utils::writeAttr<const std::string &>(fileID, "meta",
-                                                      DihuContext::metaText());
+      err = file.writeAttrStr("meta", DihuContext::metaText());
       assert(err >= 0);
     }
-    err = HDF5Utils::writeAttr(fileID, "currentTime", this->currentTime_);
+    err = file.writeAttrDouble("currentTime", this->currentTime_);
     assert(err >= 0);
-    err = HDF5Utils::writeAttr(fileID, "timeStepNo", this->timeStepNo_);
+    err = file.writeAttrInt("timeStepNo", this->timeStepNo_);
     assert(err >= 0);
     for (const std::string &meshName : meshesToOutput) {
-      hid_t groupID = H5Gcreate(fileID, meshName.c_str(), H5P_DEFAULT,
-                                H5P_DEFAULT, H5P_DEFAULT);
-      assert(groupID >= 0);
-
+      HDF5Utils::Group group = file.newGroup(meshName.c_str());
       // loop over all field variables and output those that are associated with
       // the mesh given by meshName
-      HDF5LoopOverTuple::loopOutput(groupID, variable, variable, meshName,
+      HDF5LoopOverTuple::loopOutput(group, variable, variable, meshName,
                                     specificSettings_, currentTime);
-
-      err = H5Gclose(groupID);
-      assert(err >= 0);
     }
   }
 
@@ -168,131 +162,45 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variable,
 }
 
 namespace HDF5Utils {
-template <typename T> herr_t writeAttr(hid_t fileID, const char *key, T value) {
-  assert(false);
+template <typename T, size_t RANK>
+herr_t Group::writeSimpleVec(const std::vector<T> &data,
+                             const std::string &dsname,
+                             const std::array<hsize_t, RANK> &dims) {
+  if (file_->isMPIIO()) {
+    if (std::is_same<T, int32_t>::value) {
+      return writeVectorMPIIO(data.data(), dsname, dims, H5T_STD_I32LE,
+                              H5T_NATIVE_INT, sizeof(int32_t));
+    } else if (std::is_same<T, double>::value) {
+      return writeVectorMPIIO(data.data(), dsname, dims, H5T_IEEE_F64LE,
+                              H5T_NATIVE_DOUBLE, sizeof(double));
+    }
+  } else {
+    if (std::is_same<T, int32_t>::value) {
+      return writeVector(data.data(), dsname, dims, H5T_STD_I32LE,
+                         H5T_NATIVE_INT, sizeof(int32_t));
+    } else if (std::is_same<T, double>::value) {
+      return writeVector(data.data(), dsname, dims, H5T_IEEE_F64LE,
+                         H5T_NATIVE_DOUBLE, sizeof(double));
+    }
+  }
   return 0;
 }
 
-template <>
-herr_t writeAttr<int32_t>(hid_t fileID, const char *key, int32_t value) {
-  hsize_t dims = 1;
-  std::array<int32_t, 1> data = {value};
-  hid_t dspace = H5Screate_simple(1, &dims, nullptr);
-  if (dspace < 0) {
-    return dspace;
-  }
-  hid_t attr =
-      H5Acreate(fileID, key, H5T_STD_I32LE, dspace, H5P_DEFAULT, H5P_DEFAULT);
-  if (attr < 0) {
-    // ignore error here, everything is lost anyway at this point in time
-    H5Sclose(dspace);
-    return attr;
-  }
-  herr_t err = H5Awrite(attr, H5T_NATIVE_INT, data.data());
-  if (err < 0) {
-    return err;
-  }
-  err = H5Aclose(attr);
-  if (err < 0) {
-    return err;
-  }
-  err = H5Sclose(dspace);
-  if (err < 0) {
-    return err;
-  }
-
-  return 0;
-}
-template <>
-herr_t writeAttr<double>(hid_t fileID, const char *key, double value) {
-  hsize_t dims = 1;
-  std::array<double, 1> data = {value};
-  hid_t dspace = H5Screate_simple(1, &dims, nullptr);
-  if (dspace < 0) {
-    return dspace;
-  }
-  hid_t attr =
-      H5Acreate(fileID, key, H5T_IEEE_F64LE, dspace, H5P_DEFAULT, H5P_DEFAULT);
-  if (attr < 0) {
-    // ignore error here, everything is lost anyway at this point in time
-    H5Sclose(dspace);
-    return attr;
-  }
-  herr_t err = H5Awrite(attr, H5T_NATIVE_DOUBLE, data.data());
-  if (err < 0) {
-    return err;
-  }
-  err = H5Aclose(attr);
-  if (err < 0) {
-    return err;
-  }
-  err = H5Sclose(dspace);
-  if (err < 0) {
-    return err;
-  }
-
-  return 0;
-}
-template <>
-herr_t writeAttr<const std::string &>(hid_t fileID, const char *key,
-                                      const std::string &value) {
-  hid_t filetype = H5Tcopy(H5T_FORTRAN_S1);
-  herr_t err = H5Tset_size(filetype, value.length());
-  if (err < 0) {
-    return err;
-  }
-
-  hid_t memtype = H5Tcopy(H5T_C_S1); // Datatype ID
-  err = H5Tset_size(memtype, value.length() + 1);
-  if (err < 0) {
-    return err;
-  }
-
-  hsize_t dims = 1;
-  hid_t dspace = H5Screate_simple(1, &dims, nullptr);
-  if (dspace < 0) {
-    return dspace;
-  }
-  hid_t attr =
-      H5Acreate(fileID, key, filetype, dspace, H5P_DEFAULT, H5P_DEFAULT);
-  if (attr < 0) {
-    // ignore error here, everything is lost anyway at this point in time
-    H5Sclose(dspace);
-    return attr;
-  }
-  err = H5Awrite(attr, memtype, value.c_str());
-  if (err < 0) {
-    H5Sclose(dspace);
-    H5Aclose(attr);
-    return err;
-  }
-  err = H5Aclose(attr);
-  if (err < 0) {
-    return err;
-  }
-  err = H5Sclose(dspace);
-  if (err < 0) {
-    return err;
-  }
-
-  return 0;
+template <typename T>
+herr_t Group::writeSimpleVec(const std::vector<T> &data,
+                             const std::string &dsname) {
+  std::array<hsize_t, 1> dims = {data.size()};
+  return writeSimpleVec(data, dsname, dims);
 }
 
 template <size_t RANK>
-herr_t writeVector(hid_t fileID, const void *data, const std::string &dsname,
-                   const std::array<hsize_t, RANK> &dims, hid_t typeId,
-                   hid_t memTypeId, size_t dsize) {
-  // TODO: dont do this here
-  int worldSize;
-  MPI_Comm_size(MPI_COMM_WORLD, &worldSize);
-  int proccessId;
-  MPI_Comm_rank(MPI_COMM_WORLD, &proccessId);
-
+herr_t Group::writeVectorMPIIO(const void *data, const std::string &dsname,
+                               const std::array<hsize_t, RANK> &dims,
+                               hid_t typeId, hid_t memTypeId, size_t dsize) {
   herr_t err;
   std::array<hsize_t, RANK> chunkDims = dims;
 
-  std::pair<int, int> chunkAndOffsetSpace =
-      __getMemSpace(chunkDims[0], proccessId, worldSize);
+  std::pair<int, int> chunkAndOffsetSpace = file_->getMemSpace(chunkDims[0]);
   // data into set_chunk need to be the same size for everything
   chunkDims[0] = chunkAndOffsetSpace.second;
   hid_t filespace = H5Screate_simple(RANK, dims.data(), nullptr);
@@ -301,7 +209,7 @@ herr_t writeVector(hid_t fileID, const void *data, const std::string &dsname,
   }
   std::string name = dsname;
   std::replace(name.begin(), name.end(), '/', '|');
-  hid_t dset = H5Dcreate(fileID, name.c_str(), typeId, filespace, H5P_DEFAULT,
+  hid_t dset = H5Dcreate(groupID_, name.c_str(), typeId, filespace, H5P_DEFAULT,
                          H5P_DEFAULT, H5P_DEFAULT);
   if (dset < 0) {
     H5Sclose(filespace);
@@ -323,10 +231,7 @@ herr_t writeVector(hid_t fileID, const void *data, const std::string &dsname,
   std::array<hsize_t, RANK> stride = {1};
   std::array<hsize_t, RANK> block = chunkDims;
   std::array<hsize_t, RANK> offset = {0};
-  offset[0] = chunkAndOffsetSpace.second * proccessId;
-
-  LOG(DEBUG) << "dims: " << dims << ", chunks: " << chunkDims
-             << ", offset: " << offset;
+  offset[0] = chunkAndOffsetSpace.second * file_->getOwnRank();
 
   err = H5Sselect_hyperslab(filespace, H5S_SELECT_SET, offset.data(),
                             stride.data(), count.data(), block.data());
@@ -357,8 +262,8 @@ herr_t writeVector(hid_t fileID, const void *data, const std::string &dsname,
     H5Pclose(plist);
     return memspace;
   }
-  void *dataOffset =
-      ((char *)data) + (chunkAndOffsetSpace.second * proccessId * dsize);
+  void *dataOffset = ((char *)data) +
+                     (chunkAndOffsetSpace.second * file_->getOwnRank() * dsize);
   err = H5Dwrite(dset, memTypeId, memspace, filespace, plist, dataOffset);
   if (err < 0) {
     H5Dclose(dset);
@@ -388,31 +293,45 @@ herr_t writeVector(hid_t fileID, const void *data, const std::string &dsname,
   return 0;
 }
 
-template <typename T>
-herr_t writeSimpleVec(hid_t fileID, const std::vector<T> &data,
-                      const std::string &dsname) {
-  assert(false);
+template <size_t RANK>
+herr_t Group::writeVector(const void *data, const std::string &dsname,
+                          const std::array<hsize_t, RANK> &dims, hid_t typeId,
+                          hid_t memTypeId, size_t dsize) {
+  herr_t err;
+  hid_t filespace = H5Screate_simple(RANK, dims.data(), nullptr);
+  if (filespace < 0) {
+    return filespace;
+  }
+  std::string name = dsname;
+  std::replace(name.begin(), name.end(), '/', '|');
+  hid_t dset = H5Dcreate(groupID_, name.c_str(), typeId, filespace, H5P_DEFAULT,
+                         H5P_DEFAULT, H5P_DEFAULT);
+  if (dset < 0) {
+    H5Sclose(filespace);
+    return dset;
+  }
+
+  err = H5Dwrite(dset, memTypeId, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
+  if (err < 0) {
+    H5Dclose(dset);
+    H5Sclose(filespace);
+    return err;
+  }
+
+  err = H5Dclose(dset);
+  if (err < 0) {
+    return err;
+  }
+  err = H5Sclose(filespace);
+  if (err < 0) {
+    return err;
+  }
+
   return 0;
 }
 
-template <>
-herr_t writeSimpleVec<int32_t>(hid_t fileID, const std::vector<int32_t> &data,
-                               const std::string &dsname) {
-  std::array<hsize_t, 1> dims = {data.size()};
-  return writeVector(fileID, data.data(), dsname, dims, H5T_STD_I32LE,
-                     H5T_NATIVE_INT, sizeof(int32_t));
-}
-
-template <>
-herr_t writeSimpleVec<double>(hid_t fileID, const std::vector<double> &data,
-                              const std::string &dsname) {
-  std::array<hsize_t, 1> dims = {data.size()};
-  return writeVector(fileID, data.data(), dsname, dims, H5T_IEEE_F64LE,
-                     H5T_NATIVE_DOUBLE, sizeof(double));
-}
-
 template <typename FieldVariableType>
-herr_t writeFieldVariable(hid_t fileID, FieldVariableType &fieldVariable) {
+herr_t writeFieldVariable(Group &group, FieldVariableType &fieldVariable) {
   LOG(DEBUG) << "HDF5 write field variable " << fieldVariable.name();
   VLOG(1) << fieldVariable;
 
@@ -473,19 +392,18 @@ herr_t writeFieldVariable(hid_t fileID, FieldVariableType &fieldVariable) {
   }
 
   std::array<hsize_t, 2> dims = {nComponents, componentValues[0].size()};
-  return writeVector(fileID, values.data(), fieldVariable.name(), dims,
-                     H5T_STD_I32LE, H5T_NATIVE_INT, sizeof(int32_t));
+  return group.writeSimpleVec(values, fieldVariable.name(), dims);
 }
 
 template <typename FieldVariableType>
-herr_t writePartitionFieldVariable(hid_t fileID,
+herr_t writePartitionFieldVariable(Group &group,
                                    FieldVariableType &geometryField) {
   const node_no_t nNodesLocal =
       geometryField.functionSpace()->meshPartition()->nNodesLocalWithGhosts();
 
   std::vector<int32_t> values(nNodesLocal,
                               (int32_t)DihuContext::ownRankNoCommWorld());
-  return writeSimpleVec(fileID, values, "partitioning");
+  return group.writeSimpleVec(values, "partitioning");
 }
 } // namespace HDF5Utils
 } // namespace OutputWriter

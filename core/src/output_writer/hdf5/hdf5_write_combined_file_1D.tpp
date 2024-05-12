@@ -11,7 +11,8 @@ namespace OutputWriter {
 
 template <typename FieldVariablesForOutputWriterType>
 void HDF5::writePolyDataFile(
-    hid_t fileID, const FieldVariablesForOutputWriterType &fieldVariables,
+    HDF5Utils::Group &group,
+    const FieldVariablesForOutputWriterType &fieldVariables,
     std::set<std::string> &meshNames) {
   bool meshPropertiesInitialized = !meshPropertiesPolyDataFile_.empty();
   std::vector<std::string> meshNamesVector;
@@ -224,7 +225,7 @@ void HDF5::writePolyDataFile(
       piece1D_ = Piece();
 
       // recursively call this method
-      writePolyDataFile(fileID, fieldVariables, meshNames);
+      writePolyDataFile(group, fieldVariables, meshNames);
 
       return;
     }
@@ -247,10 +248,6 @@ void HDF5::writePolyDataFile(
 
   Control::PerformanceMeasurement::start("durationHDF51DWrite");
 
-  hid_t groupID =
-      H5Gcreate(fileID, "1D", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-  assert(groupID >= 0);
-
   herr_t err;
   // write field variables
   for (PolyDataPropertiesForMesh::DataArrayName &pointDataArray :
@@ -268,25 +265,19 @@ void HDF5::writePolyDataFile(
       for (const auto &v : dataToWrite) {
         newVals.push_back((int32_t)(round(v)));
       }
-      err = HDF5Utils::writeSimpleVec<int32_t>(fileID, newVals,
-                                               pointDataArray.name.c_str());
+      err = group.writeSimpleVec<int32_t>(newVals, pointDataArray.name.c_str());
     } else {
-      err = HDF5Utils::writeSimpleVec<double>(groupID, dataToWrite,
-                                              pointDataArray.name.c_str());
+      err = group.writeSimpleVec<double>(dataToWrite,
+                                         pointDataArray.name.c_str());
     }
     assert(err >= 0);
   }
 
-  err = HDF5Utils::writeSimpleVec<double>(groupID, geometryFieldValues,
-                                          "geometry");
+  err = group.writeSimpleVec<double>(geometryFieldValues, "geometry");
   assert(err >= 0);
-  err = HDF5Utils::writeSimpleVec<int32_t>(groupID, connectivityValues,
-                                           "connectivity");
+  err = group.writeSimpleVec<int32_t>(connectivityValues, "connectivity");
   assert(err >= 0);
-  err = HDF5Utils::writeSimpleVec<int32_t>(groupID, offsetValues, "offsets");
-  assert(err >= 0);
-
-  err = H5Gclose(groupID);
+  err = group.writeSimpleVec<int32_t>(offsetValues, "offsets");
   assert(err >= 0);
   Control::PerformanceMeasurement::stop("durationHDF51DWrite");
 }

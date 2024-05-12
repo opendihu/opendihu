@@ -6,6 +6,11 @@
 #include "output_writer/poly_data_properties_for_mesh.h"
 
 namespace OutputWriter {
+namespace HDF5Utils {
+class Group;
+class File;
+} // namespace HDF5Utils
+
 class HDF5 : public Generic {
 public:
   //! constructor
@@ -25,7 +30,7 @@ public:
   //! file.
   template <typename FieldVariablesForOutputWriterType>
   void
-  writePolyDataFile(hid_t fileID,
+  writePolyDataFile(HDF5Utils::Group &group,
                     const FieldVariablesForOutputWriterType &fieldVariables,
                     std::set<std::string> &combinedMeshesOut);
 
@@ -35,7 +40,8 @@ public:
   //! 2D mesh names that were written to the vtu file.
   template <typename FieldVariablesForOutputWriterType>
   void writeCombinedUnstructuredGridFile(
-      hid_t fileID, const FieldVariablesForOutputWriterType &fieldVariables,
+      HDF5Utils::Group &group,
+      const FieldVariablesForOutputWriterType &fieldVariables,
       std::set<std::string> &combinedMeshesOut, bool output3DMeshes);
 
   //! Enable or disable combine files option
@@ -74,13 +80,10 @@ protected:
 
   //! write a vector containing nValues "12" (if output3DMeshes) or "9" (if
   //! !output3DMeshes) values for the types for an unstructured grid
-  herr_t writeCombinedTypesVector(hid_t fileHandle, uint64_t nValues,
+  herr_t writeCombinedTypesVector(HDF5Utils::Group &group, uint64_t nValues,
                                   bool output3DMeshes, const char *dsname);
 
 private:
-  //! open a HDF5 file with a given filename
-  hid_t openHDF5File(const char *filename, bool mpiio);
-
   template <typename FieldVariablesForOutputWriterType>
   void innerWrite(const FieldVariablesForOutputWriterType &variable,
                   const char *filename = nullptr, int timeStepNo = -1,
@@ -89,7 +92,8 @@ private:
   //! helper method that writes the unstructured grid file
   template <typename FieldVariablesForOutputWriterType>
   void writeCombinedUnstructuredGridFile(
-      hid_t fileID, const FieldVariablesForOutputWriterType &fieldVariables,
+      HDF5Utils::Group &group,
+      const FieldVariablesForOutputWriterType &fieldVariables,
       PolyDataPropertiesForMesh &polyDataPropertiesForMesh,
       const std::map<std::string, PolyDataPropertiesForMesh>
           &meshPropertiesUnstructuredGridFile,
@@ -126,52 +130,74 @@ private:
 };
 
 namespace HDF5Utils {
-//! write a key(string) value pair to a given fileID
-template <typename T>
-static herr_t writeAttr(hid_t fileID, const char *key, T value);
-//! write a key(string) value (int32_t) pair to a given fileID
-template <>
-herr_t writeAttr<int32_t>(hid_t fileID, const char *key, int32_t value);
-//! write a key(string) value (double) pair to a given fileID
-template <>
-herr_t writeAttr<double>(hid_t fileID, const char *key, double value);
-//! write a key(string) value (string) pair to a given fileID
-template <>
-herr_t writeAttr<const std::string &>(hid_t fileID, const char *key,
-                                      const std::string &value);
+class File {
+public:
+  File(const char *filename, bool mpiio);
+  ~File();
 
-std::pair<int, int> __getMemSpace(hsize_t len, int32_t ownRank,
-                                  int32_t worldSize);
+  hid_t getFileID() const;
+  int32_t getOwnRank() const;
+  bool isMPIIO() const;
+  std::pair<int, int> getMemSpace(hsize_t len) const;
 
-//! write a dataset with a specific name to a given fileID with a specific
-//! typeId and memTypeId
-template <size_t RANK>
-herr_t writeVector(hid_t fileID, const void *data, const std::string &dsname,
-                   const std::array<hsize_t, RANK> &dims, hid_t typeId,
-                   hid_t memTypeId, size_t dsize);
+  Group newGroup(const char *name) const;
 
-//! write a dataset with a specific name to a given fileID
-template <typename T>
-static herr_t writeSimpleVec(hid_t fileID, const std::vector<T> &data,
-                             const std::string &dsname);
-//! write a dataset(vec<int32_t>) with a specific name to a given fileID
-template <>
-herr_t writeSimpleVec<int32_t>(hid_t fileID, const std::vector<int32_t> &data,
-                               const std::string &dsname);
-//! write a dataset(vec<double>) with a specific name to a given fileID
-template <>
-herr_t writeSimpleVec<double>(hid_t fileID, const std::vector<double> &data,
-                              const std::string &dsname);
+  herr_t writeAttrInt(const char *key, int32_t value) const;
+  herr_t writeAttrDouble(const char *key, double value) const;
+  herr_t writeAttrStr(const char *key, const std::string &value) const;
 
-//! write the given field variable to a given fileID
+private:
+  std::string filename_;
+  bool mpiio_;
+  hid_t fileID_;
+  int32_t ownRank_;
+  int32_t worldSize_;
+};
+
+class Group {
+public:
+  Group(const File *f, const char *name);
+  ~Group();
+
+  Group newGroup(const char *name) const;
+
+  //! write a dataset with a specific name to the current Group
+  template <typename T, size_t RANK>
+  herr_t writeSimpleVec(const std::vector<T> &data, const std::string &dsname,
+                        const std::array<hsize_t, RANK> &dims);
+
+  //! write a dataset with a specific name to the current Group
+  template <typename T>
+  herr_t writeSimpleVec(const std::vector<T> &data, const std::string &dsname);
+
+private:
+  //! write a dataset with a specific name to the current group with a specific
+  //! typeId and memTypeId to a mpiio file
+  template <size_t RANK>
+  herr_t writeVectorMPIIO(const void *data, const std::string &dsname,
+                          const std::array<hsize_t, RANK> &dims, hid_t typeId,
+                          hid_t memTypeId, size_t dsize);
+
+  //! write a dataset with a specific name to the current group with a specific
+  //! typeId and memTypeId to a regular file
+  template <size_t RANK>
+  herr_t writeVector(const void *data, const std::string &dsname,
+                     const std::array<hsize_t, RANK> &dims, hid_t typeId,
+                     hid_t memTypeId, size_t dsize);
+
+  const File *file_;
+  hid_t groupID_;
+};
+
+//! write the given field variable to a given group
 template <typename FieldVariableType>
-static herr_t writeFieldVariable(hid_t fileID,
+static herr_t writeFieldVariable(Group &group,
                                  FieldVariableType &fieldVariable);
 
 //! write the a field variable indicating which ranks own which portion of the
-//! domain as DataSet element to a given fileID
+//! domain as DataSet element to a given group
 template <typename FieldVariableType>
-static herr_t writePartitionFieldVariable(hid_t fileID,
+static herr_t writePartitionFieldVariable(Group &group,
                                           FieldVariableType &geometryField);
 } // namespace HDF5Utils
 } // namespace OutputWriter

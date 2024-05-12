@@ -2,10 +2,10 @@
 
 #include <iostream>
 #include <vector>
-#include <hdf5.h>
 
 #include "control/types.h"
 #include "output_writer/generic.h"
+#include "output_writer/hdf5/hdf5.h"
 #include "mesh/structured_regular_fixed.h"
 
 namespace OutputWriter {
@@ -22,7 +22,7 @@ class HDF5Writer {
 public:
   //! write paraview file to given fileID, only output fieldVariables that are
   //! on a mesh with the given meshName
-  static void outputFile(hid_t fileID,
+  static void outputFile(HDF5Utils::Group &group,
                          FieldVariablesForOutputWriterType fieldVariables,
                          const std::string &meshName,
                          std::shared_ptr<FunctionSpaceType> mesh,
@@ -43,7 +43,7 @@ public:
   //! write paraview file to given fileID, only output fieldVariables that are
   //! on a mesh with the given meshName
   static void outputFile(
-      hid_t fileID, FieldVariablesForOutputWriterType fieldVariables,
+      HDF5Utils::Group &group, FieldVariablesForOutputWriterType fieldVariables,
       const std::string &meshName,
       std::shared_ptr<FunctionSpace::FunctionSpace<
           ::Mesh::StructuredRegularFixedOfDimension<D>, BasisFunctionType>>
@@ -65,7 +65,8 @@ public:
   //! write paraview file to given fileID, only output fieldVariables that are
   //! on a mesh with the given meshName
   static void
-  outputFile(hid_t fileID, FieldVariablesForOutputWriterType fieldVariables,
+  outputFile(HDF5Utils::Group &group,
+             FieldVariablesForOutputWriterType fieldVariables,
              const std::string &meshName,
              std::shared_ptr<FunctionSpace::FunctionSpace<
                  ::Mesh::StructuredDeformableOfDimension<D>, BasisFunctionType>>
@@ -87,7 +88,7 @@ public:
   //! write paraview file to given fileID, only output fieldVariables that are
   //! on a mesh with the given meshName
   static void outputFile(
-      hid_t fileID, FieldVariablesForOutputWriterType fieldVariables,
+      HDF5Utils::Group &group, FieldVariablesForOutputWriterType fieldVariables,
       const std::string &meshName,
       std::shared_ptr<FunctionSpace::FunctionSpace<
           ::Mesh::UnstructuredDeformableOfDimension<D>, BasisFunctionType>>

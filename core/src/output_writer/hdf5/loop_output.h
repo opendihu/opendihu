@@ -1,10 +1,11 @@
 #pragma once
 
-#include <hdf5.h>
 #include "utility/type_utility.h"
 #include "mesh/type_traits.h"
 
 #include <cstdlib>
+
+#include "output_writer/hdf5/hdf5.h"
 
 /** The functions in this file model a loop over the elements of a tuple, as it
  * occurs as FieldVariablesForOutputWriterType in all data_management classes.
@@ -28,7 +29,7 @@ template <typename FieldVariablesForOutputWriterType,
           typename AllFieldVariablesForOutputWriterType, int i = 0>
 inline typename std::enable_if<
     i == std::tuple_size<FieldVariablesForOutputWriterType>::value, void>::type
-loopOutput(hid_t fileID,
+loopOutput(HDF5Utils::Group &group,
            const FieldVariablesForOutputWriterType &fieldVariables,
            const AllFieldVariablesForOutputWriterType &allFieldVariables,
            const std::string &meshName, const PythonConfig &specificSettings,
@@ -41,7 +42,7 @@ template <typename FieldVariablesForOutputWriterType,
           typename AllFieldVariablesForOutputWriterType, int i = 0>
     inline typename std::enable_if <
     i<std::tuple_size<FieldVariablesForOutputWriterType>::value, void>::type
-    loopOutput(hid_t fileID,
+    loopOutput(HDF5Utils::Group &group,
                const FieldVariablesForOutputWriterType &fieldVariables,
                const AllFieldVariablesForOutputWriterType &allFieldVariables,
                const std::string &meshName,
@@ -51,7 +52,7 @@ template <typename FieldVariablesForOutputWriterType,
  */
 template <typename VectorType, typename FieldVariablesForOutputWriterType>
 typename std::enable_if<TypeUtility::isVector<VectorType>::value, bool>::type
-output(hid_t fileID, VectorType currentFieldVariableGradient,
+output(HDF5Utils::Group &group, VectorType currentFieldVariableGradient,
        const FieldVariablesForOutputWriterType &fieldVariables,
        const std::string &meshName, const PythonConfig &specificSettings,
        double currentTime);
@@ -60,7 +61,7 @@ output(hid_t fileID, VectorType currentFieldVariableGradient,
  */
 template <typename VectorType, typename FieldVariablesForOutputWriterType>
 typename std::enable_if<TypeUtility::isTuple<VectorType>::value, bool>::type
-output(hid_t fileID, VectorType currentFieldVariableGradient,
+output(HDF5Utils::Group &group, VectorType currentFieldVariableGradient,
        const FieldVariablesForOutputWriterType &fieldVariables,
        const std::string &meshName, const PythonConfig &specificSettings,
        double currentTime);
@@ -74,7 +75,7 @@ typename std::enable_if<
         !TypeUtility::isVector<CurrentFieldVariableType>::value &&
         !Mesh::isComposite<CurrentFieldVariableType>::value,
     bool>::type
-output(hid_t fileID, CurrentFieldVariableType currentFieldVariable,
+output(HDF5Utils::Group &group, CurrentFieldVariableType currentFieldVariable,
        const FieldVariablesForOutputWriterType &fieldVariables,
        const std::string &meshName, const PythonConfig &specificSettings,
        double currentTime);
@@ -85,7 +86,7 @@ template <typename CurrentFieldVariableType,
           typename FieldVariablesForOutputWriterType>
 typename std::enable_if<Mesh::isComposite<CurrentFieldVariableType>::value,
                         bool>::type
-output(hid_t fileID, CurrentFieldVariableType currentFieldVariable,
+output(HDF5Utils::Group &group, CurrentFieldVariableType currentFieldVariable,
        const FieldVariablesForOutputWriterType &fieldVariables,
        const std::string &meshName, const PythonConfig &specificSettings,
        double currentTime);

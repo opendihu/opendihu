@@ -16,7 +16,7 @@ namespace HDF5LoopOverTuple {
 template <typename FieldVariablesForOutputWriterType, int i>
     inline typename std::enable_if <
     i<std::tuple_size<FieldVariablesForOutputWriterType>::value, void>::type
-    loopOutputPointData(hid_t fileID,
+    loopOutputPointData(HDF5Utils::Group &group,
                         const FieldVariablesForOutputWriterType &fieldVariables,
                         const std::string &meshName,
                         bool onlyParallelDatasetElement) {
@@ -24,13 +24,13 @@ template <typename FieldVariablesForOutputWriterType, int i>
   if (outputPointData<typename std::tuple_element<
                           i, FieldVariablesForOutputWriterType>::type,
                       FieldVariablesForOutputWriterType>(
-          fileID, std::get<i>(fieldVariables), fieldVariables, meshName,
+          group, std::get<i>(fieldVariables), fieldVariables, meshName,
           onlyParallelDatasetElement))
     return;
 
   // advance iteration to next tuple element
   loopOutputPointData<FieldVariablesForOutputWriterType, i + 1>(
-      fileID, fieldVariables, meshName, onlyParallelDatasetElement);
+      group, fieldVariables, meshName, onlyParallelDatasetElement);
 }
 
 // current element is of pointer type (not vector)
@@ -41,14 +41,15 @@ typename std::enable_if<
         !TypeUtility::isVector<CurrentFieldVariableType>::value &&
         !Mesh::isComposite<CurrentFieldVariableType>::value,
     bool>::type
-outputPointData(hid_t fileID, CurrentFieldVariableType currentFieldVariable,
+outputPointData(HDF5Utils::Group &group,
+                CurrentFieldVariableType currentFieldVariable,
                 const FieldVariablesForOutputWriterType &fieldVariables,
                 const std::string &meshName, bool onlyParallelDatasetElement) {
   // if mesh name is the specified meshName
   if (currentFieldVariable->functionSpace()->meshName() == meshName &&
       !currentFieldVariable->isGeometryField()) {
     herr_t err = HDF5Utils::writeFieldVariable<
-        typename CurrentFieldVariableType::element_type>(fileID,
+        typename CurrentFieldVariableType::element_type>(group,
                                                          *currentFieldVariable);
     assert(err >= 0);
     (void)err;
@@ -60,14 +61,15 @@ outputPointData(hid_t fileID, CurrentFieldVariableType currentFieldVariable,
 // Elementent i is of vector type
 template <typename VectorType, typename FieldVariablesForOutputWriterType>
 typename std::enable_if<TypeUtility::isVector<VectorType>::value, bool>::type
-outputPointData(hid_t fileID, VectorType currentFieldVariableGradient,
+outputPointData(HDF5Utils::Group &group,
+                VectorType currentFieldVariableGradient,
                 const FieldVariablesForOutputWriterType &fieldVariables,
                 const std::string &meshName, bool onlyParallelDatasetElement) {
   for (auto &currentFieldVariable : currentFieldVariableGradient) {
     // call function on all vector entries
     if (outputPointData<typename VectorType::value_type,
                         FieldVariablesForOutputWriterType>(
-            fileID, currentFieldVariable, fieldVariables, meshName,
+            group, currentFieldVariable, fieldVariables, meshName,
             onlyParallelDatasetElement))
       return true; // break iteration
   }
@@ -77,11 +79,11 @@ outputPointData(hid_t fileID, VectorType currentFieldVariableGradient,
 // element i is of tuple type
 template <typename TupleType, typename FieldVariablesForOutputWriterType>
 typename std::enable_if<TypeUtility::isTuple<TupleType>::value, bool>::type
-outputPointData(hid_t fileID, TupleType currentFieldVariableTuple,
+outputPointData(HDF5Utils::Group &group, TupleType currentFieldVariableTuple,
                 const FieldVariablesForOutputWriterType &fieldVariables,
                 const std::string &meshName, bool onlyParallelDatasetElement) {
   // call for tuple element
-  loopOutputPointData<TupleType>(fileID, currentFieldVariableTuple, meshName,
+  loopOutputPointData<TupleType>(group, currentFieldVariableTuple, meshName,
                                  onlyParallelDatasetElement);
 
   return false; // do not break iteration
@@ -92,7 +94,8 @@ template <typename CurrentFieldVariableType,
           typename FieldVariablesForOutputWriterType>
 typename std::enable_if<Mesh::isComposite<CurrentFieldVariableType>::value,
                         bool>::type
-outputPointData(hid_t fileID, CurrentFieldVariableType currentFieldVariable,
+outputPointData(HDF5Utils::Group &group,
+                CurrentFieldVariableType currentFieldVariable,
                 const FieldVariablesForOutputWriterType &fieldVariables,
                 const std::string &meshName, bool onlyParallelDatasetElement) {
   const int D = CurrentFieldVariableType::element_type::FunctionSpace::dim();
@@ -113,7 +116,7 @@ outputPointData(hid_t fileID, CurrentFieldVariableType currentFieldVariable,
     // call function on all vector entries
     if (outputPointData<std::shared_ptr<SubFieldVariableType>,
                         FieldVariablesForOutputWriterType>(
-            fileID, currentSubFieldVariable, fieldVariables, meshName,
+            group, currentSubFieldVariable, fieldVariables, meshName,
             onlyParallelDatasetElement))
       return true;
   }

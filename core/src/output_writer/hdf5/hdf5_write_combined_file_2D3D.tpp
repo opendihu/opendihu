@@ -11,7 +11,8 @@ namespace OutputWriter {
 
 template <typename FieldVariablesForOutputWriterType>
 void HDF5::writeCombinedUnstructuredGridFile(
-    hid_t fileID, const FieldVariablesForOutputWriterType &fieldVariables,
+    HDF5Utils::Group &group,
+    const FieldVariablesForOutputWriterType &fieldVariables,
     std::set<std::string> &meshNames, bool output3DMeshes) {
   std::map<std::string, PolyDataPropertiesForMesh>
       &meshPropertiesUnstructuredGridFile_ =
@@ -39,10 +40,8 @@ void HDF5::writeCombinedUnstructuredGridFile(
   VLOG(1) << "meshPropertiesUnstructuredGridFile_: "
           << meshPropertiesUnstructuredGridFile_;
 
-  const char *targetDimStr = "2D";
   int targetDimensionality = 2;
   if (output3DMeshes) {
-    targetDimStr = "3D";
     targetDimensionality = 3;
   }
 
@@ -159,18 +158,11 @@ void HDF5::writeCombinedUnstructuredGridFile(
     if (piece3D_.properties.dimensionality == targetDimensionality) {
       meshNames = piece3D_.meshNamesCombinedMeshes;
 
-      hid_t groupID = H5Gcreate(fileID, targetDimStr, H5P_DEFAULT, H5P_DEFAULT,
-                                H5P_DEFAULT);
-      assert(groupID >= 0);
-
       // write actual file
       writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
-          groupID, fieldVariables, piece3D_.properties,
+          group, fieldVariables, piece3D_.properties,
           meshPropertiesUnstructuredGridFile_,
           piece3D_.meshNamesCombinedMeshesVector, meshPropertiesInitialized);
-      herr_t err = H5Gclose(groupID);
-      assert(err >= 0);
-      (void)err; // err is unsed in release mode, silence warning with this
     } else {
       VLOG(1) << "skip meshes " << piece3D_.meshNamesCombinedMeshes
               << " because " << piece3D_.properties.dimensionality
@@ -197,9 +189,7 @@ void HDF5::writeCombinedUnstructuredGridFile(
 
     LOG(DEBUG) << "meshNames: " << meshNames
                << ", next mesh to write: " << props.first;
-    hid_t groupID = H5Gcreate(fileID, props.first.c_str(), H5P_DEFAULT,
-                              H5P_DEFAULT, H5P_DEFAULT);
-    assert(groupID >= 0);
+    HDF5Utils::Group group2 = group.newGroup(props.first.c_str());
 
     // write actual file
     std::vector<std::string> currentMesh;
@@ -207,12 +197,9 @@ void HDF5::writeCombinedUnstructuredGridFile(
     meshNames.insert(props.first);
 
     writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
-        groupID, fieldVariables, polyDataPropertiesForMesh,
+        group2, fieldVariables, polyDataPropertiesForMesh,
         meshPropertiesUnstructuredGridFile_, currentMesh,
         meshPropertiesInitialized);
-    herr_t err = H5Gclose(groupID);
-    assert(err >= 0);
-    (void)err; // err is unsed in release mode, silence warning with this
 
     // for the next meshes, reinitialize, the initialized information can only
     // be shared if there is exactly 1 mesh to write in this method
@@ -222,7 +209,8 @@ void HDF5::writeCombinedUnstructuredGridFile(
 
 template <typename FieldVariablesForOutputWriterType>
 void HDF5::writeCombinedUnstructuredGridFile(
-    hid_t fileID, const FieldVariablesForOutputWriterType &fieldVariables,
+    HDF5Utils::Group &group,
+    const FieldVariablesForOutputWriterType &fieldVariables,
     PolyDataPropertiesForMesh &polyDataPropertiesForMesh,
     const std::map<std::string, PolyDataPropertiesForMesh>
         &meshPropertiesUnstructuredGridFile,
@@ -232,7 +220,7 @@ void HDF5::writeCombinedUnstructuredGridFile(
 
   std::set<std::string> meshNamesSet(meshNames.begin(), meshNames.end());
 
-  VLOG(1) << "writeCombinedUnstructuredGridFile, fileID=" << fileID
+  VLOG(1) << "writeCombinedUnstructuredGridFile"
           << ", meshNames: " << meshNames
           << ", meshPropertiesInitialized=" << meshPropertiesInitialized
           << ", targetDimensionality: " << targetDimensionality;
@@ -642,24 +630,21 @@ void HDF5::writeCombinedUnstructuredGridFile(
       for (const auto &v : dataToWrite) {
         newVals.push_back((int32_t)(round(v)));
       }
-      err = HDF5Utils::writeSimpleVec<int32_t>(fileID, newVals,
-                                               pointDataArray.name.c_str());
+      err = group.writeSimpleVec<int32_t>(newVals, pointDataArray.name.c_str());
     } else {
-      err = HDF5Utils::writeSimpleVec<double>(fileID, dataToWrite,
-                                              pointDataArray.name.c_str());
+      err = group.writeSimpleVec<double>(dataToWrite,
+                                         pointDataArray.name.c_str());
     }
     assert(err >= 0);
   }
 
-  err = HDF5Utils::writeSimpleVec<double>(fileID, geometryFieldValues,
-                                          "geometry");
+  err = group.writeSimpleVec<double>(geometryFieldValues, "geometry");
   assert(err >= 0);
-  err = HDF5Utils::writeSimpleVec<int32_t>(fileID, connectivityValues,
-                                           "connectivity");
+  err = group.writeSimpleVec<int32_t>(connectivityValues, "connectivity");
   assert(err >= 0);
-  err = HDF5Utils::writeSimpleVec<int32_t>(fileID, offsetValues, "offsets");
+  err = group.writeSimpleVec<int32_t>(offsetValues, "offsets");
   assert(err >= 0);
-  err = writeCombinedTypesVector(fileID, polyDataPropertiesForMesh.nCellsGlobal,
+  err = writeCombinedTypesVector(group, polyDataPropertiesForMesh.nCellsGlobal,
                                  output3DMeshes, "types");
   assert(err >= 0);
 

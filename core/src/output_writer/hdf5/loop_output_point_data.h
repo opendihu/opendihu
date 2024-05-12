@@ -1,11 +1,11 @@
 #pragma once
 
-#include <hdf5.h>
-
 #include "utility/type_utility.h"
 #include "mesh/type_traits.h"
 
 #include <cstdlib>
+
+#include "output_writer/hdf5/hdf5.h"
 
 /** The functions in this file model a loop over the elements of a tuple, as it
  * occurs as FieldVariablesForOutputWriterType in all data_management classes.
@@ -31,7 +31,7 @@ namespace HDF5LoopOverTuple {
 template <typename FieldVariablesForOutputWriterType, int i = 0>
 inline typename std::enable_if<
     i == std::tuple_size<FieldVariablesForOutputWriterType>::value, void>::type
-loopOutputPointData(hid_t fileID,
+loopOutputPointData(HDF5Utils::Group &group,
                     const FieldVariablesForOutputWriterType &fieldVariables,
                     const std::string &meshName,
                     bool onlyParallelDatasetElement) {}
@@ -42,7 +42,7 @@ loopOutputPointData(hid_t fileID,
 template <typename FieldVariablesForOutputWriterType, int i = 0>
     inline typename std::enable_if <
     i<std::tuple_size<FieldVariablesForOutputWriterType>::value, void>::type
-    loopOutputPointData(hid_t fileID,
+    loopOutputPointData(HDF5Utils::Group &group,
                         const FieldVariablesForOutputWriterType &fieldVariables,
                         const std::string &meshName,
                         bool onlyParallelDatasetElement);
@@ -51,7 +51,8 @@ template <typename FieldVariablesForOutputWriterType, int i = 0>
  */
 template <typename VectorType, typename FieldVariablesForOutputWriterType>
 typename std::enable_if<TypeUtility::isVector<VectorType>::value, bool>::type
-outputPointData(hid_t fileID, VectorType currentFieldVariableGradient,
+outputPointData(HDF5Utils::Group &group,
+                VectorType currentFieldVariableGradient,
                 const FieldVariablesForOutputWriterType &fieldVariables,
                 const std::string &meshName, bool onlyParallelDatasetElement);
 
@@ -59,7 +60,8 @@ outputPointData(hid_t fileID, VectorType currentFieldVariableGradient,
  */
 template <typename VectorType, typename FieldVariablesForOutputWriterType>
 typename std::enable_if<TypeUtility::isTuple<VectorType>::value, bool>::type
-outputPointData(hid_t fileID, VectorType currentFieldVariableGradient,
+outputPointData(HDF5Utils::Group &group,
+                VectorType currentFieldVariableGradient,
                 const FieldVariablesForOutputWriterType &fieldVariables,
                 const std::string &meshName, bool onlyParallelDatasetElement);
 
@@ -72,7 +74,8 @@ typename std::enable_if<
         !TypeUtility::isVector<CurrentFieldVariableType>::value &&
         !Mesh::isComposite<CurrentFieldVariableType>::value,
     bool>::type
-outputPointData(hid_t fileID, CurrentFieldVariableType currentFieldVariable,
+outputPointData(HDF5Utils::Group &group,
+                CurrentFieldVariableType currentFieldVariable,
                 const FieldVariablesForOutputWriterType &fieldVariables,
                 const std::string &meshName, bool onlyParallelDatasetElement);
 
@@ -82,7 +85,8 @@ template <typename CurrentFieldVariableType,
           typename FieldVariablesForOutputWriterType>
 typename std::enable_if<Mesh::isComposite<CurrentFieldVariableType>::value,
                         bool>::type
-outputPointData(hid_t fileID, CurrentFieldVariableType currentFieldVariable,
+outputPointData(HDF5Utils::Group &group,
+                CurrentFieldVariableType currentFieldVariable,
                 const FieldVariablesForOutputWriterType &fieldVariables,
                 const std::string &meshName, bool onlyParallelDatasetElement);
 } // namespace HDF5LoopOverTuple

@@ -18,7 +18,8 @@ void HDF5Writer<
                                  BasisFunctionType>,
     FieldVariablesForOutputWriterType>::
     outputFile(
-        hid_t fileID, FieldVariablesForOutputWriterType fieldVariables,
+        HDF5Utils::Group &group,
+        FieldVariablesForOutputWriterType fieldVariables,
         const std::string &meshName,
         std::shared_ptr<FunctionSpace::FunctionSpace<
             Mesh::StructuredRegularFixedOfDimension<D>, BasisFunctionType>>
@@ -63,16 +64,16 @@ void HDF5Writer<
     coordinates[dimensionNo][0] = 0.0;
   }
 
-  HDF5LoopOverTuple::loopOutputPointData(fileID, fieldVariables, meshName,
+  HDF5LoopOverTuple::loopOutputPointData(group, fieldVariables, meshName,
                                          false);
   herr_t err = HDF5Utils::writePartitionFieldVariable<GeometryFieldType>(
-      fileID, mesh->geometryField());
+      group, mesh->geometryField());
   assert(err >= 0);
-  err = HDF5Utils::writeSimpleVec(fileID, coordinates[0], "coordinates_0");
+  err = group.writeSimpleVec(coordinates[0], "coordinates_0");
   assert(err >= 0);
-  err = HDF5Utils::writeSimpleVec(fileID, coordinates[1], "coordinates_1");
+  err = group.writeSimpleVec(coordinates[1], "coordinates_1");
   assert(err >= 0);
-  err = HDF5Utils::writeSimpleVec(fileID, coordinates[2], "coordinates_2");
+  err = group.writeSimpleVec(coordinates[2], "coordinates_2");
   assert(err >= 0);
 }
 
@@ -83,7 +84,8 @@ void HDF5Writer<
     FunctionSpace::FunctionSpace<Mesh::StructuredDeformableOfDimension<D>,
                                  BasisFunctionType>,
     FieldVariablesForOutputWriterType>::
-    outputFile(hid_t fileID, FieldVariablesForOutputWriterType fieldVariables,
+    outputFile(HDF5Utils::Group &group,
+               FieldVariablesForOutputWriterType fieldVariables,
                const std::string &meshName,
                std::shared_ptr<FunctionSpace::FunctionSpace<
                    Mesh::StructuredDeformableOfDimension<D>, BasisFunctionType>>
@@ -101,12 +103,12 @@ void HDF5Writer<
 
   LOG(DEBUG) << "Write StructuredGrid";
 
-  HDF5LoopOverTuple::loopOutputPointData(fileID, fieldVariables, meshName,
+  HDF5LoopOverTuple::loopOutputPointData(group, fieldVariables, meshName,
                                          false);
   herr_t err = HDF5Utils::writePartitionFieldVariable<GeometryFieldType>(
-      fileID, mesh->geometryField());
+      group, mesh->geometryField());
   assert(err >= 0);
-  err = HDF5Utils::writeFieldVariable<GeometryFieldType>(fileID,
+  err = HDF5Utils::writeFieldVariable<GeometryFieldType>(group,
                                                          mesh->geometryField());
   assert(err >= 0);
 }
@@ -119,7 +121,8 @@ void HDF5Writer<
                                  BasisFunctionType>,
     FieldVariablesForOutputWriterType>::
     outputFile(
-        hid_t fileID, FieldVariablesForOutputWriterType fieldVariables,
+        HDF5Utils::Group &group,
+        FieldVariablesForOutputWriterType fieldVariables,
         const std::string &meshName,
         std::shared_ptr<FunctionSpace::FunctionSpace<
             Mesh::UnstructuredDeformableOfDimension<D>, BasisFunctionType>>
@@ -134,12 +137,12 @@ void HDF5Writer<
       FunctionSpace;
   typedef FieldVariable::FieldVariable<FunctionSpace, 3> GeometryFieldType;
 
-  HDF5LoopOverTuple::loopOutputPointData(fileID, fieldVariables, meshName,
+  HDF5LoopOverTuple::loopOutputPointData(group, fieldVariables, meshName,
                                          false);
   herr_t err = HDF5Utils::writePartitionFieldVariable<GeometryFieldType>(
-      fileID, mesh->geometryField());
+      group, mesh->geometryField());
   assert(err >= 0);
-  err = HDF5Utils::writeFieldVariable<GeometryFieldType>(fileID,
+  err = HDF5Utils::writeFieldVariable<GeometryFieldType>(group,
                                                          mesh->geometryField());
   assert(err >= 0);
 
@@ -164,7 +167,7 @@ void HDF5Writer<
       }
     }
   }
-  err = HDF5Utils::writeSimpleVec(fileID, values, "connectivity");
+  err = group.writeSimpleVec(values, "connectivity");
   assert(err >= 0);
 
   // offsets
@@ -174,7 +177,7 @@ void HDF5Writer<
        elementNo++) {
     values[elementNo] = (elementNo + 1) * FunctionSpace::nNodesPerElement();
   }
-  err = HDF5Utils::writeSimpleVec(fileID, values, "offsets");
+  err = group.writeSimpleVec(values, "offsets");
   assert(err >= 0);
 
   // cell types
@@ -192,7 +195,7 @@ void HDF5Writer<
   }
   values.clear();
   values.resize(mesh->nElementsLocal(), cellType);
-  err = HDF5Utils::writeSimpleVec(fileID, values, "types");
+  err = group.writeSimpleVec(values, "types");
   assert(err >= 0);
 }
 } // namespace OutputWriter

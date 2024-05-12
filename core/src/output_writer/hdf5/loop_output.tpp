@@ -17,7 +17,7 @@ template <typename FieldVariablesForOutputWriterType,
           typename AllFieldVariablesForOutputWriterType, int i>
     inline typename std::enable_if <
     i<std::tuple_size<FieldVariablesForOutputWriterType>::value, void>::type
-    loopOutput(hid_t fileID,
+    loopOutput(HDF5Utils::Group &group,
                const FieldVariablesForOutputWriterType &fieldVariables,
                const AllFieldVariablesForOutputWriterType &allFieldVariables,
                const std::string &meshName,
@@ -26,14 +26,14 @@ template <typename FieldVariablesForOutputWriterType,
   if (output<typename std::tuple_element<
                  i, FieldVariablesForOutputWriterType>::type,
              AllFieldVariablesForOutputWriterType>(
-          fileID, std::get<i>(fieldVariables), allFieldVariables, meshName,
+          group, std::get<i>(fieldVariables), allFieldVariables, meshName,
           specificSettings, currentTime))
     return;
 
   // advance iteration to next tuple element
   loopOutput<FieldVariablesForOutputWriterType,
              AllFieldVariablesForOutputWriterType, i + 1>(
-      fileID, fieldVariables, allFieldVariables, meshName, specificSettings,
+      group, fieldVariables, allFieldVariables, meshName, specificSettings,
       currentTime);
 }
 
@@ -45,7 +45,7 @@ typename std::enable_if<
         !TypeUtility::isVector<CurrentFieldVariableType>::value &&
         !Mesh::isComposite<CurrentFieldVariableType>::value,
     bool>::type
-output(hid_t fileID, CurrentFieldVariableType currentFieldVariable,
+output(HDF5Utils::Group &group, CurrentFieldVariableType currentFieldVariable,
        const FieldVariablesForOutputWriterType &fieldVariables,
        const std::string &meshName, const PythonConfig &specificSettings,
        double currentTime) {
@@ -62,7 +62,7 @@ output(hid_t fileID, CurrentFieldVariableType currentFieldVariable,
 
     // call exfile writer to output all field variables with the meshName
     HDF5Writer<FunctionSpace, FieldVariablesForOutputWriterType>::outputFile(
-        fileID, fieldVariables, meshName, currentFieldVariable->functionSpace(),
+        group, fieldVariables, meshName, currentFieldVariable->functionSpace(),
         nFieldVariablesInMesh, specificSettings, currentTime);
 
     return true; // break iteration
@@ -74,7 +74,7 @@ output(hid_t fileID, CurrentFieldVariableType currentFieldVariable,
 // element i is of vector type
 template <typename VectorType, typename FieldVariablesForOutputWriterType>
 typename std::enable_if<TypeUtility::isVector<VectorType>::value, bool>::type
-output(hid_t fileID, VectorType currentFieldVariableGradient,
+output(HDF5Utils::Group &group, VectorType currentFieldVariableGradient,
        const FieldVariablesForOutputWriterType &fieldVariables,
        const std::string &meshName, const PythonConfig &specificSettings,
        double currentTime) {
@@ -82,7 +82,7 @@ output(hid_t fileID, VectorType currentFieldVariableGradient,
     // call function on all vector entries
     if (output<typename VectorType::value_type,
                FieldVariablesForOutputWriterType>(
-            fileID, currentFieldVariable, fieldVariables, meshName,
+            group, currentFieldVariable, fieldVariables, meshName,
             specificSettings, currentTime))
       return true; // break iteration
   }
@@ -92,13 +92,13 @@ output(hid_t fileID, VectorType currentFieldVariableGradient,
 // element i is of tuple type
 template <typename TupleType, typename AllFieldVariablesForOutputWriterType>
 typename std::enable_if<TypeUtility::isTuple<TupleType>::value, bool>::type
-output(hid_t fileID, TupleType currentFieldVariableTuple,
+output(HDF5Utils::Group &group, TupleType currentFieldVariableTuple,
        const AllFieldVariablesForOutputWriterType &fieldVariables,
        const std::string &meshName, const PythonConfig &specificSettings,
        double currentTime) {
   // call for tuple element
   loopOutput<TupleType, AllFieldVariablesForOutputWriterType>(
-      fileID, currentFieldVariableTuple, fieldVariables, meshName,
+      group, currentFieldVariableTuple, fieldVariables, meshName,
       specificSettings, currentTime);
 
   return false; // do not break iteration
@@ -109,7 +109,7 @@ template <typename CurrentFieldVariableType,
           typename AllFieldVariablesForOutputWriterType>
 typename std::enable_if<Mesh::isComposite<CurrentFieldVariableType>::value,
                         bool>::type
-output(hid_t fileID, CurrentFieldVariableType currentFieldVariable,
+output(HDF5Utils::Group &group, CurrentFieldVariableType currentFieldVariable,
        const AllFieldVariablesForOutputWriterType &fieldVariables,
        const std::string &meshName, const PythonConfig &specificSettings,
        double currentTime) {
@@ -131,7 +131,7 @@ output(hid_t fileID, CurrentFieldVariableType currentFieldVariable,
     // call function on all vector entries
     if (output<std::shared_ptr<SubFieldVariableType>,
                AllFieldVariablesForOutputWriterType>(
-            fileID, currentSubFieldVariable, fieldVariables, meshName,
+            group, currentSubFieldVariable, fieldVariables, meshName,
             specificSettings, currentTime))
       return true;
   }
