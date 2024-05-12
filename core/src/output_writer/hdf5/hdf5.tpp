@@ -164,171 +164,26 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variable,
 }
 
 namespace HDF5Utils {
-template <typename T, size_t RANK>
+template <typename T>
 herr_t Group::writeSimpleVec(const std::vector<T> &data,
-                             const std::string &dsname,
-                             const std::array<hsize_t, RANK> &dims) {
+                             const std::string &dsname) {
   if (file_->isMPIIO()) {
     if (std::is_same<T, int32_t>::value) {
-      return writeVectorMPIIO(data.data(), dsname, dims, H5T_STD_I32LE,
+      return writeVectorMPIIO(data.data(), dsname, data.size(), H5T_STD_I32LE,
                               H5T_NATIVE_INT, sizeof(int32_t));
     } else if (std::is_same<T, double>::value) {
-      return writeVectorMPIIO(data.data(), dsname, dims, H5T_IEEE_F64LE,
+      return writeVectorMPIIO(data.data(), dsname, data.size(), H5T_IEEE_F64LE,
                               H5T_NATIVE_DOUBLE, sizeof(double));
     }
   } else {
     if (std::is_same<T, int32_t>::value) {
-      return writeVector(data.data(), dsname, dims, H5T_STD_I32LE,
+      return writeVector(data.data(), dsname, data.size(), H5T_STD_I32LE,
                          H5T_NATIVE_INT, sizeof(int32_t));
     } else if (std::is_same<T, double>::value) {
-      return writeVector(data.data(), dsname, dims, H5T_IEEE_F64LE,
+      return writeVector(data.data(), dsname, data.size(), H5T_IEEE_F64LE,
                          H5T_NATIVE_DOUBLE, sizeof(double));
     }
   }
-  return 0;
-}
-
-template <typename T>
-herr_t Group::writeSimpleVec(const std::vector<T> &data,
-                             const std::string &dsname) {
-  std::array<hsize_t, 1> dims = {data.size()};
-  return writeSimpleVec(data, dsname, dims);
-}
-
-template <size_t RANK>
-herr_t Group::writeVectorMPIIO(const void *data, const std::string &dsname,
-                               const std::array<hsize_t, RANK> &dims,
-                               hid_t typeId, hid_t memTypeId, size_t dsize) {
-  herr_t err;
-  std::array<hsize_t, RANK> chunkDims = dims;
-
-  std::pair<int, int> chunkAndOffsetSpace = file_->getMemSpace(chunkDims[0]);
-  // data into set_chunk need to be the same size for everything
-  chunkDims[0] = chunkAndOffsetSpace.second;
-  hid_t filespace = H5Screate_simple(RANK, dims.data(), nullptr);
-  if (filespace < 0) {
-    return filespace;
-  }
-  std::string name = dsname;
-  std::replace(name.begin(), name.end(), '/', '|');
-  hid_t dset = H5Dcreate(groupID_, name.c_str(), typeId, filespace, H5P_DEFAULT,
-                         H5P_DEFAULT, H5P_DEFAULT);
-  if (dset < 0) {
-    H5Sclose(filespace);
-    return dset;
-  }
-  err = H5Sclose(filespace);
-  if (err < 0) {
-    H5Dclose(dset);
-    return err;
-  }
-
-  filespace = H5Dget_space(dset);
-  if (filespace < 0) {
-    H5Dclose(dset);
-    return filespace;
-  }
-  chunkDims[0] = chunkAndOffsetSpace.first;
-  std::array<hsize_t, RANK> count = {1};
-  std::array<hsize_t, RANK> stride = {1};
-  std::array<hsize_t, RANK> block = chunkDims;
-  std::array<hsize_t, RANK> offset = {0};
-  offset[0] = chunkAndOffsetSpace.second * file_->getOwnRank();
-
-  err = H5Sselect_hyperslab(filespace, H5S_SELECT_SET, offset.data(),
-                            stride.data(), count.data(), block.data());
-  if (err < 0) {
-    H5Dclose(dset);
-    H5Sclose(filespace);
-    return err;
-  }
-
-  hid_t plist = H5Pcreate(H5P_DATASET_XFER);
-  if (plist < 0) {
-    H5Dclose(dset);
-    H5Sclose(filespace);
-    return plist;
-  }
-  err = H5Pset_dxpl_mpio(plist, H5FD_MPIO_COLLECTIVE);
-  if (err < 0) {
-    H5Dclose(dset);
-    H5Sclose(filespace);
-    H5Pclose(plist);
-    return err;
-  }
-
-  hid_t memspace = H5Screate_simple(RANK, chunkDims.data(), nullptr);
-  if (memspace < 0) {
-    H5Dclose(dset);
-    H5Sclose(filespace);
-    H5Pclose(plist);
-    return memspace;
-  }
-  void *dataOffset = ((char *)data) +
-                     (chunkAndOffsetSpace.second * file_->getOwnRank() * dsize);
-  err = H5Dwrite(dset, memTypeId, memspace, filespace, plist, dataOffset);
-  if (err < 0) {
-    H5Dclose(dset);
-    H5Sclose(filespace);
-    H5Pclose(plist);
-    H5Sclose(memspace);
-    return err;
-  }
-
-  err = H5Dclose(dset);
-  if (err < 0) {
-    return err;
-  }
-  err = H5Sclose(filespace);
-  if (err < 0) {
-    return err;
-  }
-  err = H5Pclose(plist);
-  if (err < 0) {
-    return err;
-  }
-  err = H5Sclose(memspace);
-  if (err < 0) {
-    return err;
-  }
-
-  return 0;
-}
-
-template <size_t RANK>
-herr_t Group::writeVector(const void *data, const std::string &dsname,
-                          const std::array<hsize_t, RANK> &dims, hid_t typeId,
-                          hid_t memTypeId, size_t dsize) {
-  herr_t err;
-  hid_t filespace = H5Screate_simple(RANK, dims.data(), nullptr);
-  if (filespace < 0) {
-    return filespace;
-  }
-  std::string name = dsname;
-  std::replace(name.begin(), name.end(), '/', '|');
-  hid_t dset = H5Dcreate(groupID_, name.c_str(), typeId, filespace, H5P_DEFAULT,
-                         H5P_DEFAULT, H5P_DEFAULT);
-  if (dset < 0) {
-    H5Sclose(filespace);
-    return dset;
-  }
-
-  err = H5Dwrite(dset, memTypeId, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
-  if (err < 0) {
-    H5Dclose(dset);
-    H5Sclose(filespace);
-    return err;
-  }
-
-  err = H5Dclose(dset);
-  if (err < 0) {
-    return err;
-  }
-  err = H5Sclose(filespace);
-  if (err < 0) {
-    return err;
-  }
-
   return 0;
 }
 
@@ -393,8 +248,7 @@ herr_t writeFieldVariable(Group &group, FieldVariableType &fieldVariable) {
     }
   }
 
-  std::array<hsize_t, 2> dims = {nComponents, componentValues[0].size()};
-  return group.writeSimpleVec(values, fieldVariable.name(), dims);
+  return group.writeSimpleVec(values, fieldVariable.name());
 }
 
 template <typename FieldVariableType>

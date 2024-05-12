@@ -137,8 +137,8 @@ public:
 
   hid_t getFileID() const;
   int32_t getOwnRank() const;
+  int32_t getWorldSize() const;
   bool isMPIIO() const;
-  std::pair<int, int> getMemSpace(hsize_t len) const;
 
   Group newGroup(const char *name) const;
 
@@ -157,14 +157,10 @@ private:
 class Group {
 public:
   Group(const File *f, const char *name);
+  Group(const File *f, hid_t id, const char *name);
   ~Group();
 
   Group newGroup(const char *name) const;
-
-  //! write a dataset with a specific name to the current Group
-  template <typename T, size_t RANK>
-  herr_t writeSimpleVec(const std::vector<T> &data, const std::string &dsname,
-                        const std::array<hsize_t, RANK> &dims);
 
   //! write a dataset with a specific name to the current Group
   template <typename T>
@@ -173,17 +169,18 @@ public:
 private:
   //! write a dataset with a specific name to the current group with a specific
   //! typeId and memTypeId to a mpiio file
-  template <size_t RANK>
   herr_t writeVectorMPIIO(const void *data, const std::string &dsname,
-                          const std::array<hsize_t, RANK> &dims, hid_t typeId,
-                          hid_t memTypeId, size_t dsize);
+                          const size_t dataSize, hid_t typeId, hid_t memTypeId,
+                          size_t dsize);
 
   //! write a dataset with a specific name to the current group with a specific
   //! typeId and memTypeId to a regular file
-  template <size_t RANK>
   herr_t writeVector(const void *data, const std::string &dsname,
-                     const std::array<hsize_t, RANK> &dims, hid_t typeId,
-                     hid_t memTypeId, size_t dsize);
+                     const size_t dataSize, hid_t typeId, hid_t memTypeId,
+                     size_t dsize);
+
+  herr_t writeAttrArray(hid_t dsetID, const char *key,
+                        const std::vector<int64_t> &data) const;
 
   const File *file_;
   hid_t groupID_;

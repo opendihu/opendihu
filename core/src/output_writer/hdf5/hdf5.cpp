@@ -80,25 +80,8 @@ File::~File() {
 
 hid_t File::getFileID() const { return fileID_; }
 int32_t File::getOwnRank() const { return ownRank_; }
+int32_t File::getWorldSize() const { return worldSize_; }
 bool File::isMPIIO() const { return mpiio_; }
-
-std::pair<int, int> File::getMemSpace(hsize_t len) const {
-  if (worldSize_ > len) {
-    return std::make_pair(len, len);
-  }
-
-  if (len % worldSize_ == 0) {
-    int d = len / worldSize_;
-    return std::make_pair(d, d);
-  } else {
-    int32_t split = (len / worldSize_);
-    if (ownRank_ == (worldSize_ - 1)) {
-      return std::make_pair((len - (split * worldSize_)) + split, split);
-    } else {
-      return std::make_pair(split, split);
-    }
-  }
-}
 
 Group File::newGroup(const char *name) const { return Group(this, name); }
 
@@ -211,12 +194,200 @@ Group::Group(const File *f, const char *name) : file_(f), groupID_(-1) {
   assert(groupID_ >= 0);
 }
 
+Group::Group(const File *f, hid_t id, const char *name)
+    : file_(f), groupID_(-1) {
+  groupID_ = H5Gcreate(id, name, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  assert(groupID_ >= 0);
+}
+
 Group::~Group() {
   if (groupID_ >= 0) {
     H5Gclose(groupID_);
   }
 }
 
-Group Group::newGroup(const char *name) const { return Group(file_, name); }
+Group Group::newGroup(const char *name) const {
+  return Group(file_, groupID_, name);
+}
+
+herr_t Group::writeVectorMPIIO(const void *data, const std::string &dsname,
+                               const size_t dataSize, hid_t typeId,
+                               hid_t memTypeId, size_t dsize) {
+  const herr_t RANK = 1;
+
+  std::vector<int64_t> sizes;
+  sizes.resize(file_->getWorldSize());
+  MPI_Allgather(&dataSize, 1, MPI_LONG, sizes.data(), 1, MPI_LONG,
+                MPI_COMM_WORLD);
+
+  herr_t err;
+  std::array<hsize_t, RANK> dims = {
+      std::accumulate(sizes.begin(), sizes.end(), 0ul)};
+  std::array<hsize_t, RANK> chunkDims = {dataSize};
+
+  hid_t filespace = H5Screate_simple(RANK, dims.data(), nullptr);
+  if (filespace < 0) {
+    return filespace;
+  }
+  std::string name = dsname;
+  std::replace(name.begin(), name.end(), '/', '|');
+  hid_t dset = H5Dcreate(groupID_, name.c_str(), typeId, filespace, H5P_DEFAULT,
+                         H5P_DEFAULT, H5P_DEFAULT);
+  if (dset < 0) {
+    H5Sclose(filespace);
+    return dset;
+  }
+  err = H5Sclose(filespace);
+  if (err < 0) {
+    H5Dclose(dset);
+    return err;
+  }
+
+  filespace = H5Dget_space(dset);
+  if (filespace < 0) {
+    H5Dclose(dset);
+    return filespace;
+  }
+  std::array<hsize_t, RANK> count = {1};
+  std::array<hsize_t, RANK> stride = {1};
+  std::array<hsize_t, RANK> block = chunkDims;
+  std::array<hsize_t, RANK> offset = {
+      std::accumulate(sizes.begin(), sizes.begin() + file_->getOwnRank(), 0ul)};
+
+  err = H5Sselect_hyperslab(filespace, H5S_SELECT_SET, offset.data(),
+                            stride.data(), count.data(), block.data());
+  if (err < 0) {
+    H5Dclose(dset);
+    H5Sclose(filespace);
+    return err;
+  }
+
+  hid_t plist = H5Pcreate(H5P_DATASET_XFER);
+  if (plist < 0) {
+    H5Dclose(dset);
+    H5Sclose(filespace);
+    return plist;
+  }
+  err = H5Pset_dxpl_mpio(plist, H5FD_MPIO_COLLECTIVE);
+  if (err < 0) {
+    H5Dclose(dset);
+    H5Sclose(filespace);
+    H5Pclose(plist);
+    return err;
+  }
+
+  hid_t memspace = H5Screate_simple(RANK, chunkDims.data(), nullptr);
+  if (memspace < 0) {
+    H5Dclose(dset);
+    H5Sclose(filespace);
+    H5Pclose(plist);
+    return memspace;
+  }
+  err = H5Dwrite(dset, memTypeId, memspace, filespace, plist, data);
+  if (err < 0) {
+    H5Dclose(dset);
+    H5Sclose(filespace);
+    H5Pclose(plist);
+    H5Sclose(memspace);
+    return err;
+  }
+
+  err = writeAttrArray(dset, "chunkDims", sizes);
+  if (err < 0) {
+    H5Dclose(dset);
+    H5Sclose(filespace);
+    H5Pclose(plist);
+    H5Sclose(memspace);
+    return err;
+  }
+
+  err = H5Dclose(dset);
+  if (err < 0) {
+    return err;
+  }
+  err = H5Sclose(filespace);
+  if (err < 0) {
+    return err;
+  }
+  err = H5Pclose(plist);
+  if (err < 0) {
+    return err;
+  }
+  err = H5Sclose(memspace);
+  if (err < 0) {
+    return err;
+  }
+
+  return 0;
+}
+
+herr_t Group::writeVector(const void *data, const std::string &dsname,
+                          const size_t dataSize, hid_t typeId, hid_t memTypeId,
+                          size_t dsize) {
+  const herr_t RANK = 1;
+  std::array<hsize_t, 1> dims = {dataSize};
+
+  herr_t err;
+  hid_t filespace = H5Screate_simple(RANK, dims.data(), nullptr);
+  if (filespace < 0) {
+    return filespace;
+  }
+  std::string name = dsname;
+  std::replace(name.begin(), name.end(), '/', '|');
+  hid_t dset = H5Dcreate(groupID_, name.c_str(), typeId, filespace, H5P_DEFAULT,
+                         H5P_DEFAULT, H5P_DEFAULT);
+  if (dset < 0) {
+    H5Sclose(filespace);
+    return dset;
+  }
+
+  err = H5Dwrite(dset, memTypeId, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
+  if (err < 0) {
+    H5Dclose(dset);
+    H5Sclose(filespace);
+    return err;
+  }
+
+  err = H5Dclose(dset);
+  if (err < 0) {
+    return err;
+  }
+  err = H5Sclose(filespace);
+  if (err < 0) {
+    return err;
+  }
+
+  return 0;
+}
+
+herr_t Group::writeAttrArray(hid_t dsetID, const char *key,
+                             const std::vector<int64_t> &data) const {
+  hsize_t dims = data.size();
+  hid_t dspace = H5Screate_simple(1, &dims, nullptr);
+  if (dspace < 0) {
+    return dspace;
+  }
+  hid_t attr =
+      H5Acreate(dsetID, key, H5T_STD_I64LE, dspace, H5P_DEFAULT, H5P_DEFAULT);
+  if (attr < 0) {
+    // ignore error here, everything is lost anyway at this point in time
+    H5Sclose(dspace);
+    return attr;
+  }
+  herr_t err = H5Awrite(attr, H5T_NATIVE_LONG, data.data());
+  if (err < 0) {
+    return err;
+  }
+  err = H5Aclose(attr);
+  if (err < 0) {
+    return err;
+  }
+  err = H5Sclose(dspace);
+  if (err < 0) {
+    return err;
+  }
+
+  return 0;
+}
 } // namespace HDF5Utils
 } // namespace OutputWriter
