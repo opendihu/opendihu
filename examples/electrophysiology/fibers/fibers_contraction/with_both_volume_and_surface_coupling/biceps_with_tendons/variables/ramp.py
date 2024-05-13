@@ -1,5 +1,6 @@
 
 # scenario name for log file and output directory under "out"
+case_name = "case1"
 scenario_name = "ramp"
 
 # material parameters

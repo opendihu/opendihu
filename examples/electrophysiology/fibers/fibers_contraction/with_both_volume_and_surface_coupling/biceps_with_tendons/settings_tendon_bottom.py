@@ -449,7 +449,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "OutputWriter" : [
     
     # Paraview files
-    {"format": "Paraview", "outputInterval": variables.output_timestep, "filename": "out/tendon_bottom", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+    {"format": "Paraview", "outputInterval": variables.output_timestep, "filename": "out/" + variables.case_name + "/tendon_bottom", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
     
     # Python callback function "postprocess"
     {"format": "PythonCallback", "outputInterval": variables.output_timestep, "callback": postprocess, "onlyNodalValues": True, "filename": "", "fileNumbering": "incremental"},
