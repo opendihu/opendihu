@@ -69,7 +69,7 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
          timeStepNo >
              0)) // show first timestep only if timeStepOutputInterval is <= 10
     {
-      LOG(INFO) << "PreCICE surface coupling, timestep " << timeStepNo
+      LOG(INFO) << "preCICE coupling, timestep " << timeStepNo
                 << ", t=" << currentTime;
     }
 
