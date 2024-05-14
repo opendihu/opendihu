@@ -31,22 +31,13 @@ k1 = 92.779e2               # [N/cm^2 = 1e-2 MPa]   shape parameter for fiber st
 k2 = 305.87e2               # [N/cm^2 = 1e-2 MPa]   shape parameter for fiber stress, Equine Digital Flexor (Vergari 2011)
 variables.material_parameters = [c, ca, ct, cat, ctt, mu, k1, k2]
 
-variables.constant_body_force = (0,0,-9.81e-4)   # [cm/ms^2], gravity constant for the body force
-variables.force = 1000.0       # [N]
-
 print("expected stress: {} N/cm^2 = {} MPa".format(variables.force, variables.force * 1e-2))
 
-variables.dt_elasticity = 0.01      # [ms] time step width for elasticity
-variables.end_time      = 10     # [ms] simulation time
 variables.scenario_name = "tendon_bottom"
 variables.is_bottom_tendon = True        # whether the tendon is at the bottom (negative z-direction), this is important for the boundary conditions
 
 # input mesh file
 variables.fiber_file = "../../../../input/left_biceps_brachii_tendon1.bin"        # bottom tendon
-#variables.fiber_file = "../../../../input/left_biceps_brachii_tendon2a.bin"
-#variables.fiber_file = "../../../../input/left_biceps_brachii_tendon2b.bin"
-#variables.fiber_file = "../../../../input/left_biceps_brachii_7x7fibers.bin"
-#variables.fiber_file = "../../../../input/left_biceps_brachii_7x7fibers.bin"
 
 load_fiber_data = False             # If the fiber geometry data should be loaded completely in the python script. If True, this reads the binary file and assigns the node positions in the config. If False, the C++ code will read the binary file and only extract the local node positions. This is more performant for highly parallel runs.
 
@@ -204,7 +195,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "OutputWriter" : [
     
     # Paraview files
-    {"format": "Paraview", "outputInterval": 1, "filename": "out/" + variables.case_name + '/' +variables.scenario_name+"/tendon", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+    {"format": "Paraview", "outputInterval": variables.output_timestep_3D, "filename": "out/" + variables.case_name + '/' +variables.scenario_name + "/tendon", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
     
     # Python callback function "postprocess"
     #{"format": "PythonCallback", "outputInterval": 1, "callback": postprocess, "onlyNodalValues":True, "filename": ""},
@@ -218,7 +209,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   # 3. additional output writer that writes virtual work terms
   "dynamic": {    # output of the dynamic solver, has additional virtual work values 
     "OutputWriter" : [   # output files for displacements function space (quadratic elements)
-      {"format": "Paraview", "outputInterval": 1, "filename": "out/" + variables.case_name + '/' +variables.scenario_name+"/virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+      # {"format": "Paraview", "outputInterval": 1, "filename": "out/" + variables.case_name + '/' +variables.scenario_name+"/virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
       #{"format": "Paraview", "outputInterval": 1, "filename": "out/"+variables.scenario_name+"/virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
     ],
   },
