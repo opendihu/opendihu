@@ -32,6 +32,23 @@ d  = 9.1733                 # [-] anisotropy parameter
 material_parameters = [c1, c2, b, d]   # material parameters
 pmax = 7.3                  # [N/cm^2] maximum isometric active stress
 
+
+# material parameters for tendon material, see Carniel 2017 "A transversely isotropic coupled hyperelastic model for the mechanical behavior of tendons"
+c = 9.98e-1                 # [N/cm^2 = 10kPa]    parameter for Fung model
+ca = 14.92e-1               # [N/cm^2 = 10kPa]    normal stress axial
+ct = 14.7e-1                # [N/cm^2 = 10kPa]    normal stress transversal
+cat = 9.64e-1               # [N/cm^2 = 10kPa]    shear stress axial-transversal
+ctt = 11.24e-1              # [N/cm^2 = 10kPa]    shear stress transversal-transversal
+mu = 3.76e-1                # [N/cm^2 = 10kPa]    parameter for Neo-Hookean model
+#k1 = 42.217e2               # [N/cm^2 = 1e-2 MPa]   shape parameter for fiber stress, human achilles (Couppe 2015)
+#k2 = 411.360e2              # [N/cm^2 = 1e-2 MPa]   shape parameter for fiber stress, human achilles (Couppe 2015)
+#k1 = 0.010e2                # [N/cm^2 = 1e-2 MPa]   shape parameter for fiber stress, human achilles (Csapo 2010) does not converge well
+#k2 = 197.34e2               # [N/cm^2 = 1e-2 MPa]   shape parameter for fiber stress, human achilles (Csapo 2010)
+#k1 = 2.893e2                # [N/cm^2 = 1e-2 MPa]   shape parameter for fiber stress, Equine(Horse) Digital Flexor (Thorpe 2012)
+#k2 = 357.23e2               # [N/cm^2 = 1e-2 MPa]   shape parameter for fiber stress, Equine Digital Flexor (Thorpe 2012)
+k1 = 92.779e2               # [N/cm^2 = 1e-2 MPa]   shape parameter for fiber stress, Equine Digital Flexor (Vergari 2011)
+k2 = 305.87e2               # [N/cm^2 = 1e-2 MPa]   shape parameter for fiber stress, Equine Digital Flexor (Vergari 2011)
+tendon_material_parameters = [c, ca, ct, cat, ctt, mu, k1, k2]
 # for debugging, b = 0 leads to normal Mooney-Rivlin
 #b = 0
 force = 1000.0

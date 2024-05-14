@@ -246,7 +246,7 @@ config = {
         "durationLogKey":             "nonlinear",               # key to find duration of this solver in the log file
         "timeStepOutputInterval":     1,                         # how often the current time step should be printed to console
         
-        "materialParameters":         variables.material_parameters,  # material parameters of the Mooney-Rivlin material
+        "materialParameters":         variables.muscle_material_parameters,  # material parameters of the Mooney-Rivlin material
         "density":                    variables.rho,             # density of the material
         "displacementsScalingFactor": 1.0,                       # scaling factor for displacements, only set to sth. other than 1 only to increase visual appearance for very small displacements
         "residualNormLogFilename":    "log_residual_norm.txt",   # log file where residual norm values of the nonlinear solver will be written
