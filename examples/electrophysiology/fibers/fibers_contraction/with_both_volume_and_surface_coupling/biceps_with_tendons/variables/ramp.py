@@ -3,22 +3,27 @@
 case_name = "case1"
 scenario_name = "ramp"
 
+
+# time parameters
+# --------------------
+end_time = 100                      # [ms] end time of the simulation
+dt_0D = 2e-4                      # [ms] timestep width of ODEs (2e-3)
+dt_1D = 4e-4                      # [ms] timestep width of diffusion (4e-3)
+dt_splitting = 4e-4              # [ms] overall timestep width of strang splitting (4e-3)
+dt_3D = 1e-1                         # [ms] time step width of coupling, when 3D should be performed, also sampling time of monopolar EMG, this has to be the same value as in the precice_config.xml
+output_timestep = 10               # [ms] timestep for output files, 5.0
+output_timestep_fibers = int(dt_3D/dt_splitting)*output_timestep   # [ms] timestep for fiber output
+output_timestep_big = 1.0            # [ms] timestep for output big files of 3D EMG, 100
+
 # material parameters
 # --------------------
 # quantities in CellML unit system
 sigma_f = 8.93              # [mS/cm] conductivity in fiber direction (f)
-
 Conductivity = sigma_f      # [mS/cm] sigma, conductivity
 Am = 500.0                  # [cm^-1] surface area to volume ratio
 Cm = 0.58                   # [uF/cm^2] membrane capacitance, (1 = fast twitch, 0.58 = slow twitch)
-# diffusion prefactor = Conductivity/(Am*Cm)
 
-# quantities in mechanics unit system
 rho = 10                    # [1e-4 kg/cm^3] density of the muscle (density of water)
-
-# Mooney-Rivlin parameters [c1,c2,b,d] of c1*(Ibar1 - 3) + c2*(Ibar2 - 3) + b/d (λ - 1) - b*ln(λ)
-# Heidlauf13: [6.352e-10 kPa, 3.627 kPa, 2.756e-5 kPa, 43.373] = [6.352e-11 N/cm^2, 3.627e-1 N/cm^2, 2.756e-6 N/cm^2, 43.373], pmax = 73 kPa = 7.3 N/cm^2
-# Heidlauf16: [3.176e-10 N/cm^2, 1.813 N/cm^2, 1.075e-2 N/cm^2, 9.1733], pmax = 7.3 N/cm^2
 
 c1 = 3.176e-10              # [N/cm^2]
 c2 = 1.813                  # [N/cm^2]
@@ -26,15 +31,12 @@ b  = 1.075e-2               # [N/cm^2] anisotropy parameter
 d  = 9.1733                 # [-] anisotropy parameter
 material_parameters = [c1, c2, b, d]   # material parameters
 pmax = 7.3                  # [N/cm^2] maximum isometric active stress
-pmax = 2
 
 # for debugging, b = 0 leads to normal Mooney-Rivlin
 #b = 0
-
+force = 1000.0
 constant_body_force = (0,0,-9.81e-4)   # [cm/ms^2], gravity constant for the body force
-#constant_body_force = (0,0,0)
-bottom_traction = [0.0,0.0,-1e-1]        # [1 N]
-#bottom_traction = [0.0,0.0,0.0]        # [1 N]
+bottom_traction = [0.0,0.0,0.0]        # [1 N]
 
 # timing and activation parameters
 # -----------------
@@ -54,16 +56,6 @@ motor_units = [
 ]
 # note: negative start time is the same as zero, it is just there for debugging. Delete the minus signs to get a ramp
 
-end_time = 100                      # [ms] end time of the simulation
-dt_0D = 2e-4                      # [ms] timestep width of ODEs (2e-3)
-dt_1D = 4e-4                      # [ms] timestep width of diffusion (4e-3)
-dt_splitting = 4e-4              # [ms] overall timestep width of strang splitting (4e-3)
-dt_3D = 1e-1                         # [ms] time step width of coupling, when 3D should be performed, also sampling time of monopolar EMG, this has to be the same value as in the precice_config.xml
-output_timestep = 10               # [ms] timestep for output files, 5.0
-output_timestep_fibers = int(dt_3D/dt_splitting)*output_timestep   # [ms] timestep for fiber output
-output_timestep_big = 1.0            # [ms] timestep for output big files of 3D EMG, 100
-
-
 
 # The values of dt_3D and end_time have to be also defined in "precice-config.xml" with the same value (the value is only significant in the precice-config.xml, the value here is used for output writer time intervals)
 # <max-time value="100.0"/>           <!-- end time of the whole simulation -->
@@ -78,7 +70,7 @@ import opendihu
 if "contraction" in opendihu.program_name:
   sampling_stride_x = 2
   sampling_stride_y = 2
-  sampling_stride_z = 40
+  sampling_stride_z = 74
   # good values: divisors of 1480: 1480 = 1*1480 = 2*740 = 4*370 = 5*296 = 8*185 = 10*148 = 20*74 = 37*40 
 
 else:
@@ -98,7 +90,7 @@ import os
 input_directory   = os.path.join(os.environ["OPENDIHU_HOME"], "examples/electrophysiology/input")
 
 #fiber_file        = input_directory + "/left_biceps_brachii_7x7fibers.bin"
-fiber_file        = input_directory + "/left_biceps_brachii_13x13fibers.bin"
+fiber_file        = input_directory + "/left_biceps_brachii_9x9fibers.bin"
 firing_times_file = input_directory + "/MU_firing_times_always.txt"
 fiber_distribution_file = input_directory + "/MU_fibre_distribution_10MUs.txt"
 #fiber_distribution_file = input_directory + "/MU_fibre_distribution_10MUs_13x13.txt"

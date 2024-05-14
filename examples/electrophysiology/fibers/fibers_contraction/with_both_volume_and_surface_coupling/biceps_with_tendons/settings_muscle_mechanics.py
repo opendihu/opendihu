@@ -355,7 +355,7 @@ config = {
         "initialValuesDisplacements":  [[0.0,0.0,0.0] for _ in range(mx*my*mz)],     # the initial values for the displacements, vector of values for every node [[node1-x,y,z], [node2-x,y,z], ...]
         "constantBodyForce":           variables.constant_body_force,                 # a constant force that acts on the whole body, e.g. for gravity
         
-        "dirichletOutputFilename":     "out/"+variables.scenario_name+"/dirichlet_boundary_conditions",    # filename for a vtp file that contains the Dirichlet boundary condition nodes and their values, set to None to disable
+        "dirichletOutputFilename":     "out/" + variables.case_name + "/" + variables.scenario_name+"/dirichlet_boundary_conditions",    # filename for a vtp file that contains the Dirichlet boundary condition nodes and their values, set to None to disable
         
         # define which file formats should be written
         # 1. main output writer that writes output files using the quadratic elements function space. Writes displacements, velocities and PK2 stresses.

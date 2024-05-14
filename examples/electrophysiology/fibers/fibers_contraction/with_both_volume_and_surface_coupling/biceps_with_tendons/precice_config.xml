@@ -71,7 +71,7 @@
       <basis-function:compact-polynomial-c4 support-radius="8" />
     </mapping:rbf> 
   
-    <export:vtu directory="precice-output" every-n-time-windows="10"/>
+    <!-- <export:vtu directory="precice-output" every-n-time-windows="10"/> -->
 
   </participant>
 
@@ -88,7 +88,7 @@
       <basis-function:compact-polynomial-c4 support-radius="8" />
     </mapping:rbf>  
   
-    <export:vtu directory="precice-output" every-n-time-windows="10"/>
+    <!-- <export:vtu directory="precice-output" every-n-time-windows="10"/> -->
 
   </participant>
 
@@ -105,7 +105,7 @@
       <basis-function:compact-polynomial-c4 support-radius="8" />
     </mapping:rbf>  
 
-    <export:vtu directory="precice-output" every-n-time-windows="10"/>
+    <!-- <export:vtu directory="precice-output" every-n-time-windows="10"/> -->
 
   </participant>
   
@@ -150,7 +150,7 @@
       <basis-function:compact-polynomial-c4 support-radius="8" />
     </mapping:rbf> 
 
-    <export:vtu directory="precice-output" every-n-time-windows="10"/>
+    <!-- <export:vtu directory="precice-output" every-n-time-windows="10"/> -->
 
   </participant>
 
@@ -166,7 +166,7 @@
       <basis-function:compact-polynomial-c6 support-radius="0.5" />
     </mapping:rbf>
 
-    <export:vtu directory="precice-output" every-n-time-windows="10"/>
+    <!-- <export:vtu directory="precice-output" every-n-time-windows="10"/> -->
 
   </participant>
 

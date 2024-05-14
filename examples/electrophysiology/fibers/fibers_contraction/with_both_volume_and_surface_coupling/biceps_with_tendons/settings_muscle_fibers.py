@@ -263,7 +263,7 @@ config = {
                       "stimulationLogFilename":                 "out/stimulation.log",                          # a file that will contain the times of stimulations
                   },      
                   "OutputWriter" : [
-                    {"format": "Paraview", "outputInterval": 1, "filename": "out/" + variables.scenario_name + "/0D_states({},{})".format(fiber_in_subdomain_coordinate_x,fiber_in_subdomain_coordinate_y), "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
+                    # {"format": "Paraview", "outputInterval": 1, "filename": "out/" + variables.scenario_name + "/0D_states({},{})".format(fiber_in_subdomain_coordinate_x,fiber_in_subdomain_coordinate_y), "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
                   ] if variables.states_output else []
                   
                 },
@@ -314,7 +314,7 @@ config = {
                     for fiber_no in [get_fiber_no(subdomain_coordinate_x, subdomain_coordinate_y, fiber_in_subdomain_coordinate_x, fiber_in_subdomain_coordinate_y)] \
                       for motor_unit_no in [get_motor_unit_no(fiber_no)]],
               "OutputWriter" : [
-                {"format": "Paraview", "outputInterval": variables.output_timestep_fibers, "filename": "out/" variables.case_name + "/fibers", "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
+                {"format": "Paraview", "outputInterval": variables.output_timestep_fibers, "filename": "out/" + variables.case_name + "/fibers", "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
               ]
             },
           },

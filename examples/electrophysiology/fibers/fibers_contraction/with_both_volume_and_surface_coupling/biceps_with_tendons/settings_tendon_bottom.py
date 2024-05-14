@@ -242,9 +242,6 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
     
     # Paraview files
     {"format": "Paraview", "outputInterval": variables.output_timestep, "filename": "out/" + variables.case_name + "/tendon_bottom", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
-    
-    # Python callback function "postprocess"
-    {"format": "PythonCallback", "outputInterval": variables.output_timestep, "callback": postprocess, "onlyNodalValues": True, "filename": "", "fileNumbering": "incremental"},
   ],
   # 2. additional output writer that writes also the hydrostatic pressure
   "pressure": {   # output files for pressure function space (linear elements), contains pressure values, as well as displacements and velocities

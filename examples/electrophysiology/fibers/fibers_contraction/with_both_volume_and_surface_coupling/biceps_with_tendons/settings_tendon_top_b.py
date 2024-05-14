@@ -44,7 +44,6 @@ print('\33]0;{}\a'.format(title), end='', flush=True)
 # material parameters
 # --------------------
 # quantities in mechanics unit system
-variables.rho = 10          # [1e-4 kg/cm^3] 10 = density of the muscle (density of water)
 
 # material parameters for Saint Venant-Kirchhoff material
 # https://www.researchgate.net/publication/230248067_Bulk_Modulus
@@ -60,19 +59,12 @@ mu = shear_modulus       # Lamé parameter mu or G (shear modulus)
 
 variables.material_parameters = [lambd, mu]
 
-variables.constant_body_force = (0,0,-9.81e-4)   # [cm/ms^2], gravity constant for the body force
-variables.force = 1.0       # [N]
 
 variables.scenario_name = "tendon_top_b"
 variables.is_bottom_tendon = False        # whether the tendon is at the bottom (negative z-direction), this is important for the boundary conditions
-variables.output_timestep_3D = 50  # [ms] output timestep
 
 # input mesh file
-#fiber_file = "../../../../input/left_biceps_brachii_tendon1.bin"        # bottom tendon
-#fiber_file = "../../../../input/left_biceps_brachii_tendon2a.bin"        # top tendon
 fiber_file = "../../../../../input/left_biceps_brachii_tendon2b.bin"
-#fiber_file = "../../../../input/left_biceps_brachii_7x7fibers.bin"
-#fiber_file = "../../../../input/left_biceps_brachii_7x7fibers.bin"
 
 load_fiber_data = False             # If the fiber geometry data should be loaded completely in the python script. If True, this reads the binary file and assigns the node positions in the config. If False, the C++ code will read the binary file and only extract the local node positions. This is more performant for highly parallel runs.
 
