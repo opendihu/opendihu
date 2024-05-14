@@ -374,7 +374,7 @@ public:
       // store preciceData to vector
       preciceVolumeData.push_back(preciceData);
     }
-  };
+  }
 
   template <typename SurfaceDataVector, typename VolumeDataVector>
   void
@@ -994,7 +994,7 @@ public:
       // store preciceData to vector
       preciceVolumeData.push_back(preciceData);
     }
-  };
+  }
 
   template <typename SurfaceDataVector, typename VolumeDataVector>
   void
@@ -1693,7 +1693,7 @@ public:
       PythonConfig &specificSettings, NestedSolverType &nestedSolver,
       std::shared_ptr<precice::Participant> &preciceParticipant,
       std::vector<PreciceVolumeData> &preciceVolumeData,
-      std::vector<std::shared_ptr<PreciceVolumeMesh>> &preciceVolumeMeshes){};
+      std::vector<std::shared_ptr<PreciceVolumeMesh>> &preciceVolumeMeshes){}
 
   template <typename SurfaceDataVector, typename VolumeDataVector>
   void
@@ -2187,7 +2187,7 @@ public:
       PythonConfig &specificSettings, NestedSolverType &nestedSolver,
       std::shared_ptr<precice::Participant> &preciceParticipant,
       std::vector<PreciceVolumeData> &preciceVolumeData,
-      std::vector<std::shared_ptr<PreciceVolumeMesh>> &preciceVolumeMeshes){};
+      std::vector<std::shared_ptr<PreciceVolumeMesh>> &preciceVolumeMeshes){}
 
   template <typename SurfaceDataVector, typename VolumeDataVector>
   void
@@ -2697,7 +2697,7 @@ public:
       PythonConfig &specificSettings, NestedSolverType &nestedSolver,
       std::shared_ptr<precice::Participant> &preciceParticipant,
       std::vector<PreciceVolumeData> &preciceVolumeData,
-      std::vector<std::shared_ptr<PreciceVolumeMesh>> &preciceVolumeMeshes){};
+      std::vector<std::shared_ptr<PreciceVolumeMesh>> &preciceVolumeMeshes){}
 
   template <typename SurfaceDataVector, typename VolumeDataVector>
   void
