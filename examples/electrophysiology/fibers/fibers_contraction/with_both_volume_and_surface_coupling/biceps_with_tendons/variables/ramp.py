@@ -29,7 +29,7 @@ c1 = 3.176e-10              # [N/cm^2]
 c2 = 1.813                  # [N/cm^2]
 b  = 1.075e-2               # [N/cm^2] anisotropy parameter
 d  = 9.1733                 # [-] anisotropy parameter
-material_parameters = [c1, c2, b, d]   # material parameters
+muscle_material_parameters = [c1, c2, b, d]   # material parameters
 pmax = 7.3                  # [N/cm^2] maximum isometric active stress
 
 
