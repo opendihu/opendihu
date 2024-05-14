@@ -64,11 +64,9 @@ mu = shear_modulus       # Lamé parameter mu or G (shear modulus)
 variables.material_parameters = [lambd, mu]
 
 variables.constant_body_force = (0,0,-9.81e-4)   # [cm/ms^2], gravity constant for the body force
-variables.force = 100.0           # [N] pulling force to the bottom 
 
 variables.scenario_name = "tendon_bottom"
 variables.is_bottom_tendon = True        # whether the tendon is at the bottom (negative z-direction), this is important for the boundary conditions
-variables.output_timestep_3D = 1  # [ms] output timestep
 
 # input mesh file
 fiber_file = "../../../../../input/left_biceps_brachii_tendon1.bin"        # bottom tendon
@@ -218,7 +216,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "snesRelativeTolerance":      1e-2,                         # relative tolerance of the nonlinear solver
   "snesLineSearchType":         "l2",                         # type of linesearch, possible values: "bt" "nleqerr" "basic" "l2" "cp" "ncglinear"
   "snesAbsoluteTolerance":      1e-5,                         # absolute tolerance of the nonlinear solver
-  "snesRebuildJacobianFrequency": 5,                          # how often the jacobian should be recomputed, -1 indicates NEVER rebuild, 1 means rebuild every time the Jacobian is computed within a single nonlinear solve, 2 means every second time the Jacobian is built etc. -2 means rebuild at next chance but then never again 
+  "snesRebuildJacobianFrequency": 1,                          # how often the jacobian should be recomputed, -1 indicates NEVER rebuild, 1 means rebuild every time the Jacobian is computed within a single nonlinear solve, 2 means every second time the Jacobian is built etc. -2 means rebuild at next chance but then never again 
   
   #"dumpFilename": "out/r{}/m".format(sys.argv[-1]),          # dump system matrix and right hand side after every solve
   "dumpFilename":               "",                           # dump disabled
@@ -245,12 +243,6 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "constantBodyForce":           variables.constant_body_force,       # a constant force that acts on the whole body, e.g. for gravity
   
   "dirichletOutputFilename":     "out/tendon_bottom_dirichlet_boundary_conditions",    # filename for a vtp file that contains the Dirichlet boundary condition nodes and their values, set to None to disable
-  "totalForceLogFilename":       "out/tendon_bottom_force.csv",              # filename of a log file that will contain the total (bearing) forces and moments at the top and bottom of the volume
-  "totalForceLogOutputInterval": 10,                                  # output interval when to write the totalForceLog file
-  "totalForceBottomElementNosGlobal":  [j*nx + i for j in range(ny) for i in range(nx)],                  # global element nos of the bottom elements used to compute the total forces in the log file totalForceLogFilename
-  "totalForceTopElementNosGlobal":     [(nz-1)*ny*nx + j*nx + i for j in range(ny) for i in range(nx)],   # global element nos of the top elements used to compute the total forces in the log file totalForceTopElementsGlobal
-  "totalForceFunction":          None, #callback_total_force,                # callback function that gets the total force at bottom and top of the domain
-  "totalForceFunctionCallInterval": 1,                                # how often the "totalForceFunction" is called
       
   # define which file formats should be written
   # 1. main output writer that writes output files using the quadratic elements function space. Writes displacements, velocities and PK2 stresses.
