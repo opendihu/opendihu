@@ -157,7 +157,7 @@ for i in range(mx):
        
 # set Neumann BC, set traction at the end of the tendon that is attached to the muscle
 k = 0
-variables.elasticity_neumann_bc = [{"element": k*nx*ny + j*nx + i, "constantVector": [0,0,0], "face": "2-"} for j in range(ny) for i in range(nx)]
+variables.elasticity_neumann_bc = [{"element": k*nx*ny + j*nx + i, "constantVector": [0,0,-variables.force], "face": "2-"} for j in range(ny) for i in range(nx)]
 variables.elasticity_dirichlet_bc = {}
 
 def update_neumann_bc(t):
@@ -234,7 +234,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "divideNeumannBoundaryConditionValuesByTotalArea": True,            # if the given Neumann boundary condition values under "neumannBoundaryConditions" are total forces instead of surface loads and therefore should be scaled by the surface area of all elements where Neumann BC are applied
   "updateDirichletBoundaryConditionsFunction": None, #update_dirichlet_bc,   # function that updates the dirichlet BCs while the simulation is running
   "updateDirichletBoundaryConditionsFunctionCallInterval": 1,         # stide every which step the update function should be called, 1 means every time step
-  "updateNeumannBoundaryConditionsFunction": update_neumann_bc,       # a callback function to periodically update the Neumann boundary conditions
+  "updateNeumannBoundaryConditionsFunction": None,       # a callback function to periodically update the Neumann boundary conditions
   "updateNeumannBoundaryConditionsFunctionCallInterval": 1,           # every which step the update function should be called, 1 means every time step 
  
   "initialValuesDisplacements":  [[0.0,0.0,0.0] for _ in range(mx*my*mz)],     # the initial values for the displacements, vector of values for every node [[node1-x,y,z], [node2-x,y,z], ...]

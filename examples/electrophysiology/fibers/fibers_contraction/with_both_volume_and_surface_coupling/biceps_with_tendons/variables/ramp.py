@@ -51,7 +51,7 @@ k2 = 305.87e2               # [N/cm^2 = 1e-2 MPa]   shape parameter for fiber st
 tendon_material_parameters = [c, ca, ct, cat, ctt, mu, k1, k2]
 # for debugging, b = 0 leads to normal Mooney-Rivlin
 #b = 0
-force = 100.0
+force = 1000.0
 constant_body_force = (0,0,-9.81e-4)   # [cm/ms^2], gravity constant for the body force
 bottom_traction = [0.0,0.0,0.0]        # [1 N]
 
