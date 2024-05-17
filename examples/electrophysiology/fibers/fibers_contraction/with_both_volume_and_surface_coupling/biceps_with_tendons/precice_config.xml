@@ -160,10 +160,9 @@
     <write-data name="Gamma" mesh="MuscleFibersMesh"/>
     <read-data  name="Geometry" mesh="MuscleFibersMesh"/>
     
-    <mapping:rbf direction="read" from="MuscleMechanicsMesh" to="MuscleFibersMesh" constraint="consistent">
-      <basis-function:compact-polynomial-c6 support-radius="0.5" />
-    </mapping:rbf>
-
+    <mapping:rbf-pum-direct direction="read" from="MuscleMechanicsMesh" to="MuscleFibersMesh" constraint="consistent" relative-overlap="0.15" vertices-per-cluster="20" project-to-input="false" polynomial="separate">
+      <basis-function:compact-polynomial-c6 support-radius="1" />
+    </mapping:rbf-pum-direct>
     <!-- <export:vtu directory="precice-output" every-n-time-windows="10"/> -->
 
   </participant>

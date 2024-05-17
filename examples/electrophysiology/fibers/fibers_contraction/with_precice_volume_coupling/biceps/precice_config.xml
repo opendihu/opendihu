@@ -28,10 +28,9 @@
     <write-data name="Gamma" mesh="PartitionedFibersMesh"/>
     <read-data  name="Geometry" mesh="PartitionedFibersMesh"/>
     
-    <mapping:rbf direction="read" from="MuscleContractionMesh" to="PartitionedFibersMesh" constraint="consistent">
-      <basis-function:compact-polynomial-c6 support-radius="0.5" />
-    </mapping:rbf>
-
+    <mapping:rbf-pum-direct direction="read" from="MuscleContractionMesh" to="PartitionedFibersMesh" constraint="consistent" relative-overlap="0.15" vertices-per-cluster="20" project-to-input="false" polynomial="separate">
+      <basis-function:compact-polynomial-c6 support-radius="1" />
+    </mapping:rbf-pum-direct>
   </participant>
   
   <participant name="MuscleContraction">

@@ -42,12 +42,9 @@
     <write-data name="Gamma" mesh="PartitionedFibersMesh"/>
     <read-data  name="Geometry" mesh="PartitionedFibersMesh"/>
     
-    <mapping:rbf direction="read" from="MuscleContractionMesh" to="PartitionedFibersMesh" constraint="consistent">
-      <basis-function:compact-polynomial-c6 support-radius="0.5" />
-    </mapping:rbf>
-
-    <export:vtu directory="precice-output" />
-
+    <mapping:rbf-pum-direct direction="read" from="MuscleContractionMesh" to="PartitionedFibersMesh" constraint="consistent" relative-overlap="0.15" vertices-per-cluster="20" project-to-input="false" polynomial="separate">
+      <basis-function:compact-polynomial-c6 support-radius="1" />
+    </mapping:rbf-pum-direct>
   </participant>
   
   <participant name="MuscleContraction">
@@ -63,12 +60,8 @@
 
     <write-data name="Geometry" mesh="MuscleContractionMesh"/>
     <read-data  name="Gamma"    mesh="MuscleContractionMesh"/>
-    
-    <mapping:rbf direction="read" from="PartitionedFibersMesh" to="MuscleContractionMesh" constraint="consistent">
-      <basis-function:compact-polynomial-c6 support-radius="0.1" />
-    </mapping:rbf> 
 
-    <mapping:nearest-neighbor constraint="consistent" direction="read" from="MuscleFibersMesh" to="MuscleMechanicsMesh"/>
+    <mapping:nearest-neighbor constraint="consistent" direction="read" from="PartitionedFibersMesh" to="MuscleContractionMesh"/>
 
     <mapping:rbf direction="read" from="TendonMeshTop" to="MuscleMeshBottom" constraint="consistent">
       <basis-function:compact-polynomial-c4 support-radius="8" />
