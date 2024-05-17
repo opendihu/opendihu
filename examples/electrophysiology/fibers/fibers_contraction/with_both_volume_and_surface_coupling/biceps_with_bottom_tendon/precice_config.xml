@@ -68,9 +68,13 @@
       <basis-function:compact-polynomial-c6 support-radius="0.1" />
     </mapping:rbf> 
 
-    <mapping:nearest-neighbor direction="read" from="TendonMeshTop" to="MuscleMeshBottom" constraint="consistent"/>
+    <mapping:nearest-neighbor constraint="consistent" direction="read" from="MuscleFibersMesh" to="MuscleMechanicsMesh"/>
 
-    <export:vtu directory="precice-output" />
+    <mapping:rbf direction="read" from="TendonMeshTop" to="MuscleMeshBottom" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf> 
+
+    <!-- <export:vtu directory="precice-output" /> -->
 
   </participant>
 
@@ -83,15 +87,11 @@
     <write-data name="Velocity"      mesh="TendonMeshTop"/>
     <read-data  name="Traction"      mesh="TendonMeshTop"/>
 
-    <mapping:rbf 
-      direction="read" 
-      from="MuscleMeshBottom" 
-      to="TendonMeshTop" 
-      constraint="consistent">
-      <basis-function:gaussian shape-parameter="50" />
-    </mapping:rbf> 
+    <mapping:rbf direction="read" from="MuscleMeshBottom" to="TendonMeshTop" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf>  
   
-    <export:vtu directory="precice-output" />
+    <!-- <export:vtu directory="precice-output" /> -->
 
   </participant>
 
@@ -112,15 +112,18 @@
     <participants second="BottomTendon" first="MuscleContraction"/>
     <max-time value="1000.0"/>           
     <time-window-size value="1e-1"/>   
-    
-    <max-iterations value="30" />
+    <max-iterations value="25" />
+
     <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonMeshTop" />
+    <relative-convergence-measure limit="0.01" data="Velocity" mesh="TendonMeshTop" />
     <relative-convergence-measure limit="0.1" data="Traction" mesh="MuscleMeshBottom" />
+    
     <acceleration:IQN-ILS>
       <data name="Displacement" mesh="TendonMeshTop"/>
+      <data name="Velocity" mesh="TendonMeshTop"/>
       <data name="Traction" mesh="MuscleMeshBottom"/>
       <preconditioner type="residual-sum"/>
-      <filter type="QR1" limit="1e-2"/>
+      <filter type="QR2" limit="5e-3"/>
       <initial-relaxation value="0.4"/>
       <max-used-iterations value="40"/>
       <time-windows-reused value="15"/>

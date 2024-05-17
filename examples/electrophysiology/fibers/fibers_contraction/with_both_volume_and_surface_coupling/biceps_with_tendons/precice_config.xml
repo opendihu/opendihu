@@ -133,10 +133,8 @@
 
     <write-data name="Geometry" mesh="MuscleMechanicsMesh"/>
     <read-data  name="Gamma"    mesh="MuscleMechanicsMesh"/>
-    
-    <mapping:rbf direction="read" from="MuscleFibersMesh" to="MuscleMechanicsMesh" constraint="consistent">
-      <basis-function:compact-polynomial-c6 support-radius="0.1" />
-    </mapping:rbf> 
+     
+    <mapping:nearest-neighbor constraint="consistent" direction="read" from="MuscleFibersMesh" to="MuscleMechanicsMesh"/>
 
     <mapping:rbf direction="read" from="TendonBottomMesh" to="MuscleMeshBottom" constraint="consistent">
       <basis-function:compact-polynomial-c4 support-radius="8" />
