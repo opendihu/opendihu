@@ -188,7 +188,7 @@
     <participant name="TendonTopB"/>
     
     <max-time value="50.0"/>           <!-- end time of the whole simulation -->
-    <time-window-size value="0.11"/>   <!-- timestep width for coupling -->
+    <time-window-size value="0.01"/>   <!-- timestep width for coupling -->
     <max-iterations value="25" />
     
     <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonBottomMesh" />
