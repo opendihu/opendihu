@@ -174,8 +174,8 @@
 
   <coupling-scheme:serial-explicit>
     <participants first="MuscleFibers" second="MuscleMechanics"/>
-    <max-time value="100.0"/>           
-    <time-window-size value="0.1"/>   
+    <max-time value="50.0"/>           
+    <time-window-size value="0.01"/>   
     
     <exchange data="Gamma"    mesh="MuscleFibersMesh" from="MuscleFibers" to="MuscleMechanics"/>
     <exchange data="Geometry" mesh="MuscleMechanicsMesh" from="MuscleMechanics" to="MuscleFibers" initialize="yes"/> 
@@ -187,8 +187,8 @@
     <participant name="TendonTopA"/>
     <participant name="TendonTopB"/>
     
-    <max-time value="100.0"/>           <!-- end time of the whole simulation -->
-    <time-window-size value="0.1"/>   <!-- timestep width for coupling -->
+    <max-time value="50.0"/>           <!-- end time of the whole simulation -->
+    <time-window-size value="0.11"/>   <!-- timestep width for coupling -->
     <max-iterations value="25" />
     
     <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonBottomMesh" />

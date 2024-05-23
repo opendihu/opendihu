@@ -83,6 +83,7 @@ n_ranks = (int)(sys.argv[-1])
 
 # define command line arguments
 parser = argparse.ArgumentParser(description='tendon')
+parser.add_argument('--case_name',                           help='The name to identify this run in the log.',   default=variables.case_name)s
 parser.add_argument('--n_subdomains', nargs=3,               help='Number of subdomains in x,y,z direction.',    type=int)
 parser.add_argument('--n_subdomains_x', '-x',                help='Number of subdomains in x direction.',        type=int, default=variables.n_subdomains_x)
 parser.add_argument('--n_subdomains_y', '-y',                help='Number of subdomains in y direction.',        type=int, default=variables.n_subdomains_y)
