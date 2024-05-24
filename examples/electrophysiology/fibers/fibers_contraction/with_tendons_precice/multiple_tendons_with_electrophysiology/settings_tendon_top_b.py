@@ -27,6 +27,8 @@ n_ranks = (int)(sys.argv[-1])
 
 # define command line arguments
 parser = argparse.ArgumentParser(description='tendon')
+parser.add_argument('--case_name',                           help='The name to identify this run in the log.',   default=variables.case_name)
+parser.add_argument('--precice_config_file',                 help='The name to identify this run in the log.',   default=variables.precice_config_file)
 parser.add_argument('--n_subdomains', nargs=3,               help='Number of subdomains in x,y,z direction.',    type=int)
 parser.add_argument('--n_subdomains_x', '-x',                help='Number of subdomains in x direction.',        type=int, default=variables.n_subdomains_x)
 parser.add_argument('--n_subdomains_y', '-y',                help='Number of subdomains in y direction.',        type=int, default=variables.n_subdomains_y)
@@ -95,7 +97,7 @@ for j in range(my):
 variables.elasticity_neumann_bc = []
 
 config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyperelasticitySolver"
-  "timeStepWidth":              variables.dt_elasticity,      # time step width 
+  "timeStepWidth":              variables.dt_3D,      # time step width 
   "endTime":                    variables.end_time,           # end time of the simulation time span    
   "durationLogKey":             "duration_mechanics",         # key to find duration of this solver in the log file
   "timeStepOutputInterval":     1,                            # how often the current time step should be printed to console
@@ -115,8 +117,8 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "inputMeshIsGlobal":          True,                         # boundary conditions are specified in global numberings, whereas the mesh is given in local numberings
   
   "fiberMeshNames":             [],                           # fiber meshes that will be used to determine the fiber direction
-  #"fiberDirection":             [0,0,1],                      # if fiberMeshNames is empty, directly set the constant fiber direction, in element coordinate system
-  "fiberDirectionInElement":    [0,0,1],                      # if fiberMeshNames and fiberDirections are empty, directly set the constant fiber direction, in element coordinate system
+  "fiberDirection":             [0,0,1],                      # if fiberMeshNames is empty, directly set the constant fiber direction, in element coordinate system
+
       
   # nonlinear solver
   "relativeTolerance":          1e-10,                         # 1e-10 relative tolerance of the linear solver
@@ -129,7 +131,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "snesRelativeTolerance":      1e-2,                         # relative tolerance of the nonlinear solver
   "snesLineSearchType":         "l2",                         # type of linesearch, possible values: "bt" "nleqerr" "basic" "l2" "cp" "ncglinear"
   "snesAbsoluteTolerance":      1e-5,                         # absolute tolerance of the nonlinear solver
-  "snesRebuildJacobianFrequency": 5,                          # how often the jacobian should be recomputed, -1 indicates NEVER rebuild, 1 means rebuild every time the Jacobian is computed within a single nonlinear solve, 2 means every second time the Jacobian is built etc. -2 means rebuild at next chance but then never again 
+  "snesRebuildJacobianFrequency": 1,                          # how often the jacobian should be recomputed, -1 indicates NEVER rebuild, 1 means rebuild every time the Jacobian is computed within a single nonlinear solve, 2 means every second time the Jacobian is built etc. -2 means rebuild at next chance but then never again 
   
   #"dumpFilename": "out/r{}/m".format(sys.argv[-1]),          # dump system matrix and right hand side after every solve
   "dumpFilename":               "",                           # dump disabled
@@ -164,7 +166,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "OutputWriter" : [
     
     # Paraview files
-    {"format": "Paraview", "outputInterval": variables.output_timestep_3D, "filename": "out/" + variables.case_name + "/tendon_top_b", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+    {"format": "Paraview", "outputInterval": variables.output_timestep, "filename": "out/" + variables.case_name + "/tendon_top_b", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
     
     # Python callback function "postprocess"
     #{"format": "PythonCallback", "outputInterval": 1, "callback": postprocess, "onlyNodalValues":True, "filename": ""},
@@ -201,7 +203,7 @@ config = {
     "timeStepOutputInterval":   100,                        # interval in which to display current timestep and time in console
     "timestepWidth":            1,                          # coupling time step width, must match the value in the precice config
     "couplingEnabled":          True,                       # if the precice coupling is enabled, if not, it simply calls the nested solver, for debugging
-    "preciceConfigFilename":    "precice_config_muscle_dirichlet_tendon_neumann_implicit_coupling_multiple_tendons.xml",    # the preCICE configuration file
+    "preciceConfigFilename":    variables.precice_config_file,    # the preCICE configuration file
     "preciceParticipantName":   "TendonTopB",         # name of the own precice participant, has to match the name given in the precice xml config file
     "scalingFactor":            1,                          # a factor to scale the exchanged data, prior to communication
     "outputOnlyConvergedTimeSteps": True,                   # if the output writers should be called only after a time window of precice is complete, this means the timestep has converged

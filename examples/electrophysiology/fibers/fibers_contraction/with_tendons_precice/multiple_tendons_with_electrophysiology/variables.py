@@ -1,7 +1,7 @@
 # This file contains internal values of create_partitioned_meshes_for_settings.py 
 # that need to be persistent for the helper function to work
-case_name = "case1"
-
+case_name = "default"
+precice_config_file = "precice_config.xml"
 debug_output = False                # verbose output in this python script, for debugging the domain decomposition
 
 
@@ -24,10 +24,9 @@ force = 100.0           # [N] pulling force to the bottom
 
 
 # time parameters
-dt_elasticity = 0.1      # [ms] time step width for elasticity
-end_time      = 200.0   # [ms] simulation time
-output_timestep_3D = 10  # [ms] output timestep
-
+dt_3D = 0.01      # [ms] time step width for elasticity
+end_time = 1.0   # [ms] simulation time
+output_timestep = 50  # [ms] output timestep
 
 # further internal variables
 n_fibers_total = None

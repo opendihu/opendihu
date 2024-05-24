@@ -70,10 +70,7 @@ variables.is_bottom_tendon = True        # whether the tendon is at the bottom (
 
 # input mesh file
 fiber_file = "../../../../../input/left_biceps_brachii_tendon1.bin"        # bottom tendon
-#fiber_file = "../../../../input/left_biceps_brachii_tendon2a.bin"
-#fiber_file = "../../../../input/left_biceps_brachii_tendon2b.bin"
-#fiber_file = "../../../../input/left_biceps_brachii_7x7fibers.bin"
-#fiber_file = "../../../../input/left_biceps_brachii_7x7fibers.bin"
+
 
 load_fiber_data = False             # If the fiber geometry data should be loaded completely in the python script. If True, this reads the binary file and assigns the node positions in the config. If False, the C++ code will read the binary file and only extract the local node positions. This is more performant for highly parallel runs.
 
@@ -83,7 +80,7 @@ n_ranks = (int)(sys.argv[-1])
 
 # define command line arguments
 parser = argparse.ArgumentParser(description='tendon')
-parser.add_argument('--case_name',                           help='The name to identify this run in the log.',   default=variables.case_name)s
+parser.add_argument('--case_name',                           help='The name to identify this run in the log.',   default=variables.case_name)
 parser.add_argument('--n_subdomains', nargs=3,               help='Number of subdomains in x,y,z direction.',    type=int)
 parser.add_argument('--n_subdomains_x', '-x',                help='Number of subdomains in x direction.',        type=int, default=variables.n_subdomains_x)
 parser.add_argument('--n_subdomains_y', '-y',                help='Number of subdomains in y direction.',        type=int, default=variables.n_subdomains_y)
@@ -139,22 +136,6 @@ node_positions = variables.meshes["3Dmesh_quadratic"]["nodePositions"]
 [mx, my, mz] = variables.meshes["3Dmesh_quadratic"]["nPointsGlobal"]
 [nx, ny, nz] = variables.meshes["3Dmesh_quadratic"]["nElements"]
 
-# set Dirichlet BC, fix one end
-variables.elasticity_dirichlet_bc = {}
-k = mz-1
-
-# fix z value on the whole x-y-plane
-for j in range(my):
-  for i in range(mx):
-    variables.elasticity_dirichlet_bc[k*mx*my + j*mx + i] = [None,None,0.0,None,None,None]
-
-# fix left edge 
-for j in range(my):
-  variables.elasticity_dirichlet_bc[k*mx*my + j*mx + 0][0] = 0.0
-  
-# fix front edge 
-for i in range(mx):
-  variables.elasticity_dirichlet_bc[k*mx*my + 0*mx + i][1] = 0.0
        
 # set Neumann BC, set traction at the end of the tendon that is attached to the muscle
 k = 0
@@ -203,8 +184,8 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "inputMeshIsGlobal":          True,                         # boundary conditions are specified in global numberings, whereas the mesh is given in local numberings
   
   "fiberMeshNames":             [],                           # fiber meshes that will be used to determine the fiber direction
-  #"fiberDirection":             [0,0,1],                      # if fiberMeshNames is empty, directly set the constant fiber direction, in element coordinate system
-  "fiberDirectionInElement":    [0,0,1],                      # if fiberMeshNames and fiberDirections are empty, directly set the constant fiber direction, in element coordinate system
+  "fiberDirection":             [0,0,1],                      # if fiberMeshNames is empty, directly set the constant fiber direction, in element coordinate system
+
       
   # nonlinear solver
   "relativeTolerance":          1e-10,                         # 1e-10 relative tolerance of the linear solver

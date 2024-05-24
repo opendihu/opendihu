@@ -66,11 +66,7 @@ variables.scenario_name = "tendon_top_a"
 variables.is_bottom_tendon = False        # whether the tendon is at the bottom (negative z-direction), this is important for the boundary conditions
 
 # input mesh file
-#fiber_file = "../../../../input/left_biceps_brachii_tendon1.bin"        # bottom tendon
 fiber_file = "../../../../../input/left_biceps_brachii_tendon2a.bin"        # top tendon
-#fiber_file = "../../../../input/left_biceps_brachii_tendon2b.bin"
-#fiber_file = "../../../../input/left_biceps_brachii_7x7fibers.bin"
-#fiber_file = "../../../../input/left_biceps_brachii_7x7fibers.bin"
 
 load_fiber_data = False             # If the fiber geometry data should be loaded completely in the python script. If True, this reads the binary file and assigns the node positions in the config. If False, the C++ code will read the binary file and only extract the local node positions. This is more performant for highly parallel runs.
 
@@ -166,8 +162,8 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "inputMeshIsGlobal":          True,                         # boundary conditions are specified in global numberings, whereas the mesh is given in local numberings
   
   "fiberMeshNames":             [],                           # fiber meshes that will be used to determine the fiber direction
-  #"fiberDirection":             [0,0,1],                      # if fiberMeshNames is empty, directly set the constant fiber direction, in element coordinate system
-  "fiberDirectionInElement":    [0,0,1],                      # if fiberMeshNames and fiberDirections are empty, directly set the constant fiber direction, in element coordinate system
+  "fiberDirection":             [0,0,1],                      # if fiberMeshNames is empty, directly set the constant fiber direction, in element coordinate system
+
       
   # nonlinear solver
   "relativeTolerance":          1e-10,                         # 1e-10 relative tolerance of the linear solver

@@ -70,7 +70,7 @@ load_fiber_data = False             # If the fiber geometry data should be loade
 
 # define command line arguments
 parser = argparse.ArgumentParser(description='tendon')
-parser.add_argument('--case_name',                           help='The name to identify this run in the log.',   default=variables.case_name)s
+parser.add_argument('--case_name',                           help='The name to identify this run in the log.',   default=variables.case_name)
 parser.add_argument('--n_subdomains', nargs=3,               help='Number of subdomains in x,y,z direction.',    type=int)
 parser.add_argument('--n_subdomains_x', '-x',                help='Number of subdomains in x direction.',        type=int, default=variables.n_subdomains_x)
 parser.add_argument('--n_subdomains_y', '-y',                help='Number of subdomains in y direction.',        type=int, default=variables.n_subdomains_y)
@@ -121,7 +121,6 @@ nz = n_points_3D_mesh_linear_global_z-1
 
 node_positions = variables.meshes["3Dmesh_quadratic"]["nodePositions"]
 
-
 # boundary conditions (for quadratic elements)
 # --------------------------------------------
 [mx, my, mz] = variables.meshes["3Dmesh_quadratic"]["nPointsGlobal"]
@@ -160,8 +159,8 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "inputMeshIsGlobal":          True,                         # boundary conditions are specified in global numberings, whereas the mesh is given in local numberings
   
   "fiberMeshNames":             [],                           # fiber meshes that will be used to determine the fiber direction
-  #"fiberDirection":             [0,0,1],                      # if fiberMeshNames is empty, directly set the constant fiber direction, in element coordinate system
-  "fiberDirectionInElement":    [0,0,1],                      # if fiberMeshNames and fiberDirections are empty, directly set the constant fiber direction, in element coordinate system
+  "fiberDirection":             [0,0,1],                      # if fiberMeshNames is empty, directly set the constant fiber direction, in element coordinate system
+
       
   # nonlinear solver
   "relativeTolerance":          1e-10,                         # 1e-10 relative tolerance of the linear solver
@@ -204,8 +203,6 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "totalForceBottomElementNosGlobal":  [j*nx + i for j in range(ny) for i in range(nx)],                  # global element nos of the bottom elements used to compute the total forces in the log file totalForceLogFilename
   "totalForceTopElementNosGlobal":     [(nz-1)*ny*nx + j*nx + i for j in range(ny) for i in range(nx)],   # global element nos of the top elements used to compute the total forces in the log file totalForceTopElementsGlobal
       
-  # define which file formats should be written
-  # 1. main output writer that writes output files using the quadratic elements function space. Writes displacements, velocities and PK2 stresses.
   # define which file formats should be written
   # 1. main output writer that writes output files using the quadratic elements function space. Writes displacements, velocities and PK2 stresses.
   "OutputWriter" : [

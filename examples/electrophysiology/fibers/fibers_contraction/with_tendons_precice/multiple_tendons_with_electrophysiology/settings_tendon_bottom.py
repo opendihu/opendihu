@@ -32,6 +32,8 @@ n_ranks = (int)(sys.argv[-1])
 
 # define command line arguments
 parser = argparse.ArgumentParser(description='tendon')
+parser.add_argument('--case_name',                           help='The name to identify this run in the log.',   default=variables.case_name)
+parser.add_argument('--precice_config_file',                 help='The name to identify this run in the log.',   default=variables.precice_config_file)
 parser.add_argument('--n_subdomains', nargs=3,               help='Number of subdomains in x,y,z direction.',    type=int)
 parser.add_argument('--n_subdomains_x', '-x',                help='Number of subdomains in x direction.',        type=int, default=variables.n_subdomains_x)
 parser.add_argument('--n_subdomains_y', '-y',                help='Number of subdomains in y direction.',        type=int, default=variables.n_subdomains_y)
@@ -87,19 +89,11 @@ node_positions = variables.meshes["3Dmesh_quadratic"]["nodePositions"]
 [mx, my, mz] = variables.meshes["3Dmesh_quadratic"]["nPointsGlobal"]
 [nx, ny, nz] = variables.meshes["3Dmesh_quadratic"]["nElements"]
 
-# set Dirichlet BC, fix x and y coordinates of the end of tendon that is attached to the bone
-variables.elasticity_dirichlet_bc = {}
-k = 0
-  
-# fix z value on the whole x-y-plane
-for j in range(my):
-  for i in range(mx):
-    variables.elasticity_dirichlet_bc[k*mx*my + j*mx + i] = [0.0,0.0,None,None,None,None]
        
-# set Neumann BC, set traction at the end of the tendon that is attached to the bone
+# set Neumann BC, set traction at the end of the tendon that is attached to the muscle
 k = 0
-# start with 0 BC
-variables.elasticity_neumann_bc = [{"element": k*nx*ny + j*nx + i, "constantVector": [0,0,0], "face": "2-"} for j in range(ny) for i in range(nx)]
+variables.elasticity_neumann_bc = [{"element": k*nx*ny + j*nx + i, "constantVector": [0,0,-variables.force], "face": "2-"} for j in range(ny) for i in range(nx)]
+variables.elasticity_dirichlet_bc = {}
 
 def update_neumann_bc(t):
 
@@ -120,210 +114,10 @@ def update_neumann_bc(t):
   }
   print("prescribed pulling force to bottom: {}".format(variables.force*factor))
   return config
-
-# update dirichlet boundary conditions to account for movement of humerus
-
-current_ulna_force = 0
-current_ulna_angle = 0
-
-# global coordinates of tendon bottom
-# global coordinates of elbow hinge
-elbow_hinge_point = np.array([3.54436, 11.4571, -58.5607])
-bottom_tendon_insertion_point = np.array([4.30, 14.81, -63.41])
-
-vec = -elbow_hinge_point + bottom_tendon_insertion_point
-angle_offset = np.arctan((bottom_tendon_insertion_point[2] - elbow_hinge_point[2]) / np.linalg.norm(vec))
-rotation_axis = np.array([-1.5, 1, 0])
-rotation_axis = rotation_axis / np.linalg.norm(rotation_axis)   # normalize rotation axis
-  
-def rotation_matrix(angle):
-  axis_x = rotation_axis[0]
-  axis_y = rotation_axis[1]
-  axis_z = rotation_axis[2]
-  
-  # compute rotation matrix
-  rotation_matrix = np.array([
-    [np.cos(angle) + axis_x**2*(1 - np.cos(angle)), 
-     axis_x*axis_y*(1 - np.cos(angle)) - axis_z*np.sin(angle), 
-     axis_x*axis_z*(1 - np.cos(angle)) + axis_y*np.sin(angle)],
-    [axis_y*axis_x*(1 - np.cos(angle)) + axis_z*np.sin(angle),
-     np.cos(angle) + axis_y**2*(1 - np.cos(angle)),
-     axis_y*axis_z*(1 - np.cos(angle)) - axis_x*np.sin(angle)],
-    [axis_z*axis_x*(1 - np.cos(angle)) - axis_y*np.sin(angle),
-     axis_z*axis_y*(1 - np.cos(angle)) + axis_x*np.sin(angle),
-     np.cos(angle) + axis_z**2*(1 - np.cos(angle))]])
-
-  return rotation_matrix
-
-call_count = 0
-ulna_series_files = []
-ulna_stl_filename = os.path.join(os.getcwd(),"cm_left_ulna.stl")
-stl_mesh = None
-try:
-  stl_mesh = mesh.Mesh.from_file(ulna_stl_filename)
-except: 
-  print("Could not open file {} in directory {}".format(ulna_stl_filename, os.getcwd()))
-  sys.exit(0)
-
-# Function to update dirichlet boundary conditions over time, t.
-# Only those entries can be updated that were also initially set.
-def update_dirichlet_bc(t):
-  global current_ulna_angle
-
-  # determine parameter for the rotation of the tendon insertion point
-  angle = current_ulna_angle
-  rotation_point = elbow_hinge_point
-  rotation_mat = rotation_matrix(angle)
-  vertex = bottom_tendon_insertion_point
-  
-  # rotation vertex about rotation_axis by angle
-  vertex = vertex - rotation_point
-  vertex = rotation_mat.dot(vertex)
-  vertex = vertex + rotation_point
-
-  new_insertion_point = vertex
-  offset = -bottom_tendon_insertion_point + new_insertion_point
-  print("angle: {} deg, rot matrix: {}".format(angle*180/np.pi,rotation_matrix(angle)))
-  print("old insertion point: {}, new insertion point: {}, offset: {}".format(bottom_tendon_insertion_point,new_insertion_point,offset))
-  #offset[0] = 0
-  #offset[1] = 0
-  #offset[2] = 0
-
-  # update dirichlet boundary conditions, set prescribed value to offset, do not constrain velocity
-  for key in variables.elasticity_dirichlet_bc.keys():
-    variables.elasticity_dirichlet_bc[key] = [offset[0],offset[1],offset[2],None,None,None]
-  return variables.elasticity_dirichlet_bc
- 
-def store_rotated_ulna(t): 
-  global current_ulna_angle, call_count, stl_mesh, ulna_series_files
-
-  if np.isnan(current_ulna_angle):
-    return
-
-  # store rotated ulna
-  call_count += 1
-  output_interval = 50    # [ms] (because coupling timestep is 1ms)
-  if call_count % output_interval == 0:
-    out_triangles = []
-
-    rotation_point = elbow_hinge_point
-    rotation_mat = rotation_matrix(current_ulna_angle)
-
-    for p in stl_mesh.points:
-      # p contains the 9 entries [p1x p1y p1z p2x p2y p2z p3x p3y p3z] of the triangle with corner points (p1,p2,p3)
-
-      # transform vertices
-      vertex_list = []
-      
-      # apply rotation
-      for vertex in [np.array(p[0:3]), np.array(p[3:6]), np.array(p[6:9])]:
-        vertex = vertex - rotation_point
-        vertex = rotation_mat.dot(vertex)
-        vertex = vertex + rotation_point
-        vertex_list.append(vertex)
-      
-      out_triangles += [vertex_list]
-
-    # Create the mesh
-    out_mesh = mesh.Mesh(np.zeros(len(out_triangles), dtype=mesh.Mesh.dtype))
-    for i, f in enumerate(out_triangles):
-      out_mesh.vectors[i] = f
-        
-    out_mesh.update_normals()
-    ulna_output_filename = "ulna_{:04d}.stl".format((int)(call_count/output_interval))
-    ulna_output_path = os.path.join("out",ulna_output_filename)
-    out_mesh.save(ulna_output_path)
-    print("Saved file {}".format(ulna_output_path))
-    ulna_series_files.append({"name": ulna_output_filename, "time": t})
-
-    # save json series file
-    ulna_series_filename = "out/ulna.stl.series"
-    with open(ulna_series_filename, "w") as f:  
-      data = {"file-series-version" : "1.0", "files" : ulna_series_files}
-      json.dump(data, f, indent='\t')
-
-forces = []
-def callback_total_force(t, bearing_force_bottom, bearing_moment_bottom, bearing_force_top, bearing_moment_top):
-  global current_ulna_angle
-  # this callback functions gets the current total forces that are exerted by the muscle  
-
-  current_ulna_force = bearing_force_bottom[2]
-
-  # compute average of last 10 values
-  forces.append(current_ulna_force)
-
-  if len(forces) > 10:
-    forces.pop(0)
-  current_ulna_force = np.mean(forces)
-  print("callback_total_force, t: {}, force: {}".format(t, current_ulna_force))
-  
-  # compute relation between force and angle of ulna
-  if False:
-    # positive angle = elbow flexion (ulna move downwards)
-    min_ulna_angle = 0  # [deg]
-    max_ulna_angle = -45   # [deg]
-    force_factor = -current_ulna_force / 500
-    force_factor = min(1.5, max(-0.5, force_factor))
-
-    current_ulna_angle = min_ulna_angle + force_factor * (max_ulna_angle-min_ulna_angle)
-    print("callback_total_force, t: {}, force: {}, factor: {}, angle: {}".format(t, current_ulna_force, force_factor,current_ulna_angle))
-    current_ulna_angle *= np.pi/180   # convert from deg to rad
-
-
-
-# Function to postprocess the output
-# This function gets periodically called by the running simulation. 
-# It provides all current variables for each node: geometry (position), u, v, stress, etc.
-def postprocess(result):
-  global current_ulna_angle
-
-  result = result[0]
-  # print result for debugging
-  #print(result)
-  
-  # get current time
-  current_time = result["currentTime"]
-  timestep_no = result["timeStepNo"]
-
-  # get number of nodes
-  nx = result["nElementsLocal"][0]		# number of elements
-  ny = result["nElementsLocal"][1]    # number of elements
-  nz = result["nElementsLocal"][2]    # number of elements
-  mx = 2*nx + 1  # number of nodes for quadratic elements
-  my = 2*ny + 1
-  mz = 2*nz + 1
-  
-  # parse variables
-  field_variables = result["data"]
-  
-  #for f in field_variables:
-  #  print(f["name"])
-  
-  # field_variables[0] is the geometry
-  # field_variables[1] is the displacements u
-  # etc., uncomment the above to see all field variables
-  
-  displacement_components = field_variables[1]["components"]
-  
-  # traction values contains the traction vector in reference configuration
-  u1_values = displacement_components[0]["values"]   # displacement in x-direction
-  u2_values = displacement_components[1]["values"]   # displacement in y-direction
-  u3_values = displacement_components[2]["values"]   # displacement in z-direction
-  u3_values_bottom = [u3_values[j*mx+i] for j in range(my) for i in range(mx)]
-  z_displacement = np.mean(u3_values)
-
-  #print("nx,ny: {},{}, mx,my: {},{}, {}={}".format(nx,ny,mx,my,mx*my*mz,len(u3_values)))
-
-  # compute elbow angle from displacement of muscle in z direction
-  vec = -elbow_hinge_point + bottom_tendon_insertion_point
-  current_ulna_angle = -np.arcsin(z_displacement / np.linalg.norm(vec))
- 
-  print("z displacement: {} ({}), current_ulna_angle: {} deg".format(z_displacement, np.linalg.norm(vec), current_ulna_angle*180/np.pi))
-
-  store_rotated_ulna(current_time)
+print("nRanks: ",variables.meshes["3Dmesh_quadratic"]["nRanks"])
 
 config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyperelasticitySolver"
-  "timeStepWidth":              variables.dt_elasticity,      # time step width 
+  "timeStepWidth":              variables.dt_3D,      # time step width 
   "endTime":                    variables.end_time,           # end time of the simulation time span    
   "durationLogKey":             "duration_mechanics",         # key to find duration of this solver in the log file
   "timeStepOutputInterval":     1,                            # how often the current time step should be printed to console
@@ -343,8 +137,8 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "inputMeshIsGlobal":          True,                         # boundary conditions are specified in global numberings, whereas the mesh is given in local numberings
   
   "fiberMeshNames":             [],                           # fiber meshes that will be used to determine the fiber direction
-  #"fiberDirection":             [0,0,1],                      # if fiberMeshNames is empty, directly set the constant fiber direction, in element coordinate system
-  "fiberDirectionInElement":    [0,0,1],                      # if fiberMeshNames and fiberDirections are empty, directly set the constant fiber direction, in element coordinate system
+  "fiberDirection":             [0,0,1],                      # if fiberMeshNames is empty, directly set the constant fiber direction, in element coordinate system
+
       
   # nonlinear solver
   "relativeTolerance":          1e-10,                         # 1e-10 relative tolerance of the linear solver
@@ -357,7 +151,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "snesRelativeTolerance":      1e-2,                         # relative tolerance of the nonlinear solver
   "snesLineSearchType":         "l2",                         # type of linesearch, possible values: "bt" "nleqerr" "basic" "l2" "cp" "ncglinear"
   "snesAbsoluteTolerance":      1e-5,                         # absolute tolerance of the nonlinear solver
-  "snesRebuildJacobianFrequency": 5,                          # how often the jacobian should be recomputed, -1 indicates NEVER rebuild, 1 means rebuild every time the Jacobian is computed within a single nonlinear solve, 2 means every second time the Jacobian is built etc. -2 means rebuild at next chance but then never again 
+  "snesRebuildJacobianFrequency": 1,                          # how often the jacobian should be recomputed, -1 indicates NEVER rebuild, 1 means rebuild every time the Jacobian is computed within a single nonlinear solve, 2 means every second time the Jacobian is built etc. -2 means rebuild at next chance but then never again 
   
   #"dumpFilename": "out/r{}/m".format(sys.argv[-1]),          # dump system matrix and right hand side after every solve
   "dumpFilename":               "",                           # dump disabled
@@ -375,7 +169,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "divideNeumannBoundaryConditionValuesByTotalArea": True,            # if the given Neumann boundary condition values under "neumannBoundaryConditions" are total forces instead of surface loads and therefore should be scaled by the surface area of all elements where Neumann BC are applied
   "updateDirichletBoundaryConditionsFunction": None, #update_dirichlet_bc,   # function that updates the dirichlet BCs while the simulation is running
   "updateDirichletBoundaryConditionsFunctionCallInterval": 1,         # stide every which step the update function should be called, 1 means every time step
-  "updateNeumannBoundaryConditionsFunction": update_neumann_bc,       # a callback function to periodically update the Neumann boundary conditions
+  "updateNeumannBoundaryConditionsFunction": None,       # a callback function to periodically update the Neumann boundary conditions
   "updateNeumannBoundaryConditionsFunctionCallInterval": 1,           # every which step the update function should be called, 1 means every time step 
  
   "initialValuesDisplacements":  [[0.0,0.0,0.0] for _ in range(mx*my*mz)],     # the initial values for the displacements, vector of values for every node [[node1-x,y,z], [node2-x,y,z], ...]
@@ -384,22 +178,13 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   "constantBodyForce":           variables.constant_body_force,       # a constant force that acts on the whole body, e.g. for gravity
   
   "dirichletOutputFilename":     "out/tendon_bottom_dirichlet_boundary_conditions",    # filename for a vtp file that contains the Dirichlet boundary condition nodes and their values, set to None to disable
-  "totalForceLogFilename":       "out/tendon_bottom_force.csv",              # filename of a log file that will contain the total (bearing) forces and moments at the top and bottom of the volume
-  "totalForceLogOutputInterval": 10,                                  # output interval when to write the totalForceLog file
-  "totalForceBottomElementNosGlobal":  [j*nx + i for j in range(ny) for i in range(nx)],                  # global element nos of the bottom elements used to compute the total forces in the log file totalForceLogFilename
-  "totalForceTopElementNosGlobal":     [(nz-1)*ny*nx + j*nx + i for j in range(ny) for i in range(nx)],   # global element nos of the top elements used to compute the total forces in the log file totalForceTopElementsGlobal
-  "totalForceFunction":          None, #callback_total_force,                # callback function that gets the total force at bottom and top of the domain
-  "totalForceFunctionCallInterval": 1,                                # how often the "totalForceFunction" is called
-      
+ 
   # define which file formats should be written
   # 1. main output writer that writes output files using the quadratic elements function space. Writes displacements, velocities and PK2 stresses.
   "OutputWriter" : [
     
     # Paraview files
-    {"format": "Paraview", "outputInterval": variables.output_timestep_3D, "filename": "out/" + variables.case_name + "/tendon_bottom", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
-    
-    # Python callback function "postprocess"
-    {"format": "PythonCallback", "outputInterval": 1, "callback": postprocess, "onlyNodalValues":True, "filename": "", "fileNumbering": "incremental"},
+    {"format": "Paraview", "outputInterval": variables.output_timestep, "filename": "out/" + variables.case_name + "/tendon_bottom", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
   ],
   # 2. additional output writer that writes also the hydrostatic pressure
   "pressure": {   # output files for pressure function space (linear elements), contains pressure values, as well as displacements and velocities
@@ -410,7 +195,7 @@ config_hyperelasticity = {    # for both "HyperelasticitySolver" and "DynamicHyp
   # 3. additional output writer that writes virtual work terms
   "dynamic": {    # output of the dynamic solver, has additional virtual work values 
     "OutputWriter" : [   # output files for displacements function space (quadratic elements)
-      #{"format": "Paraview", "outputInterval": int(1./variables.dt_elasticity*variables.output_timestep_3D), "filename": "out/tendon_bottom_virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+      # {"format": "Paraview", "outputInterval": variables.output_timestep, "filename": "out/tendon_bottom_virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
       #{"format": "Paraview", "outputInterval": 1, "filename": "out/"+variables.scenario_name+"/virtual_work", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
     ],
   },
@@ -433,7 +218,7 @@ config = {
     "timeStepOutputInterval":   100,                        # interval in which to display current timestep and time in console
     "timestepWidth":            1,                          # coupling time step width, must match the value in the precice config
     "couplingEnabled":          True,                       # if the precice coupling is enabled, if not, it simply calls the nested solver, for debugging
-    "preciceConfigFilename":    "precice_config_muscle_dirichlet_tendon_neumann_implicit_coupling_multiple_tendons.xml",    # the preCICE configuration file
+    "preciceConfigFilename":    variables.precice_config_file,    # the preCICE configuration file
     "preciceParticipantName":   "TendonBottom",       # name of the own precice participant, has to match the name given in the precice xml config file
     "scalingFactor":            1,                          # a factor to scale the exchanged data, prior to communication
     "outputOnlyConvergedTimeSteps": True,                   # if the output writers should be called only after a time window of precice is complete, this means the timestep has converged
