@@ -77,7 +77,7 @@ for x in range(el_x):
 
 # Define directory for cellml files
 import os
-input_dir = os.path.join(os.environ.get('OPENDIHU_HOME', '../../../../../'), "examples/electrophysiology/input/")
+input_dir = os.path.join(os.environ.get('OPENDIHU_HOME', '../../../../../../../'), "examples/electrophysiology/input/")
 
 # Fiber activation
 fiber_distribution_file = input_dir + "MU_fibre_distribution_3780.txt"
