@@ -135,7 +135,7 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variable,
       s << this->filename_ << "_p.h5";
     }
 
-    hid_t fileID = openHDF5File(s.str().c_str(), true);
+    hid_t fileID = openHDF5File(s.str().c_str(), false);
     herr_t err;
     if (writeMeta_) {
       err = HDF5Utils::writeAttr<const std::string &>(
