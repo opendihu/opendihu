@@ -12,6 +12,14 @@ void HDF5::write(DataType &data, const char *filename, int timeStepNo,
                              callCountIncrement)) {
     return;
   }
+  this->innerWrite(data.getFieldVariablesForOutputWriter(), filename,
+                   timeStepNo, currentTime, callCountIncrement);
+}
+
+template <typename FieldVariablesForOutputWriterType>
+void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variable,
+                      const char *filename, int timeStepNo, double currentTime,
+                      int callCountIncrement) {
   Control::PerformanceMeasurement::start("durationHDF5Output");
 
   std::set<std::string> combined1DMeshes;
@@ -61,32 +69,27 @@ void HDF5::write(DataType &data, const char *filename, int timeStepNo,
 
     Control::PerformanceMeasurement::start("durationHDF51D");
 
-    LOG(DEBUG)
-        << "FieldVariablesForOutputWriter: "
-        << StringUtility::demangle(
-               typeid(typename DataType::FieldVariablesForOutputWriter).name());
+    LOG(DEBUG) << "FieldVariablesForOutputWriterType: "
+               << StringUtility::demangle(
+                      typeid(FieldVariablesForOutputWriterType).name());
 
     // create a PolyData file that combines all 1D meshes into one file
-    writePolyDataFile<typename DataType::FieldVariablesForOutputWriter>(
-        fileID, data.getFieldVariablesForOutputWriter(), combined1DMeshes);
+    writePolyDataFile<FieldVariablesForOutputWriterType>(fileID, variable,
+                                                         combined1DMeshes);
 
     Control::PerformanceMeasurement::stop("durationHDF51D");
     Control::PerformanceMeasurement::start("durationHDF53D");
 
     // create an UnstructuredMesh file that combines all 3D meshes into one file
-    writeCombinedUnstructuredGridFile<
-        typename DataType::FieldVariablesForOutputWriter>(
-        fileID, data.getFieldVariablesForOutputWriter(), combined3DMeshes,
-        true);
+    writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
+        fileID, variable, combined3DMeshes, true);
 
     Control::PerformanceMeasurement::stop("durationHDF53D");
     Control::PerformanceMeasurement::start("durationHDF52D");
 
     // create an UnstructuredMesh file that combines all 2D meshes into one file
-    writeCombinedUnstructuredGridFile<
-        typename DataType::FieldVariablesForOutputWriter>(
-        fileID, data.getFieldVariablesForOutputWriter(), combined2DMeshes,
-        false);
+    writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
+        fileID, variable, combined2DMeshes, false);
 
     Control::PerformanceMeasurement::stop("durationHDF52D");
 
@@ -99,9 +102,8 @@ void HDF5::write(DataType &data, const char *filename, int timeStepNo,
 
   // collect all available meshes
   std::set<std::string> meshNames;
-  LoopOverTuple::loopCollectMeshNames<
-      typename DataType::FieldVariablesForOutputWriter>(
-      data.getFieldVariablesForOutputWriter(), meshNames);
+  LoopOverTuple::loopCollectMeshNames<FieldVariablesForOutputWriterType>(
+      variable, meshNames);
 
   // remove 1D meshes that were already output by writePolyDataFile
   std::set<std::string> meshesWithout1D;
@@ -154,10 +156,8 @@ void HDF5::write(DataType &data, const char *filename, int timeStepNo,
 
       // loop over all field variables and output those that are associated with
       // the mesh given by meshName
-      HDF5LoopOverTuple::loopOutput(groupID,
-                                    data.getFieldVariablesForOutputWriter(),
-                                    data.getFieldVariablesForOutputWriter(),
-                                    meshName, specificSettings_, currentTime);
+      HDF5LoopOverTuple::loopOutput(groupID, variable, variable, meshName,
+                                    specificSettings_, currentTime);
 
       err = H5Gclose(groupID);
       assert(err >= 0);

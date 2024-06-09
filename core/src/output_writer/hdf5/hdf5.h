@@ -88,6 +88,11 @@ private:
   //! open a HDF5 file with a given filename
   hid_t openHDF5File(const char *filename, bool mpiio);
 
+  template <typename FieldVariablesForOutputWriterType>
+  void innerWrite(const FieldVariablesForOutputWriterType &variable,
+                  const char *filename = nullptr, int timeStepNo = -1,
+                  double currentTime = -1, int callCountIncrement = 1);
+
   //! helper method that writes the unstructured grid file
   template <typename FieldVariablesForOutputWriterType>
   void writeCombinedUnstructuredGridFile(
