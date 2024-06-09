@@ -6,6 +6,8 @@
 #include "output_writer/poly_data_properties_for_mesh.h"
 
 namespace OutputWriter {
+
+// forward declaration
 namespace HDF5Utils {
 class Group;
 class File;
@@ -84,8 +86,9 @@ protected:
                                   bool output3DMeshes, const char *dsname);
 
 private:
+  //! helper method, to write a specific variables, called by the write function
   template <typename FieldVariablesForOutputWriterType>
-  void innerWrite(const FieldVariablesForOutputWriterType &variable,
+  void innerWrite(const FieldVariablesForOutputWriterType &variables,
                   const char *filename = nullptr, int timeStepNo = -1,
                   double currentTime = -1, int callCountIncrement = 1);
 
@@ -130,36 +133,55 @@ private:
 };
 
 namespace HDF5Utils {
+
+//! HDF5 File abstraction, automatically opens a File and closes the File on
+//! destructor call. Provides helper function for creating new Groups and
+//! writing Attributes to the HDF5 file
 class File {
 public:
+  //! Constructor opens a new file with a given filename, either with mpiio or
+  //! not
   File(const char *filename, bool mpiio);
+  //! Close the file and cleanup everything else still open
   ~File();
 
+  //! Get the HDF5 File ID
   hid_t getFileID() const;
+  //! Get the own rank, this value is cached
   int32_t getOwnRank() const;
+  //! Get the world size, this value is cached
   int32_t getWorldSize() const;
+  //! Returns true if the file was opened with MPIIO, false if not
   bool isMPIIO() const;
 
+  //! Create a new group with a given name
   Group newGroup(const char *name) const;
 
+  //! Write a integer attribute to the root node with a given key
   herr_t writeAttrInt(const char *key, int32_t value) const;
+  //! Write a double attribute to the root node with a given key
   herr_t writeAttrDouble(const char *key, double value) const;
+  //! Write a string attribute to the root node with a given key
   herr_t writeAttrStr(const char *key, const std::string &value) const;
 
 private:
-  std::string filename_;
-  bool mpiio_;
-  hid_t fileID_;
-  int32_t ownRank_;
-  int32_t worldSize_;
+  std::string filename_; //< filename in which is been written
+  const bool mpiio_;     //< stored value if the file was opened with mpiio
+  hid_t fileID_;         //< stored fileID
+  int32_t ownRank_;      //< own rank cached
+  int32_t worldSize_;    //< world size cached
 };
 
+//! HDF5 Group abstraction that provides helper function for create another
+//! nested group or writing datasets to this group
 class Group {
 public:
+  //! Constructor for creating a new group for a given file with a given name
   Group(const File *f, const char *name);
-  Group(const File *f, hid_t id, const char *name);
+  //! Destructor that closes the group
   ~Group();
 
+  //! Create a new Group inside the current group, nested groups
   Group newGroup(const char *name) const;
 
   //! write a dataset with a specific name to the current Group
@@ -167,23 +189,33 @@ public:
   herr_t writeSimpleVec(const std::vector<T> &data, const std::string &dsname);
 
 private:
-  //! write a dataset with a specific name to the current group with a specific
-  //! typeId and memTypeId to a mpiio file
+  //! private constructor for creating a group for a given hid_t id, so
+  //! basically a already existing group. This constructor only gets called by
+  //! Group::newGroup, so it can be a private constructor which will then not
+  //! lead to missuse of this constructor.
+  Group(const File *f, hid_t id, const char *name);
+
+  //! inner write method, that writes a dataset with a specific name to the
+  //! current group with a specific typeId and memTypeId to a mpiio file
   herr_t writeVectorMPIIO(const void *data, const std::string &dsname,
                           const size_t dataSize, hid_t typeId, hid_t memTypeId,
                           size_t dsize);
 
-  //! write a dataset with a specific name to the current group with a specific
-  //! typeId and memTypeId to a regular file
+  //! inner write method, that writes a dataset with a specific name to the
+  //! current group with a specific typeId and memTypeId to a regular file
   herr_t writeVector(const void *data, const std::string &dsname,
                      const size_t dataSize, hid_t typeId, hid_t memTypeId,
                      size_t dsize);
 
+  //! write a vector of integers to a given dataset ID as an attribute with a
+  //! given key
   herr_t writeAttrArray(hid_t dsetID, const char *key,
                         const std::vector<int64_t> &data) const;
 
-  const File *file_;
-  hid_t groupID_;
+  const File
+      *file_; //< Const handle to a File, weak pointer because we dont cleanup
+              // that file, because we dont want to call the destructor.
+  hid_t groupID_; //< HDF5 ID of this Group
 };
 
 //! write the given field variable to a given group

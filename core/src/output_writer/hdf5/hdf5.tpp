@@ -17,7 +17,7 @@ void HDF5::write(DataType &data, const char *filename, int timeStepNo,
 }
 
 template <typename FieldVariablesForOutputWriterType>
-void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variable,
+void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
                       const char *filename, int timeStepNo, double currentTime,
                       int callCountIncrement) {
   Control::PerformanceMeasurement::start("durationHDF5Output");
@@ -72,7 +72,7 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variable,
     // create a PolyData file that combines all 1D meshes into one file
     {
       HDF5Utils::Group group = file->newGroup("1D");
-      writePolyDataFile<FieldVariablesForOutputWriterType>(group, variable,
+      writePolyDataFile<FieldVariablesForOutputWriterType>(group, variables,
                                                            combined1DMeshes);
     }
 
@@ -83,7 +83,7 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variable,
     {
       HDF5Utils::Group group = file->newGroup("3D");
       writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
-          group, variable, combined3DMeshes, true);
+          group, variables, combined3DMeshes, true);
     }
 
     Control::PerformanceMeasurement::stop("durationHDF53D");
@@ -93,7 +93,7 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variable,
     {
       HDF5Utils::Group group = file->newGroup("2D");
       writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
-          group, variable, combined2DMeshes, false);
+          group, variables, combined2DMeshes, false);
     }
 
     Control::PerformanceMeasurement::stop("durationHDF52D");
@@ -105,7 +105,7 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variable,
   // collect all available meshes
   std::set<std::string> meshNames;
   LoopOverTuple::loopCollectMeshNames<FieldVariablesForOutputWriterType>(
-      variable, meshNames);
+      variables, meshNames);
 
   // remove 1D meshes that were already output by writePolyDataFile
   std::set<std::string> meshesWithout1D;
@@ -155,7 +155,7 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variable,
       HDF5Utils::Group group = file.newGroup(meshName.c_str());
       // loop over all field variables and output those that are associated with
       // the mesh given by meshName
-      HDF5LoopOverTuple::loopOutput(group, variable, variable, meshName,
+      HDF5LoopOverTuple::loopOutput(group, variables, variables, meshName,
                                     specificSettings_, currentTime);
     }
   }
