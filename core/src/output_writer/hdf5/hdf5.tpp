@@ -129,10 +129,12 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variable,
                       std::inserter(meshesToOutput, meshesToOutput.end()));
 
   if (meshesToOutput.size() > 0) {
-    // extract filename base
     std::stringstream s;
-    if (!filename) {
-      s << filename << "p";
+    if (filename) {
+      s << filename;
+      if (combineFiles_) {
+        s << "p";
+      }
     } else {
       s << this->filename_ << "_p.h5";
     }
