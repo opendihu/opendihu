@@ -9,7 +9,7 @@ Usage
 To use the framework, one needs to use two programming languages: C++ and Python.
 For a simulation, one has to write a small C++ `main` file that includes the main framework header (`opendihu.h`) and contains a definition of the desired nested solvers as class templates.
 
-This source file will be compiled either in debug or release mode. It will be linked against a single opendihu library under `core/build_debug/libopendihud.a` or `core/build_debug/libopendihu.a`.
+This source file will be compiled either in debug or release mode. It will be linked against a single opendihu library under `core/build_debug/libopendihud.a` or `core/build_release/libopendihu.a`.
 For example, you can build any example in its top-level directory by calling 
 
 .. code-block:: bash
