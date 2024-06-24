@@ -362,3 +362,29 @@ void assertParallelEqualsSerialOutputFiles(
   ASSERT_EQ(resultVariable, Py_True)
       << "Parallel and serial output do not match!";
 }
+
+void compareArray(const std::vector<double> &l1,
+                  std::initializer_list<double> l2, double delta) {
+  std::stringstream s1, s2;
+  s1 << "[";
+  for (const auto v : l1) {
+    s1 << v << ", ";
+  }
+  s1 << "]";
+
+  s2 << "[";
+  for (const auto v : l2) {
+    s2 << v << ", ";
+  }
+  s2 << "]";
+
+  ASSERT_EQ(l1.size(), l2.size()) << "l1: " << s1.str() << "\n"
+                                  << "l2: " << s2.str();
+  auto i1 = l1.begin();
+  auto i2 = l2.begin();
+  for (; i1 != l1.end();) {
+    ASSERT_NEAR(*i1, *i2, delta);
+    i1++;
+    i2++;
+  }
+}
