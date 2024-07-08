@@ -204,7 +204,6 @@ void PreciceAdapterNestedSolver<
 
   // if this rank has no data, do not set any boundary conditions
   if (preciceData.preciceMesh->nNodesLocal != 0) {
-
     // loop over selected nodes of surface mesh
     for (const int &surfaceDofNoLocal :
          preciceData.preciceMesh->selectedDofNosLocal) {
