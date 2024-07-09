@@ -1,7 +1,7 @@
 
-# scenario name for log file
+case_name = "default"
 scenario_name = "muscle"
-precice_config_file ="precice_config_file.xml"
+precice_config_file ="precice_config.xml"
 
 # material parameters
 # --------------------
