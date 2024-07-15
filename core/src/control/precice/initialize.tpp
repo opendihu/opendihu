@@ -156,6 +156,10 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
 #ifdef HAVE_PRECICE
 template <typename NestedSolver>
 void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceMeshes() {
+  if (functionSpace_->dimension() < 3) {
+    return;
+  }
+
   const int nNodesX = functionSpace_->nNodesLocalWithoutGhosts(0);
   const int nNodesY = functionSpace_->nNodesLocalWithoutGhosts(1);
   const int nNodesZ = functionSpace_->nNodesLocalWithoutGhosts(2);
@@ -421,6 +425,9 @@ void PreciceAdapterInitialize<
           typename PreciceAdapterNestedSolver<NestedSolver>::FunctionSpace,
           6>::ElementWithNodes;
   if (preciceSurfaceData_.empty()) {
+    return;
+  }
+  if (functionSpace_->dimension() < 3) {
     return;
   }
 
