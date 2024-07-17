@@ -70,7 +70,6 @@ struct Material : Equation::SolidMechanics::HyperelasticityBase {
       INT(0);
 };
 
-
 // Fast monodomain: 0D / 1D
 using MonodomainSolver = FastMonodomainSolver< // a wrapper that improves
                                                // performance of multidomain
