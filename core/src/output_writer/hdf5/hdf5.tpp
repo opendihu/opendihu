@@ -53,14 +53,14 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
 
     herr_t err;
     if (writeMeta_) {
-      err = file->writeAttrStr("version", DihuContext::versionText());
+      err = file->writeAttr("version", DihuContext::versionText());
       assert(err >= 0);
-      err = file->writeAttrStr("meta", DihuContext::metaText());
+      err = file->writeAttr("meta", DihuContext::metaText());
       assert(err >= 0);
     }
-    err = file->writeAttrDouble("currentTime", this->currentTime_);
+    err = file->writeAttr("currentTime", this->currentTime_);
     assert(err >= 0);
-    err = file->writeAttrInt("timeStepNo", this->timeStepNo_);
+    err = file->writeAttr("timeStepNo", this->timeStepNo_);
     assert(err >= 0);
 
     Control::PerformanceMeasurement::start("durationHDF51D");
@@ -142,14 +142,14 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
     HDF5Utils::File file = HDF5Utils::File(s.str().c_str(), false);
     herr_t err;
     if (writeMeta_) {
-      err = file.writeAttrStr("version", DihuContext::versionText());
+      err = file.writeAttr("version", DihuContext::versionText());
       assert(err >= 0);
-      err = file.writeAttrStr("meta", DihuContext::metaText());
+      err = file.writeAttr("meta", DihuContext::metaText());
       assert(err >= 0);
     }
-    err = file.writeAttrDouble("currentTime", this->currentTime_);
+    err = file.writeAttr("currentTime", this->currentTime_);
     assert(err >= 0);
-    err = file.writeAttrInt("timeStepNo", this->timeStepNo_);
+    err = file.writeAttr("timeStepNo", this->timeStepNo_);
     assert(err >= 0);
     for (const std::string &meshName : meshesToOutput) {
       HDF5Utils::Group group = file.newGroup(meshName.c_str());
@@ -164,6 +164,40 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
 }
 
 namespace HDF5Utils {
+template <typename T, std::enable_if_t<std::is_same<T, int>::value, bool>>
+herr_t File::writeAttr(const char *key, const T &v) const {
+  std::array<int32_t, 1> data = {(int32_t)v};
+  return writeAttribute(fileID_, H5T_STD_I32LE, H5T_NATIVE_INT, 1, key,
+                        data.data());
+}
+
+template <typename T, std::enable_if_t<std::is_same<T, double>::value, bool>>
+herr_t File::writeAttr(const char *key, const T &v) const {
+  std::array<double, 1> data = {(double)v};
+  return writeAttribute(fileID_, H5T_IEEE_F64LE, H5T_NATIVE_DOUBLE, 1, key,
+                        data.data());
+}
+
+template <typename T,
+          std::enable_if_t<std::is_same<T, std::string>::value, bool>>
+herr_t File::writeAttr(const char *key, const T &v) const {
+  auto value = (const std::string &)v;
+
+  hid_t filetype = H5Tcopy(H5T_FORTRAN_S1);
+  herr_t err = H5Tset_size(filetype, value.length());
+  if (err < 0) {
+    return err;
+  }
+
+  hid_t memtype = H5Tcopy(H5T_C_S1); // Datatype ID
+  err = H5Tset_size(memtype, value.length() + 1);
+  if (err < 0) {
+    return err;
+  }
+
+  return writeAttribute(fileID_, filetype, memtype, 1, key, value.c_str());
+}
+
 template <typename T>
 herr_t Group::writeSimpleVec(const std::vector<T> &data,
                              const std::string &dsname) {

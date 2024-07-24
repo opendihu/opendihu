@@ -85,109 +85,6 @@ bool File::isMPIIO() const { return mpiio_; }
 
 Group File::newGroup(const char *name) const { return Group(this, name); }
 
-herr_t File::writeAttrInt(const char *key, int32_t value) const {
-  hsize_t dims = 1;
-  std::array<int32_t, 1> data = {value};
-  hid_t dspace = H5Screate_simple(1, &dims, nullptr);
-  if (dspace < 0) {
-    return dspace;
-  }
-  hid_t attr =
-      H5Acreate(fileID_, key, H5T_STD_I32LE, dspace, H5P_DEFAULT, H5P_DEFAULT);
-  if (attr < 0) {
-    // ignore error here, everything is lost anyway at this point in time
-    H5Sclose(dspace);
-    return attr;
-  }
-  herr_t err = H5Awrite(attr, H5T_NATIVE_INT, data.data());
-  if (err < 0) {
-    return err;
-  }
-  err = H5Aclose(attr);
-  if (err < 0) {
-    return err;
-  }
-  err = H5Sclose(dspace);
-  if (err < 0) {
-    return err;
-  }
-
-  return 0;
-}
-
-herr_t File::writeAttrDouble(const char *key, double value) const {
-  hsize_t dims = 1;
-  std::array<double, 1> data = {value};
-  hid_t dspace = H5Screate_simple(1, &dims, nullptr);
-  if (dspace < 0) {
-    return dspace;
-  }
-  hid_t attr =
-      H5Acreate(fileID_, key, H5T_IEEE_F64LE, dspace, H5P_DEFAULT, H5P_DEFAULT);
-  if (attr < 0) {
-    // ignore error here, everything is lost anyway at this point in time
-    H5Sclose(dspace);
-    return attr;
-  }
-  herr_t err = H5Awrite(attr, H5T_NATIVE_DOUBLE, data.data());
-  if (err < 0) {
-    return err;
-  }
-  err = H5Aclose(attr);
-  if (err < 0) {
-    return err;
-  }
-  err = H5Sclose(dspace);
-  if (err < 0) {
-    return err;
-  }
-
-  return 0;
-}
-
-herr_t File::writeAttrStr(const char *key, const std::string &value) const {
-  hid_t filetype = H5Tcopy(H5T_FORTRAN_S1);
-  herr_t err = H5Tset_size(filetype, value.length());
-  if (err < 0) {
-    return err;
-  }
-
-  hid_t memtype = H5Tcopy(H5T_C_S1); // Datatype ID
-  err = H5Tset_size(memtype, value.length() + 1);
-  if (err < 0) {
-    return err;
-  }
-
-  hsize_t dims = 1;
-  hid_t dspace = H5Screate_simple(1, &dims, nullptr);
-  if (dspace < 0) {
-    return dspace;
-  }
-  hid_t attr =
-      H5Acreate(fileID_, key, filetype, dspace, H5P_DEFAULT, H5P_DEFAULT);
-  if (attr < 0) {
-    // ignore error here, everything is lost anyway at this point in time
-    H5Sclose(dspace);
-    return attr;
-  }
-  err = H5Awrite(attr, memtype, value.c_str());
-  if (err < 0) {
-    H5Sclose(dspace);
-    H5Aclose(attr);
-    return err;
-  }
-  err = H5Aclose(attr);
-  if (err < 0) {
-    return err;
-  }
-  err = H5Sclose(dspace);
-  if (err < 0) {
-    return err;
-  }
-
-  return 0;
-}
-
 Group::Group(const File *f, const char *name) : file_(f), groupID_(-1) {
   groupID_ = H5Gcreate(file_->getFileID(), name, H5P_DEFAULT, H5P_DEFAULT,
                        H5P_DEFAULT);
@@ -362,19 +259,24 @@ herr_t Group::writeVector(const void *data, const std::string &dsname,
 
 herr_t Group::writeAttrArray(hid_t dsetID, const char *key,
                              const std::vector<int64_t> &data) const {
-  hsize_t dims = data.size();
+  return writeAttribute(dsetID, H5T_STD_I64LE, H5T_NATIVE_LONG, data.size(),
+                        key, data.data());
+}
+
+herr_t writeAttribute(hid_t dest, hid_t filetype, hid_t memtype, hsize_t dims,
+                      const char *key, const void *buf) {
+  herr_t err;
   hid_t dspace = H5Screate_simple(1, &dims, nullptr);
   if (dspace < 0) {
     return dspace;
   }
-  hid_t attr =
-      H5Acreate(dsetID, key, H5T_STD_I64LE, dspace, H5P_DEFAULT, H5P_DEFAULT);
+  hid_t attr = H5Acreate(dest, key, filetype, dspace, H5P_DEFAULT, H5P_DEFAULT);
   if (attr < 0) {
     // ignore error here, everything is lost anyway at this point in time
     H5Sclose(dspace);
     return attr;
   }
-  herr_t err = H5Awrite(attr, H5T_NATIVE_LONG, data.data());
+  err = H5Awrite(attr, memtype, buf);
   if (err < 0) {
     return err;
   }

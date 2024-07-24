@@ -158,11 +158,17 @@ public:
   Group newGroup(const char *name) const;
 
   //! Write a integer attribute to the root node with a given key
-  herr_t writeAttrInt(const char *key, int32_t value) const;
+  template <typename T,
+            std::enable_if_t<std::is_same<T, int>::value, bool> = true>
+  herr_t writeAttr(const char *key, const T &v) const;
   //! Write a double attribute to the root node with a given key
-  herr_t writeAttrDouble(const char *key, double value) const;
+  template <typename T,
+            std::enable_if_t<std::is_same<T, double>::value, bool> = true>
+  herr_t writeAttr(const char *key, const T &v) const;
   //! Write a string attribute to the root node with a given key
-  herr_t writeAttrStr(const char *key, const std::string &value) const;
+  template <typename T,
+            std::enable_if_t<std::is_same<T, std::string>::value, bool> = true>
+  herr_t writeAttr(const char *key, const T &v) const;
 
 private:
   std::string filename_; //< filename in which is been written
@@ -228,6 +234,9 @@ static herr_t writeFieldVariable(Group &group,
 template <typename FieldVariableType>
 static herr_t writePartitionFieldVariable(Group &group,
                                           FieldVariableType &geometryField);
+
+herr_t writeAttribute(hid_t dest, hid_t filetype, hid_t memtype, hsize_t dims,
+                      const char *key, const void *buf);
 } // namespace HDF5Utils
 } // namespace OutputWriter
 
