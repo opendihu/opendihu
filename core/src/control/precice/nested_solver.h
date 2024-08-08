@@ -566,6 +566,6 @@ public:
 
 #include "control/precice/nested_solver_fast_monodomain_solver.tpp"
 #include "control/precice/nested_solver_muscle_contraction_solver.tpp"
-#include "control/precice/nested_solver_control_coupling_muscle_contration_solver.tpp"
+#include "control/precice/nested_solver_coupled_muscle_contration_solver.tpp"
 #include "control/precice/nested_solver_dynamic_hyperelasticity_solver.tpp"
-#include "control/precice/nested_solver_spatial_spatial_discretization_hyperelasticity_solver.tpp"
+#include "control/precice/nested_solver_hyperelasticity_solver.tpp"
