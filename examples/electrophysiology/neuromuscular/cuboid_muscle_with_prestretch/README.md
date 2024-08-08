@@ -9,9 +9,8 @@ mkorn && sr
 To run the code: 
 ```
 cd build_release
-./muscle_with_prestretch ../settings_muscle_with_prestretch.py variables_1N.py
+./muscle_with_prestretch ../settings_muscle_with_prestretch.py variables.py --force 1.1
 ```
 
-There are several `variables.py` available that compute prestretch for different pulling forces. 
-
+'--force' specifies the pulling force. A useful range of values would be from 1 to 10 N. 
 A requirement to run this case is to have set up `OPENDIHU_HOME` in your system. 

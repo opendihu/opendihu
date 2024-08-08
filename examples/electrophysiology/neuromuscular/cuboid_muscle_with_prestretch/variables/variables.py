@@ -1,13 +1,13 @@
 # scenario name for log file
-scenario_name = "case_5N"
-prestretch_bottom_traction =  [0,0,-5]        # [N]  (-30 also works)
+scenario_name = "default_"
+prestretch_bottom_traction =  [0,0,1]        # [N]  (-30 also works)
 # constant_body_force = (0,0,-9.81e-4)   # [cm/ms^2], gravity constant for the body force
-zdisplacement = 0.82794359
+zdisplacement = 0.15223752
 constant_body_force = (0,0,0)
 
 # timing parameters
 # -----------------
-dt_elasticity = 0.01
+dt_elasticity = 0.1
 dt_0D = 0.5e-3                        # [ms] timestep width of ODEs
 dt_1D = 1e-3                      # [ms] timestep width of diffusion
 dt_splitting_0D1D = dt_1D           # [ms] overall timestep width of strang splitting
