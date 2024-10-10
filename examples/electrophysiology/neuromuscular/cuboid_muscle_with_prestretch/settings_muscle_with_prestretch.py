@@ -68,35 +68,35 @@ for fiber_x in range(variables.n_fibers_x):
             "nRanks":               n_ranks
         }
 
-
-# set Dirichlet BC, fix bottom
+# boundary confitions for prestretch
+# fix bottom
 elasticity_dirichlet_bc = {}
 k = 0
 
 # fix z value on the whole x-y-plane
-for j in range(my):
-  for i in range(mx):
-    elasticity_dirichlet_bc[k*mx*my + j*mx + i] = [None,None,0.0,None,None,None]
+for j in range(ny):
+  for i in range(nx):
+    elasticity_dirichlet_bc[k*nx*ny + j*nx + i] = [None,None,0.0,None,None,None]
 
 # fix left edge 
-for j in range(my):
-  elasticity_dirichlet_bc[k*mx*my + j*mx + 0][0] = 0.0
+for j in range(ny):
+  elasticity_dirichlet_bc[k*nx*ny + j*nx + 0][0] = 0.0
   
 # fix front edge 
-for i in range(mx):
-  elasticity_dirichlet_bc[k*mx*my + 0*mx + i][1] = 0.0
+for i in range(nx):
+  elasticity_dirichlet_bc[k*nx*ny + 0*nx + i][1] = 0.0
        
 # set Neumann BC, set traction at the top
-k = nz-1
+k = mz-1
 traction_vector = [0, 0, force]     # the traction force in specified in the reference configuration
 
-elasticity_neumann_bc = [{"element": k*nx*ny + j*nx + i, "constantVector": traction_vector, "face": "2+"} for j in range(ny) for i in range(nx)]
+elasticity_neumann_bc = [{"element": k*mx*my + j*mx + i, "constantVector": traction_vector, "face": "2+"} for j in range(my) for i in range(mx)]
 
 # callback for writing to file
 def write_prestretch_length_to_file(result):
   data = result[0]
 
-  number_of_nodes = mx * my
+  number_of_nodes = nx * ny
   average_z_start = 0
   average_z_end = 0
 
@@ -104,7 +104,7 @@ def write_prestretch_length_to_file(result):
 
   for i in range(number_of_nodes):
     average_z_start += z_data[i]
-    average_z_end += z_data[number_of_nodes*(mz -1) + i]
+    average_z_end += z_data[number_of_nodes*(nz -1) + i]
 
   average_z_start /= number_of_nodes
   average_z_end /= number_of_nodes
@@ -388,7 +388,7 @@ config = {
                   # if useAnalyticJacobian,useNumericJacobian and dumpDenseMatlabVariables all all three true, the analytic and numeric jacobian matrices will get compared to see if there are programming errors for the analytic jacobian
                   
                   # mesh
-                  "meshName":                   "3Dmesh_quadratic",           # mesh with quadratic Lagrange ansatz functions
+                  "meshName":                   "muscleMesh_quadratic",           # mesh with quadratic Lagrange ansatz functions
                   "inputMeshIsGlobal":          True,                         # boundary conditions are specified in global numberings, whereas the mesh is given in local numberings
                   
                   "fiberDirection":             [0,0,1],                      # if fiberMeshNames is empty, directly set the constant fiber direction, in element coordinate system
@@ -631,7 +631,7 @@ config = {
               "density":                variables.rho,
               "timeStepOutputInterval": 1,
 
-              "meshName":                   "3Dmesh_quadratic",
+              "meshName":                   "muscleMesh_quadratic",
               "inputMeshIsGlobal":          True,
               "fiberMeshNames":             [],
               "fiberDirection":             [0,0,1],
