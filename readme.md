@@ -45,3 +45,7 @@ Currently, the following literature written by the authors is available.
 * First conference paper:
 
 	[Maier, B., Emamy, N., Krämer, A., & Mehl, M. (2019). Highly parallel multi-physics simulation of muscular activation and EMG. In COUPLED VIII: proceedings of the VIII International Conference on Computational Methods for Coupled Problems in Science and Engineering (pp. 610-621). CIMNE](https://upcommons.upc.edu/handle/2117/190149)
+
+* (Open-access) Article about an agonist-antagonist myoneural interface model using OpenDiHu andd preCICE:
+
+	[C. Homs-Pons, R. Lautenschlager, L. Schmid, J. Ernst, D. Göddeke, O. Röhrle and M. Schulte, Coupled simulations and parameter inversion for neural system and electrophysiological muscle models, GAMM-Mitteilungen. 47 (2024), e202370009.](https://doi.org/10.1002/gamm.202370009])
