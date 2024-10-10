@@ -17,9 +17,9 @@ import variables
 # prestretch force
 
 force = variables.prestretch_force                       # default value
-if len(sys.argv) > 2:                                                                           
-  force = float(sys.argv[0])
-  print("prestretch force: {}".format(force))
+if len(sys.argv) > 3:                                                                           
+  force = float(sys.argv[1])
+print(" prestretch force: {}N".format(force))
 
 # parameters
 
@@ -647,7 +647,7 @@ config = {
               "extrapolateInitialGuess":    True,
               "nNonlinearSolveCalls":       1,
 
-              "dirichletBoundaryConditions":                            {}, #elasticity_dirichlet_bc, #variables.dirichlet_bc,
+              "dirichletBoundaryConditions":                            elasticity_dirichlet_bc, #variables.dirichlet_bc,
               "neumannBoundaryConditions":                              {}, #elasticity_neumann_bc, #variables.neumann_bc,
               "updateDirichletBoundaryConditionsFunction":              None,
               "updateDirichletBoundaryConditionsFunctionCallInterval":  1,
