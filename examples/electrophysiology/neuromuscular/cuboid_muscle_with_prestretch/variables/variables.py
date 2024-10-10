@@ -1,21 +1,17 @@
 # scenario name for log file
-scenario_name = "default_"
-prestretch_bottom_traction =  [0,0,1]        # [N]  (-30 also works)
+scenario_name = "default"
+prestretch_force =  10.0        # [N]  (-30 also works)
 # constant_body_force = (0,0,-9.81e-4)   # [cm/ms^2], gravity constant for the body force
-zdisplacement = 0.15223752
-constant_body_force = (0,0,0)
 
 # timing parameters
 # -----------------
-dt_elasticity = 0.1
+dt_3D = 0.1
 dt_0D = 0.5e-3                        # [ms] timestep width of ODEs
 dt_1D = 1e-3                      # [ms] timestep width of diffusion
-dt_splitting_0D1D = dt_1D           # [ms] overall timestep width of strang splitting
+dt_splitting = dt_1D           # [ms] overall timestep width of strang splitting
 end_time = 20.0
 
-output_interval_fibers = dt_elasticity/dt_1D
-output_interval_0D = dt_elasticity/dt_0D
-output_timestep_elasticity = 10      # [ms] timestep for elasticity output files
+output_interval = dt_3D # time interval between outputs
 
 
 stimulation_frequency = 100*1e-3    # [ms^-1] sampling frequency of stimuli in firing_times_file, in stimulations per ms, number before 1e-3 factor is in Hertz. This is not used here.
@@ -45,6 +41,7 @@ prestretch_elasticity_dirichlet_bc = {}
 elasticity_dirichlet_bc = {}
 elasticity_neumann_bc = []
 meshes = {}
+
 # material parameters
 # --------------------
 Pmax = 7.3                          # maximum stress [N/cm^2]
@@ -64,14 +61,16 @@ d  = 9.1733                 # [-] anisotropy parameter
 # for debugging, b = 0 leads to normal Mooney-Rivlin
 
 muscle_material_parameters = [c1, c2, b, d]   # material parameters
-
+diffusion_prefactor = 3.828 / (500.0 * 0.58)  # Conductivity / (Am * Cm)
+# Define directory for cellml files
 import os
-input_directory = os.path.join(os.environ.get('OPENDIHU_HOME', '../../../../../'), "examples/electrophysiology/input")
+input_dir = os.path.join(os.environ.get('OPENDIHU_HOME', '../../../../../'), "examples/electrophysiology/input/")
 
-cellml_file = input_directory+"/hodgkin_huxley-razumova.cellml"
-fiber_distribution_file = input_directory+"/MU_fibre_distribution_multidomain_67x67_100.txt"
-firing_times_file = input_directory + "/MU_firing_times_real.txt"
-no_firing_times_file = input_directory + "/MU_firing_times_real_no_firing.txt" # no firing
+# Fiber activation
+fiber_distribution_file = input_dir + "MU_fibre_distribution_3780.txt"
+firing_times_file = input_dir + "MU_firing_times_always.txt"
+specific_states_call_enable_begin = 1.0                     # time of first fiber activation
+specific_states_call_frequency = 1e-3                       # frequency of fiber activation
 
 maximum_number_of_threads = 1
 use_aovs_memory_layout = True
@@ -179,3 +178,5 @@ def muscle_write_to_file(data):
     f.write("{:6.2f} {:+2.8f} {:+2.8f}\n".format(t,z_value_begin, z_value_end))
     f.close()
 
+def get_fiber_no(fiber_in_subdomain_coordinate_x, fiber_in_subdomain_coordinate_y):
+    return fiber_in_subdomain_coordinate_x + n_fibers_x * fiber_in_subdomain_coordinate_y
