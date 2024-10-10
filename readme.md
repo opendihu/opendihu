@@ -30,6 +30,10 @@ Currently, the following literature written by the authors is available.
 
 	[Maier, B. (2021). Scalable Biophysical Simulations of the Neuromuscular System. ](https://arxiv.org/abs/2107.07104)
 
+* (Open-access) Journal paper with an overview of OpenDiHu:
+
+	[Maier, B.; Göddeke, D.; Huber, F.; Klotz, T.; Röhrle, O. & Schulte, M. (2024). OpenDiHu: An Efficient and Scalable Framework for Biophysical Simulations of the Neuromuscular System, Journal of Computational Science](https://doi.org/10.1016/j.jocs.2024.102291)
+
 * (Open-access) Journal paper about mesh generation and simulations:
 
 	[Maier, B, Schulte, M. (2022) Mesh generation and multi-scale simulation of a contracting muscle–tendon complex, Journal of Computational Science](https://www.sciencedirect.com/science/article/pii/S1877750322000023)
