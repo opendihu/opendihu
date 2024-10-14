@@ -1,30 +1,19 @@
-#include "output_writer/paraview/paraview.h"
-
-#include <fstream>
-#include <iostream>
-#include <thread>
-#include <chrono>
-#include <cstdio> // remove
+#include "output_writer/hdf5/hdf5.h"
 
 #include "easylogging++.h"
-#include "base64.h"
 
-#include "output_writer/poly_data_properties_for_mesh.h"
 #include "output_writer/loop_collect_mesh_properties.h"
 #include "output_writer/loop_get_nodal_values.h"
 #include "output_writer/loop_get_geometry_field_nodal_values.h"
-#include "output_writer/paraview/loop_output.h"
 #include "control/diagnostic_tool/performance_measurement.h"
 
 namespace OutputWriter {
 
 template <typename FieldVariablesForOutputWriterType>
-void Paraview::writeCombinedUnstructuredGridFile(
+void HDF5::writeCombinedUnstructuredGridFile(
+    HDF5Utils::Group &group,
     const FieldVariablesForOutputWriterType &fieldVariables,
     std::set<std::string> &meshNames, bool output3DMeshes) {
-  // output a *.vtu file which contains 3D (if output3DMeshes==true) or 2D
-  // meshes (if output3DMeshes==false), if there are any
-
   std::map<std::string, PolyDataPropertiesForMesh>
       &meshPropertiesUnstructuredGridFile_ =
           (output3DMeshes ? meshPropertiesUnstructuredGridFile3D_
@@ -33,22 +22,16 @@ void Paraview::writeCombinedUnstructuredGridFile(
   bool meshPropertiesInitialized = !meshPropertiesUnstructuredGridFile_.empty();
   std::vector<std::string> meshNamesVector;
 
-  // a counter that increments over every call to writeCombinedValuesVector per
-  // timestep and is used to access cached information
-  int callIdentifier = 0;
-
   if (!meshPropertiesInitialized) {
-    LOG(DEBUG) << "initialize meshPropertiesUnstructuredGridFile_";
-    Control::PerformanceMeasurement::start("durationParaview3DInit");
+    Control::PerformanceMeasurement::start("durationHDF53DInit");
 
     // collect the size data that is needed to compute offsets for parallel file
     // output
     LoopOverTuple::loopCollectMeshProperties<FieldVariablesForOutputWriterType>(
         fieldVariables, meshPropertiesUnstructuredGridFile_, meshNamesVector);
 
-    Control::PerformanceMeasurement::stop("durationParaview3DInit");
-  } else
-    LOG(DEBUG) << "meshPropertiesUnstructuredGridFile_ already initialized";
+    Control::PerformanceMeasurement::stop("durationHDF53DInit");
+  }
 
   VLOG(1) << "writeCombinedUnstructuredGridFile on rankSubset_: "
           << *this->rankSubset_;
@@ -58,54 +41,56 @@ void Paraview::writeCombinedUnstructuredGridFile(
           << meshPropertiesUnstructuredGridFile_;
 
   int targetDimensionality = 2;
-  if (output3DMeshes)
+  if (output3DMeshes) {
     targetDimensionality = 3;
+  }
 
   VLOG(1) << "targetDimensionality: " << targetDimensionality;
 
   if (!meshPropertiesInitialized) {
-    Control::PerformanceMeasurement::start("durationParaview2D3DInit");
+    Control::PerformanceMeasurement::start("durationHDF52D3DInit");
 
     // parse the collected properties of the meshes that will be output to the
     // file
-    for (std::string meshName : meshNamesVector) {
+    for (const std::string &meshName : meshNamesVector) {
       PolyDataPropertiesForMesh &polyDataPropertiesForMesh =
           meshPropertiesPolyDataFile_[meshName];
 
       // do not combine meshes other than 1D meshes
-      if (polyDataPropertiesForMesh.dimensionality != targetDimensionality)
+      if (polyDataPropertiesForMesh.dimensionality != targetDimensionality) {
         continue;
+      }
 
       // check if this mesh should be combined with other meshes
       bool combineMesh = true;
 
       // check if mesh can be merged into previous meshes
-      if (!vtkPiece3D_.properties.pointDataArrays
+      if (!piece3D_.properties.pointDataArrays
                .empty()) // if properties are already assigned by an earlier
                          // mesh
       {
-        if (vtkPiece3D_.properties.pointDataArrays.size() !=
+        if (piece3D_.properties.pointDataArrays.size() !=
             polyDataPropertiesForMesh.pointDataArrays.size()) {
           LOG(DEBUG) << "Mesh " << meshName << " cannot be combined with "
-                     << vtkPiece3D_.meshNamesCombinedMeshes
+                     << piece3D_.meshNamesCombinedMeshes
                      << ". Number of field variables mismatches for "
                      << meshName << " (is "
                      << polyDataPropertiesForMesh.pointDataArrays.size()
                      << " instead of "
-                     << vtkPiece3D_.properties.pointDataArrays.size() << ")";
+                     << piece3D_.properties.pointDataArrays.size() << ")";
           combineMesh = false;
         } else {
           for (int j = 0; j < polyDataPropertiesForMesh.pointDataArrays.size();
                j++) {
-            if (vtkPiece3D_.properties.pointDataArrays[j].name !=
+            if (piece3D_.properties.pointDataArrays[j].name !=
                 polyDataPropertiesForMesh.pointDataArrays[j]
                     .name) // if the name of the jth field variable is different
             {
               LOG(DEBUG) << "Mesh " << meshName << " cannot be combined with "
-                         << vtkPiece3D_.meshNamesCombinedMeshes
+                         << piece3D_.meshNamesCombinedMeshes
                          << ". Field variable names mismatch for " << meshName
                          << " (there is \""
-                         << vtkPiece3D_.properties.pointDataArrays[j].name
+                         << piece3D_.properties.pointDataArrays[j].name
                          << "\" instead of \""
                          << polyDataPropertiesForMesh.pointDataArrays[j].name
                          << "\")";
@@ -116,138 +101,105 @@ void Paraview::writeCombinedUnstructuredGridFile(
 
         if (combineMesh) {
           VLOG(1) << "Combine mesh " << meshName << " with "
-                  << vtkPiece3D_.meshNamesCombinedMeshes << ", add "
+                  << piece3D_.meshNamesCombinedMeshes << ", add "
                   << polyDataPropertiesForMesh.nPointsLocal << " points, "
                   << polyDataPropertiesForMesh.nCellsLocal << " elements to "
-                  << vtkPiece3D_.properties.nPointsLocal << " points, "
-                  << vtkPiece3D_.properties.nCellsLocal << " elements";
+                  << piece3D_.properties.nPointsLocal << " points, "
+                  << piece3D_.properties.nCellsLocal << " elements";
 
-          vtkPiece3D_.properties.nPointsLocal +=
+          piece3D_.properties.nPointsLocal +=
               polyDataPropertiesForMesh.nPointsLocal;
-          vtkPiece3D_.properties.nCellsLocal +=
+          piece3D_.properties.nCellsLocal +=
               polyDataPropertiesForMesh.nCellsLocal;
 
-          vtkPiece3D_.properties.nPointsGlobal +=
+          piece3D_.properties.nPointsGlobal +=
               polyDataPropertiesForMesh.nPointsGlobal;
-          vtkPiece3D_.properties.nCellsGlobal +=
+          piece3D_.properties.nCellsGlobal +=
               polyDataPropertiesForMesh.nCellsGlobal;
-          vtkPiece3D_.setVTKValues();
+          piece3D_.setVTKValues();
         }
       } else {
         VLOG(1) << "this is the first " << targetDimensionality << "D mesh";
 
         // properties are not yet assigned
-        vtkPiece3D_.properties = polyDataPropertiesForMesh; // store properties
-        vtkPiece3D_.setVTKValues();
+        piece3D_.properties = polyDataPropertiesForMesh; // store properties
+        piece3D_.setVTKValues();
       }
 
       VLOG(1) << "combineMesh: " << combineMesh;
       if (combineMesh) {
         // if the mesh is not yet present in meshNamesCombinedMeshes, add it
-        if (vtkPiece3D_.meshNamesCombinedMeshes.find(meshName) ==
-            vtkPiece3D_.meshNamesCombinedMeshes.end()) {
-          vtkPiece3D_.meshNamesCombinedMeshes.insert(meshName);
-          vtkPiece3D_.meshNamesCombinedMeshesVector.push_back(meshName);
+        if (piece3D_.meshNamesCombinedMeshes.find(meshName) ==
+            piece3D_.meshNamesCombinedMeshes.end()) {
+          piece3D_.meshNamesCombinedMeshes.insert(meshName);
+          piece3D_.meshNamesCombinedMeshesVector.push_back(meshName);
         }
       }
     }
 
-    LOG(DEBUG) << "vtkPiece3D_: meshNamesCombinedMeshes: "
-               << vtkPiece3D_.meshNamesCombinedMeshes
-               << ", properties: " << vtkPiece3D_.properties
-               << ", firstScalarName: " << vtkPiece3D_.firstScalarName
-               << ", firstVectorName: " << vtkPiece3D_.firstVectorName;
+    LOG(DEBUG) << "piece3D_: meshNamesCombinedMeshes: "
+               << piece3D_.meshNamesCombinedMeshes
+               << ", properties: " << piece3D_.properties
+               << ", firstScalarName: " << piece3D_.firstScalarName
+               << ", firstVectorName: " << piece3D_.firstVectorName;
 
-    Control::PerformanceMeasurement::stop("durationParaview2D3DInit");
+    Control::PerformanceMeasurement::stop("durationHDF52D3DInit");
   }
 
   // write combined mesh
-  if (!vtkPiece3D_.meshNamesCombinedMeshes.empty()) {
-    PolyDataPropertiesForMesh &polyDataPropertiesForMesh =
-        vtkPiece3D_.properties;
+  if (!piece3D_.meshNamesCombinedMeshes.empty()) {
+    const PolyDataPropertiesForMesh &polyDataPropertiesForMesh =
+        piece3D_.properties;
 
     VLOG(1) << "polyDataPropertiesForMesh combined: "
             << polyDataPropertiesForMesh;
 
     // if the meshes have the right dimensionality (2D or 3D)
-    if (vtkPiece3D_.properties.dimensionality == targetDimensionality) {
-      meshNames = vtkPiece3D_.meshNamesCombinedMeshes;
-
-      std::stringstream filename;
-      filename << this->filenameBaseWithNo_ << ".vtu";
+    if (piece3D_.properties.dimensionality == targetDimensionality) {
+      meshNames = piece3D_.meshNamesCombinedMeshes;
 
       // write actual file
       writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
-          fieldVariables, vtkPiece3D_.properties,
+          group, fieldVariables, piece3D_.properties,
           meshPropertiesUnstructuredGridFile_,
-          vtkPiece3D_.meshNamesCombinedMeshesVector, meshPropertiesInitialized,
-          callIdentifier, filename.str());
-      callIdentifier++;
+          piece3D_.meshNamesCombinedMeshesVector, meshPropertiesInitialized);
     } else {
-      VLOG(1) << "skip meshes " << vtkPiece3D_.meshNamesCombinedMeshes
-              << " because " << vtkPiece3D_.properties.dimensionality
+      VLOG(1) << "skip meshes " << piece3D_.meshNamesCombinedMeshes
+              << " because " << piece3D_.properties.dimensionality
               << " != " << targetDimensionality;
     }
   }
 
-  // write other single meshes
-
   // loop over 3D or 2D meshes
-  for (std::map<std::string, PolyDataPropertiesForMesh>::iterator
-           meshPropertiesIter = meshPropertiesUnstructuredGridFile_.begin();
-       meshPropertiesIter != meshPropertiesUnstructuredGridFile_.end();
-       meshPropertiesIter++) {
-    PolyDataPropertiesForMesh &polyDataPropertiesForMesh =
-        meshPropertiesIter->second;
+  for (std::pair<const std::string, PolyDataPropertiesForMesh> &props :
+       meshPropertiesUnstructuredGridFile_) {
+    PolyDataPropertiesForMesh &polyDataPropertiesForMesh = props.second;
 
     // if the current mesh does not have the correct dimensionality, skip this
     // mesh
-    if (polyDataPropertiesForMesh.dimensionality != targetDimensionality)
+    if (polyDataPropertiesForMesh.dimensionality != targetDimensionality) {
       continue;
+    }
 
     // if the current mesh was already output within the combined file, skip
     // this mesh
-    if (meshNames.find(meshPropertiesIter->first) != meshNames.end())
+    if (meshNames.find(props.first) != meshNames.end()) {
       continue;
-
-    std::stringstream filename;
-    if (meshPropertiesUnstructuredGridFile_.size() > 1) {
-      // split the current filename into base part and number part, e.g.
-      // "output_0000010" -> "output" + "_0000010"
-      std::string filenamePartBase;
-      std::string filenamePartNumber;
-
-      if (this->filenameBaseWithNo_.find("_") != std::string::npos) {
-        filenamePartBase = this->filenameBaseWithNo_.substr(
-            0, this->filenameBaseWithNo_.rfind("_"));
-        filenamePartNumber = this->filenameBaseWithNo_.substr(
-            this->filenameBaseWithNo_.rfind("_"));
-      } else {
-        filenamePartBase = this->filenameBaseWithNo_;
-      }
-
-      // add mesh name in filename
-      filename << filenamePartBase << "_" << meshPropertiesIter->first
-               << filenamePartNumber << ".vtu";
-    } else {
-      std::stringstream filename;
-      filename << this->filenameBaseWithNo_ << ".vtu";
     }
 
     LOG(DEBUG) << "meshNames: " << meshNames
-               << ", next mesh to write: " << meshPropertiesIter->first
-               << ", filename: " << filename.str();
+               << ", next mesh to write: " << props.first;
+    HDF5Utils::Group group2 = group.newGroup(props.first.c_str());
 
     // write actual file
     std::vector<std::string> currentMesh;
-    currentMesh.push_back(meshPropertiesIter->first);
-    meshNames.insert(meshPropertiesIter->first);
+    currentMesh.push_back(props.first);
+    meshNames.insert(props.first);
 
     writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
-        fieldVariables, polyDataPropertiesForMesh,
+        group2, fieldVariables, polyDataPropertiesForMesh,
         meshPropertiesUnstructuredGridFile_, currentMesh,
-        meshPropertiesInitialized, callIdentifier, filename.str());
-    callIdentifier++;
+        meshPropertiesInitialized);
 
     // for the next meshes, reinitialize, the initialized information can only
     // be shared if there is exactly 1 mesh to write in this method
@@ -256,19 +208,19 @@ void Paraview::writeCombinedUnstructuredGridFile(
 }
 
 template <typename FieldVariablesForOutputWriterType>
-void Paraview::writeCombinedUnstructuredGridFile(
+void HDF5::writeCombinedUnstructuredGridFile(
+    HDF5Utils::Group &group,
     const FieldVariablesForOutputWriterType &fieldVariables,
     PolyDataPropertiesForMesh &polyDataPropertiesForMesh,
     const std::map<std::string, PolyDataPropertiesForMesh>
         &meshPropertiesUnstructuredGridFile,
-    std::vector<std::string> meshNames, bool meshPropertiesInitialized,
-    int &callIdentifier, std::string filename) {
+    std::vector<std::string> meshNames, bool meshPropertiesInitialized) {
   int targetDimensionality = polyDataPropertiesForMesh.dimensionality;
   bool output3DMeshes = targetDimensionality == 3;
 
   std::set<std::string> meshNamesSet(meshNames.begin(), meshNames.end());
 
-  VLOG(1) << "writeCombinedUnstructuredGridFile, filename=" << filename
+  VLOG(1) << "writeCombinedUnstructuredGridFile"
           << ", meshNames: " << meshNames
           << ", meshPropertiesInitialized=" << meshPropertiesInitialized
           << ", targetDimensionality: " << targetDimensionality;
@@ -277,65 +229,25 @@ void Paraview::writeCombinedUnstructuredGridFile(
   std::string firstScalarName;
   std::string firstVectorName;
 
-  for (std::vector<PolyDataPropertiesForMesh::DataArrayName>::iterator iter =
-           polyDataPropertiesForMesh.pointDataArrays.begin();
-       iter != polyDataPropertiesForMesh.pointDataArrays.end(); iter++) {
-    if (iter->nComponents == 3 && firstVectorName.empty()) {
-      firstVectorName = iter->name;
+  for (const PolyDataPropertiesForMesh::DataArrayName &pointDataArray :
+       polyDataPropertiesForMesh.pointDataArrays) {
+    if (pointDataArray.nComponents == 3 && firstVectorName.empty()) {
+      firstVectorName = pointDataArray.name;
     } else if (firstScalarName.empty()) {
-      firstScalarName = iter->name;
+      firstScalarName = pointDataArray.name;
     }
 
     if (!firstScalarName.empty() && firstVectorName.empty())
       break;
   }
 
-  // determine filename, broadcast from rank 0
-  int filenameLength = filename.length();
-
-  // broadcast length of filename
-  MPIUtility::handleReturnValue(MPI_Bcast(&filenameLength, 1, MPI_INT, 0,
-                                          this->rankSubset_->mpiCommunicator()),
-                                "MPI_Bcast (5)");
-
-  std::vector<char> receiveBuffer(filenameLength + 1, char(0));
-  strcpy(receiveBuffer.data(), filename.c_str());
-  MPIUtility::handleReturnValue(MPI_Bcast(receiveBuffer.data(), filenameLength,
-                                          MPI_CHAR, 0,
-                                          this->rankSubset_->mpiCommunicator()),
-                                "MPI_Bcast (6)");
-
-  std::string filenameStr(receiveBuffer.begin(), receiveBuffer.end());
-
-  // remove file if it exists, synchronization afterwards by MPI calls, that is
-  // why the remove call is already here
-  assert(this->rankSubset_);
-  int ownRankNo = this->rankSubset_->ownRankNo();
-  if (ownRankNo == 0) {
-    // open file to ensure that directory exists and file is writable
-    std::ofstream file;
-    Generic::openFile(file, filenameStr);
-
-    // close and delete file
-    file.close();
-    std::remove(filenameStr.c_str());
-  }
-
   // exchange information about offset in terms of nCells and nPoints
   if (!meshPropertiesInitialized) {
-    VLOG(1) << "set nCellsPreviousRanks3D_, nPointsPreviousRanks3D_, "
-               "nPointsGlobal3D_";
+    VLOG(1) << "set nCellsPreviousRanks3D_, nPointsPreviousRanks3D_";
 
-    Control::PerformanceMeasurement::start("durationParaview3DInit");
-    Control::PerformanceMeasurement::start("durationParaview3DReduction");
-    nPointsGlobal3D_[callIdentifier] = 0;
-    MPIUtility::handleReturnValue(
-        MPI_Reduce(&polyDataPropertiesForMesh.nPointsLocal,
-                   &nPointsGlobal3D_[callIdentifier], 1, MPI_INT, MPI_SUM, 0,
-                   this->rankSubset_->mpiCommunicator()),
-        "MPI_Reduce");
-
-    for (std::string meshName : meshNames) {
+    Control::PerformanceMeasurement::start("durationHDF53DInit");
+    Control::PerformanceMeasurement::start("durationHDF53DReduction");
+    for (const std::string &meshName : meshNames) {
       nCellsPreviousRanks3D_[meshName] = 0;
       nPointsPreviousRanks3D_[meshName] = 0;
 
@@ -361,26 +273,23 @@ void Paraview::writeCombinedUnstructuredGridFile(
               << ", prefix sum: " << nPointsPreviousRanks3D_[meshName];
     }
 
-    Control::PerformanceMeasurement::stop("durationParaview3DReduction");
-    Control::PerformanceMeasurement::stop("durationParaview3DInit");
-
-    VLOG(1) << "nPointsGlobal: " << nPointsGlobal3D_[callIdentifier];
+    Control::PerformanceMeasurement::stop("durationHDF53DReduction");
+    Control::PerformanceMeasurement::stop("durationHDF53DInit");
   } else {
-    VLOG(1) << "nCellsPreviousRanks3D_, nPointsPreviousRanks3D_, "
-               "nPointsGlobal3D_ already set to "
-            << nCellsPreviousRanks3D_ << ", " << nPointsPreviousRanks3D_ << ", "
-            << nPointsGlobal3D_;
+    VLOG(1) << "nCellsPreviousRanks3D_, nPointsPreviousRanks3D_ already set to "
+            << nCellsPreviousRanks3D_ << ", " << nPointsPreviousRanks3D_;
   }
 
 #ifndef NDEBUG
-  std::vector<node_no_t> &nNodesLocalWithGhosts =
+  const std::vector<node_no_t> &nNodesLocalWithGhosts =
       polyDataPropertiesForMesh.nNodesLocalWithGhosts;
   assert(nNodesLocalWithGhosts.size() == targetDimensionality);
 #endif
 
   int nNodesPerCell = 4;
-  if (output3DMeshes)
+  if (output3DMeshes) {
     nNodesPerCell = 8;
+  }
 
   // get local data values
   // setup connectivity array, which gives the node numbers for every
@@ -391,7 +300,7 @@ void Paraview::writeCombinedUnstructuredGridFile(
   // meshPropertiesUnstructuredGridFile[...] contains information for all
   // meshes, polyDataPropertiesForMesh contains already combined information of
   // the set of meshes
-  for (std::string meshName : meshNames) {
+  for (const std::string &meshName : meshNames) {
     nConnectivityValues +=
         meshPropertiesUnstructuredGridFile.at(meshName).nCellsLocal *
         nNodesPerCell;
@@ -414,8 +323,9 @@ void Paraview::writeCombinedUnstructuredGridFile(
   // if connectivity values are already explicitly given, this is the case if we
   // have an unstructured mesh to output
   if (!polyDataPropertiesForMesh.unstructuredMeshConnectivityValues.empty()) {
-    if (meshNames.size() > 1)
+    if (meshNames.size() > 1) {
       LOG(FATAL) << "Cannot combine file for unstructured meshes.";
+    }
     assert(
         polyDataPropertiesForMesh.unstructuredMeshConnectivityValues.size() ==
         connectivityValues.size());
@@ -435,14 +345,14 @@ void Paraview::writeCombinedUnstructuredGridFile(
     int connectivityValuesIndexOffset = 0;
     int connectivityValuesOffset = 0;
 
-    for (std::string meshName : meshNames) {
+    for (const std::string &meshName : meshNames) {
       connectivityValuesOffset += nPointsPreviousRanks3D_[meshName];
     }
 
     VLOG(1) << "connectivityValuesOffset start: " << connectivityValuesOffset;
 
     // loop over meshes
-    for (std::string meshName : meshNames) {
+    for (const std::string &meshName : meshNames) {
       int nPointsPreviousRanks3D = connectivityValuesOffset;
 
       const std::vector<node_no_t> &nNodesLocalWithGhosts =
@@ -580,30 +490,27 @@ void Paraview::writeCombinedUnstructuredGridFile(
 
   VLOG(1) << "nPointsPreviousRanks3D_: " << nPointsPreviousRanks3D_
           << ", nCellsPreviousRanks3D_: " << nCellsPreviousRanks3D_;
-  // VLOG(1) << "nNodesLocalWithGhosts: " << nNodesLocalWithGhosts[0]-1 << "x"
-  // << nNodesLocalWithGhosts[1]-1 << "x" << nNodesLocalWithGhosts[2]-1;
   VLOG(1) << "connectivity: " << connectivityValues;
 
   // setup offset array
   std::vector<int> offsetValues(polyDataPropertiesForMesh.nCellsLocal);
 
-  int offsetValuesIndexOffset = 0;
+  size_t offsetValuesIndexOffset = 0;
   int offsetValuesOffset = 0;
 
-  for (std::string meshName : meshNames) {
+  for (const std::string &meshName : meshNames) {
     offsetValuesOffset += nCellsPreviousRanks3D_[meshName] * nNodesPerCell;
   }
 
   // loop over meshes
-  for (std::string meshName : meshNames) {
-    for (int i = 0;
+  for (const std::string &meshName : meshNames) {
+    for (size_t i = 0;
          i < meshPropertiesUnstructuredGridFile.at(meshName).nCellsLocal; i++) {
       assert(offsetValuesIndexOffset + i < offsetValues.size());
+      // specifies the end, i.e. one after the last, of the last of nodes for
+      // each element
       offsetValues[offsetValuesIndexOffset + i] =
-          offsetValuesOffset +
-          (i + 1) *
-              nNodesPerCell; // specifies the end, i.e. one after the last, of
-                             // the last of nodes for each element
+          offsetValuesOffset + (i + 1) * nNodesPerCell;
     }
 
     offsetValuesIndexOffset +=
@@ -629,10 +536,9 @@ void Paraview::writeCombinedUnstructuredGridFile(
                  << polyDataPropertiesForMesh.pointDataArrays.size();
       LOG(DEBUG) << "mesh names: " << meshNames;
       std::stringstream pointDataArraysNames;
-      for (int i = 0; i < polyDataPropertiesForMesh.pointDataArrays.size();
-           i++) {
-        pointDataArraysNames
-            << polyDataPropertiesForMesh.pointDataArrays[i].name << " ";
+      for (const PolyDataPropertiesForMesh::DataArrayName &pointDataArray :
+           polyDataPropertiesForMesh.pointDataArrays) {
+        pointDataArraysNames << pointDataArray.name << " ";
       }
       LOG(DEBUG) << "pointDataArraysNames: " << pointDataArraysNames.str();
       LOG(DEBUG) << "FieldVariablesForOutputWriterType: "
@@ -667,15 +573,11 @@ void Paraview::writeCombinedUnstructuredGridFile(
     std::vector<double> buffer;
 
     // loop over all field variables
-    for (std::vector<PolyDataPropertiesForMesh::DataArrayName>::iterator
-             pointDataArrayIter =
-                 polyDataPropertiesForMesh.pointDataArrays.begin();
-         pointDataArrayIter != polyDataPropertiesForMesh.pointDataArrays.end();
-         pointDataArrayIter++) {
+    for (const PolyDataPropertiesForMesh::DataArrayName &pointDataArray :
+         polyDataPropertiesForMesh.pointDataArrays) {
       // if it is a 2D vector field
-      if (pointDataArrayIter->nComponents == 2) {
-        std::vector<double> &values =
-            fieldVariableValues[pointDataArrayIter->name];
+      if (pointDataArray.nComponents == 2) {
+        std::vector<double> &values = fieldVariableValues[pointDataArray.name];
 
         // copy all values to a buffer
         buffer.assign(values.begin(), values.end());
@@ -709,309 +611,43 @@ void Paraview::writeCombinedUnstructuredGridFile(
            "the field variables returned by getFieldVariablesForOutputWriter!";
   }
 
-  int nOutputFileParts = 5 + polyDataPropertiesForMesh.pointDataArrays.size();
+  Control::PerformanceMeasurement::start("durationHDF53DWrite");
 
-  // transform current time to string
-  std::vector<double> time(1, this->currentTime_);
-  std::string stringTime;
-  if (binaryOutput_) {
-    stringTime = Paraview::encodeBase64Float(time.begin(), time.end());
-  } else {
-    stringTime = Paraview::convertToAscii(time, fixedFormat_);
-  }
-
-  // create the basic structure of the output file
-  std::vector<std::stringstream> outputFileParts(nOutputFileParts);
-  int outputFilePartNo = 0;
-  outputFileParts[outputFilePartNo]
-      << "<?xml version=\"1.0\"?>" << std::endl
-      << "<!-- " << DihuContext::versionText() << " " << DihuContext::metaText()
-      << ", currentTime: " << this->currentTime_
-      << ", timeStepNo: " << this->timeStepNo_ << " -->" << std::endl
-      << "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" "
-         "byte_order=\"LittleEndian\">"
-      << std::endl // intel cpus are LittleEndian
-      << std::string(1, '\t') << "<UnstructuredGrid>" << std::endl
-      << std::string(2, '\t') << "<FieldData>" << std::endl
-      << std::string(3, '\t')
-      << "<DataArray type=\"Float32\" Name=\"Time\" NumberOfTuples=\"1\" "
-         "format=\""
-      << (binaryOutput_ ? "binary" : "ascii") << "\" >" << std::endl
-      << std::string(4, '\t') << stringTime << std::endl
-      << std::string(3, '\t') << "</DataArray>" << std::endl
-      << std::string(2, '\t') << "</FieldData>" << std::endl;
-
-  outputFileParts[outputFilePartNo]
-      << std::string(2, '\t') << "<Piece NumberOfPoints=\""
-      << nPointsGlobal3D_[callIdentifier] << "\" NumberOfCells=\""
-      << polyDataPropertiesForMesh.nCellsGlobal << "\">" << std::endl
-      << std::string(3, '\t') << "<PointData";
-
-  if (firstScalarName != "") {
-    outputFileParts[outputFilePartNo] << " Scalars=\"" << firstScalarName
-                                      << "\"";
-  }
-  if (firstVectorName != "") {
-    outputFileParts[outputFilePartNo] << " Vectors=\"" << firstVectorName
-                                      << "\"";
-  }
-  outputFileParts[outputFilePartNo] << ">" << std::endl;
-
-  // loop over field variables (PointData)
-  for (std::vector<PolyDataPropertiesForMesh::DataArrayName>::iterator
-           pointDataArrayIter =
-               polyDataPropertiesForMesh.pointDataArrays.begin();
-       pointDataArrayIter != polyDataPropertiesForMesh.pointDataArrays.end();
-       pointDataArrayIter++) {
-    // paraview cannot handle 2D vector fields without warnings, so set 3D
-    // vector fields
-    int nComponentsParaview = pointDataArrayIter->nComponents;
-    if (nComponentsParaview == 2)
-      nComponentsParaview = 3;
-
-    // set up string for component names
-    std::stringstream componentNames;
-    bool isComponentNamesSet = false;
-    for (int componentNo = 0; componentNo < pointDataArrayIter->nComponents;
-         componentNo++) {
-      // get component name of the current component
-      std::string componentName =
-          pointDataArrayIter->componentNames[componentNo];
-
-      componentNames << "ComponentName" << componentNo << "=\"" << componentName
-                     << "\" ";
-
-      // check if it is equal to simply the componentNo, if no component name
-      // was explicitly specify they have names "0", "1", ...
-      std::stringstream trivialComponentName;
-      trivialComponentName << componentNo;
-
-      if (componentName != trivialComponentName.str())
-        isComponentNamesSet = true;
-    }
-
-    // if there were no real component names set, do not include them in the VTK
-    // file
-    if (!isComponentNamesSet)
-      componentNames.str("");
-
-    // write normal data element
-    outputFileParts[outputFilePartNo]
-        << std::string(4, '\t') << "<DataArray "
-        << "Name=\"" << pointDataArrayIter->name << "\" "
-        << "type=\""
-        << (pointDataArrayIter->name == "partitioning" ? "Int32" : "Float32")
-        << "\" "
-        << "NumberOfComponents=\"" << nComponentsParaview << "\" "
-        << componentNames.str() << " format=\""
-        << (binaryOutput_ ? "binary" : "ascii") << "\" >" << std::endl
-        << std::string(5, '\t');
-
-    // at this point the data of the field variable is missing
-    outputFilePartNo++;
-
-    outputFileParts[outputFilePartNo] << std::endl
-                                      << std::string(4, '\t') << "</DataArray>"
-                                      << std::endl;
-  }
-
-  outputFileParts[outputFilePartNo]
-      << std::string(3, '\t') << "</PointData>" << std::endl
-      << std::string(3, '\t') << "<CellData>" << std::endl
-      << std::string(3, '\t') << "</CellData>" << std::endl
-      << std::string(3, '\t') << "<Points>" << std::endl
-      << std::string(4, '\t')
-      << "<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\""
-      << (binaryOutput_ ? "binary" : "ascii") << "\" >" << std::endl
-      << std::string(5, '\t');
-
-  // at this point the data of points (geometry field) is missing
-  outputFilePartNo++;
-
-  outputFileParts[outputFilePartNo]
-      << std::endl
-      << std::string(4, '\t') << "</DataArray>" << std::endl
-      << std::string(3, '\t') << "</Points>" << std::endl
-      << std::string(3, '\t') << "<Cells>" << std::endl
-      << std::string(4, '\t')
-      << "<DataArray Name=\"connectivity\" type=\"Int32\" "
-      << (binaryOutput_ ? "format=\"binary\"" : "format=\"ascii\"") << ">"
-      << std::endl
-      << std::string(5, '\t');
-
-  // at this point the the structural information of the lines (connectivity) is
-  // missing
-  outputFilePartNo++;
-
-  outputFileParts[outputFilePartNo]
-      << std::endl
-      << std::string(4, '\t') << "</DataArray>" << std::endl
-      << std::string(4, '\t') << "<DataArray Name=\"offsets\" type=\"Int32\" "
-      << (binaryOutput_ ? "format=\"binary\"" : "format=\"ascii\"") << ">"
-      << std::endl
-      << std::string(5, '\t');
-
-  // at this point the offset array will be written to the file
-  outputFilePartNo++;
-
-  outputFileParts[outputFilePartNo]
-      << std::endl
-      << std::string(4, '\t') << "</DataArray>" << std::endl
-      << std::string(4, '\t') << "<DataArray Name=\"types\" type=\"UInt8\" "
-      << (binaryOutput_ ? "format=\"binary\"" : "format=\"ascii\"") << ">"
-      << std::endl
-      << std::string(5, '\t');
-
-  // at this point the types array will be written to the file
-  outputFilePartNo++;
-
-  outputFileParts[outputFilePartNo]
-      << std::endl
-      << std::string(4, '\t') << "</DataArray>" << std::endl
-      << std::string(3, '\t') << "</Cells>" << std::endl
-      << std::string(2, '\t') << "</Piece>" << std::endl
-      << std::string(1, '\t') << "</UnstructuredGrid>" << std::endl
-      << "</VTKFile>" << std::endl;
-
-  assert(outputFilePartNo + 1 == nOutputFileParts);
-
-  // loop over output file parts and collect the missing data for the own rank
-
-  VLOG(1) << "outputFileParts:";
-
-  for (std::vector<std::stringstream>::iterator iter = outputFileParts.begin();
-       iter != outputFileParts.end(); iter++) {
-    VLOG(1) << "  " << iter->str();
-  }
-
-  LOG(DEBUG) << "open MPI file \"" << filenameStr << "\" for rankSubset "
-             << *this->rankSubset_;
-
-  // open file
-  MPI_File fileHandle;
-
-  // set a maximum timeout of 10s if the file is not writable
-  MPI_Info info;
-  MPIUtility::handleReturnValue(MPI_Info_create(&info), "MPI_Info_create");
-  MPIUtility::handleReturnValue(
-      MPI_Info_set(info, "shared_file_timeout", "10.0"), "MPI_Info_set");
-
-  MPIUtility::handleReturnValue(
-      MPI_File_open(this->rankSubset_->mpiCommunicator(), filenameStr.c_str(),
-                    // MPI_MODE_WRONLY | MPI_MODE_CREATE | MPI_MODE_UNIQUE_OPEN,
-                    MPI_MODE_WRONLY | MPI_MODE_CREATE, info, &fileHandle),
-      "MPI_File_open");
-
-  Control::PerformanceMeasurement::start("durationParaview3DWrite");
-
-  // write beginning of file on rank 0
-  outputFilePartNo = 0;
-
-  writeAsciiDataShared(fileHandle, ownRankNo,
-                       outputFileParts[outputFilePartNo].str());
-  outputFilePartNo++;
-
-  VLOG(1) << "get current shared file position";
-
-  // get current file position
-  MPI_Offset currentFilePosition = 0;
-  MPIUtility::handleReturnValue(
-      MPI_File_get_position_shared(fileHandle, &currentFilePosition),
-      "MPI_File_get_position_shared");
-  LOG(DEBUG) << "current shared file position: " << currentFilePosition;
-
+  herr_t err;
   // write field variables
-  // loop over field variables
-  for (std::vector<PolyDataPropertiesForMesh::DataArrayName>::iterator
-           pointDataArrayIter =
-               polyDataPropertiesForMesh.pointDataArrays.begin();
-       pointDataArrayIter != polyDataPropertiesForMesh.pointDataArrays.end();
-       pointDataArrayIter++) {
-    assert(fieldVariableValues.find(pointDataArrayIter->name) !=
+  for (PolyDataPropertiesForMesh::DataArrayName &pointDataArray :
+       polyDataPropertiesForMesh.pointDataArrays) {
+    assert(fieldVariableValues.find(pointDataArray.name) !=
            fieldVariableValues.end());
 
-    VLOG(1) << "write vector for field variable \"" << pointDataArrayIter->name
-            << "\".";
-
+    const std::vector<double> &dataToWrite =
+        fieldVariableValues[pointDataArray.name];
     // write values
-    bool writeFloatsAsInt =
-        pointDataArrayIter->name ==
-        "partitioning"; // for partitioning, convert float values to integer
-                        // values for output
-    writeCombinedValuesVector(fileHandle, ownRankNo,
-                              fieldVariableValues[pointDataArrayIter->name],
-                              callIdentifier++, writeFloatsAsInt);
+    // for partitioning, convert float values to integer values for output
+    if (pointDataArray.name == "partitioning") {
+      std::vector<int32_t> newVals(dataToWrite.size());
 
-    // write next xml constructs
-    writeAsciiDataShared(fileHandle, ownRankNo,
-                         outputFileParts[outputFilePartNo].str());
-    outputFilePartNo++;
+      for (const auto &v : dataToWrite) {
+        newVals.push_back((int32_t)(round(v)));
+      }
+      err = group.writeSimpleVec<int32_t>(newVals, pointDataArray.name.c_str());
+    } else {
+      err = group.writeSimpleVec<double>(dataToWrite,
+                                         pointDataArray.name.c_str());
+    }
+    assert(err >= 0);
   }
 
-  VLOG(1) << "write vector for geometry data";
+  err = group.writeSimpleVec<double>(geometryFieldValues, "geometry");
+  assert(err >= 0);
+  err = group.writeSimpleVec<int32_t>(connectivityValues, "connectivity");
+  assert(err >= 0);
+  err = group.writeSimpleVec<int32_t>(offsetValues, "offsets");
+  assert(err >= 0);
+  err = writeCombinedTypesVector(group, polyDataPropertiesForMesh.nCellsGlobal,
+                                 output3DMeshes, "types");
+  assert(err >= 0);
 
-  // write geometry field data
-  writeCombinedValuesVector(fileHandle, ownRankNo, geometryFieldValues,
-                            callIdentifier++);
-
-  // write next xml constructs
-  writeAsciiDataShared(fileHandle, ownRankNo,
-                       outputFileParts[outputFilePartNo].str());
-  outputFilePartNo++;
-
-  // write connectivity values
-  writeCombinedValuesVector(fileHandle, ownRankNo, connectivityValues,
-                            callIdentifier++);
-
-  // write next xml constructs
-  writeAsciiDataShared(fileHandle, ownRankNo,
-                       outputFileParts[outputFilePartNo].str());
-  outputFilePartNo++;
-
-  // write offset values
-  writeCombinedValuesVector(fileHandle, ownRankNo, offsetValues,
-                            callIdentifier++);
-
-  // write next xml constructs
-  writeAsciiDataShared(fileHandle, ownRankNo,
-                       outputFileParts[outputFilePartNo].str());
-  outputFilePartNo++;
-
-  // write types values
-  writeCombinedTypesVector(fileHandle, ownRankNo,
-                           polyDataPropertiesForMesh.nCellsGlobal,
-                           output3DMeshes, callIdentifier++);
-
-  // write next xml constructs
-  writeAsciiDataShared(fileHandle, ownRankNo,
-                       outputFileParts[outputFilePartNo].str());
-
-  /*
-    int array_of_sizes[1];
-    array_of_sizes[0]=numProcs;
-    int array_of_subsizes[1];
-    array_of_subsizes[0]=1;
-    int array_of_starts[1];
-    array_of_starts[0]=myId;
-
-
-    MPI_Datatype accessPattern;
-    MPI_Type_create_subarray(1,array_of_sizes, array_of_subsizes,
-    array_of_starts, MPI_ORDER_C, MPI_BYTE, &accessPattern);
-    MPI_Type_commit(&accessPattern);
-
-    MPI_File_set_view(fh, 0, MPI_BYTE, accessPattern, "native", MPI_INFO_NULL);
-    MPI_File_write(fh, v, size, MPI_BYTE, MPI_STATUS_IGNORE);
-  */
-
-  Control::PerformanceMeasurement::stop("durationParaview3DWrite");
-  MPIUtility::handleReturnValue(MPI_File_close(&fileHandle), "MPI_File_close");
-
-  // register file at SeriesWriter to be included in the "*.vtk.series" JSON
-  // file
-  if (ownRankNo == 0) {
-    Paraview::seriesWriter().registerNewFile(filenameStr, this->currentTime_);
-  }
+  Control::PerformanceMeasurement::stop("durationHDF53DWrite");
 }
-
 } // namespace OutputWriter

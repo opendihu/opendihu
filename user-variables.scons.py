@@ -25,6 +25,8 @@ cmake="cmake"      # cmake command
 PETSC_DOWNLOAD = True
 #PETSC_DIR = "/usr/lib/petsc/"
 
+HDF5_DOWNLOAD = True
+
 # Python 3.9, note that this also builds the C-API which is usually not included in the normal python3 installation of your system, therefore it is recommended that you leave it at 'True'
 PYTHON_DOWNLOAD = True
 

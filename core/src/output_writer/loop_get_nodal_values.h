@@ -25,7 +25,7 @@
 
 namespace OutputWriter {
 
-namespace ParaviewLoopOverTuple {
+namespace LoopOverTuple {
 
 /** Static recursive loop from 0 to number of entries in the tuple
  *  Stopping criterion
@@ -90,8 +90,7 @@ getNodalValues(CurrentFieldVariableType currentFieldVariable,
                std::set<std::string> meshNames,
                std::map<std::string, std::vector<double>> &values);
 
-} // namespace ParaviewLoopOverTuple
-
+} // namespace LoopOverTuple
 } // namespace OutputWriter
 
-#include "output_writer/paraview/loop_get_nodal_values.tpp"
+#include "output_writer/loop_get_nodal_values.tpp"

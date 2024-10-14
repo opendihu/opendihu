@@ -6,7 +6,7 @@
 
 #include "control/types.h"
 #include "output_writer/generic.h"
-#include "output_writer/paraview/poly_data_properties_for_mesh.h"
+#include "output_writer/poly_data_properties_for_mesh.h"
 #include "output_writer/paraview/series_writer.h"
 
 namespace OutputWriter {

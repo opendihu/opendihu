@@ -8,6 +8,7 @@
 #include "output_writer/paraview/paraview.h"
 #include "output_writer/exfile/exfile.h"
 #include "output_writer/megamol/megamol.h"
+#include "output_writer/hdf5/hdf5.h"
 
 namespace OutputWriter {
 
@@ -15,10 +16,8 @@ void Manager::initialize(DihuContext context, PythonConfig settings,
                          std::shared_ptr<Partition::RankSubset> rankSubset) {
   std::vector<int> outputFileNo;
   if (!outputWriter_.empty()) {
-    for (std::list<std::shared_ptr<Generic>>::iterator iter =
-             outputWriter_.begin();
-         iter != outputWriter_.end(); iter++) {
-      outputFileNo.push_back((*iter)->outputFileNo());
+    for (std::shared_ptr<Generic> &writer : outputWriter_) {
+      outputFileNo.push_back(writer->outputFileNo());
     }
   }
 
@@ -49,7 +48,7 @@ void Manager::initialize(DihuContext context, PythonConfig settings,
     }
   } else if (settings.hasKey("OutputWriters")) {
     LOG(ERROR)
-        << "You wrote \"OutputWriters\" but it should be \"OutputWriter\".";
+        << R"(You wrote "OutputWriters" but it should be "OutputWriter".)";
   } else {
     std::vector<std::string> configKeys;
     settings.getKeys(configKeys);
@@ -64,13 +63,12 @@ void Manager::initialize(DihuContext context, PythonConfig settings,
   // these numbers
   if (!outputWriter_.empty() && !outputFileNo.empty()) {
     int i = 0;
-    for (std::list<std::shared_ptr<Generic>>::iterator iter =
-             outputWriter_.begin();
-         iter != outputWriter_.end(); iter++) {
-      (*iter)->setOutputFileNo(outputFileNo[i]);
+    for (std::shared_ptr<Generic> &writer : outputWriter_) {
+      writer->setOutputFileNo(outputFileNo[i]);
 
-      if (i < outputFileNo.size())
+      if (i < outputFileNo.size()) {
         i++;
+      }
     }
   }
 }
@@ -104,10 +102,13 @@ void Manager::createOutputWriterFromSettings(
       LOG(ERROR) << "Not compiled with ADIOS, but a \"MegaMol\" output writer "
                     "was specified. Ignoring this output writer.";
 #endif
+    } else if (typeString == "HDF5") {
+      outputWriter_.push_back(
+          std::make_shared<HDF5>(context, settings, rankSubset));
     } else {
       LOG(WARNING) << "Unknown output writer type \"" << typeString << "\". "
                    << "Valid options are: \"Paraview\", \"PythonCallback\", "
-                      "\"PythonFile\", \"Exfile\", \"MegaMol\"";
+                      "\"PythonFile\", \"Exfile\", \"MegaMol\", \"HDF5\"";
     }
   }
 }

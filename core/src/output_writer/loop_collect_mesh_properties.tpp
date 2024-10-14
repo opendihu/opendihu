@@ -1,9 +1,6 @@
-#include "output_writer/paraview/loop_collect_field_variables_names.h"
+#include "output_writer/loop_collect_mesh_properties.h"
 
-#include "output_writer/paraview/paraview_writer.h"
-#include "output_writer/paraview/poly_data_properties_for_mesh.h"
-#include "output_writer/paraview/get_connectivity_values_unstructured_mesh.h"
-
+#include "output_writer/get_connectivity_values_unstructured_mesh.h"
 #include "function_space/00_function_space_base_dim.h"
 
 #include <cstdlib>
@@ -11,7 +8,7 @@
 
 namespace OutputWriter {
 
-namespace ParaviewLoopOverTuple {
+namespace LoopOverTuple {
 
 /** Static recursive loop from 0 to number of entries in the tuple
  * Loop body
@@ -217,5 +214,5 @@ collectMeshProperties(
 
   return false; // do not break iteration
 }
-} // namespace ParaviewLoopOverTuple
+} // namespace LoopOverTuple
 } // namespace OutputWriter
