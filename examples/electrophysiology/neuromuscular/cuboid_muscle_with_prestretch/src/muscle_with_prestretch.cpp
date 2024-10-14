@@ -1,35 +1,11 @@
+#include <Python.h>
 #include <iostream>
 #include <cstdlib>
 
+#include <iostream>
+#include "easylogging++.h"
+
 #include "opendihu.h"
-
-////// Possible options
-
-// #define Shorten
-// #define HodgkinHuxley
-#define HodgkinHuxlexRazumova
-
-// #define FiberDiffusionSolver TimeSteppingScheme::ImplicitEuler
-// #define FiberDiffusionSolver TimeSteppingScheme::CrankNicolson
-template <typename T>
-using FiberDiffusionSolver = TimeSteppingScheme::ImplicitEuler<T>;
-// template<typename T> using FiberDiffusionSolver =
-// TimeSteppingScheme::CrankNicolson<T>;
-
-////// ^^^^^^^^^^^^^^^^
-
-#ifdef Shorten
-#define N_STATES 57
-#define N_ALGEBRAICS 1
-#endif
-#ifdef HodgkinHuxley
-#define N_STATES 4
-#define N_ALGEBRAICS 9
-#endif
-#ifdef HodgkinHuxlexRazumova
-#define N_STATES 9
-#define N_ALGEBRAICS 19
-#endif
 
 // define material
 struct Material : Equation::SolidMechanics::HyperelasticityBase {
@@ -70,44 +46,69 @@ struct Material : Equation::SolidMechanics::HyperelasticityBase {
       INT(0);
 };
 
-// Fast monodomain: 0D / 1D
-using MonodomainSolver = FastMonodomainSolver< // a wrapper that improves
-                                               // performance of multidomain
-    Control::MultipleInstances<                // fibers
-        OperatorSplitting::Strang<
-            Control::MultipleInstances<TimeSteppingScheme::Heun< // fiber
-                                                                 // reaction
-                                                                 // term
-                CellmlAdapter<N_STATES, N_ALGEBRAICS, // depends on the cellml
-                                                      // model
-                              FunctionSpace::FunctionSpace<
-                                  Mesh::StructuredDeformableOfDimension<1>,
-                                  BasisFunction::LagrangeOfOrder<1>>>>>,
-            Control::MultipleInstances<
-                FiberDiffusionSolver< // fiber diffusion, note that implicit
-                                      // euler gives lower error in this case
-                                      // than crank nicolson
-                    SpatialDiscretization::FiniteElementMethod<
-                        Mesh::StructuredDeformableOfDimension<1>,
-                        BasisFunction::LagrangeOfOrder<1>, Quadrature::Gauss<2>,
-                        Equation::Dynamic::IsotropicDiffusion>>>>>>;
-
 int main(int argc, char *argv[]) {
+  // Solves nonlinear hyperelasticity (Mooney-Rivlin) using the built-in solver
+
   // initialize everything, handle arguments and parse settings from input file
   DihuContext settings(argc, argv);
-  Control::Coupling<
-      // static trans-iso material for "prestretch"
-      SpatialDiscretization::HyperelasticitySolver<Material>,
-      // actual simlation
-      Control::Coupling<
-          // Term1
-          MonodomainSolver,
-          // Term2
-          MuscleContractionSolver<Mesh::StructuredDeformableOfDimension<3>>>
 
-      >
+  // define problem
+  Control::Coupling<
+
+      Control::Coupling< // Couple fibers (FastMonodomain) with solid mechanics
+                         // (MuscleContraction)
+          FastMonodomainSolver<Control::MultipleInstances< // subdomains in
+                                                           // xy-plane
+              OperatorSplitting::Strang<
+                  Control::MultipleInstances< // fiber reaction term
+                      TimeSteppingScheme::Heun<CellmlAdapter<
+                          9, 19, // nStates, nAlgebraics
+                          FunctionSpace::FunctionSpace<
+                              Mesh::StructuredDeformableOfDimension<1>,
+                              BasisFunction::LagrangeOfOrder<1>>>>>,
+                  Control::MultipleInstances<            // fiber diffusion
+                      TimeSteppingScheme::ImplicitEuler< // note that implicit
+                                                         // euler gives lower
+                                                         // error in this case
+                                                         // than crank nicolson
+                          SpatialDiscretization::FiniteElementMethod<
+                              Mesh::StructuredDeformableOfDimension<1>,
+                              BasisFunction::LagrangeOfOrder<1>,
+                              Quadrature::Gauss<2>,
+                              Equation::Dynamic::IsotropicDiffusion>>>>>>,
+          MuscleContractionSolver< // 3D solid mechanics equation
+              Mesh::StructuredDeformableOfDimension<3>,
+              Equation::SolidMechanics::
+                  TransverselyIsotropicMooneyRivlinIncompressibleActive3D>>,
+
+      Control::Coupling< // Couple fibers (FastMonodomain) with solid mechanics
+                         // (MuscleContraction)
+          FastMonodomainSolver<Control::MultipleInstances< // subdomains in
+                                                           // xy-plane
+              OperatorSplitting::Strang<
+                  Control::MultipleInstances< // fiber reaction term
+                      TimeSteppingScheme::Heun<CellmlAdapter<
+                          9, 19, // nStates, nAlgebraics
+                          FunctionSpace::FunctionSpace<
+                              Mesh::StructuredDeformableOfDimension<1>,
+                              BasisFunction::LagrangeOfOrder<1>>>>>,
+                  Control::MultipleInstances<            // fiber diffusion
+                      TimeSteppingScheme::ImplicitEuler< // note that implicit
+                                                         // euler gives lower
+                                                         // error in this case
+                                                         // than crank nicolson
+                          SpatialDiscretization::FiniteElementMethod<
+                              Mesh::StructuredDeformableOfDimension<1>,
+                              BasisFunction::LagrangeOfOrder<1>,
+                              Quadrature::Gauss<2>,
+                              Equation::Dynamic::IsotropicDiffusion>>>>>>,
+          MuscleContractionSolver< // 3D solid mechanics equation
+              Mesh::StructuredDeformableOfDimension<3>,
+              Equation::SolidMechanics::
+                  TransverselyIsotropicMooneyRivlinIncompressibleActive3D>>>
       problem(settings);
 
+  // run problem
   problem.run();
 
   return EXIT_SUCCESS;
