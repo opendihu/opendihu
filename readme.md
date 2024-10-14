@@ -48,4 +48,4 @@ Currently, the following literature written by the authors is available.
 
 * (Open-access) Article about an agonist-antagonist myoneural interface model using OpenDiHu andd preCICE:
 
-	[C. Homs-Pons, R. Lautenschlager, L. Schmid, J. Ernst, D. Göddeke, O. Röhrle and M. Schulte, Coupled simulations and parameter inversion for neural system and electrophysiological muscle models, GAMM-Mitteilungen. 47 (2024), e202370009.](https://doi.org/10.1002/gamm.202370009])
+	[C. Homs-Pons, R. Lautenschlager, L. Schmid, J. Ernst, D. Göddeke, O. Röhrle and M. Schulte, Coupled simulations and parameter inversion for neural system and electrophysiological muscle models, GAMM-Mitteilungen. 47 (2024), e202370009.](https://doi.org/10.1002/gamm.202370009)
