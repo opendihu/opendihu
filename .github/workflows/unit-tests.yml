@@ -3,7 +3,7 @@ on: [push, pull_request]
 jobs:
   container-test-job:
     runs-on: ubuntu-latest
-    container: maierbn/opendihu:latest
+    container: carmehp/opendihu:latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
