@@ -2,6 +2,7 @@ from .clock import clock
 from .MPI import MPI
 from .GSL import GSL
 from .HDF5 import HDF5
+from .nlohmannjson import NlohmannJson
 from .FFTW import FFTW
 from .FFTW3 import FFTW3
 from .PETSc import PETSc
@@ -58,3 +59,4 @@ from .xbraid import xbraid
 from .opencor import OpenCOR
 from .precice import precice
 from .std_simd import std_simd
+from .scr import SCR
