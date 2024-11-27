@@ -23,13 +23,11 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 100
 WORKDIR /workspace
 
 # Clone opendihu
-RUN git clone --branch develop --depth=1 https://github.com/maierbn/opendihu.git  
+RUN git clone --branch update-docker --depth=1 https://github.com/opendihu/opendihu.git  
 WORKDIR opendihu
 
 # Build opendihu, debug and release target for core, build release unit tests and run tests, build all examples
-RUN make debug_without_tests; echo "make debug_without_tests done"
 RUN make release_without_tests; echo "make release_without_tests done"; cat config.log
-RUN make travis_ci; echo "build examples done"
 
 # Set environment variable such that OpenMPI works inside docker container (run as root)
 ENV OMPI_ALLOW_RUN_AS_ROOT=1
