@@ -5,12 +5,10 @@ jobs:
     runs-on: ubuntu-latest
     container: carmehp/opendihu:latest
     steps:
-      - name: Get code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-      - name: Checkout head
-        run: git checkout HEAD^
+      - name: Show path
+        run: pwd
+      - name: Show content
+        run: ls
       - name: Build 
         working-directory: opendihu
         run: python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE no_examples=TRUE
