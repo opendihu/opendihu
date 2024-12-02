@@ -6,14 +6,10 @@ jobs:
     container: carmehp/opendihu:latest
     steps:
       - name: Go to directory
-        run: cd /workspace/opendihu
-      - name: Show path
-        run: pwd
-      - name: List Files in Root Directory
         run: |
+          cd /workspace/opendihu
+          pwd
           echo "Listing files in the root directory:"
           ls -lah
-      - name: Build 
-        working-directory: opendihu
-        run: python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE no_examples=TRUE
+          python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE no_examples=TRUE
 
