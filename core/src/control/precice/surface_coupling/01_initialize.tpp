@@ -40,6 +40,8 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // call initialize of the nested solver
+  nestedSolver_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "precice_adapter"));
   nestedSolver_.initialize();
 
   // initialize function space
@@ -117,6 +119,12 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
   LOG(FATAL) << "Failed to initialize PreciceAdapter (surface coupling) "
                 "because opendihu is not compiled with preCICE.";
 #endif
+}
+
+template <typename NestedSolver>
+void PreciceAdapterInitialize<NestedSolver>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 #ifdef HAVE_PRECICE

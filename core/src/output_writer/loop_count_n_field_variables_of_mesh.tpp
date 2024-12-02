@@ -41,8 +41,9 @@ countNFieldVariablesOfMesh(CurrentFieldVariableType currentFieldVariable,
           << ", before: " << nFieldVariablesOfMesh;
 
   // if the field variable is a null pointer, return but do not break iteration
-  if (!currentFieldVariable)
+  if (!currentFieldVariable) {
     return false;
+  }
 
   // if mesh name is the specified meshName, count this mesh
   if (currentFieldVariable->functionSpace()->meshName() == meshName) {

@@ -119,6 +119,8 @@ void TimeSteppingSchemeOdeReduced<TimeSteppingType>::initialize() {
   // initialized
   DihuContext::solverStructureVisualizer()->beginChild("fullTimestepping");
 
+  this->fullTimestepping_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "time_stepping_scheme_ode_reduced"));
   this->fullTimestepping_.initialize();
   LOG(DEBUG) << "fullTimestepping_ was initialized, has function space: "
              << this->fullTimestepping_.data().functionSpace()->meshName();
@@ -136,6 +138,8 @@ void TimeSteppingSchemeOdeReduced<TimeSteppingType>::initialize() {
   assert(functionSpaceRed->meshPartition()); // assert that the function space
                                              // was retrieved correctly
   this->data_->setFunctionSpace(functionSpaceRed);
+  this->data_->setUniquePrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "time_stepping_scheme_ode_reduced"));
   this->data_->initialize();
 
   MORBase<typename TimeSteppingType::FunctionSpace>::initialize();
@@ -169,8 +173,9 @@ void TimeSteppingSchemeOdeReduced<TimeSteppingType>::run() {
   // initialize
   this->initialize();
 
+  auto checkpointing = this->context_.getCheckpointing();
   // do simulations
-  this->advanceTimeSpan();
+  this->advanceTimeSpan(true, checkpointing);
 }
 
 template <typename TimeSteppingType>

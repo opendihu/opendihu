@@ -102,6 +102,12 @@ void Component<FunctionSpaceType, nComponents>::setName(
 }
 
 template <typename FunctionSpaceType, int nComponents>
+void Component<FunctionSpaceType, nComponents>::setUniqueName(
+    const std::string &uniqueName) {
+  this->uniqueName_ = uniqueName;
+}
+
+template <typename FunctionSpaceType, int nComponents>
 std::string
 Component<FunctionSpaceType, nComponents>::exfileBasisFunctionSpecification()
     const {
@@ -218,6 +224,18 @@ element_no_t Component<FunctionSpaceType, nComponents>::nElementsLocal() const {
 template <typename FunctionSpaceType, int nComponents>
 std::string Component<FunctionSpaceType, nComponents>::name() const {
   return this->name_;
+}
+
+template <typename FunctionSpaceType, int nComponents>
+std::string Component<FunctionSpaceType, nComponents>::uniqueName() const {
+  std::stringstream ss;
+  if (this->uniqueName_ == "") {
+    ss << this->name_;
+  } else {
+    ss << this->uniqueName_;
+  }
+  ss << "_" << this->nDofsGlobal();
+  return ss.str();
 }
 
 template <typename FunctionSpaceType, int nComponents>

@@ -23,6 +23,7 @@ public:
   typedef typename Data::StaticBidomain<
       typename FiniteElementMethodDiffusion::FunctionSpace>
       Data;
+  typedef Data FullData;
   typedef typename Data::SlotConnectorDataType SlotConnectorDataType;
 
   //! constructor
@@ -30,7 +31,9 @@ public:
 
   //! advance simulation by the given time span, data in solution is used,
   //! afterwards new data is in solution
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! initialize components of the simulation
   void initialize();
@@ -55,8 +58,15 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! get the data that will be transferred in the operator splitting to the
   //! other term of the splitting the transfer is done by the
@@ -79,6 +89,7 @@ protected:
                         // and solverManager
   Data data_; //< the data object of the multidomain solver which stores all
               // field variables and matrices
+  std::string uniqueDataPrefix_;
 
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writer

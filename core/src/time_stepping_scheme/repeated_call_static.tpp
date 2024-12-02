@@ -32,6 +32,8 @@ template <typename Solver> void RepeatedCallStatic<Solver>::initialize() {
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // initialize underlying Solver object, also with time step width
+  solver_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "repeated_call_static"));
   solver_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization
@@ -41,7 +43,8 @@ template <typename Solver> void RepeatedCallStatic<Solver>::initialize() {
 
 template <typename Solver>
 void RepeatedCallStatic<Solver>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   // avoid that solver structure file is created, this should only be done after
   // the whole simulation has finished
   DihuContext::solverStructureVisualizer()->disable();
@@ -66,7 +69,19 @@ void RepeatedCallStatic<Solver>::callOutputWriter(int timeStepNo,
 }
 
 template <typename Solver>
+void RepeatedCallStatic<Solver>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename Solver>
 typename RepeatedCallStatic<Solver>::Data &RepeatedCallStatic<Solver>::data() {
+  return solver_.data();
+}
+
+template <typename Solver>
+typename RepeatedCallStatic<Solver>::Data &
+RepeatedCallStatic<Solver>::fullData() {
   return solver_.data();
 }
 

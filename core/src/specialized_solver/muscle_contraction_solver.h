@@ -9,6 +9,97 @@
 #include "equation/mooney_rivlin_incompressible.h"
 #include "data_management/specialized_solver/muscle_contraction_solver.h"
 
+template <typename MeshType = Mesh::StructuredDeformableOfDimension<3>,
+          typename Term = Equation::SolidMechanics::
+              TransverselyIsotropicMooneyRivlinIncompressibleActive3D,
+          bool withLargeOutputFiles = true>
+class FullStaticDataForCheckpointing {
+public:
+  typedef ::TimeSteppingScheme::DynamicHyperelasticitySolver<
+      Term, withLargeOutputFiles, MeshType>
+      DynamicHyperelasticitySolverType;
+  typedef ::SpatialDiscretization::HyperelasticitySolver<
+      Term, withLargeOutputFiles, MeshType>
+      StaticHyperelasticitySolverType;
+  typedef typename DynamicHyperelasticitySolverType::DisplacementsFunctionSpace
+      FunctionSpace;
+  typedef typename Data::MuscleContractionSolver<FunctionSpace> Data;
+
+  FullStaticDataForCheckpointing(
+      Data &data, std::shared_ptr<StaticHyperelasticitySolverType>
+                      staticHyperelasticitySolver);
+
+  //! field variables that will be output by checkpointing
+  typedef decltype(std::tuple_cat(
+      std::declval<typename StaticHyperelasticitySolverType::FullData::
+                       FieldVariablesForCheckpointing>(),
+      std::declval<typename Data::FieldVariablesForCheckpointing>()))
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  //! field variables that will be output by checkpointing
+  typedef FieldVariablesForCheckpointing FieldVariablesForOutputWriter;
+
+  //! Not needed for this implementation, shadowing checkpointing function
+  FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
+
+  bool restoreState(const InputReader::Generic &r);
+
+  const std::shared_ptr<FunctionSpace> functionSpace() const;
+
+private:
+  std::shared_ptr<StaticHyperelasticitySolverType>
+      staticHyperelasticitySolver_; //< the static hyperelasticity solver that
+                                    // can be used for quasi-static solution
+  Data &data_; //< the data object that holds all field variables
+};
+
+template <typename MeshType = Mesh::StructuredDeformableOfDimension<3>,
+          typename Term = Equation::SolidMechanics::
+              TransverselyIsotropicMooneyRivlinIncompressibleActive3D,
+          bool withLargeOutputFiles = true>
+class FullDynamicDataForCheckpointing {
+public:
+  typedef ::TimeSteppingScheme::DynamicHyperelasticitySolver<
+      Term, withLargeOutputFiles, MeshType>
+      DynamicHyperelasticitySolverType;
+  typedef typename DynamicHyperelasticitySolverType::DisplacementsFunctionSpace
+      FunctionSpace;
+  typedef typename Data::MuscleContractionSolver<FunctionSpace> Data;
+
+  FullDynamicDataForCheckpointing(
+      Data &data, std::shared_ptr<DynamicHyperelasticitySolverType>
+                      dynamicHyperelasticitySolver);
+
+  //! field variables that will be output by checkpointing
+  typedef decltype(std::tuple_cat(
+      std::declval<typename DynamicHyperelasticitySolverType::FullData::
+                       FieldVariablesForCheckpointing>(),
+      std::declval<typename Data::FieldVariablesForCheckpointing>()))
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  //! field variables that will be output by checkpointing
+  typedef FieldVariablesForCheckpointing FieldVariablesForOutputWriter;
+
+  //! Not needed for this implementation, shadowing checkpointing function
+  FieldVariablesForCheckpointing getFieldVariablesForOutputWriter();
+
+  bool restoreState(const InputReader::Generic &r);
+
+  const std::shared_ptr<FunctionSpace> functionSpace() const;
+
+private:
+  std::shared_ptr<DynamicHyperelasticitySolverType>
+      dynamicHyperelasticitySolver_; //< the dynamic hyperelasticity solver that
+                                     // solves for the dynamic contraction
+  Data &data_; //< the data object that holds all field variables
+};
+
 /** Solve the incompressible, transversely isotropic Mooney-Rivlin material with
  * active stress contribution.
  *
@@ -39,6 +130,9 @@ public:
   //! define the type of the data object,
   typedef typename Data::MuscleContractionSolver<FunctionSpace> Data;
 
+  typedef FullDynamicDataForCheckpointing<MeshType, Term, withLargeOutputFiles>
+      FullData;
+
   //! Define the type of data that will be transferred between solvers when
   //! there is a coupling scheme. Usually you define this type in the "Data"
   //! class and reuse it here.
@@ -51,7 +145,9 @@ public:
   //! advance simulation by the given time span [startTime_, endTime_] (set by
   //! setTimeSpan(), take a look at
   //! time_stepping_scheme/00_time_stepping_scheme.h)
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! initialize time span from specificSettings_
   void initialize();
@@ -68,9 +164,16 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object of the timestepping scheme, with the call to this
   //! method the output writers get the data to create their output files
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  FullData fullData();
 
   //! get a reference to the DynamicHyperelasticitySolverType
   std::shared_ptr<DynamicHyperelasticitySolverType>
@@ -103,6 +206,7 @@ protected:
                                     // can be used for quasi-static solution
 
   Data data_; //< the data object that holds all field variables
+  std::string uniqueDataPrefix_;
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writers
 

@@ -8,6 +8,52 @@
 
 namespace TimeSteppingScheme {
 
+template <typename Term =
+              Equation::SolidMechanics::MooneyRivlinIncompressible3D,
+          bool withLargeOutput = true,
+          typename MeshType = Mesh::StructuredDeformableOfDimension<3>>
+class FullDataForCheckpointing {
+  typedef SpatialDiscretization::HyperelasticitySolver<Term, withLargeOutput,
+                                                       MeshType, 6>
+      HyperelasticitySolverType; // the hyperelasticity solver that solves the
+                                 // nonlinear problem, 6 non-pressure components
+                                 // (u and v)
+  typedef typename HyperelasticitySolverType::DisplacementsFunctionSpace
+      DisplacementsFunctionSpace;
+  typedef DisplacementsFunctionSpace FunctionSpace;
+
+  typedef typename HyperelasticitySolverType::FullData HyperelasticityData;
+  typedef Data::DynamicHyperelasticitySolver<DisplacementsFunctionSpace> Data;
+
+public:
+  FullDataForCheckpointing(HyperelasticityData &hyperelasticityData,
+                           Data &data);
+
+  //! field variables that will be output by checkpointing
+  typedef decltype(std::tuple_cat(
+      std::declval<
+          typename HyperelasticityData::FieldVariablesForCheckpointing>(),
+      std::declval<typename Data::FieldVariablesForCheckpointing>()))
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  //! field variables that will be output by checkpointing
+  typedef FieldVariablesForCheckpointing FieldVariablesForOutputWriter;
+
+  //! Not needed for this implementation, shadowing checkpointing function
+  FieldVariablesForCheckpointing getFieldVariablesForOutputWriter();
+
+  bool restoreState(const InputReader::Generic &r);
+
+  const std::shared_ptr<FunctionSpace> functionSpace() const;
+
+private:
+  HyperelasticityData &hyperelasticityData_;
+  Data &data_;
+};
+
 /** This is a solver for a dynamic nonlinear finite elasticity problem.
  *  It uses the hyperelasticity solver for the static computations.
  *  The dynamic problem includes the static problem, only the right hand side
@@ -40,12 +86,15 @@ public:
       MatHyperelasticity;
 
   typedef Data::DynamicHyperelasticitySolver<DisplacementsFunctionSpace> Data;
+  typedef FullDataForCheckpointing<Term, withLargeOutput, MeshType> FullData;
 
   //! constructor
   DynamicHyperelasticitySolver(DihuContext context);
 
   //! advance simulation by the given time span
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! initialize everything for the simulation
   void initialize();
@@ -58,9 +107,16 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object, with the call to this method the output writers
   //! get the data to create their output files
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  FullData fullData();
 
   //! get a reference to the underlying HyperelasticitySolver which has the
   //! material formulation and the nonlinear solver
@@ -108,6 +164,7 @@ private:
       hyperelasticitySolver_; //< hyperelasticity solver that solver the static
                               // problem
   Data data_;
+  std::string uniqueDataPrefix_;
 
   double density_; //< density rho, used for inertia
 

@@ -752,6 +752,42 @@ void FieldVariableSetGetStructured<FunctionSpaceType, nComponents>::setValues(
   }
 }
 
+//! set values for all dofs
+template <typename FunctionSpaceType, int nComponents>
+void FieldVariableSetGetStructured<FunctionSpaceType, nComponents>::setValues(
+    const std::vector<double> &values) {
+  // get number of dofs
+  assert(this->functionSpace_);
+  const dof_no_t nDofs =
+      this->functionSpace_->meshPartition()->nDofsLocalWithGhosts();
+
+  if (nDofs == values.size()) {
+    for (int componentIndex = 0; componentIndex < nComponents;
+         componentIndex++) {
+      this->setValuesWithGhosts(componentIndex, values, INSERT_VALUES);
+    }
+  } else if ((values.size() >= (nDofs * nComponents) &&
+              values.size() % nComponents == 0) ||
+             values.size() == (nDofs * (nComponents + 1))) {
+    std::vector<double> t;
+    t.resize(nDofs);
+    for (int componentIndex = 0; componentIndex < nComponents;
+         componentIndex++) {
+      for (size_t i = 0; i < nDofs; i++) {
+        t[i] = values[(i * nComponents) + componentIndex];
+      }
+      this->setValuesWithGhosts(componentIndex, t, INSERT_VALUES);
+    }
+  } else {
+    LOG(WARNING) << "Failed to set values in fieldVariable ["
+                 << this->uniqueName()
+                 << "] because values.size() != (nDofs * nComponents): "
+                 << values.size() << " != " << (nDofs * nComponents)
+                 << " | nDofs: " << nDofs << " | nComponents: " << nComponents;
+    // assert(false);
+  }
+}
+
 //! set values for the specified component for all local dofs, after all calls
 //! to setValue(s), finishGhostManipulation has to be called to apply the cached
 //! changes

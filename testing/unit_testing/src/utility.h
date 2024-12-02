@@ -15,4 +15,7 @@ void assertFileMatchesContent(std::string filename,
 void assertParallelEqualsSerialOutputFiles(
     std::vector<std::string> &outputFilesToCheck);
 
+void compareArray(const std::vector<double> &l1,
+                  std::initializer_list<double> l2, double delta = 0.00001);
+
 extern int nFails;

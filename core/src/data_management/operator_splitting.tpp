@@ -44,4 +44,22 @@ OperatorSplitting<TimeStepping1,
   return timeStepping1_->data().getFieldVariablesForOutputWriter();
 }
 
+template <typename TimeStepping1, typename TimeStepping2>
+typename OperatorSplitting<TimeStepping1,
+                           TimeStepping2>::FieldVariablesForCheckpointing
+OperatorSplitting<TimeStepping1,
+                  TimeStepping2>::getFieldVariablesForCheckpointing() {
+  return std::tuple_cat(
+      timeStepping1_->fullData().getFieldVariablesForCheckpointing(),
+      timeStepping2_->fullData().getFieldVariablesForCheckpointing());
+}
+
+template <typename TimeStepping1, typename TimeStepping2>
+bool OperatorSplitting<TimeStepping1, TimeStepping2>::restoreState(
+    const InputReader::Generic &r) {
+  bool a = timeStepping1_->fullData().restoreState(r);
+  bool b = timeStepping2_->fullData().restoreState(r);
+  return a && b;
+}
+
 } // namespace Data

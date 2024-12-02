@@ -5,6 +5,8 @@
 
 #include <cstdlib>
 
+#include "output_writer/hdf5/hdf5.h"
+
 /** The functions in this file model a loop over the elements of a tuple, as it
  * occurs as FieldVariablesForOutputWriterType in all data_management classes.
  *  (Because the types inside the tuple are static and fixed at compile-time, a
@@ -15,55 +17,54 @@
  * std::tuple<...>> where the types can be (mixed)
  * std::shared_ptr<FieldVariable> or
  * std::vector<std::shared_ptr<FieldVariable>>.
- *
- *  Get all nodal values of all field variables in the meshes given in
- * meshNames. The output variable is a vector of the data for the field
- * variables (values[fieldVariableNo][entryNo]). The components of the field
- * variable are interleaved (x y z x y z ...) as needed in the paraview output
- * files.
  */
 
 namespace OutputWriter {
-
-namespace ParaviewLoopOverTuple {
+namespace HDF5LoopOverTuple {
 
 /** Static recursive loop from 0 to number of entries in the tuple
  *  Stopping criterion
  */
-template <typename FieldVariablesForOutputWriterType, int i = 0>
+template <typename FieldVariablesForOutputWriterType,
+          typename AllFieldVariablesForOutputWriterType, int i = 0>
 inline typename std::enable_if<
     i == std::tuple_size<FieldVariablesForOutputWriterType>::value, void>::type
-loopGetNodalValues(const FieldVariablesForOutputWriterType &fieldVariables,
-                   std::set<std::string> meshNames,
-                   std::map<std::string, std::vector<double>> &values) {}
+loopOutput(HDF5Utils::Group &group,
+           const FieldVariablesForOutputWriterType &fieldVariables,
+           const AllFieldVariablesForOutputWriterType &allFieldVariables,
+           const std::string &meshName, const PythonConfig &specificSettings,
+           double currentTime) {}
 
 /** Static recursive loop from 0 to number of entries in the tuple
  * Loop body
  */
-template <typename FieldVariablesForOutputWriterType, int i = 0>
+template <typename FieldVariablesForOutputWriterType,
+          typename AllFieldVariablesForOutputWriterType, int i = 0>
     inline typename std::enable_if <
     i<std::tuple_size<FieldVariablesForOutputWriterType>::value, void>::type
-    loopGetNodalValues(const FieldVariablesForOutputWriterType &fieldVariables,
-                       std::set<std::string> meshNames,
-                       std::map<std::string, std::vector<double>> &values);
+    loopOutput(HDF5Utils::Group &group,
+               const FieldVariablesForOutputWriterType &fieldVariables,
+               const AllFieldVariablesForOutputWriterType &allFieldVariables,
+               const std::string &meshName,
+               const PythonConfig &specificSettings, double currentTime);
 
 /** Loop body for a vector element
  */
 template <typename VectorType, typename FieldVariablesForOutputWriterType>
 typename std::enable_if<TypeUtility::isVector<VectorType>::value, bool>::type
-getNodalValues(VectorType currentFieldVariableGradient,
-               const FieldVariablesForOutputWriterType &fieldVariables,
-               std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values);
+output(HDF5Utils::Group &group, VectorType currentFieldVariableGradient,
+       const FieldVariablesForOutputWriterType &fieldVariables,
+       const std::string &meshName, const PythonConfig &specificSettings,
+       double currentTime);
 
 /** Loop body for a tuple element
  */
 template <typename VectorType, typename FieldVariablesForOutputWriterType>
 typename std::enable_if<TypeUtility::isTuple<VectorType>::value, bool>::type
-getNodalValues(VectorType currentFieldVariableGradient,
-               const FieldVariablesForOutputWriterType &fieldVariables,
-               std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values);
+output(HDF5Utils::Group &group, VectorType currentFieldVariableGradient,
+       const FieldVariablesForOutputWriterType &fieldVariables,
+       const std::string &meshName, const PythonConfig &specificSettings,
+       double currentTime);
 
 /**  Loop body for a pointer element
  */
@@ -74,10 +75,10 @@ typename std::enable_if<
         !TypeUtility::isVector<CurrentFieldVariableType>::value &&
         !Mesh::isComposite<CurrentFieldVariableType>::value,
     bool>::type
-getNodalValues(CurrentFieldVariableType currentFieldVariable,
-               const FieldVariablesForOutputWriterType &fieldVariables,
-               std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values);
+output(HDF5Utils::Group &group, CurrentFieldVariableType currentFieldVariable,
+       const FieldVariablesForOutputWriterType &fieldVariables,
+       const std::string &meshName, const PythonConfig &specificSettings,
+       double currentTime);
 
 /** Loop body for a field variables with Mesh::CompositeOfDimension<D>
  */
@@ -85,13 +86,11 @@ template <typename CurrentFieldVariableType,
           typename FieldVariablesForOutputWriterType>
 typename std::enable_if<Mesh::isComposite<CurrentFieldVariableType>::value,
                         bool>::type
-getNodalValues(CurrentFieldVariableType currentFieldVariable,
-               const FieldVariablesForOutputWriterType &fieldVariables,
-               std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values);
-
-} // namespace ParaviewLoopOverTuple
-
+output(HDF5Utils::Group &group, CurrentFieldVariableType currentFieldVariable,
+       const FieldVariablesForOutputWriterType &fieldVariables,
+       const std::string &meshName, const PythonConfig &specificSettings,
+       double currentTime);
+} // namespace HDF5LoopOverTuple
 } // namespace OutputWriter
 
-#include "output_writer/paraview/loop_get_nodal_values.tpp"
+#include "output_writer/hdf5/loop_output.tpp"

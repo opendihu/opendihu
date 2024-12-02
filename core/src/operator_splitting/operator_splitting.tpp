@@ -96,6 +96,8 @@ void OperatorSplitting<TimeStepping1, TimeStepping2>::initialize() {
 
   // initialize time stepping objects
   LOG(DEBUG) << "  OperatorSplitting::initialize timeStepping1";
+  timeStepping1_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "operator_splitting"));
   timeStepping1_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization
@@ -107,6 +109,8 @@ void OperatorSplitting<TimeStepping1, TimeStepping2>::initialize() {
   DihuContext::solverStructureVisualizer()->beginChild("Term2");
 
   LOG(DEBUG) << "  OperatorSplitting::initialize timeStepping2";
+  timeStepping2_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "operator_splitting"));
   timeStepping2_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization
@@ -196,8 +200,9 @@ void OperatorSplitting<TimeStepping1, TimeStepping2>::run() {
 // Extrae_event(1337, 42);
 #endif
 
+  auto checkpointing = this->context_.getCheckpointing();
   // run simulation
-  advanceTimeSpan();
+  advanceTimeSpan(true, checkpointing);
 
 #ifdef HAVE_EXTRAE
   Extrae_restart();
@@ -228,8 +233,20 @@ OperatorSplitting<TimeStepping1, TimeStepping2>::getSlotConnectorData() {
 }
 
 template <typename TimeStepping1, typename TimeStepping2>
+void OperatorSplitting<TimeStepping1, TimeStepping2>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename TimeStepping1, typename TimeStepping2>
 typename OperatorSplitting<TimeStepping1, TimeStepping2>::Data &
 OperatorSplitting<TimeStepping1, TimeStepping2>::data() {
+  return data_;
+}
+
+template <typename TimeStepping1, typename TimeStepping2>
+typename OperatorSplitting<TimeStepping1, TimeStepping2>::Data &
+OperatorSplitting<TimeStepping1, TimeStepping2>::fullData() {
   return data_;
 }
 

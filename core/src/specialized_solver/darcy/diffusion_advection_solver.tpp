@@ -29,7 +29,8 @@ DiffusionAdvectionSolver<FiniteElementMethod>::DiffusionAdvectionSolver(
 
 template <typename FiniteElementMethod>
 void DiffusionAdvectionSolver<FiniteElementMethod>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   // This method computes some time steps of the simulation by running a for
   // loop over the time steps. The number of steps, timestep width and current
   // time are all set by the parent class, TimeSteppingScheme. You shouldn't
@@ -53,7 +54,12 @@ void DiffusionAdvectionSolver<FiniteElementMethod>::advanceTimeSpan(
 
   // loop over time steps
   double currentTime = this->startTime_;
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(this->data_, timeStepNo, currentTime);
+  }
+
+  for (; timeStepNo < this->numberTimeSteps_;) {
     // in defined intervals (settings "timeStepOutputInterval") print out the
     // current timestep
     if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
@@ -135,6 +141,16 @@ void DiffusionAdvectionSolver<FiniteElementMethod>::advanceTimeSpan(
       this->outputWriterManager_.writeOutput(this->data_, timeStepNo,
                                              currentTime);
 
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->data_, timeStepNo, currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
+
     // start duration measurement
     if (this->durationLogKey_ != "")
       Control::PerformanceMeasurement::start(this->durationLogKey_);
@@ -168,6 +184,8 @@ void DiffusionAdvectionSolver<FiniteElementMethod>::initialize() {
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // call initialize of the nested timestepping solver
+  finiteElementMethod_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "diffusion_advection_solver"));
   finiteElementMethod_.initialize();
   finiteElementMethod_.initializeForImplicitTimeStepping();
 
@@ -193,6 +211,8 @@ void DiffusionAdvectionSolver<FiniteElementMethod>::initialize() {
   data_.setFunctionSpace(functionSpace);
 
   // now call initialize, data will then create all variables (Petsc Vec's)
+  data_.setUniquePrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "diffusion_advection_solver"));
   data_.initialize();
 
   // set the slotConnectorData for the solverStructureVisualizer to appear in
@@ -228,7 +248,8 @@ void DiffusionAdvectionSolver<FiniteElementMethod>::run() {
   // enclosing solver will call initialize() and advanceTimeSpan().
   initialize();
 
-  advanceTimeSpan();
+  auto checkpointing = this->context_.getCheckpointing();
+  advanceTimeSpan(true, checkpointing);
 }
 
 template <typename FiniteElementMethod>
@@ -513,6 +534,12 @@ void DiffusionAdvectionSolver<FiniteElementMethod>::executeMyHelperMethod() {
 }
 
 template <typename FiniteElementMethod>
+void DiffusionAdvectionSolver<FiniteElementMethod>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename FiniteElementMethod>
 typename DiffusionAdvectionSolver<FiniteElementMethod>::Data &
 DiffusionAdvectionSolver<FiniteElementMethod>::data() {
   // get a reference to the data object
@@ -521,6 +548,12 @@ DiffusionAdvectionSolver<FiniteElementMethod>::data() {
   // The finiteElementMethod_ object also has a data object, we could also
   // directly use this and avoid having an own data object:
   //  return finiteElementMethod_.data();
+}
+
+template <typename FiniteElementMethod>
+typename DiffusionAdvectionSolver<FiniteElementMethod>::Data &
+DiffusionAdvectionSolver<FiniteElementMethod>::fullData() {
+  return data_;
 }
 
 //! get the data that will be transferred in the operator splitting to the other

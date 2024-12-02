@@ -18,7 +18,9 @@ public:
 
   //! advance simulation by the given time span [startTime_, endTime_] with
   //! given numberTimeSteps
-  virtual void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  virtual void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! initialize solver
   void initialize();
@@ -31,9 +33,13 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
 private:
   Solver
       solver_; //< the underlying solver object that will be stepped repeatedly
+  std::string uniqueDataPrefix_;
 };
 
 } // namespace TimeSteppingScheme

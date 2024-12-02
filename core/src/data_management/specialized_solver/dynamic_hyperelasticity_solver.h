@@ -61,6 +61,23 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  //! field variables that will be output by checkpointing
+  // type to use if there is no fiber direction field variable
+  typedef std::tuple<
+      std::shared_ptr<DisplacementsFieldVariableType>, // current geometry field
+      std::shared_ptr<DisplacementsFieldVariableType>, // displacements
+      std::shared_ptr<DisplacementsFieldVariableType>, // velocities
+      std::shared_ptr<DisplacementsFieldVariableType>, // ∂Wint_stress
+      std::shared_ptr<DisplacementsFieldVariableType>, // ∂Wint_acceleration
+      std::shared_ptr<DisplacementsFieldVariableType>  // ∂Wext
+      >
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  bool restoreState(const InputReader::Generic &r);
+
 protected:
   //! initializes the vectors with size
   void createPetscObjects() override;

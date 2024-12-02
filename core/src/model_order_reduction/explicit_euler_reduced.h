@@ -19,7 +19,9 @@ public:
   void run();
 
   //! advance the simulation by the time step
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
 protected:
 };

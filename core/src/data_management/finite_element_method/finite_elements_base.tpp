@@ -96,6 +96,43 @@ void FiniteElementsBase<FunctionSpaceType, nComponents>::
 }
 
 template <typename FunctionSpaceType, int nComponents>
+bool FiniteElementsBase<FunctionSpaceType, nComponents>::restoreState(
+    const InputReader::Generic &r) {
+  std::vector<double> rhs, solution, negativeRhsNeumannBoundaryConditions;
+  if (!r.readDoubleVector(this->rhs_->uniqueName().c_str(), rhs)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->solution_->uniqueName().c_str(), solution)) {
+    return false;
+  }
+  if (!r.readDoubleVector(
+          this->negativeRhsNeumannBoundaryConditions_->uniqueName().c_str(),
+          negativeRhsNeumannBoundaryConditions)) {
+    return false;
+  }
+
+  std::array<std::vector<double>, 3> geometryValues;
+  if (!r.template readDoubleVecD<3>(
+          this->functionSpace_->geometryField().name().c_str(), geometryValues,
+          "3D/")) {
+    return false;
+  }
+
+  this->rhs_->setValues(rhs);
+  this->solution_->setValues(solution);
+  this->negativeRhsNeumannBoundaryConditions_->setValues(
+      negativeRhsNeumannBoundaryConditions);
+
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
+
+  // TODO: restore stiffnessMatrix, stiffnessMatrixWithoutBc ???
+  return true;
+}
+
+template <typename FunctionSpaceType, int nComponents>
 void FiniteElementsBase<FunctionSpaceType, nComponents>::createPetscObjects() {
   LOG(TRACE) << "FiniteElements::createPetscObjects";
 
@@ -108,11 +145,20 @@ void FiniteElementsBase<FunctionSpaceType, nComponents>::createPetscObjects() {
   // create field variables on local partition
   this->rhs_ = this->functionSpace_->template createFieldVariable<nComponents>(
       "rightHandSide");
+  this->rhs_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "finite_elements_base_") +
+      "rightHandSide");
   this->solution_ =
       this->functionSpace_->template createFieldVariable<nComponents>(
           "solution");
+  this->solution_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "finite_elements_base_") +
+      "solution");
   this->negativeRhsNeumannBoundaryConditions_ =
       this->functionSpace_->template createFieldVariable<nComponents>("zero");
+  this->negativeRhsNeumannBoundaryConditions_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "finite_elements_base_") +
+      "zero");
 
   // create PETSc matrix object
 
@@ -323,4 +369,18 @@ FiniteElementsBase<FunctionSpaceType,
                                        negativeRhsNeumannBoundaryConditions_);
 }
 
+template <typename FunctionSpaceType, int nComponents>
+typename FiniteElementsBase<FunctionSpaceType,
+                            nComponents>::FieldVariablesForCheckpointing
+FiniteElementsBase<FunctionSpaceType,
+                   nComponents>::getFieldVariablesForCheckpointing() {
+  assert(this->functionSpace_);
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
+      geometryField =
+          std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+              this->functionSpace_->geometryField());
+
+  return FieldVariablesForOutputWriter(geometryField, solution_, rhs_,
+                                       negativeRhsNeumannBoundaryConditions_);
+}
 } // namespace Data

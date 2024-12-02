@@ -43,6 +43,12 @@ template <typename Data3D> void OutputSurface<Data3D>::setData(Data3D &data3d) {
   this->data3d_ = std::make_shared<Data3D>(data3d);
 }
 
+template <typename Data3D>
+bool OutputSurface<Data3D>::restoreState(const InputReader::Generic &r) {
+  // TODO: restore state
+  return false;
+}
+
 template <typename Data3D> void OutputSurface<Data3D>::createPetscObjects() {}
 
 template <typename Data3D> void OutputSurface<Data3D>::print() {}
@@ -84,4 +90,9 @@ OutputSurface<Data3D>::getFieldVariablesForOutputWriter() {
   return outputFieldVariables2D_;
 }
 
+template <typename Data3D>
+typename OutputSurface<Data3D>::FieldVariablesForCheckpointing
+OutputSurface<Data3D>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

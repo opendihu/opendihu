@@ -27,6 +27,28 @@ void QuasiStaticNonlinearElasticityChaste<FunctionSpace>::initialize() {
 }
 
 template <typename FunctionSpace>
+bool QuasiStaticNonlinearElasticityChaste<FunctionSpace>::restoreState(
+    const InputReader::Generic &r) {
+  std::vector<double> activation, activeStress, displacement;
+  if (!r.readDoubleVector(this->activation_->uniqueName().c_str(),
+                          activation)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->activeStress_->uniqueName().c_str(),
+                          activeStress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->displacement_->uniqueName().c_str(),
+                          displacement)) {
+    return false;
+  }
+  this->activation_->setValues(activation);
+  this->activeStress_->setValues(activeStress);
+  this->displacement_->setValues(displacement);
+  return true;
+}
+
+template <typename FunctionSpace>
 void QuasiStaticNonlinearElasticityChaste<FunctionSpace>::createPetscObjects() {
   LOG(DEBUG) << "QuasiStaticNonlinearElasticityChaste::createPetscObjects";
 
@@ -34,10 +56,22 @@ void QuasiStaticNonlinearElasticityChaste<FunctionSpace>::createPetscObjects() {
 
   this->activation_ =
       this->functionSpace_->template createFieldVariable<1>("activation");
+  this->activation_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_nonlinear_elasticity_chaste_") +
+      "activation");
   this->activeStress_ =
       this->functionSpace_->template createFieldVariable<9>("activeStress");
+  this->activeStress_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_nonlinear_elasticity_chaste_") +
+      "activeStress");
   this->displacement_ =
       this->functionSpace_->template createFieldVariable<3>("displacement");
+  this->displacement_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_nonlinear_elasticity_chaste_") +
+      "displacement");
 }
 
 template <typename FunctionSpace>
@@ -82,4 +116,11 @@ QuasiStaticNonlinearElasticityChaste<
           this->displacement_));
 }
 
+template <typename FunctionSpace>
+typename QuasiStaticNonlinearElasticityChaste<
+    FunctionSpace>::FieldVariablesForCheckpointing
+QuasiStaticNonlinearElasticityChaste<
+    FunctionSpace>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

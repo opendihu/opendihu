@@ -13,7 +13,8 @@ LoadBalancingBase<TimeStepping>::LoadBalancingBase(DihuContext context)
 
 template <typename TimeStepping>
 void LoadBalancingBase<TimeStepping>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   // start duration measurement, the name of the output variable can be set by
   // "durationLogKey" in the config
   if (this->durationLogKey_ != "")
@@ -28,7 +29,12 @@ void LoadBalancingBase<TimeStepping>::advanceTimeSpan(
 
   // loop over time steps
   double currentTime = this->startTime_;
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_; timeStepNo++) {
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(this->data(), timeStepNo, currentTime);
+  }
+
+  for (; timeStepNo < this->numberTimeSteps_; timeStepNo++) {
     currentTime = this->startTime_ +
                   double(timeStepNo) / this->numberTimeSteps_ * timeSpan;
 
@@ -48,6 +54,16 @@ void LoadBalancingBase<TimeStepping>::advanceTimeSpan(
     // advance the simulation by the specified time span
     timeSteppingScheme_.advanceTimeSpan(withOutputWritersEnabled);
 
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->data(), timeStepNo, currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
+
     // check if the dofs can be rebalanced
     rebalance();
   }
@@ -62,13 +78,16 @@ void LoadBalancingBase<TimeStepping>::initialize() {
   LOG(TRACE) << "LoadBalancingBase::initialize()";
 
   TimeSteppingScheme::TimeSteppingScheme::initialize();
+  timeSteppingScheme_.setUniqueDataPrefix(
+      StringUtility::optionalConcat(this->uniqueDataPrefix_, "load_balancing"));
   timeSteppingScheme_.initialize();
 }
 
 template <typename TimeStepping> void LoadBalancingBase<TimeStepping>::run() {
   initialize();
 
-  advanceTimeSpan();
+  auto checkpointing = this->context_.getCheckpointing();
+  advanceTimeSpan(true, checkpointing);
 }
 
 template <typename TimeStepping> void LoadBalancingBase<TimeStepping>::reset() {
@@ -86,9 +105,21 @@ void LoadBalancingBase<TimeStepping>::callOutputWriter(int timeStepNo,
 }
 
 template <typename TimeStepping>
+void LoadBalancingBase<TimeStepping>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename TimeStepping>
 typename LoadBalancingBase<TimeStepping>::Data &
 LoadBalancingBase<TimeStepping>::data() {
   return timeSteppingScheme_.data();
+}
+
+template <typename TimeStepping>
+typename LoadBalancingBase<TimeStepping>::Data &
+LoadBalancingBase<TimeStepping>::fullData() {
+  return timeSteppingScheme_.fullData();
 }
 
 //! get the data that will be transferred in the operator splitting to the other

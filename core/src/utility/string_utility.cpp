@@ -123,4 +123,28 @@ std::size_t stringLength(std::string string) {
   return length;
 }
 
+std::string optionalConcat(const std::string &lhs, const std::string &rhs) {
+  if (lhs.empty()) {
+    return rhs;
+  } else {
+    return lhs + "_" + rhs;
+  }
+}
+
+std::string getFirstNE(const std::string &lhs, const std::string &rhs) {
+  if (!lhs.empty()) {
+    if (lhs[lhs.size() - 1] == '_') {
+      return lhs;
+    } else {
+      return lhs + "_";
+    }
+  } else {
+    if (rhs[rhs.size() - 1] == '_') {
+      return rhs;
+    } else {
+      return rhs + "_";
+    }
+  }
+}
+
 } // namespace StringUtility

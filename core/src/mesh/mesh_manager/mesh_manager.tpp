@@ -177,6 +177,7 @@ Manager::createFunctionSpace(std::string name, Args &&...args) {
   }
 
   functionSpace->setMeshName(name);
+  // ->DI()
   functionSpace->initialize();
 
   functionSpaces_[name] = functionSpace;
@@ -240,6 +241,7 @@ Manager::createCompositeMesh(PythonConfig settings) {
             this->partitionManager_, subFunctionSpaces);
 
     functionSpace->setMeshName(compositeName.str());
+    // ->DI()
     functionSpace->initialize();
 
     // store created mesh
@@ -314,6 +316,7 @@ Manager::createFunctionSpaceWithGivenMeshPartition(
 
   functionSpace->setMeshName(name);
   functionSpace->setMeshPartition(meshPartition);
+  // ->DI()
   functionSpace->initialize();
 
   functionSpaces_[name] = functionSpace;

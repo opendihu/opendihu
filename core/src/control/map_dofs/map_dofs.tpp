@@ -7,7 +7,8 @@ namespace Control {
 //! advance simulation by the given time span
 template <typename FunctionSpaceType, typename NestedSolverType>
 void MapDofs<FunctionSpaceType, NestedSolverType>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   LOG(DEBUG) << "MapDofs::advanceTimeSpan, "
@@ -21,7 +22,7 @@ void MapDofs<FunctionSpaceType, NestedSolverType>::advanceTimeSpan(
   performMappings(mappingsBeforeComputation_, nestedSolver_.startTime());
 
   // compute the simulation in the current time span with the nested solver
-  nestedSolver_.advanceTimeSpan(withOutputWritersEnabled);
+  nestedSolver_.advanceTimeSpan(withOutputWritersEnabled, checkpointing);
 
   LOG(DEBUG) << "MapDofs::performMappings afterComputation";
   // perform mapping from settings "afterComputation"
@@ -34,8 +35,9 @@ void MapDofs<FunctionSpaceType, NestedSolverType>::run() {
   // initialize the solver
   initialize();
 
+  auto checkpointing = this->context_.getCheckpointing();
   // advance one timestep
-  advanceTimeSpan();
+  advanceTimeSpan(true, checkpointing);
 }
 
 //! reset state of this object, such that a new initialize() is necessary
@@ -70,6 +72,12 @@ void MapDofs<FunctionSpaceType, NestedSolverType>::callOutputWriter(
     int timeStepNo, double currentTime, int callCountIncrement) {
   // call the output writer of the nested solver
   nestedSolver_.callOutputWriter(timeStepNo, currentTime, callCountIncrement);
+}
+
+template <typename FunctionSpaceType, typename NestedSolverType>
+void MapDofs<FunctionSpaceType, NestedSolverType>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 template <typename FunctionSpaceType, typename NestedSolverType>
@@ -311,6 +319,12 @@ void MapDofs<FunctionSpaceType, NestedSolverType>::performMappings(
 template <typename FunctionSpaceType, typename NestedSolverType>
 typename MapDofs<FunctionSpaceType, NestedSolverType>::Data &
 MapDofs<FunctionSpaceType, NestedSolverType>::data() {
+  return data_;
+}
+
+template <typename FunctionSpaceType, typename NestedSolverType>
+typename MapDofs<FunctionSpaceType, NestedSolverType>::Data &
+MapDofs<FunctionSpaceType, NestedSolverType>::fullData() {
   return data_;
 }
 

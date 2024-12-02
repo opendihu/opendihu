@@ -33,6 +33,7 @@ The following pages contain all settings that are possible to specify for the di
    settings/prescribed_values
    settings/map_dofs
    settings/precice_adapter
+   settings/checkpointing
   
 .. Indices and tables
   ==================

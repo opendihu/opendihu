@@ -3,6 +3,7 @@
 #include <Python.h> // has to be the first included header
 #include "control/dihu_context.h"
 #include "output_writer/manager.h"
+#include "checkpointing/manager.h"
 #include "interfaces/splittable.h"
 #include "interfaces/multipliable.h"
 
@@ -17,7 +18,9 @@ public:
 
   //! advance simulation by the given time span [startTime_, endTime_] with
   //! given numberTimeSteps
-  virtual void advanceTimeSpan(bool withOutputWritersEnabled = true) = 0;
+  virtual void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr) = 0;
 
   //! set a new time step width, gets transferred to numberTimeSteps_
   void setTimeStepWidth(double timeStepWidth);
@@ -78,7 +81,8 @@ protected:
                         // current context and the global singletons meshManager
                         // and solverManager
   OutputWriter::Manager
-      outputWriterManager_;    //< manager object holding all output writer
+      outputWriterManager_; //< manager object holding all output writer
+
   int timeStepOutputInterval_; //< time step number and time is output every
                                // timeStepOutputInterval_ time steps
 

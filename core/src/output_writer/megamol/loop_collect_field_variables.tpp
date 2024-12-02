@@ -54,6 +54,11 @@ collectFieldVariables(
     std::vector<
         std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 1>>>
         &scalarFieldVariables) {
+  // if the field variable is a null pointer, return but do not break iteration
+  if (!currentFieldVariable) {
+    return false;
+  }
+
   // if mesh name is not the specified meshName step over this field variable
   // but do not exit the loop over field variables
   if (currentFieldVariable->functionSpace()->meshName() != meshName) {
@@ -88,6 +93,11 @@ collectFieldVariables(
     std::vector<
         std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 1>>>
         &scalarFieldVariables) {
+  // if the field variable is a null pointer, return but do not break iteration
+  if (!currentFieldVariable) {
+    return false;
+  }
+
   // if mesh name is not the specified meshName step over this field variable
   // but do not exit the loop over field variables
   if (currentFieldVariable->functionSpace()->meshName() != meshName) {

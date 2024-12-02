@@ -223,6 +223,7 @@ public:
 
   //! set value for all dofs
   void setValues(double value);
+  void setValues(const std::vector<double> &values);
 
   //! set values for the all component for all local dofs, after all calls to
   //! setValue(s), finishGhostManipulation has to be called to apply the cached

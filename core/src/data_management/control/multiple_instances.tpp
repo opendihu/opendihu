@@ -56,6 +56,16 @@ void MultipleInstances<FunctionSpaceType, BaseTimesteppingType>::
 }
 
 template <typename FunctionSpaceType, typename BaseDataType>
+bool MultipleInstances<FunctionSpaceType, BaseDataType>::restoreState(
+    const InputReader::Generic &r) {
+  bool v = true;
+  for (auto iter : instancesData_) {
+    v = v && iter->restoreState(r);
+  }
+  return v;
+}
+
+template <typename FunctionSpaceType, typename BaseDataType>
 void MultipleInstances<FunctionSpaceType, BaseDataType>::createPetscObjects() {}
 
 template <typename FunctionSpaceType, typename BaseDataType>
@@ -83,4 +93,20 @@ MultipleInstances<FunctionSpaceType,
   return std::make_tuple(instancesFieldVariablesForOutputWriter);
 }
 
+template <typename FunctionSpaceType, typename BaseDataType>
+typename MultipleInstances<FunctionSpaceType,
+                           BaseDataType>::FieldVariablesForCheckpointing
+MultipleInstances<FunctionSpaceType,
+                  BaseDataType>::getFieldVariablesForCheckpointing() {
+  std::vector<typename BaseDataType::FieldVariablesForCheckpointing>
+      instancesFieldVariablesForCheckpointing;
+  instancesFieldVariablesForCheckpointing.reserve(instancesData_.size());
+
+  for (const auto &x : instancesData_) {
+    instancesFieldVariablesForCheckpointing.push_back(
+        x->getFieldVariablesForCheckpointing());
+  }
+
+  return std::make_tuple(instancesFieldVariablesForCheckpointing);
+}
 } // namespace Data

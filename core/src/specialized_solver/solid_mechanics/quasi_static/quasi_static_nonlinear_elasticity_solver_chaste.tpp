@@ -70,7 +70,8 @@ QuasiStaticNonlinearElasticitySolverChaste<
 
 template <int D>
 void QuasiStaticNonlinearElasticitySolverChaste<D>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement, the name of the output variable can be set by
@@ -485,6 +486,9 @@ void QuasiStaticNonlinearElasticitySolverChaste<D>::initialize() {
   // store mesh in data
   data_.setFunctionSpace(functionSpace_);
 
+  data_.setUniquePrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_,
+      "quasi_static_nonlinear_elasticity_solver_chaste"));
   data_.initialize();
 
   LOG(DEBUG) << "initialization done";
@@ -496,8 +500,20 @@ template <int D> void QuasiStaticNonlinearElasticitySolverChaste<D>::reset() {
 }
 
 template <int D>
+void QuasiStaticNonlinearElasticitySolverChaste<D>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <int D>
 typename QuasiStaticNonlinearElasticitySolverChaste<D>::Data &
 QuasiStaticNonlinearElasticitySolverChaste<D>::data() {
+  return data_;
+}
+
+template <int D>
+typename QuasiStaticNonlinearElasticitySolverChaste<D>::Data &
+QuasiStaticNonlinearElasticitySolverChaste<D>::fullData() {
   return data_;
 }
 

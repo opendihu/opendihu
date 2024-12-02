@@ -59,7 +59,8 @@ NonlinearElasticitySolverFebio::NonlinearElasticitySolverFebio(
 }
 
 void NonlinearElasticitySolverFebio::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement, the name of the output variable can be set by
@@ -914,6 +915,8 @@ void NonlinearElasticitySolverFebio::initialize() {
   // initialize the data object
   // store mesh in data
   data_.setFunctionSpace(functionSpace);
+  data_.setUniquePrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "nonlinear_elasticity_solver_febio"));
   data_.initialize();
 
   // write initial geometry but don't increment counter
@@ -933,8 +936,18 @@ void NonlinearElasticitySolverFebio::initialize() {
 
 void NonlinearElasticitySolverFebio::reset() { this->initialized_ = false; }
 
+void NonlinearElasticitySolverFebio::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
 typename NonlinearElasticitySolverFebio::Data &
 NonlinearElasticitySolverFebio::data() {
+  return data_;
+}
+
+typename NonlinearElasticitySolverFebio::Data &
+NonlinearElasticitySolverFebio::fullData() {
   return data_;
 }
 

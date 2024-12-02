@@ -32,6 +32,7 @@ public:
 
   typedef Term_ Term;
   typedef ::Data::FiniteElements<FunctionSpaceType, nComponents, Term> Data;
+  typedef Data FullData;
   typedef FunctionSpaceType FunctionSpace;
   typedef QuadratureType Quadrature;
   typedef typename Data::SlotConnectorDataType SlotConnectorDataType;
@@ -57,8 +58,15 @@ public:
   //! get the stored functionSpace
   std::shared_ptr<FunctionSpaceType> functionSpace();
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! get the data object
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! get the data that will be transferred in the operator splitting to the
   //! other term of the splitting the transfer is done by the
@@ -93,6 +101,8 @@ protected:
                         // current context and the global singletons meshManager
                         // and solverManager
   Data data_; //< data object that holds all PETSc vectors and matrices
+  std::string uniqueDataPrefix_;
+
   PythonConfig specificSettings_; //< python object containing the value of the
                                   // python config dict with corresponding key
   OutputWriter::Manager

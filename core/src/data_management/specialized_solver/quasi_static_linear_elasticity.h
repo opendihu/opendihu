@@ -81,6 +81,25 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  //! field variables that will be output by checkpointing
+  typedef decltype(std::tuple_cat(
+      std::declval<
+          typename DataLinearElasticityType::FieldVariablesForOutputWriter>(),
+      std::declval<std::tuple<
+          std::shared_ptr<FieldVariableType>,       // activation
+          std::shared_ptr<StressFieldVariableType>, // active stress
+          std::shared_ptr<StressFieldVariableType>, // strain
+          std::shared_ptr<VectorFieldVariableType>, // rightHandSideActive_
+          std::shared_ptr<VectorFieldVariableType>, // fiberDirection
+          std::shared_ptr<FieldVariableType> // solution of laplace potential
+                                             // flow
+          >>())) FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  bool restoreState(const InputReader::Generic &r);
+
 private:
   //! initializes the vectors with size
   void createPetscObjects() override;

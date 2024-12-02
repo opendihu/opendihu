@@ -16,7 +16,8 @@ ImplicitEuler<DiscretizableInTimeType>::ImplicitEuler(DihuContext context)
 
 template <typename DiscretizableInTimeType>
 void ImplicitEuler<DiscretizableInTimeType>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
   // start duration measurement, the name of the output variable can be set by
   // "durationLogKey" in the config
@@ -38,8 +39,12 @@ void ImplicitEuler<DiscretizableInTimeType>::advanceTimeSpan(
 
   // loop over time steps
   double currentTime = this->startTime_;
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(*this->dataImplicit_, timeStepNo, currentTime);
+  }
 
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
+  for (; timeStepNo < this->numberTimeSteps_;) {
     if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
         (this->timeStepOutputInterval_ <= 10 ||
          timeStepNo >
@@ -86,6 +91,17 @@ void ImplicitEuler<DiscretizableInTimeType>::advanceTimeSpan(
     if (withOutputWritersEnabled)
       this->outputWriterManager_.writeOutput(*this->dataImplicit_, timeStepNo,
                                              currentTime);
+
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(*this->dataImplicit_, timeStepNo,
+                                        currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
 
     // start duration measurement
     if (this->durationLogKey_ != "")

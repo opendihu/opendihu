@@ -25,9 +25,17 @@ void TimeSteppingImplicit<FunctionSpaceType,
   this->boundaryConditionsRightHandSideSummand_ =
       this->functionSpace_->template createFieldVariable<nComponents>(
           "boundaryConditionsRightHandSideSummand");
+  this->boundaryConditionsRightHandSideSummand_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "time_stepping_implicit_") +
+      "boundaryConditionsRightHandSideSummand");
   this->systemRightHandSide_ =
       this->functionSpace_->template createFieldVariable<nComponents>(
           "systemRightHandSide");
+  this->systemRightHandSide_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "time_stepping_implicit_") +
+      "systemRightHandSide");
 
   this->debuggingName_ = "Implicit";
   VLOG(1) << "initial values "
@@ -113,4 +121,16 @@ void TimeSteppingImplicit<FunctionSpaceType, nComponents>::
   VLOG(4) << "=======================================";
 }
 
+template <typename FunctionSpaceType, int nComponents>
+typename TimeSteppingImplicit<FunctionSpaceType,
+                              nComponents>::FieldVariablesForCheckpointing
+TimeSteppingImplicit<FunctionSpaceType,
+                     nComponents>::getFieldVariablesForCheckpointing() {
+  return std::tuple_cat(
+      TimeStepping<FunctionSpaceType,
+                   nComponents>::getFieldVariablesForCheckpointing(),
+      std::tuple<std::shared_ptr<FieldVariableType>,
+                 std::shared_ptr<FieldVariableType>>(
+          boundaryConditionsRightHandSideSummand_, systemRightHandSide_));
+}
 } // namespace Data

@@ -33,6 +33,47 @@ TimeStepping<FunctionSpaceType, nComponents>::~TimeStepping() {
 }
 
 template <typename FunctionSpaceType, int nComponents>
+bool TimeStepping<FunctionSpaceType, nComponents>::restoreState(
+    const InputReader::Generic &r) {
+  std::vector<double> solution, increment;
+  if (!r.readDoubleVector(this->solution_->uniqueName().c_str(), solution)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->increment_->uniqueName().c_str(), increment)) {
+    return false;
+  }
+  std::vector<std::vector<double>> additionalValues;
+  for (int i = 0; i < additionalFieldVariables_.size(); i++) {
+    std::vector<double> additional;
+    if (!r.readDoubleVector(
+            this->additionalFieldVariables_[i]->uniqueName().c_str(),
+            additional)) {
+      return false;
+    }
+    additionalValues.push_back(additional);
+  }
+  std::array<std::vector<double>, 3> geometryValues;
+  if (!r.template readDoubleVecD<3>(
+          this->functionSpace_->geometryField().name().c_str(), geometryValues,
+          "3D/")) {
+    return false;
+  }
+
+  this->solution_->setValues(solution);
+  this->increment_->setValues(increment);
+  for (int i = 0; i < additionalFieldVariables_.size(); i++) {
+    slotConnectorData_->variable2[i].values->setValues(additionalValues[i]);
+  }
+
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
+
+  return true;
+}
+
+template <typename FunctionSpaceType, int nComponents>
 void TimeStepping<FunctionSpaceType, nComponents>::createPetscObjects() {
   LOG(DEBUG)
       << "TimeStepping<FunctionSpaceType,nComponents>::createPetscObjects("
@@ -44,18 +85,30 @@ void TimeStepping<FunctionSpaceType, nComponents>::createPetscObjects() {
     this->solution_ =
         this->functionSpace_->template createFieldVariable<nComponents>(
             "solution");
+    this->solution_->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "time_stepping_") +
+        "solution");
     this->increment_ =
         this->functionSpace_->template createFieldVariable<nComponents>(
             "increment");
+    this->increment_->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "time_stepping_") +
+        "increment");
   } else {
     // if there are component names stored, use them for construction of the
     // field variables
     this->solution_ =
         this->functionSpace_->template createFieldVariable<nComponents>(
             "solution", componentNames_);
+    this->solution_->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "time_stepping_") +
+        "solution");
     this->increment_ =
         this->functionSpace_->template createFieldVariable<nComponents>(
             "increment", componentNames_);
+    this->increment_->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "time_stepping_") +
+        "increment");
   }
 
   slotConnectorData_ = std::make_shared<SlotConnectorDataType>();
@@ -72,6 +125,9 @@ void TimeStepping<FunctionSpaceType, nComponents>::createPetscObjects() {
     name << "additionalFieldVariable" << i;
     additionalFieldVariables_[i] =
         this->functionSpace_->template createFieldVariable<1>(name.str());
+    additionalFieldVariables_[i]->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "time_stepping_") +
+        name.str());
 
     slotConnectorData_->addFieldVariable2(additionalFieldVariables_[i]);
     LOG(DEBUG) << "  add field variable " << name.str();
@@ -154,6 +210,32 @@ TimeStepping<FunctionSpaceType,
       std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
           this->functionSpace_->geometryField()),
       solution_, additionalFieldVariables_);
+}
+
+template <typename FunctionSpaceType, int nComponents>
+typename TimeStepping<FunctionSpaceType,
+                      nComponents>::FieldVariablesForCheckpointing
+TimeStepping<FunctionSpaceType,
+             nComponents>::getFieldVariablesForCheckpointing() {
+  // recover additional field variables from slotConnectorData_, they may have
+  // been changed by transfer
+  assert(slotConnectorData_->variable2.size() >=
+         additionalFieldVariables_.size());
+  for (int i = 0; i < additionalFieldVariables_.size(); i++) {
+    LOG(DEBUG) << " Data::TimeStepping::getFieldVariablesForCheckpointing(), "
+               << " get field variable "
+               << slotConnectorData_->variable2[i].values << ", \""
+               << slotConnectorData_->variable2[i].values->name()
+               << "\" for additionalFieldVariables_[" << i << "]";
+    additionalFieldVariables_[i] = slotConnectorData_->variable2[i].values;
+  }
+  auto geometryField =
+      std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+          this->functionSpace_->geometryField());
+
+  // these field variables will be written to output files
+  return FieldVariablesForCheckpointing(geometryField, solution_, increment_,
+                                        additionalFieldVariables_);
 }
 
 //! output the given data for debugging

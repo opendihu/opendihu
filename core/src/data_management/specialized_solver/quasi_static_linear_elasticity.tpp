@@ -43,6 +43,45 @@ void QuasiStaticLinearElasticity<DataLinearElasticityType>::initialize() {
 }
 
 template <typename DataLinearElasticityType>
+bool QuasiStaticLinearElasticity<DataLinearElasticityType>::restoreState(
+    const InputReader::Generic &r) {
+  std::vector<double> activation, activeStress, strain, rightHandSideActive,
+      fiberDirection, flowPotential;
+  if (!r.readDoubleVector(this->activation_->uniqueName().c_str(),
+                          activation)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->activeStress_->uniqueName().c_str(),
+                          activeStress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->strain_->uniqueName().c_str(), strain)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->rightHandSideActive_->uniqueName().c_str(),
+                          rightHandSideActive)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->fiberDirection_->uniqueName().c_str(),
+                          fiberDirection)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->flowPotential_->uniqueName().c_str(),
+                          flowPotential)) {
+    return false;
+  }
+
+  activation_->setValues(activation);
+  activeStress_->setValues(activeStress);
+  strain_->setValues(strain);
+  rightHandSideActive_->setValues(rightHandSideActive);
+  fiberDirection_->setValues(fiberDirection);
+  flowPotential_->setValues(flowPotential);
+
+  return this->dataLinearElasticity_->restoreState(r);
+}
+
+template <typename DataLinearElasticityType>
 void QuasiStaticLinearElasticity<
     DataLinearElasticityType>::createPetscObjects() {
   LOG(DEBUG) << "QuasiStaticLinearElasticity::createPetscObject";
@@ -55,17 +94,41 @@ void QuasiStaticLinearElasticity<
   // create all field variables that are needed
   this->activation_ =
       this->functionSpace_->template createFieldVariable<1>("activation");
+  this->activation_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_linear_elasticity_") +
+      "activation");
   this->activeStress_ = this->functionSpace_->template createFieldVariable<9>(
       "activeStress", componentNames);
+  this->activeStress_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_linear_elasticity_") +
+      "activeStress");
   this->strain_ = this->functionSpace_->template createFieldVariable<9>(
       "strain", componentNames);
+  this->strain_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_linear_elasticity_") +
+      "strain");
   this->flowPotential_ =
       this->functionSpace_->template createFieldVariable<1>("flowPotential");
+  this->flowPotential_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_linear_elasticity_") +
+      "flowPotential");
   this->rightHandSideActive_ =
       this->functionSpace_->template createFieldVariable<3>(
           "rightHandSideActive");
+  this->rightHandSideActive_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_linear_elasticity_") +
+      "rightHandSideActive");
   this->fiberDirection_ =
       this->functionSpace_->template createFieldVariable<3>("fiberDirection");
+  this->fiberDirection_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_linear_elasticity_") +
+      "fiberDirection");
 }
 
 template <typename DataLinearElasticityType>
@@ -182,4 +245,11 @@ QuasiStaticLinearElasticity<
       std::tuple<std::shared_ptr<FieldVariableType>>(this->flowPotential_));
 }
 
+template <typename DataLinearElasticityType>
+typename QuasiStaticLinearElasticity<
+    DataLinearElasticityType>::FieldVariablesForCheckpointing
+QuasiStaticLinearElasticity<
+    DataLinearElasticityType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

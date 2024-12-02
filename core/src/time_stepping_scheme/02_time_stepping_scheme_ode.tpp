@@ -78,6 +78,8 @@ void TimeSteppingSchemeOdeBaseDiscretizable<
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // initialize underlying DiscretizableInTime object, also with time step width
+  discretizableInTime_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "time_stepping_scheme_ode"));
   discretizableInTime_.initialize();
   discretizableInTime_
       .initializeForImplicitTimeStepping(); // this performs extra
@@ -106,6 +108,8 @@ void TimeSteppingSchemeOdeBaseDiscretizable<
   this->data_->setComponentNames(componentNames);
 
   // create the vectors in the data object
+  this->data_->setUniquePrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "time_stepping_scheme_ode"));
   this->data_->initialize();
 
   // pass the solution field variable on to the discretizableInTime object, by
@@ -166,6 +170,52 @@ std::shared_ptr<SpatialDiscretization::DirichletBoundaryConditions<
 TimeSteppingSchemeOdeBaseDiscretizable<
     DiscretizableInTimeType>::dirichletBoundaryConditions() {
   return dirichletBoundaryConditions_;
+}
+
+template <typename DiscretizableInTimeType>
+typename TimeSteppingSchemeOdeBaseDiscretizable<
+    DiscretizableInTimeType>::FullData
+TimeSteppingSchemeOdeBaseDiscretizable<DiscretizableInTimeType>::fullData() {
+  return FullOdeDataForCheckpointing<DiscretizableInTimeType>(
+      this->data_, discretizableInTime_.fullData());
+}
+
+template <typename DiscretizableInTimeType>
+FullOdeDataForCheckpointing<DiscretizableInTimeType>::
+    FullOdeDataForCheckpointing(
+        std::shared_ptr<Data> data,
+        DiscretizableInTimeData &discretizableInTimeData)
+    : data_(data), discretizableInTimeData_(discretizableInTimeData) {}
+
+template <typename DiscretizableInTimeType>
+typename FullOdeDataForCheckpointing<
+    DiscretizableInTimeType>::FieldVariablesForCheckpointing
+FullOdeDataForCheckpointing<
+    DiscretizableInTimeType>::getFieldVariablesForCheckpointing() {
+  return std::tuple_cat(
+      data_->getFieldVariablesForCheckpointing(),
+      discretizableInTimeData_.getFieldVariablesForCheckpointing());
+}
+
+template <typename DiscretizableInTimeType>
+typename FullOdeDataForCheckpointing<
+    DiscretizableInTimeType>::FieldVariablesForOutputWriter
+FullOdeDataForCheckpointing<
+    DiscretizableInTimeType>::getFieldVariablesForOutputWriter() {
+  return getFieldVariablesForCheckpointing();
+}
+
+template <typename DiscretizableInTimeType>
+bool FullOdeDataForCheckpointing<DiscretizableInTimeType>::restoreState(
+    const InputReader::Generic &r) {
+  return data_->restoreState(r) && discretizableInTimeData_.restoreState(r);
+}
+
+template <typename DiscretizableInTimeType>
+const std::shared_ptr<typename FullOdeDataForCheckpointing<
+    DiscretizableInTimeType>::FunctionSpace>
+FullOdeDataForCheckpointing<DiscretizableInTimeType>::functionSpace() const {
+  return data_->functionSpace();
 }
 
 } // namespace TimeSteppingScheme

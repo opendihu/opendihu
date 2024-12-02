@@ -24,6 +24,8 @@ public:
   //! initialize the object
   void initialize();
 
+  void setUniqueDataPrefix(const std::string &prefix);
+
 protected:
 #ifdef HAVE_PRECICE
 
@@ -142,6 +144,7 @@ protected:
                                       // coupling is not enabled
 
   bool initialized_; //< if initialize() was already called
+  std::string uniqueDataPrefix_;
 };
 
 } // namespace Control

@@ -29,6 +29,9 @@ public:
   //! run tracing of stream lines
   void run();
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
 protected:
   //! trace the streamlines starting from seed points
   void traceStreamlines();
@@ -71,6 +74,7 @@ protected:
       csvFilenameBeforePostprocessing_; //< a csv output filename to write the
                                         // node positions of the streamlines to
                                         //(before postprocessing)
+  std::string uniqueDataPrefix_;
 };
 
 } // namespace Postprocessing

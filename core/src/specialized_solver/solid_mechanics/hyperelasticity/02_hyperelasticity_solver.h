@@ -104,7 +104,9 @@ public:
 
   //! advance simulation by the given time span, data in solution is used,
   //! afterwards new data is in solution
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! dummy method, set endTime as current output time
   void setTimeSpan(double startTime, double endTime);

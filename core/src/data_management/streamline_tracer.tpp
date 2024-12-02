@@ -39,6 +39,19 @@ void StreamlineTracer<FunctionSpaceType, BaseDataType>::setBaseData(
 }
 
 template <typename FunctionSpaceType, typename BaseDataType>
+bool StreamlineTracer<FunctionSpaceType, BaseDataType>::restoreState(
+    const InputReader::Generic &r) {
+  std::vector<double> gradient;
+  if (!r.readDoubleVector(this->gradient_->uniqueName().c_str(), gradient)) {
+    return false;
+  }
+  this->gradient_->setValues(gradient);
+  // TODO: restore fiberGeometry_, currently not serialized
+
+  return this->baseData_->restoreState(r);
+}
+
+template <typename FunctionSpaceType, typename BaseDataType>
 void StreamlineTracer<FunctionSpaceType, BaseDataType>::createPetscObjects() {
   LOG(DEBUG) << "StreamlineTracer<FunctionSpaceType,BaseDataType>::"
                 "createPetscObjects()"
@@ -48,6 +61,9 @@ void StreamlineTracer<FunctionSpaceType, BaseDataType>::createPetscObjects() {
   // create field variables on local partition
   this->gradient_ =
       this->functionSpace_->template createFieldVariable<3>("gradient");
+  this->gradient_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "streamline_tracer") +
+      "_gradient");
 }
 
 template <typename FunctionSpaceType, typename BaseDataType>
@@ -122,4 +138,11 @@ StreamlineTracer<FunctionSpaceType,
           fiberGeometry_));
 }
 
+template <typename FunctionSpaceType, typename BaseDataType>
+typename StreamlineTracer<FunctionSpaceType,
+                          BaseDataType>::FieldVariablesForCheckpointing
+StreamlineTracer<FunctionSpaceType,
+                 BaseDataType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

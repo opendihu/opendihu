@@ -59,6 +59,16 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  //! field variables that will be output by checkpointing
+  typedef typename ConvertFieldVariablesForOutputWriter<
+      typename Data3D::FieldVariablesForOutputWriter>::type
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  bool restoreState(const InputReader::Generic &r);
+
 private:
   std::vector<Mesh::face_t>
       faces_; //< one of Mesh::face_t::face2Minus and Mesh::face_t::face2Plus,

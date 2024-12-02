@@ -6,7 +6,9 @@ Dummy::Dummy(DihuContext context)
     : Runnable(), ::TimeSteppingScheme::TimeSteppingScheme(context),
       data_(this->context_) {}
 
-void Dummy::advanceTimeSpan(bool withOutputWritersEnabled) {}
+void Dummy::advanceTimeSpan(
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {}
 
 void Dummy::initialize() {
   // initialize() will be called before the simulation starts.
@@ -19,6 +21,8 @@ void Dummy::initialize() {
                        // with the first subsolver
 
   // now call initialize, data will then create all variables (Petsc Vec's)
+  data_.setUniquePrefix(
+      StringUtility::optionalConcat(this->uniqueDataPrefix_, "dummy"));
   data_.initialize();
 
   // set the slotConnectorData for the solverStructureVisualizer to appear in
@@ -37,9 +41,18 @@ void Dummy::run() {
 void Dummy::callOutputWriter(int timeStepNo, double currentTime,
                              int callCountIncrement) {}
 
+void Dummy::setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
 void Dummy::reset() {}
 
 typename Dummy::Data &Dummy::data() {
+  // get a reference to the data object
+  return data_;
+}
+
+typename Dummy::Data &Dummy::fullData() {
   // get a reference to the data object
   return data_;
 }

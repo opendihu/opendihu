@@ -37,6 +37,11 @@ typename std::enable_if<
 outputNodeValues(CurrentFieldVariableType currentFieldVariable,
                  std::string meshName, std::ostream &stream,
                  node_no_t nodeGlobalNo) {
+  // if the field variable is a null pointer, return but do not break iteration
+  if (!currentFieldVariable) {
+    return false;
+  }
+
   VLOG(2) << "loop_output_node_values.tpp:34, outputNodeValues, field variable "
           << currentFieldVariable->name();
 

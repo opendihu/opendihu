@@ -97,6 +97,29 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  //! field variables that will be output by checkpointing
+  typedef std::tuple<
+      std::shared_ptr<GradientFieldVariableType>, // geometry
+      std::shared_ptr<GradientFieldVariableType>, // fiberDirection
+      std::shared_ptr<FieldVariableType>, // solution of laplace potential flow
+      std::shared_ptr<FieldVariableType>, // extra-cellular potential
+      std::vector<std::shared_ptr<
+          FieldVariableType>>, // transmembranePotentialsSolution
+      std::vector<
+          std::shared_ptr<FieldVariableType>>, // transmembranePotentials
+      std::vector<
+          std::shared_ptr<FieldVariableType>>, // compartmentRelativeFactors
+      std::vector<std::shared_ptr<FieldVariableType>>, // activeStress
+      std::shared_ptr<FieldVariableType>,              // relativeFactorTotal
+      std::shared_ptr<FieldVariableType>               // activeStressTotal
+      >
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  bool restoreState(const InputReader::Generic &r);
+
 private:
   //! initializes the vectors with size
   void createPetscObjects() override;

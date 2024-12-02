@@ -18,6 +18,7 @@ class OperatorSplitting
 public:
   typedef typename TimeStepping1::FunctionSpace FunctionSpace;
   typedef Data::OperatorSplitting<TimeStepping1, TimeStepping2> Data;
+  typedef Data FullData;
   typedef typename Data::SlotConnectorDataType
       SlotConnectorDataType; // needed when this class is itself part of an
                              // operator splitting
@@ -56,8 +57,15 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  FullData &fullData();
 
   //! get a reference to the first timestepping object
   TimeStepping1 &timeStepping1();
@@ -75,6 +83,7 @@ protected:
   Data data_; //< data object that stores the slotConnectorData_ object which is
               // a tuple of both slotConnectorData objects of the timestepping
               // schemes
+  std::string uniqueDataPrefix_;
 
   int timeStepOutputInterval_; //< time step number and time is output every
                                // timeStepOutputInterval_ time steps

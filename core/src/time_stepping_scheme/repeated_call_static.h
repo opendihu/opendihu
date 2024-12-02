@@ -23,7 +23,9 @@ public:
 
   //! advance simulation by the given time span [startTime_, endTime_] with
   //! given numberTimeSteps
-  virtual void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  virtual void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! initialize solver
   void initialize();
@@ -36,9 +38,16 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object, with the call to this method the output writers
   //! get the data to create their output files
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! Get the data that will be transferred in the operator splitting or
   //! coupling to the other term of the splitting/coupling. the transfer is done
@@ -48,6 +57,7 @@ public:
 private:
   Solver
       solver_; //< the underlying solver object that will be stepped repeatedly
+  std::string uniqueDataPrefix_;
 };
 
 } // namespace TimeSteppingScheme

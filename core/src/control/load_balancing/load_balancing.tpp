@@ -995,6 +995,8 @@ void LoadBalancing<
   // cellMLAdapter is now initialized
 
   LOG(DEBUG) << "timeSteppingHeun.initialize()";
+  timeSteppingHeun.setUniqueDataPrefix(
+      StringUtility::optionalConcat(this->uniqueDataPrefix_, "load_balancing"));
   timeSteppingHeun.initialize(); // retrieves function space from cellMLAdapter,
                                  // does not initialize CellMLAdapter again
 
@@ -1016,6 +1018,8 @@ void LoadBalancing<
 
   // initialize timeStepping
   LOG(DEBUG) << "timeSteppingDiffusion.initialize()";
+  timeSteppingDiffusion.setUniqueDataPrefix(
+      StringUtility::optionalConcat(this->uniqueDataPrefix_, "load_balancing"));
   timeSteppingDiffusion
       .initialize(); // retrieves function space from finiteElementMethod
 

@@ -19,6 +19,7 @@ public:
   typedef FunctionSpaceType FunctionSpace;
   typedef typename Data::TimeStepping<FunctionSpaceType, nComponents>
       Data; // type of Data object
+  typedef Data FullData;
   typedef typename Data::SlotConnectorDataType SlotConnectorDataType;
 
   //! constructor
@@ -30,8 +31,15 @@ public:
   //! run simulation
   virtual void run();
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! output the given data for debugging
   // virtual std::string getString(std::shared_ptr<SlotConnectorDataType> data);
@@ -70,6 +78,7 @@ protected:
 
   std::shared_ptr<Data>
       data_; //< data object that holds all PETSc vectors and matrices
+  std::string uniqueDataPrefix_;
 
   bool initialized_; //< if initialize() was already called
   std::string name_; //< the name given to this time stepping scheme

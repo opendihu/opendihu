@@ -54,6 +54,7 @@ void FunctionSpacePartition<Mesh::CompositeOfDimension<D>,
   // iterate over submeshes
   for (std::shared_ptr<SubFunctionSpaceType> &subFunctionSpace :
        subFunctionSpaces_) {
+    // ->DI()
     subFunctionSpace->initialize();
 
     // count number of elements

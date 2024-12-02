@@ -26,7 +26,8 @@ PrescribedValues<FunctionSpaceType, nComponents1,
 
 template <typename FunctionSpaceType, int nComponents1, int nComponents2>
 void PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
-    advanceTimeSpan(bool withOutputWritersEnabled) {
+    advanceTimeSpan(bool withOutputWritersEnabled,
+                    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement, the name of the output variable can be set by
@@ -44,7 +45,12 @@ void PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
 
   // loop over time steps
   double currentTime = this->startTime_;
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(this->data_, timeStepNo, currentTime);
+  }
+
+  for (; timeStepNo < this->numberTimeSteps_;) {
     // in defined intervals (settings "timeStepOutputInterval") print out the
     // current timestep
     if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
@@ -74,6 +80,16 @@ void PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
     if (withOutputWritersEnabled)
       this->outputWriterManager_.writeOutput(this->data_, timeStepNo,
                                              currentTime);
+
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->data_, timeStepNo, currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
 
     // start duration measurement
     if (this->durationLogKey_ != "")
@@ -326,7 +342,8 @@ void PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::run() {
   // enclosing solver will call initialize() and advanceTimeSpan().
   initialize();
 
-  advanceTimeSpan();
+  auto checkpointing = this->context_.getCheckpointing();
+  advanceTimeSpan(true, checkpointing);
 }
 
 template <typename FunctionSpaceType, int nComponents1, int nComponents2>
@@ -350,8 +367,21 @@ void PrescribedValues<FunctionSpaceType, nComponents1,
 }
 
 template <typename FunctionSpaceType, int nComponents1, int nComponents2>
+void PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
+    setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename FunctionSpaceType, int nComponents1, int nComponents2>
 typename PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::Data &
 PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::data() {
+  // get a reference to the data object
+  return data_;
+}
+
+template <typename FunctionSpaceType, int nComponents1, int nComponents2>
+typename PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::Data &
+PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::fullData() {
   // get a reference to the data object
   return data_;
 }

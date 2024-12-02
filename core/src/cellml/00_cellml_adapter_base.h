@@ -32,6 +32,7 @@ public:
   typedef FieldVariable::FieldVariable<FunctionSpaceType, nStates_>
       FieldVariableStates;
   typedef Data::CellmlAdapter<nStates_, nAlgebraics_, FunctionSpaceType> Data;
+  typedef Data FullData;
 
   /** The data type of the slot connector of the CellML adapter.
    *  This is the data that will be transferred to connected solvers.
@@ -115,8 +116,15 @@ public:
   //! get the const number of algebraics
   constexpr int nAlgebraics() const;
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return reference to the data object that stores all field variables
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  FullData &fullData();
 
   //! get the python config object that contains all python settings for the
   //! CellML adapter
@@ -143,6 +151,8 @@ protected:
                       // problem as there are nodes in the mesh
   Data data_; //< the data object that stores all variables, i.e. algebraics and
               // states
+  std::string uniqueDataPrefix_;
+
   static std::array<double, nStates_>
       statesInitialValues_; //< the initial values for the states, see
                             // setInitialValues

@@ -151,6 +151,8 @@ void CellmlAdapterBase<nStates_, nAlgebraics_,
   data_.setFunctionSpace(functionSpace_);
   data_.setAlgebraicAndParameterNames(
       cellmlSourceCodeGenerator_.algebraicNames(), parameterNames, slotNames);
+  data_.setUniquePrefix(
+      StringUtility::optionalConcat(this->uniqueDataPrefix_, "cellml_adapter"));
   data_.initialize();
 
   // get the data_.parameters() raw pointer
@@ -806,8 +808,21 @@ void CellmlAdapterBase<nStates_, nAlgebraics_, FunctionSpaceType>::
 }
 
 template <int nStates_, int nAlgebraics_, typename FunctionSpaceType>
+void CellmlAdapterBase<nStates_, nAlgebraics_, FunctionSpaceType>::
+    setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <int nStates_, int nAlgebraics_, typename FunctionSpaceType>
 typename CellmlAdapterBase<nStates_, nAlgebraics_, FunctionSpaceType>::Data &
 CellmlAdapterBase<nStates_, nAlgebraics_, FunctionSpaceType>::data() {
+  return this->data_;
+}
+
+template <int nStates_, int nAlgebraics_, typename FunctionSpaceType>
+typename CellmlAdapterBase<nStates_, nAlgebraics_,
+                           FunctionSpaceType>::FullData &
+CellmlAdapterBase<nStates_, nAlgebraics_, FunctionSpaceType>::fullData() {
   return this->data_;
 }
 

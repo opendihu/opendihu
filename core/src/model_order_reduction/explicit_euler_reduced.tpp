@@ -14,7 +14,8 @@ ExplicitEulerReduced<TimeSteppingExplicitType>::ExplicitEulerReduced(
 
 template <typename TimeSteppingExplicitType>
 void ExplicitEulerReduced<TimeSteppingExplicitType>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   // compute timestep width
   double timeSpan = this->endTime_ - this->startTime_;
 
@@ -40,6 +41,11 @@ void ExplicitEulerReduced<TimeSteppingExplicitType>::advanceTimeSpan(
 
   // loop over time steps
   double currentTime = this->startTime_;
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(*this->data_, timeStepNo, currentTime);
+  }
+
   for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
     if (timeStepNo % this->fullTimestepping_.timeStepOutputInterval() == 0) {
       std::stringstream threadNumberMessage;
@@ -107,6 +113,16 @@ void ExplicitEulerReduced<TimeSteppingExplicitType>::advanceTimeSpan(
       // write the current output values of the (reduced) timestepping
       this->outputWriterManager().writeOutput(*this->data_, timeStepNo,
                                               currentTime);
+    }
+
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(*this->data_, timeStepNo, currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
     }
   }
 

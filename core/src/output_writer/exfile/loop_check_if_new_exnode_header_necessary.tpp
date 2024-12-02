@@ -40,6 +40,11 @@ checkIfNewExnodeHeaderNecessary(CurrentFieldVariableType currentFieldVariable,
                                 std::string meshName,
                                 element_no_t currentNodeGlobalNo,
                                 bool &newHeaderNecessary) {
+  // if the field variable is a null pointer, return but do not break iteration
+  if (!currentFieldVariable) {
+    return false;
+  }
+
   // if mesh name is not the specified meshName step over this field variable
   // but do not exit the loop over field variables
   if (currentFieldVariable->functionSpace()->meshName() != meshName) {

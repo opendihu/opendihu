@@ -42,6 +42,8 @@ void StaticBidomain<FunctionSpaceType>::initialize() {
     name << "additionalFieldVariable" << i;
     additionalFieldVariables_[i] =
         this->functionSpace_->template createFieldVariable<1>(name.str());
+    additionalFieldVariables_[i]->setUniqueName("static_bidomain_" +
+                                                name.str());
 
     slotConnectorData_->addFieldVariable2(additionalFieldVariables_[i]);
     LOG(DEBUG) << "  add field variable " << name.str();
@@ -49,6 +51,62 @@ void StaticBidomain<FunctionSpaceType>::initialize() {
 
   // make sure that there are as many slot names as slots
   slotConnectorData_->slotNames.resize(slotConnectorData_->nSlots());
+}
+
+template <typename FunctionSpaceType>
+bool StaticBidomain<FunctionSpaceType>::restoreState(
+    const InputReader::Generic &r) {
+  std::vector<double> transmembraneFlow, transmembranePotential, flowPotential,
+      fiberDirection, extraCellularPotential, zero, jacobianConditionNumber;
+  if (!r.readDoubleVector(this->transmembraneFlow_->uniqueName().c_str(),
+                          transmembraneFlow)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->transmembranePotential_->uniqueName().c_str(),
+                          transmembranePotential)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->flowPotential_->uniqueName().c_str(),
+                          flowPotential)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->fiberDirection_->uniqueName().c_str(),
+                          fiberDirection)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->extraCellularPotential_->uniqueName().c_str(),
+                          extraCellularPotential)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->zero_->uniqueName().c_str(), zero)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->jacobianConditionNumber_->uniqueName().c_str(),
+                          jacobianConditionNumber)) {
+    return false;
+  }
+
+  std::array<std::vector<double>, 3> geometryValues;
+  if (!r.template readDoubleVecD<3>(
+          this->functionSpace_->geometryField().name().c_str(), geometryValues,
+          "3D/")) {
+    return false;
+  }
+
+  this->transmembraneFlow_->setValues(transmembraneFlow);
+  this->transmembranePotential_->setValues(transmembranePotential);
+  this->flowPotential_->setValues(flowPotential);
+  this->fiberDirection_->setValues(fiberDirection);
+  this->extraCellularPotential_->setValues(extraCellularPotential);
+  this->zero_->setValues(zero);
+  this->jacobianConditionNumber_->setValues(jacobianConditionNumber);
+
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
+
+  return true;
 }
 
 template <typename FunctionSpaceType>
@@ -60,18 +118,39 @@ void StaticBidomain<FunctionSpaceType>::createPetscObjects() {
   this->transmembraneFlow_ =
       this->functionSpace_->template createFieldVariable<1>(
           "transmembraneFlow");
+  this->transmembraneFlow_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "static_bidomain_") +
+      "transmembraneFlow");
   this->transmembranePotential_ =
       this->functionSpace_->template createFieldVariable<1>("Vm");
+  this->transmembranePotential_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "static_bidomain_") +
+      "Vm");
   this->flowPotential_ =
       this->functionSpace_->template createFieldVariable<1>("flowPotential");
+  this->flowPotential_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "static_bidomain_") +
+      "flowPotential");
   this->fiberDirection_ =
       this->functionSpace_->template createFieldVariable<3>("fiberDirection");
+  this->fiberDirection_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "static_bidomain_") +
+      "fiberDirection");
   this->extraCellularPotential_ =
       this->functionSpace_->template createFieldVariable<1>("phi_e");
+  this->extraCellularPotential_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "static_bidomain_") +
+      "phi_e");
   this->zero_ = this->functionSpace_->template createFieldVariable<1>("zero");
+  this->zero_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "static_bidomain_") +
+      "zero");
   this->jacobianConditionNumber_ =
       this->functionSpace_->template createFieldVariable<1>(
           "jacobianConditionNumber");
+  this->jacobianConditionNumber_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "static_bidomain_") +
+      "jacobianConditionNumber");
 
   LOG(DEBUG) << "Vm field variable (" << this->transmembranePotential_ << ")";
 }
@@ -170,4 +249,31 @@ StaticBidomain<FunctionSpaceType>::getFieldVariablesForOutputWriter() {
                          jacobianConditionNumber_, additionalFieldVariables_);
 }
 
+template <typename FunctionSpaceType>
+typename StaticBidomain<FunctionSpaceType>::FieldVariablesForCheckpointing
+StaticBidomain<FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
+      geometryField =
+          std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+              this->functionSpace_->geometryField());
+
+  // recover additional field variables from slotConnectorData_, they may have
+  // been changed by transfer
+  assert(slotConnectorData_->variable2.size() >=
+         additionalFieldVariables_.size());
+  for (int i = 0; i < additionalFieldVariables_.size(); i++) {
+    LOG(DEBUG) << " Data::StaticBidomain::getFieldVariablesForOutputWriter(), "
+               << " get field variable "
+               << slotConnectorData_->variable2[i].values << ", \""
+               << slotConnectorData_->variable2[i].values->name()
+               << "\" for additionalFieldVariables_[" << i << "]";
+    additionalFieldVariables_[i] = slotConnectorData_->variable2[i].values;
+  }
+
+  // these field variables will be written to output files
+  return std::make_tuple(geometryField, this->fiberDirection_,
+                         extraCellularPotential_, transmembranePotential_,
+                         transmembraneFlow_, this->flowPotential_,
+                         jacobianConditionNumber_, additionalFieldVariables_);
+}
 } // namespace Data

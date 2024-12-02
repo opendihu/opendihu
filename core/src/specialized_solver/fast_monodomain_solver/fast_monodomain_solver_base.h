@@ -67,6 +67,7 @@ public:
 
   typedef typename NestedSolversType::FunctionSpace FunctionSpace;
   typedef typename NestedSolversType::Data Data;
+  typedef typename NestedSolversType::FullData FullData;
   typedef
       typename NestedSolversType::SlotConnectorDataType SlotConnectorDataType;
 
@@ -80,7 +81,9 @@ public:
   void run();
 
   //! run simulation for the specified timespan
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! call the output writer on the data object, output files will contain
   //! currentTime, with callCountIncrement !=1 output timesteps can be skipped
@@ -90,8 +93,15 @@ public:
   //! reset to uninitialized state
   void reset();
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! get a reference to the data object
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  FullData &fullData();
 
   //! set a new time interval that will be simulated by next call to
   //! advanceTimeSpan.
@@ -210,7 +220,8 @@ protected:
                  double prefactor);
 
   //! compute the 0D-1D problem with Strang splitting
-  void computeMonodomain();
+  void computeMonodomain(
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! check if the current point will be stimulated now
   bool isCurrentPointStimulated(int fiberDataNo, double currentTime,
@@ -248,6 +259,7 @@ protected:
 
   PythonConfig specificSettings_; //< config for this object
 
+  std::string uniqueDataPrefix_;
   NestedSolversType nestedSolvers_; //< the nested solvers object that would
                                     // normally solve the problem
 

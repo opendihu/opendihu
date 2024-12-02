@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Python.h> // has to be the first included header
+#include <tuple>
 
 namespace Data {
 
@@ -22,6 +23,11 @@ public:
   //! return the object that will be used to transfer values between solvers, in
   //! this case this includes only Vm
   std::shared_ptr<SlotConnectorDataType> getSlotConnectorData();
+
+  typedef std::tuple<> FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
 
 private:
   //! create all field variables with their respective sizes, this will be

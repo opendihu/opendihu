@@ -34,6 +34,16 @@ public:
   //! print all stored data to stdout
   void print() override;
 
+  //! field variables that will be output by checkpointing
+  typedef decltype(std::tuple_cat(
+      std::declval<typename TimeStepping<
+          FunctionSpaceType, nComponents>::FieldVariablesForCheckpointing>(),
+      std::declval<std::tuple<std::shared_ptr<FieldVariableType>>>()))
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
 private:
   //! initializes the vectors with size
   void createPetscObjects() override;

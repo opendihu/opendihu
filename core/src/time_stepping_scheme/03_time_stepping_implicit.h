@@ -9,6 +9,47 @@
 
 namespace TimeSteppingScheme {
 
+template <typename DiscretizableInTimeType>
+class FullImplicitDataForCheckpointing {
+  typedef DiscretizableInTimeType DiscretizableInTime;
+  typedef typename DiscretizableInTimeType::FunctionSpace FunctionSpace;
+  typedef typename DiscretizableInTimeType::FullData DiscretizableInTimeData;
+
+  typedef typename Data::TimeSteppingImplicit<
+      FunctionSpace, DiscretizableInTimeType::nComponents()>
+      Data;
+
+public:
+  FullImplicitDataForCheckpointing(
+      std::shared_ptr<Data> data,
+      DiscretizableInTimeData &discretizableInTimeData);
+
+  //! field variables that will be output by checkpointing
+  typedef decltype(std::tuple_cat(
+      std::declval<typename Data::FieldVariablesForCheckpointing>(),
+      std::declval<
+          typename DiscretizableInTimeData::FieldVariablesForCheckpointing>()))
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  //! field variables that will be output by checkpointing
+  typedef FieldVariablesForCheckpointing FieldVariablesForOutputWriter;
+
+  //! Not needed for this implementation, shadowing checkpointing function
+  FieldVariablesForCheckpointing getFieldVariablesForOutputWriter();
+
+  bool restoreState(const InputReader::Generic &r);
+
+  const std::shared_ptr<FunctionSpace> functionSpace() const;
+
+private:
+  std::shared_ptr<Data> data_; //< data object
+  DiscretizableInTimeData
+      &discretizableInTimeData_; //< the object to be discretized
+};
+
 /** The implicit time integration scheme
  */
 template <typename DiscretizableInTimeType>
@@ -21,6 +62,7 @@ public:
       DiscretizableInTimeType::nComponents()>
       DataImplicit;
   typedef typename DataImplicit::SlotConnectorDataType SlotConnectorDataType;
+  typedef FullImplicitDataForCheckpointing<DiscretizableInTimeType> FullData;
 
   //! constructor
   TimeSteppingImplicit(DihuContext context, const std::string name);
@@ -28,7 +70,9 @@ public:
   //! advance simulation by the given time span [startTime_, endTime_] with
   //! given numberTimeSteps, data in solution is used, afterwards new data is in
   //! solution
-  virtual void advanceTimeSpan(bool withOutputWritersEnabled = true) = 0;
+  virtual void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr) = 0;
 
   virtual void initialize();
 
@@ -47,6 +91,8 @@ public:
   // &data);
 
   //! there should be no getSlotConnectorData here!
+
+  FullData fullData();
 
 protected:
   //! actual implementation of initializeWithTimeStepWidth

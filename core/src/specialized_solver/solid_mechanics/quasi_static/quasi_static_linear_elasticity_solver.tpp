@@ -44,7 +44,8 @@ QuasiStaticLinearElasticitySolver<
 
 template <typename FiniteElementMethod>
 void QuasiStaticLinearElasticitySolver<FiniteElementMethod>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement, the name of the output variable can be set by
@@ -204,6 +205,8 @@ void QuasiStaticLinearElasticitySolver<FiniteElementMethod>::initialize() {
 
   // initialize the data object
   data_.setFunctionSpace(finiteElementMethodLinearElasticity_.functionSpace());
+  data_.setUniquePrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "quasi_static_linear_elasticity_solver"));
   data_.initialize();
 
   // add this solver to the solvers diagram
@@ -221,6 +224,9 @@ void QuasiStaticLinearElasticitySolver<FiniteElementMethod>::initialize() {
       data_.rightHandSideActive());
 
   // initialize the finite element method
+  finiteElementMethodLinearElasticity_.setUniqueDataPrefix(
+      StringUtility::optionalConcat(this->uniqueDataPrefix_,
+                                    "quasi_static_linear_elasticity_solver"));
   finiteElementMethodLinearElasticity_.initialize();
 
   data_.setData(std::make_shared<DataLinearElasticityType>(
@@ -248,6 +254,9 @@ void QuasiStaticLinearElasticitySolver<FiniteElementMethod>::initialize() {
     DihuContext::solverStructureVisualizer()->beginChild("PotentialFlow");
 
     // initialize the potential flow finite element method
+    finiteElementMethodPotentialFlow_.setUniqueDataPrefix(
+        StringUtility::optionalConcat(this->uniqueDataPrefix_,
+                                      "quasi_static_linear_elasticity_solver"));
     finiteElementMethodPotentialFlow_.initialize();
 
     // indicate in solverStructureVisualizer that the child solver
@@ -302,9 +311,23 @@ void QuasiStaticLinearElasticitySolver<FiniteElementMethod>::callOutputWriter(
 }
 
 template <typename FiniteElementMethod>
+void QuasiStaticLinearElasticitySolver<
+    FiniteElementMethod>::setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename FiniteElementMethod>
 typename QuasiStaticLinearElasticitySolver<FiniteElementMethod>::Data &
 QuasiStaticLinearElasticitySolver<FiniteElementMethod>::data() {
   return data_;
+}
+
+template <typename FiniteElementMethod>
+typename QuasiStaticLinearElasticitySolver<FiniteElementMethod>::FullData
+QuasiStaticLinearElasticitySolver<FiniteElementMethod>::fullData() {
+  return FullQuasiStaticLinearDataForCheckpointing<FiniteElementMethod>(
+      data_, finiteElementMethodPotentialFlow_,
+      finiteElementMethodLinearElasticity_);
 }
 
 //! get the data that will be transferred in the operator splitting to the other
@@ -326,6 +349,50 @@ std::string QuasiStaticLinearElasticitySolver<FiniteElementMethod>::getString(
   std::stringstream s;
   s << "<QuasiStaticLinearElasticitySolver:" << *data << ">";
   return s.str();
+}
+
+template <typename FiniteElementMethod>
+FullQuasiStaticLinearDataForCheckpointing<FiniteElementMethod>::
+    FullQuasiStaticLinearDataForCheckpointing(
+        Data &data, FiniteElementMethodPotentialFlow &potential,
+        FiniteElementMethod &elasticity)
+    : data_(data), finiteElementMethodPotentialFlow_(potential),
+      finiteElementMethodLinearElasticity_(elasticity) {}
+
+template <typename FiniteElementMethod>
+typename FullQuasiStaticLinearDataForCheckpointing<
+    FiniteElementMethod>::FieldVariablesForCheckpointing
+FullQuasiStaticLinearDataForCheckpointing<
+    FiniteElementMethod>::getFieldVariablesForCheckpointing() {
+  return std::tuple_cat(data_.getFieldVariablesForCheckpointing(),
+                        finiteElementMethodPotentialFlow_.fullData()
+                            .getFieldVariablesForCheckpointing(),
+                        finiteElementMethodLinearElasticity_.fullData()
+                            .getFieldVariablesForCheckpointing());
+}
+
+template <typename FiniteElementMethod>
+typename FullQuasiStaticLinearDataForCheckpointing<
+    FiniteElementMethod>::FieldVariablesForOutputWriter
+FullQuasiStaticLinearDataForCheckpointing<
+    FiniteElementMethod>::getFieldVariablesForOutputWriter() {
+  return getFieldVariablesForCheckpointing();
+}
+
+template <typename FiniteElementMethod>
+bool FullQuasiStaticLinearDataForCheckpointing<
+    FiniteElementMethod>::restoreState(const InputReader::Generic &r) {
+  return data_.restoreState(r) &&
+         finiteElementMethodPotentialFlow_.fullData().restoreState(r) &&
+         finiteElementMethodLinearElasticity_.fullData().restoreState(r);
+}
+
+template <typename FiniteElementMethod>
+const std::shared_ptr<typename FullQuasiStaticLinearDataForCheckpointing<
+    FiniteElementMethod>::FunctionSpace>
+FullQuasiStaticLinearDataForCheckpointing<FiniteElementMethod>::functionSpace()
+    const {
+  return data_.functionSpace();
 }
 
 } // namespace TimeSteppingScheme

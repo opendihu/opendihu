@@ -13,6 +13,45 @@
 #include "time_stepping_scheme/01_time_stepping_scheme_ode_base.h"
 
 namespace TimeSteppingScheme {
+template <typename DiscretizableInTimeType> class FullOdeDataForCheckpointing {
+  typedef DiscretizableInTimeType DiscretizableInTime;
+  typedef typename DiscretizableInTimeType::FunctionSpace FunctionSpace;
+  typedef typename DiscretizableInTimeType::FullData DiscretizableInTimeData;
+
+  typedef typename Data::TimeStepping<FunctionSpace,
+                                      DiscretizableInTimeType::nComponents()>
+      Data; // type of Data object
+
+public:
+  FullOdeDataForCheckpointing(std::shared_ptr<Data> data,
+                              DiscretizableInTimeData &discretizableInTimeData);
+
+  //! field variables that will be output by checkpointing
+  typedef decltype(std::tuple_cat(
+      std::declval<typename Data::FieldVariablesForCheckpointing>(),
+      std::declval<
+          typename DiscretizableInTimeData::FieldVariablesForCheckpointing>()))
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  //! field variables that will be output by checkpointing
+  typedef FieldVariablesForCheckpointing FieldVariablesForOutputWriter;
+
+  //! Not needed for this implementation, shadowing checkpointing function
+  FieldVariablesForCheckpointing getFieldVariablesForOutputWriter();
+
+  bool restoreState(const InputReader::Generic &r);
+
+  const std::shared_ptr<FunctionSpace> functionSpace() const;
+
+private:
+  std::shared_ptr<Data> data_; //< data object
+  DiscretizableInTimeData
+      &discretizableInTimeData_; //< the object to be discretized
+};
+
 /** This is the base class for all ode solvers.
  */
 template <typename DiscretizableInTimeType>
@@ -23,6 +62,7 @@ class TimeSteppingSchemeOdeBaseDiscretizable
 public:
   typedef DiscretizableInTimeType DiscretizableInTime;
   typedef typename DiscretizableInTimeType::FunctionSpace FunctionSpace;
+  typedef FullOdeDataForCheckpointing<DiscretizableInTimeType> FullData;
 
   //! constructor
   TimeSteppingSchemeOdeBaseDiscretizable(DihuContext context, std::string name);
@@ -46,6 +86,8 @@ public:
   std::shared_ptr<SpatialDiscretization::DirichletBoundaryConditions<
       FunctionSpace, DiscretizableInTimeType::nComponents()>>
   dirichletBoundaryConditions();
+
+  FullData fullData();
 
 protected:
   //! prepare the discretizableInTime object for the following call to

@@ -46,7 +46,8 @@ MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::
 
 template <typename MeshType, typename Term, bool withLargeOutputFiles>
 void MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::
-    advanceTimeSpan(bool withOutputWritersEnabled) {
+    advanceTimeSpan(bool withOutputWritersEnabled,
+                    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
   // This method computes some time steps of the simulation by running a for
   // loop over the time steps. The number of steps, timestep width and current
@@ -76,7 +77,22 @@ void MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::
 
   // loop over time steps
   double currentTime = this->startTime_;
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
+  int timeStepNo = 0;
+  if (checkpointing) {
+    if (isDynamic_) {
+      auto fullDataset =
+          FullDynamicDataForCheckpointing<MeshType, Term, withLargeOutputFiles>(
+              this->data_, dynamicHyperelasticitySolver_);
+      checkpointing->restore(fullDataset, timeStepNo, currentTime);
+    } else {
+      auto fullDataset =
+          FullStaticDataForCheckpointing<MeshType, Term, withLargeOutputFiles>(
+              this->data_, staticHyperelasticitySolver_);
+      checkpointing->restore(fullDataset, timeStepNo, currentTime);
+    }
+  }
+
+  for (; timeStepNo < this->numberTimeSteps_;) {
     // in defined intervals (settings "timeStepOutputInterval") print out the
     // current timestep
     if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
@@ -123,6 +139,28 @@ void MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::
       this->outputWriterManager_.writeOutput(this->data_, timeStepNo,
                                              currentTime);
 
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        if (isDynamic_) {
+          auto fullDataset =
+              FullDynamicDataForCheckpointing<MeshType, Term,
+                                              withLargeOutputFiles>(
+                  this->data_, dynamicHyperelasticitySolver_);
+          checkpointing->createCheckpoint(fullDataset, timeStepNo, currentTime);
+        } else {
+          auto fullDataset =
+              FullStaticDataForCheckpointing<MeshType, Term,
+                                             withLargeOutputFiles>(
+                  this->data_, staticHyperelasticitySolver_);
+          checkpointing->createCheckpoint(fullDataset, timeStepNo, currentTime);
+        }
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
+
     // start duration measurement
     if (this->durationLogKey_ != "")
       Control::PerformanceMeasurement::start(this->durationLogKey_);
@@ -138,9 +176,9 @@ void MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::
 #if 0
   std::vector<Vec3> materialTractionValues;
   dynamicHyperelasticitySolver_->hyperelasticitySolver()->data().materialTraction()->getValuesWithoutGhosts(materialTractionValues);
-  
-  LOG(INFO) << "end of muscle contraction solver, materialTraction \"" 
-    << dynamicHyperelasticitySolver_->hyperelasticitySolver()->data().materialTraction()->name() << "\" (" 
+
+  LOG(INFO) << "end of muscle contraction solver, materialTraction \""
+    << dynamicHyperelasticitySolver_->hyperelasticitySolver()->data().materialTraction()->name() << "\" ("
     << dynamicHyperelasticitySolver_->hyperelasticitySolver()->data().materialTraction() << ") Values: " << materialTractionValues;
 #endif
 }
@@ -172,8 +210,14 @@ void MuscleContractionSolver<MeshType, Term,
 
   // call initialize of the nested timestepping solver
   if (isDynamic_) {
+    dynamicHyperelasticitySolver_->setUniqueDataPrefix(
+        StringUtility::optionalConcat(this->uniqueDataPrefix_,
+                                      "muscle_contraction_solver"));
     dynamicHyperelasticitySolver_->initialize();
   } else {
+    staticHyperelasticitySolver_->setUniqueDataPrefix(
+        StringUtility::optionalConcat(this->uniqueDataPrefix_,
+                                      "muscle_contraction_solver"));
     staticHyperelasticitySolver_->initialize();
   }
 
@@ -202,6 +246,8 @@ void MuscleContractionSolver<MeshType, Term,
   data_.setFunctionSpace(functionSpace);
 
   // now call initialize, data will then create all variables (Petsc Vec's)
+  data_.setUniquePrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "muscle_contraction_solver"));
   data_.initialize();
 
   bool setGeometryFieldForTransfer = meshNamesOfGeometryToMapTo_.empty();
@@ -246,7 +292,8 @@ template <typename MeshType, typename Term, bool withLargeOutputFiles>
 void MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::run() {
   initialize();
 
-  advanceTimeSpan();
+  auto checkpointing = this->context_.getCheckpointing();
+  advanceTimeSpan(true, checkpointing);
 }
 
 template <typename MeshType, typename Term, bool withLargeOutputFiles>
@@ -657,9 +704,22 @@ MuscleContractionSolver<MeshType, Term,
 }
 
 template <typename MeshType, typename Term, bool withLargeOutputFiles>
+void MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::
+    setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename MeshType, typename Term, bool withLargeOutputFiles>
 typename MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::Data &
 MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::data() {
   return data_;
+}
+
+template <typename MeshType, typename Term, bool withLargeOutputFiles>
+typename MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::FullData
+MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::fullData() {
+  return FullDynamicDataForCheckpointing<MeshType, Term, withLargeOutputFiles>(
+      this->data_, dynamicHyperelasticitySolver_);
 }
 
 //! get the data that will be transferred in the operator splitting to the other
@@ -671,4 +731,85 @@ std::shared_ptr<typename MuscleContractionSolver<
 MuscleContractionSolver<MeshType, Term,
                         withLargeOutputFiles>::getSlotConnectorData() {
   return data_.getSlotConnectorData();
+}
+
+template <typename MeshType, typename Term, bool withLargeOutputFiles>
+FullStaticDataForCheckpointing<MeshType, Term, withLargeOutputFiles>::
+    FullStaticDataForCheckpointing(
+        Data &data, std::shared_ptr<StaticHyperelasticitySolverType>
+                        staticHyperelasticitySolver)
+    : staticHyperelasticitySolver_(staticHyperelasticitySolver), data_(data) {}
+
+template <typename MeshType, typename Term, bool withLargeOutputFiles>
+typename FullStaticDataForCheckpointing<
+    MeshType, Term, withLargeOutputFiles>::FieldVariablesForCheckpointing
+FullStaticDataForCheckpointing<
+    MeshType, Term, withLargeOutputFiles>::getFieldVariablesForCheckpointing() {
+  return std::tuple_cat(staticHyperelasticitySolver_->fullData()
+                            .getFieldVariablesForCheckpointing(),
+                        data_.getFieldVariablesForCheckpointing());
+}
+
+template <typename MeshType, typename Term, bool withLargeOutputFiles>
+typename FullStaticDataForCheckpointing<
+    MeshType, Term, withLargeOutputFiles>::FieldVariablesForOutputWriter
+FullStaticDataForCheckpointing<
+    MeshType, Term, withLargeOutputFiles>::getFieldVariablesForOutputWriter() {
+  return getFieldVariablesForCheckpointing();
+}
+
+template <typename MeshType, typename Term, bool withLargeOutputFiles>
+bool FullStaticDataForCheckpointing<MeshType, Term, withLargeOutputFiles>::
+    restoreState(const InputReader::Generic &r) {
+  return staticHyperelasticitySolver_->fullData().restoreState(r) &&
+         data_.restoreState(r);
+}
+
+template <typename MeshType, typename Term, bool withLargeOutputFiles>
+const std::shared_ptr<typename FullStaticDataForCheckpointing<
+    MeshType, Term, withLargeOutputFiles>::FunctionSpace>
+FullStaticDataForCheckpointing<MeshType, Term,
+                               withLargeOutputFiles>::functionSpace() const {
+  return data_.functionSpace();
+}
+
+template <typename MeshType, typename Term, bool withLargeOutputFiles>
+FullDynamicDataForCheckpointing<MeshType, Term, withLargeOutputFiles>::
+    FullDynamicDataForCheckpointing(
+        Data &data, std::shared_ptr<DynamicHyperelasticitySolverType>
+                        dynamicHyperelasticitySolver)
+    : dynamicHyperelasticitySolver_(dynamicHyperelasticitySolver), data_(data) {
+}
+
+template <typename MeshType, typename Term, bool withLargeOutputFiles>
+typename FullDynamicDataForCheckpointing<
+    MeshType, Term, withLargeOutputFiles>::FieldVariablesForCheckpointing
+FullDynamicDataForCheckpointing<
+    MeshType, Term, withLargeOutputFiles>::getFieldVariablesForCheckpointing() {
+  return std::tuple_cat(dynamicHyperelasticitySolver_->fullData()
+                            .getFieldVariablesForCheckpointing(),
+                        data_.getFieldVariablesForCheckpointing());
+}
+
+template <typename MeshType, typename Term, bool withLargeOutputFiles>
+typename FullDynamicDataForCheckpointing<
+    MeshType, Term, withLargeOutputFiles>::FieldVariablesForOutputWriter
+FullDynamicDataForCheckpointing<
+    MeshType, Term, withLargeOutputFiles>::getFieldVariablesForOutputWriter() {
+  return getFieldVariablesForCheckpointing();
+}
+
+template <typename MeshType, typename Term, bool withLargeOutputFiles>
+bool FullDynamicDataForCheckpointing<MeshType, Term, withLargeOutputFiles>::
+    restoreState(const InputReader::Generic &r) {
+  return dynamicHyperelasticitySolver_->fullData().restoreState(r) &&
+         data_.restoreState(r);
+}
+
+template <typename MeshType, typename Term, bool withLargeOutputFiles>
+const std::shared_ptr<typename FullDynamicDataForCheckpointing<
+    MeshType, Term, withLargeOutputFiles>::FunctionSpace>
+FullDynamicDataForCheckpointing<MeshType, Term,
+                                withLargeOutputFiles>::functionSpace() const {
+  return data_.functionSpace();
 }

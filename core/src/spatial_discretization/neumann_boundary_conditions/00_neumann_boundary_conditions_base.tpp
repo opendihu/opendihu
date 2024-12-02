@@ -27,6 +27,7 @@ void NeumannBoundaryConditionsBase<
 
   this->functionSpace_ = functionSpace;
   data_.setFunctionSpace(functionSpace_);
+  // ->DI()
   data_.initialize();
 
   LOG(DEBUG) << "initialize Neumann boundary conditions, key  \""
@@ -222,6 +223,7 @@ void NeumannBoundaryConditionsBase<FunctionSpaceType, QuadratureType,
 
   this->functionSpace_ = functionSpace;
   data_.setFunctionSpace(functionSpace_);
+  // ->DI()
   data_.initialize();
 
   boundaryConditionElements_ = boundaryConditionElements;

@@ -1,14 +1,9 @@
-#include "output_writer/paraview/loop_collect_field_variables_names.h"
-
-#include "output_writer/paraview/paraview_writer.h"
-#include "easylogging++.h"
-#include "utility/vector_operators.h"
 #include <cstdlib>
 #include "field_variable/field_variable.h"
 
 namespace OutputWriter {
 
-namespace ParaviewLoopOverTuple {
+namespace LoopOverTuple {
 
 /** Static recursive loop from 0 to number of entries in the tuple
  * Loop body
@@ -44,6 +39,11 @@ getGeometryFieldNodalValues(
     CurrentFieldVariableType currentFieldVariable,
     const FieldVariablesForOutputWriterType &fieldVariables,
     std::set<std::string> meshNames, std::vector<double> &values) {
+  // if the field variable is a null pointer, return but do not break iteration
+  if (!currentFieldVariable) {
+    return false;
+  }
+
   VLOG(1) << "getGeometryFieldNodalValues meshNames: " << meshNames
           << ", own: " << currentFieldVariable->functionSpace()->meshName()
           << ", fieldVariable name \"" << currentFieldVariable->name() << "\""
@@ -175,5 +175,5 @@ getGeometryFieldNodalValues(
 
   return false; // do not break iteration
 }
-} // namespace ParaviewLoopOverTuple
+} // namespace LoopOverTuple
 } // namespace OutputWriter

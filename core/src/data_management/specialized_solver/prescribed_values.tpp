@@ -64,6 +64,48 @@ void PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
 }
 
 template <typename FunctionSpaceType, int nComponents1, int nComponents2>
+bool PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
+    restoreState(const InputReader::Generic &r) {
+  std::vector<std::vector<double>> data1;
+  data1.resize(fieldVariables1_.size());
+  std::vector<std::vector<double>> data2;
+  data2.resize(fieldVariables2_.size());
+  for (size_t i = 0; i < fieldVariables1_.size(); i++) {
+    if (!r.readDoubleVector(fieldVariables1_[i]->uniqueName().c_str(),
+                            data1[i])) {
+      return false;
+    }
+  }
+  for (size_t i = 0; i < fieldVariables2_.size(); i++) {
+    if (!r.readDoubleVector(fieldVariables2_[i]->uniqueName().c_str(),
+                            data2[i])) {
+      return false;
+    }
+  }
+
+  std::array<std::vector<double>, 3> geometryValues;
+  if (!r.template readDoubleVecD<3>(
+          this->functionSpace_->geometryField().name().c_str(), geometryValues,
+          "3D/")) {
+    return false;
+  }
+
+  for (size_t i = 0; i < fieldVariables1_.size(); i++) {
+    fieldVariables1_[i]->setValues(data1[i]);
+  }
+  for (size_t i = 0; i < fieldVariables2_.size(); i++) {
+    fieldVariables2_[i]->setValues(data2[i]);
+  }
+
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
+
+  return true;
+}
+
+template <typename FunctionSpaceType, int nComponents1, int nComponents2>
 void PrescribedValues<FunctionSpaceType, nComponents1,
                       nComponents2>::createPetscObjects() {
   assert(this->functionSpace_);
@@ -73,8 +115,12 @@ void PrescribedValues<FunctionSpaceType, nComponents1,
   for (int fieldVariable1No = 0; fieldVariable1No < fieldVariable1Names_.size();
        fieldVariable1No++) {
     std::string name = fieldVariable1Names_[fieldVariable1No];
-    this->fieldVariables1_.push_back(
-        this->functionSpace_->template createFieldVariable<nComponents1>(name));
+    auto var =
+        this->functionSpace_->template createFieldVariable<nComponents1>(name);
+    var->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "prescribed_values_") +
+        name);
+    this->fieldVariables1_.push_back(var);
   }
 
   // create field variables with `nComponents2` components, using the given
@@ -82,8 +128,12 @@ void PrescribedValues<FunctionSpaceType, nComponents1,
   for (int fieldVariable2No = 0; fieldVariable2No < fieldVariable2Names_.size();
        fieldVariable2No++) {
     std::string name = fieldVariable2Names_[fieldVariable2No];
-    this->fieldVariables2_.push_back(
-        this->functionSpace_->template createFieldVariable<nComponents2>(name));
+    auto var =
+        this->functionSpace_->template createFieldVariable<nComponents2>(name);
+    var->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "prescribed_values_") +
+        name);
+    this->fieldVariables2_.push_back(var);
   }
 }
 
@@ -141,4 +191,29 @@ PrescribedValues<FunctionSpaceType, nComponents1,
                          this->fieldVariables2_);
 }
 
+template <typename FunctionSpaceType, int nComponents1, int nComponents2>
+typename PrescribedValues<FunctionSpaceType, nComponents1,
+                          nComponents2>::FieldVariablesForCheckpointing
+PrescribedValues<FunctionSpaceType, nComponents1,
+                 nComponents2>::getFieldVariablesForCheckpointing() {
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
+      geometryField =
+          std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+              this->functionSpace_->geometryField());
+
+  // update the pointer of the field variables, because the most recent field
+  // variable may be in slotConnectorData_ (it could have been changed during
+  // transfer)
+  for (int fieldVariable1No = 0; fieldVariable1No < fieldVariables1_.size();
+       fieldVariable1No++) {
+    this->fieldVariables1_[fieldVariable1No] = fieldVariable1(fieldVariable1No);
+  }
+  for (int fieldVariable2No = 0; fieldVariable2No < fieldVariables2_.size();
+       fieldVariable2No++) {
+    this->fieldVariables2_[fieldVariable2No] = fieldVariable2(fieldVariable2No);
+  }
+
+  return std::make_tuple(geometryField, this->fieldVariables1_,
+                         this->fieldVariables2_);
+}
 } // namespace Data

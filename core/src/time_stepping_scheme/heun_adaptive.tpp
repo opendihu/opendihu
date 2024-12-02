@@ -93,7 +93,8 @@ HeunAdaptive<DiscretizableInTime>::~HeunAdaptive() {
 
 template <typename DiscretizableInTime>
 void HeunAdaptive<DiscretizableInTime>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement, the name of the output variable can be set by
@@ -155,6 +156,10 @@ void HeunAdaptive<DiscretizableInTime>::advanceTimeSpan(
 
   // calculate current time
   double currentTime = this->startTime_;
+  if (checkpointing) {
+    checkpointing->restore(*this->data_, timeStepNo, currentTime);
+  }
+
   LOG(DEBUG) << "New timeSpan started. Current time: " << currentTime;
 
   // update current time for returning method
@@ -436,6 +441,17 @@ void HeunAdaptive<DiscretizableInTime>::advanceTimeSpan(
         this->outputWriterManager_.writeOutput(*this->data_, timeStepNo,
                                                currentTime);
 
+      if (checkpointing) {
+        if (checkpointing->needCheckpoint()) {
+          checkpointing->createCheckpoint(*this->data_, timeStepNo,
+                                          currentTime);
+        }
+
+        if (checkpointing->shouldExit()) {
+          break;
+        }
+      }
+
       // start duration measurement
       if (this->durationLogKey_ != "")
         Control::PerformanceMeasurement::start(this->durationLogKey_);
@@ -631,6 +647,17 @@ void HeunAdaptive<DiscretizableInTime>::advanceTimeSpan(
         this->outputWriterManager_.writeOutput(*this->data_, timeStepNo,
                                                currentTime);
 
+      if (checkpointing) {
+        if (checkpointing->needCheckpoint()) {
+          checkpointing->createCheckpoint(*this->data_, timeStepNo,
+                                          currentTime);
+        }
+
+        if (checkpointing->shouldExit()) {
+          break;
+        }
+      }
+
       // start duration measurement
       if (this->durationLogKey_ != "")
         Control::PerformanceMeasurement::start(this->durationLogKey_);
@@ -670,6 +697,17 @@ void HeunAdaptive<DiscretizableInTime>::run() {
 template <typename DiscretizableInTime>
 double HeunAdaptive<DiscretizableInTime>::currentHeunTime() {
   return currentTimeHeun_;
+}
+
+template <typename DiscretizableInTime>
+typename HeunAdaptive<DiscretizableInTime>::FullData
+HeunAdaptive<DiscretizableInTime>::fullData() {
+  return FullHeunDataForCheckpointing<DiscretizableInTime>(
+      std::static_pointer_cast<
+          Data::TimeSteppingHeun<typename DiscretizableInTime::FunctionSpace,
+                                 DiscretizableInTime::nComponents()>>(
+          this->data_),
+      this->discretizableInTime_.fullData());
 }
 
 } // namespace TimeSteppingScheme

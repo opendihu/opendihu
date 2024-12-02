@@ -30,7 +30,9 @@ public:
 
   //! advance simulation by the given time span, data in solution is used,
   //! afterwards new data is in solution
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! initialize components of the simulation
   void initialize();
@@ -49,8 +51,15 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! get the data that will be transferred in the operator splitting to the
   //! other term of the splitting the transfer is done by the
@@ -68,6 +77,7 @@ protected:
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writer
   Data data_;               //< data object
+  std::string uniqueDataPrefix_;
 
   std::string durationLogKey_; //< key with with the duration of the computation
                                // is written to the performance measurement log

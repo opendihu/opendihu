@@ -40,6 +40,9 @@ public:
   //! fibers to same file
   void fixInvalidFibersInFile(std::string filename);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! function space to use, i.e. 3D structured deformable grid
   typedef FunctionSpace::FunctionSpace<Mesh::StructuredDeformableOfDimension<3>,
                                        BasisFunctionType>
@@ -397,6 +400,8 @@ protected:
 
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writer
+
+  std::string uniqueDataPrefix_;
 };
 
 } // namespace Postprocessing

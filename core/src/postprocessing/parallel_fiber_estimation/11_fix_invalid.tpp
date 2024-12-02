@@ -632,4 +632,10 @@ void ParallelFiberEstimation<BasisFunctionType>::fixInvalidFibersInFile(
   }
 }
 
+template <typename BasisFunctionType>
+void ParallelFiberEstimation<BasisFunctionType>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
 } // namespace Postprocessing

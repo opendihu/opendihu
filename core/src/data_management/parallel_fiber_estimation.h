@@ -79,6 +79,32 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  //! field variables that will be output by checkpointing
+  typedef std::tuple<
+      std::shared_ptr<
+          FieldVariable::FieldVariable<FunctionSpaceType, 3>>, // geometry
+      std::shared_ptr<
+          FieldVariable::FieldVariable<FunctionSpaceType, 1>>, // solution
+      std::shared_ptr<
+          FieldVariable::FieldVariable<FunctionSpaceType, 1>>, // rhs
+      std::shared_ptr<
+          FieldVariable::FieldVariable<FunctionSpaceType, 1>>, // rhs
+                                                               // neumann
+                                                               // bc
+      std::shared_ptr<
+          FieldVariable::FieldVariable<FunctionSpaceType, 3>>, // gradient field
+      std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType,
+                                                   1>>, // dirichlet values
+      std::shared_ptr<FieldVariable::FieldVariable<
+          FunctionSpaceType, 1>> // jacobianConditionNumber
+      >
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  bool restoreState(const InputReader::Generic &r);
+
 protected:
   //! initializes the vectors with size
   virtual void createPetscObjects();

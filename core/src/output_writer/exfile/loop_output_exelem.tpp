@@ -46,6 +46,11 @@ outputExelem(CurrentFieldVariableType currentFieldVariable,
              const FieldVariablesForOutputWriterType &fieldVariables,
              std::string meshName, std::ofstream &file,
              std::shared_ptr<Mesh::Mesh> &mesh) {
+  // if the field variable is a null pointer, return but do not break iteration
+  if (!currentFieldVariable) {
+    return false;
+  }
+
   // if mesh name is the specified meshName
   if (currentFieldVariable->functionSpace()->meshName() == meshName) {
     // here we have the type of the mesh with meshName (which is typedef to

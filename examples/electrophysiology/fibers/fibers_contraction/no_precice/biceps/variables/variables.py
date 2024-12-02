@@ -157,5 +157,10 @@ cellml_file = ""
 states_initial_values = []
 enable_force_length_relation = True
 lambda_dot_scaling_factor = 1
-
+enable_checkpointing = False
+checkpointing_dir = "states"
+checkpointing_interval = 10
+checkpointing_system = "hdf5-combined"
+checkpointing_autorestore = False
+checkpointing_restore_checkpoint = None
 

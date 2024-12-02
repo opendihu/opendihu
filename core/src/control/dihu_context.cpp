@@ -18,6 +18,8 @@
 #include <cstdlib>
 #include <cctype>
 
+#include <scr.h>
+
 #include "utility/python_utility.h"
 //#include "output_writer/paraview/paraview.h"
 #include "output_writer/python_callback/python_callback.h"
@@ -30,6 +32,7 @@
 #include "control/diagnostic_tool/stimulation_logging.h"
 #include "control/diagnostic_tool/solver_structure_visualizer.h"
 #include "slot_connection/global_connections_by_slot_name.h"
+#include "checkpointing/manager.h"
 
 #include "easylogging++.h"
 #include "control/python_config/settings_file_name.h"
@@ -53,6 +56,7 @@ bool GLOBAL_DEBUG =
            // visible in certain conditions. Do not commit these hacks!
 
 // global singleton objects
+std::shared_ptr<Checkpointing::Manager> DihuContext::checkpointing_ = nullptr;
 std::shared_ptr<MappingBetweenMeshes::Manager>
     DihuContext::mappingBetweenMeshesManager_ = nullptr;
 std::shared_ptr<Mesh::Manager> DihuContext::meshManager_ = nullptr;
@@ -381,6 +385,17 @@ DihuContext::DihuContext(int argc, char *argv[], bool doNotFinalizeMpi,
         std::make_shared<GlobalConnectionsBySlotName>(pythonConfig_);
   }
 
+  if (pythonConfig_.hasKey("checkpointing")) {
+    checkpointing_ = std::make_shared<Checkpointing::Manager>(
+        PythonConfig(pythonConfig_, "checkpointing"));
+
+    SCR_Configf("SCR_CHECKPOINT_INTERVAL=%d", checkpointing_->getInterval());
+    SCR_Configf("SCR_PREFIX=%s", checkpointing_->getPrefix());
+    if (SCR_Init() != SCR_SUCCESS) {
+      LOG(FATAL) << "Failed to initialize SCR";
+    }
+  }
+
   // initialize regularization parameters
   if (pythonConfig_.hasKey("regularization")) {
     if (pythonConfig_.isEmpty("regularization")) {
@@ -441,11 +456,13 @@ PythonConfig DihuContext::getPythonConfig() const { return pythonConfig_; }
 
 std::string DihuContext::pythonScriptText() { return pythonScriptText_; }
 
+std::string DihuContext::version() { return "1.3"; }
+
 std::string DihuContext::versionText() {
   std::stringstream versionTextStr;
 
   versionTextStr
-      << "opendihu 1.3, built "
+      << "opendihu " << DihuContext::version() << ", built "
       << __DATE__; // << " " << __TIME__; // do not add time otherwise it wants
                    // to recompile this file every time
 #ifdef __cplusplus
@@ -494,6 +511,14 @@ int DihuContext::ownRankNoCommWorld() { return ownRankNoCommWorld_; }
 int DihuContext::ownRankNo() { return rankSubset_->ownRankNo(); }
 
 int DihuContext::nRanksCommWorld() { return nRanksCommWorld_; }
+
+std::shared_ptr<Checkpointing::Handle> DihuContext::getCheckpointing() const {
+  if (checkpointing_) {
+    return checkpointing_->initialize(*this);
+  } else {
+    return nullptr;
+  }
+}
 
 std::shared_ptr<Mesh::Manager> DihuContext::meshManager() {
   return meshManager_;
@@ -599,6 +624,10 @@ DihuContext::~DihuContext() {
       LOG(DEBUG) << "Petsc_Finalize";
       PetscErrorCode ierr = PetscFinalize();
       CHKERRV(ierr);
+
+      if (checkpointing_) {
+        SCR_Finalize();
+      }
       MPI_Finalize();
     }
   }

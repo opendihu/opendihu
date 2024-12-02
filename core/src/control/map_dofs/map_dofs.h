@@ -27,13 +27,16 @@ public:
   //! define the type of the data object,
   typedef ::Data::MapDofs<FunctionSpaceType, NestedSolverType> Data;
   typedef typename Data::SlotConnectorDataType SlotConnectorDataType;
+  typedef Data FullData;
 
   //! constructor, gets the DihuContext object which contains all python
   //! settings
   MapDofs(DihuContext context);
 
   //! advance simulation by the given time span
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! initialize field variables and everything needed for the dofs mapping
   void initialize();
@@ -59,8 +62,15 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object of the timestepping scheme
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  FullData &fullData();
 
   //! Get the data that will be transferred in the operator splitting or
   //! coupling to the other term of the splitting/coupling. the transfer is done
@@ -178,6 +188,8 @@ protected:
                                   // advanceTimeSpan
 
   Data data_; //< the data object that stores the additional field variables
+  std::string uniqueDataPrefix_;
+
   std::vector<std::string> slotNames_; //< names of all slots
 
   std::vector<DofsMappingType>

@@ -35,10 +35,19 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  //! field variables that will be output by checkpointing
+  typedef std::tuple<std::vector<std::shared_ptr<FieldVariableType>>>
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
   //! Get the data that will be transferred in the operator splitting or
   //! coupling to the other term of the splitting/coupling. the transfer is done
   //! by the slot_connector_data_transfer class
   std::shared_ptr<SlotConnectorDataType> getSlotConnectorData();
+
+  bool restoreState(const InputReader::Generic &r);
 
 protected:
   //! initializes the vectors with size

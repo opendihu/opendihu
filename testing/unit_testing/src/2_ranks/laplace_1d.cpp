@@ -8,6 +8,7 @@
 #include "arg.h"
 #include "opendihu.h"
 #include "../utility.h"
+#include "input_reader/hdf5/full_dataset.h"
 
 TEST(LaplaceTest, Structured1DLinear) {
   std::string pythonConfig = R"(
@@ -28,7 +29,8 @@ config = {
     "relativeTolerance": 1e-15,
     "OutputWriter" : [
       {"format": "Paraview", "filename": "out4", "outputInterval": 1, "binary": False, "fixedFormat": True, "combineFiles": False, "onlyNodalValues": True},
-      {"format": "PythonFile", "filename": "out4", "outputInterval": 1, "binary": False, "onlyNodalValues": True}
+      {"format": "PythonFile", "filename": "out4", "outputInterval": 1, "binary": False, "onlyNodalValues": True},
+      {"format": "HDF5", "filename": "out4", "outputInterval": 1, "combineFiles": False},
     ]
   }
 }
@@ -82,6 +84,27 @@ config = {
   if (settings.ownRankNo() == 0) {
     assertFileMatchesContent("out4.0.py", referenceOutput0);
     assertFileMatchesContent("out4.1.py", referenceOutput1);
+
+    InputReader::HDF5::FullDataset r1("out4.0_p.h5");
+    InputReader::HDF5::FullDataset r2("out4.1_p.h5");
+    {
+      ASSERT_TRUE(r1.hasAttribute("timeStepNo"));
+      ASSERT_TRUE(r1.hasAttribute("currentTime"));
+      std::vector<double> geometry, solution;
+      r1.readDoubleVector("geometry", geometry);
+      r1.readDoubleVector("solution", solution);
+      compareArray(geometry, {0, 0, 0, 0.8, 0, 0, 1.6, 0, 0, 2.4, 0, 0});
+      compareArray(solution, {1.0, 0.8, 0.6, 0.4});
+    }
+    {
+      ASSERT_TRUE(r2.hasAttribute("timeStepNo"));
+      ASSERT_TRUE(r2.hasAttribute("currentTime"));
+      std::vector<double> geometry, solution;
+      r2.readDoubleVector("geometry", geometry);
+      r2.readDoubleVector("solution", solution);
+      compareArray(geometry, {2.4, 0, 0, 3.2, 0, 0, 4.0, 0, 0});
+      compareArray(solution, {0.4, 0.2, 0.0});
+    }
   }
 
   nFails += ::testing::Test::HasFailure();
@@ -106,7 +129,8 @@ config = {
     "relativeTolerance": 1e-15,
     "OutputWriter" : [
       {"format": "Paraview", "filename": "out5", "outputInterval": 1, "binary": False},
-      {"format": "PythonFile", "filename": "out5", "outputInterval": 1, "binary": False}
+      {"format": "PythonFile", "filename": "out5", "outputInterval": 1, "binary": False},
+      {"format": "HDF5", "filename": "out5", "outputInterval": 1, "combineFiles": False},
     ]
   }
 }
@@ -122,9 +146,9 @@ config = {
 
   problem.run();
 
-  LOG(INFO) << "wait 1 s";
+  LOG(INFO) << "wait 2 s";
   std::this_thread::sleep_for(std::chrono::milliseconds(
-      1000)); // pause execution, such that output files can be closed
+      2000)); // pause execution, such that output files can be closed
 
   std::string referenceOutput0 =
       "{\"meshType\": \"StructuredDeformable\", \"dimension\": 1, "
@@ -164,6 +188,30 @@ config = {
   if (settings.ownRankNo() == 0) {
     assertFileMatchesContent("out5.0.py", referenceOutput0);
     assertFileMatchesContent("out5.1.py", referenceOutput1);
+
+    InputReader::HDF5::FullDataset r1("out5.0_p.h5");
+    InputReader::HDF5::FullDataset r2("out5.1_p.h5");
+    {
+      ASSERT_TRUE(r1.hasAttribute("timeStepNo"));
+      ASSERT_TRUE(r1.hasAttribute("currentTime"));
+      std::vector<double> geometry, solution;
+      r1.readDoubleVector("geometry", geometry);
+      r1.readDoubleVector("solution", solution);
+      compareArray(geometry, {0, 0,   0, 0.4, 0,   0, 0.8, 0,   0, 1.2, 0,
+                              0, 1.6, 0, 0,   2.0, 0, 0,   2.4, 0, 0});
+      compareArray(solution,
+                   {0.99999999999999822, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4});
+    }
+    {
+      ASSERT_TRUE(r2.hasAttribute("timeStepNo"));
+      ASSERT_TRUE(r2.hasAttribute("currentTime"));
+      std::vector<double> geometry, solution;
+      r2.readDoubleVector("geometry", geometry);
+      r2.readDoubleVector("solution", solution);
+      compareArray(geometry,
+                   {2.4, 0, 0, 2.8, 0, 0, 3.2, 0, 0, 3.6, 0, 0, 4.0, 0, 0});
+      compareArray(solution, {0.4, 0.3, 0.2, 0.1, 0});
+    }
   }
 
   nFails += ::testing::Test::HasFailure();
@@ -188,7 +236,8 @@ config = {
     "relativeTolerance": 1e-15,
     "OutputWriter" : [
       {"format": "Paraview", "filename": "out6", "outputInterval": 1, "binary": False},
-      {"format": "PythonFile", "filename": "out6", "outputInterval": 1, "binary": False, "onlyNodalValues": True}
+      {"format": "PythonFile", "filename": "out6", "outputInterval": 1, "binary": False, "onlyNodalValues": True},
+      {"format": "HDF5", "filename": "out6", "outputInterval": 1, "combineFiles": False},
     ]
   }
 }
@@ -202,6 +251,10 @@ config = {
       problem(settings);
 
   problem.run();
+
+  LOG(INFO) << "wait 2 s";
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      2000)); // pause execution, such that output files can be closed
 
   std::string referenceOutput0 =
       "{\"meshType\": \"StructuredDeformable\", \"dimension\": 1, "
@@ -237,6 +290,27 @@ config = {
   if (settings.ownRankNo() == 0) {
     assertFileMatchesContent("out6.0.py", referenceOutput0);
     assertFileMatchesContent("out6.1.py", referenceOutput1);
+
+    InputReader::HDF5::FullDataset r1("out6.0_p.h5");
+    InputReader::HDF5::FullDataset r2("out6.1_p.h5");
+    {
+      ASSERT_TRUE(r1.hasAttribute("timeStepNo"));
+      ASSERT_TRUE(r1.hasAttribute("currentTime"));
+      std::vector<double> geometry, solution;
+      r1.readDoubleVector("geometry", geometry);
+      r1.readDoubleVector("solution", solution);
+      compareArray(geometry, {0, 0, 0, 0.8, 0, 0, 1.6, 0, 0, 2.4, 0, 0});
+      compareArray(solution, {0.99999999999999944, 0.8, 0.6, 0.4});
+    }
+    {
+      ASSERT_TRUE(r2.hasAttribute("timeStepNo"));
+      ASSERT_TRUE(r2.hasAttribute("currentTime"));
+      std::vector<double> geometry, solution;
+      r2.readDoubleVector("geometry", geometry);
+      r2.readDoubleVector("solution", solution);
+      compareArray(geometry, {2.4, 0, 0, 3.2, 0, 0, 4, 0, 0});
+      compareArray(solution, {0.4, 0.2, 0});
+    }
   }
 
   nFails += ::testing::Test::HasFailure();
@@ -263,7 +337,8 @@ config = {
     "preconditionerType": "sor",
     "OutputWriter" : [
       {"format": "Paraview", "filename": "out7", "outputInterval": 1, "binary": False},
-      {"format": "PythonFile", "filename": "out7", "outputInterval": 1, "binary": False, "onlyNodalValues": False}
+      {"format": "PythonFile", "filename": "out7", "outputInterval": 1, "binary": False, "onlyNodalValues": False},
+      {"format": "HDF5", "filename": "out7", "outputInterval": 1, "combineFiles": False},
     ]
   }
 }
@@ -316,6 +391,28 @@ config = {
   if (settings.ownRankNo() == 0) {
     assertFileMatchesContent("out7.0.py", referenceOutput0);
     assertFileMatchesContent("out7.1.py", referenceOutput1);
+
+    InputReader::HDF5::FullDataset r1("out7.0_p.h5");
+    InputReader::HDF5::FullDataset r2("out7.1_p.h5");
+    {
+      ASSERT_TRUE(r1.hasAttribute("timeStepNo"));
+      ASSERT_TRUE(r1.hasAttribute("currentTime"));
+      std::vector<double> geometry, solution;
+      r1.readDoubleVector("geometry", geometry);
+      r1.readDoubleVector("solution", solution);
+      compareArray(geometry, {0, 0, 0, 0.8, 0, 0, 1.6, 0, 0, 2.4, 0, 0});
+      compareArray(solution, {0.029462781246902558, 0.00505501, 0.000867281,
+                              0.000148677});
+    }
+    {
+      ASSERT_TRUE(r2.hasAttribute("timeStepNo"));
+      ASSERT_TRUE(r2.hasAttribute("currentTime"));
+      std::vector<double> geometry, solution;
+      r2.readDoubleVector("geometry", geometry);
+      r2.readDoubleVector("solution", solution);
+      compareArray(geometry, {2.4, 0, 0, 3.2, 0, 0, 4, 0, 0});
+      compareArray(solution, {0.000148677, 2.47795e-05, 0});
+    }
   }
 
   nFails += ::testing::Test::HasFailure();

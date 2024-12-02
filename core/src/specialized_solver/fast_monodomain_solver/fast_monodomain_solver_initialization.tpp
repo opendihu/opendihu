@@ -66,6 +66,8 @@ void FastMonodomainSolverBase<nStates, nAlgebraics,
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // initialize all the nested solvers
+  nestedSolvers_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "fast_monodomain_solver"));
   nestedSolvers_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization

@@ -24,9 +24,19 @@ public:
   //! run solution process, this first calls initialize() and then run()
   void run();
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object, with the call to this method the output writers
   //! get the data to create their output files
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
+
+private:
+  std::string uniqueDataPrefix_;
 };
 
 } // namespace Control

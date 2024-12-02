@@ -22,6 +22,10 @@
 
 extern bool GLOBAL_DEBUG;
 // forward declaration
+namespace Checkpointing {
+class Manager;
+class Handle;
+} // namespace Checkpointing
 namespace Mesh {
 class Manager;
 }
@@ -71,7 +75,11 @@ public:
   //! return the python code that was used to create the config object
   static std::string pythonScriptText();
 
-  //! return a text specifying the version of this opendihu program
+  //! return a text only containing the version of this opendihu program
+  static std::string version();
+
+  //! return a text specifying the version of this opendihu program, including
+  //! the used compiler and more
   static std::string versionText();
 
   //! return a text giving meta information
@@ -82,6 +90,9 @@ public:
   DihuContext
   createSubContext(PythonConfig config,
                    std::shared_ptr<Partition::RankSubset> rankSubset = nullptr);
+
+  //! return the top-level python config object
+  std::shared_ptr<Checkpointing::Handle> getCheckpointing() const;
 
   //! return the mesh manager object that contains all meshes
   static std::shared_ptr<Mesh::Manager> meshManager();
@@ -182,6 +193,8 @@ private:
                    // context is valid
 
   // global singletons
+  static std::shared_ptr<Checkpointing::Manager>
+      checkpointing_; //< object that is used to create checkpoints
   static std::shared_ptr<Mesh::Manager>
       meshManager_; //< object that saves all meshes that are used
   static std::shared_ptr<MappingBetweenMeshes::Manager>

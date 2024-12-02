@@ -470,6 +470,8 @@ void ParallelFiberEstimation<BasisFunctionType>::generateParallelMeshRecursion(
     // initialize data object to allocate gradient field
     data_.setFunctionSpace(this->functionSpace_);
     data_.reset();
+    data_.setUniquePrefix(StringUtility::optionalConcat(
+        this->uniqueDataPrefix_, "parallel_fiber_estimation"));
     data_.initialize();
 
     // set dirichlet values in data for debugging output of vector of dirichlet
@@ -492,6 +494,8 @@ void ParallelFiberEstimation<BasisFunctionType>::generateParallelMeshRecursion(
       problem_->setDirichletBoundaryConditions(dirichletBoundaryConditions);
     }
 
+    problem_->setUniqueDataPrefix(StringUtility::optionalConcat(
+        this->uniqueDataPrefix_, "parallel_fiber_estimation"));
     problem_->initialize();
 
     // solve the laplace problem, globally on all subdomains on all ranks of the

@@ -45,6 +45,8 @@ void PreciceAdapterVolumeCouplingInitialize<NestedSolver>::initialize() {
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // call initialize of the nested solver
+  nestedSolver_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "precice_volume_coupling"));
   nestedSolver_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization

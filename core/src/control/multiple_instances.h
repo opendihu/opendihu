@@ -27,13 +27,16 @@ public:
   typedef typename ::Data::MultipleInstances<
       typename TimeSteppingScheme::FunctionSpace, TimeSteppingScheme>
       Data;
+  typedef Data FullData;
   typedef TimeSteppingScheme TimeSteppingSchemeType;
 
   //! constructor
   MultipleInstances(DihuContext context);
 
   //! advance simulation by the given time span [startTime_, endTime_]
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! set a new time interval that will be simulated by next call to
   //! advanceTimeSpan. This also potentially changes the time step width (it
@@ -43,8 +46,15 @@ public:
   //! initialize time span from specificSettings_
   void initialize();
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! get the data that will be transferred in the operator splitting to the
   //! other term of the splitting the transfer is done by the
@@ -94,6 +104,7 @@ protected:
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output write
   Data data_;               //< the data object
+  std::string uniqueDataPrefix_;
 
   std::shared_ptr<SlotConnectorDataType>
       slotConnectorData_; //< the slotConnectorData as vector of references o f

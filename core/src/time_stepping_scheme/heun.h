@@ -5,6 +5,8 @@
 #include "data_management/time_stepping/time_stepping_heun.h"
 #include "control/dihu_context.h"
 
+#include "time_stepping_scheme/full_heun_data.h"
+
 namespace TimeSteppingScheme {
 
 /** The Heun integration scheme, u_{t+1} = u_{t} + 0.5*dt*(f(u_{t})+f(u*))
@@ -17,6 +19,9 @@ namespace TimeSteppingScheme {
 template <typename DiscretizableInTime>
 class Heun : public TimeSteppingExplicit<DiscretizableInTime>, public Runnable {
 public:
+  typedef typename DiscretizableInTime::FunctionSpace FunctionSpace;
+  typedef FullHeunDataForCheckpointing<DiscretizableInTime> FullData;
+
   //! constructor
   Heun(DihuContext context);
 
@@ -26,10 +31,14 @@ public:
   //! advance simulation by the given time span [startTime_, endTime_] with
   //! given numberTimeSteps, data in solution is used, afterwards new data is in
   //! solution
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! run the simulation
   void run();
+
+  FullData fullData();
 };
 
 } // namespace TimeSteppingScheme

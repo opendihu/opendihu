@@ -189,6 +189,55 @@ void TimeSteppingImplicit<DiscretizableInTimeType>::initializeLinearSolver() {
   }
 }
 
+template <typename DiscretizableInTimeType>
+typename TimeSteppingImplicit<DiscretizableInTimeType>::FullData
+TimeSteppingImplicit<DiscretizableInTimeType>::fullData() {
+  return FullImplicitDataForCheckpointing<DiscretizableInTimeType>(
+      std::static_pointer_cast<Data::TimeSteppingImplicit<
+          typename DiscretizableInTimeType::FunctionSpace,
+          DiscretizableInTimeType::nComponents()>>(this->data_),
+      this->discretizableInTime_.fullData());
+}
+
+template <typename DiscretizableInTimeType>
+FullImplicitDataForCheckpointing<DiscretizableInTimeType>::
+    FullImplicitDataForCheckpointing(
+        std::shared_ptr<Data> data,
+        DiscretizableInTimeData &discretizableInTimeData)
+    : data_(data), discretizableInTimeData_(discretizableInTimeData) {}
+
+template <typename DiscretizableInTimeType>
+typename FullImplicitDataForCheckpointing<
+    DiscretizableInTimeType>::FieldVariablesForCheckpointing
+FullImplicitDataForCheckpointing<
+    DiscretizableInTimeType>::getFieldVariablesForCheckpointing() {
+  return std::tuple_cat(
+      data_->getFieldVariablesForCheckpointing(),
+      discretizableInTimeData_.getFieldVariablesForCheckpointing());
+}
+
+template <typename DiscretizableInTimeType>
+typename FullImplicitDataForCheckpointing<
+    DiscretizableInTimeType>::FieldVariablesForOutputWriter
+FullImplicitDataForCheckpointing<
+    DiscretizableInTimeType>::getFieldVariablesForOutputWriter() {
+  return getFieldVariablesForCheckpointing();
+}
+
+template <typename DiscretizableInTimeType>
+bool FullImplicitDataForCheckpointing<DiscretizableInTimeType>::restoreState(
+    const InputReader::Generic &r) {
+  return data_->restoreState(r) && discretizableInTimeData_.restoreState(r);
+}
+
+template <typename DiscretizableInTimeType>
+const std::shared_ptr<typename FullImplicitDataForCheckpointing<
+    DiscretizableInTimeType>::FunctionSpace>
+FullImplicitDataForCheckpointing<DiscretizableInTimeType>::functionSpace()
+    const {
+  return data_->functionSpace();
+}
+
 /*
 //! output the given data for debugging
 template<typename DiscretizableInTimeType>

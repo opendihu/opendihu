@@ -29,4 +29,10 @@ Dummy<FunctionSpaceType>::getSlotConnectorData() {
   return this->slotConnectorData_;
 }
 
+template <typename FunctionSpaceType>
+typename Dummy<FunctionSpaceType>::FieldVariablesForCheckpointing
+Dummy<FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  return std::make_tuple();
+}
+
 } // namespace Data

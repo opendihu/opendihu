@@ -13,7 +13,8 @@ void FastMonodomainSolverBase<nStates, nAlgebraics,
 template <int nStates, int nAlgebraics, typename DiffusionTimeSteppingScheme>
 void FastMonodomainSolverBase<nStates, nAlgebraics,
                               DiffusionTimeSteppingScheme>::
-    advanceTimeSpan(bool withOutputWritersEnabled) {
+    advanceTimeSpan(bool withOutputWritersEnabled,
+                    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   LOG(TRACE) << "FastMonodomainSolver::advanceTimeSpan";
@@ -26,7 +27,7 @@ void FastMonodomainSolverBase<nStates, nAlgebraics,
 
   // do computation of own fibers, stimulation from parsed MU and firing_times
   // files
-  computeMonodomain();
+  computeMonodomain(checkpointing);
 
   // Control::PerformanceMeasurement::endFlops();
 
@@ -49,8 +50,9 @@ void FastMonodomainSolverBase<nStates, nAlgebraics,
 }
 
 template <int nStates, int nAlgebraics, typename DiffusionTimeSteppingScheme>
-void FastMonodomainSolverBase<
-    nStates, nAlgebraics, DiffusionTimeSteppingScheme>::computeMonodomain() {
+void FastMonodomainSolverBase<nStates, nAlgebraics,
+                              DiffusionTimeSteppingScheme>::
+    computeMonodomain(std::shared_ptr<Checkpointing::Handle> checkpointing) {
   if (!useVc_) {
     computeMonodomainGpu();
     return;

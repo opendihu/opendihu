@@ -22,8 +22,20 @@ TimeSteppingSchemeOdeBase<FunctionSpaceType, nComponents>::
 }
 
 template <typename FunctionSpaceType, int nComponents>
+void TimeSteppingSchemeOdeBase<FunctionSpaceType, nComponents>::
+    setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename FunctionSpaceType, int nComponents>
 typename Data::TimeStepping<FunctionSpaceType, nComponents> &
 TimeSteppingSchemeOdeBase<FunctionSpaceType, nComponents>::data() {
+  return *data_;
+}
+
+template <typename FunctionSpaceType, int nComponents>
+typename Data::TimeStepping<FunctionSpaceType, nComponents> &
+TimeSteppingSchemeOdeBase<FunctionSpaceType, nComponents>::fullData() {
   return *data_;
 }
 
@@ -104,8 +116,9 @@ void TimeSteppingSchemeOdeBase<FunctionSpaceType, nComponents>::run() {
   // initialize
   this->initialize();
 
+  auto checkpointing = this->context_.getCheckpointing();
   // do simulations
-  this->advanceTimeSpan();
+  this->advanceTimeSpan(true, checkpointing);
 }
 
 //! call the output writer on the data object, output files will contain

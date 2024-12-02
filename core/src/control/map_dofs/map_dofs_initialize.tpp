@@ -35,6 +35,8 @@ void MapDofs<FunctionSpaceType, NestedSolverType>::initialize() {
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // initialize solver
+  nestedSolver_.setUniqueDataPrefix(
+      StringUtility::optionalConcat(this->uniqueDataPrefix_, "map_dofs"));
   nestedSolver_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization

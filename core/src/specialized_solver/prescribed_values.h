@@ -21,6 +21,7 @@ public:
   typedef ::Data::PrescribedValues<FunctionSpaceType, nComponents1,
                                    nComponents2>
       Data;
+  typedef Data FullData;
 
   //! Define the type of data that will be transferred between solvers when
   //! there is a coupling scheme.
@@ -31,7 +32,9 @@ public:
   PrescribedValues(DihuContext context);
 
   //! advance simulation by the given time span [startTime_, endTime_]
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! initialize time span from specificSettings_
   void initialize();
@@ -48,9 +51,16 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object of the timestepping scheme, with the call to this
   //! method the output writers get the data to create their output files
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! Get the data that will be transferred in the operator splitting or
   //! coupling to the other term of the splitting/coupling. the transfer is done
@@ -63,6 +73,7 @@ protected:
 
   Data data_; //< the data object that stores at least all field variables that
               // should be output by output writers.
+  std::string uniqueDataPrefix_;
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writers
 

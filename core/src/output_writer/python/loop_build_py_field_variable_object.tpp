@@ -42,8 +42,9 @@ buildPyFieldVariableObject(CurrentFieldVariableType currentFieldVariable,
                            PyObject *pyData, bool onlyNodalValues,
                            std::shared_ptr<Mesh::Mesh> &mesh) {
   // if the field variable is a null pointer, return but do not break iteration
-  if (!currentFieldVariable)
+  if (!currentFieldVariable) {
     return false;
+  }
 
   // if mesh name is not the specified meshName step over this field variable
   // but do not exit the loop over field variables

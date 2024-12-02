@@ -38,6 +38,7 @@ public:
                                            DisplacementsFunctionSpace, Term,
                                            withLargeOutput, Term>
       Data;
+  typedef Data FullData;
   typedef ::Data::QuasiStaticHyperelasticityPressureOutput<
       PressureFunctionSpace>
       PressureDataCopy;
@@ -73,8 +74,15 @@ public:
   //! reset state
   void reset();
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! copy entries of combined vector x to u and p, if both u and p are nullptr,
   //! use this->data_.displacements() and this->data_.pressure(), if only p is
@@ -218,6 +226,7 @@ protected:
                                           // computation of several load
                                           // increments
   Data data_;                             //< data object
+  std::string uniqueDataPrefix_;
   PressureDataCopy pressureDataCopy_; //< a helper object that is used to write
                                       // the pressure function space based
                                       // variables with the output writers

@@ -77,6 +77,24 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  //! field variables that will be output by outputWriters
+  typedef std::tuple<
+      std::shared_ptr<VectorFieldVariableType>, // geometry, this always has to
+                                                // be the first field variable,
+                                                // such that the output writer
+                                                // knows the geometry of the
+                                                // mesh
+      std::shared_ptr<ScalarFieldVariableType>, // solution_,
+      std::shared_ptr<ScalarFieldVariableType>  // variableB
+      // ... add all field variables that you want to have in the output file
+      >
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by output writers
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  bool restoreState(const InputReader::Generic &r);
+
 private:
   //! create all field variables with their respective sizes, this will be
   //! called automatically within initialize by the base class

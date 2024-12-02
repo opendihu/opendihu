@@ -21,12 +21,29 @@ MultidomainWithFat<FunctionSpaceType, FunctionSpaceFatType>::MultidomainWithFat(
     : Data<FunctionSpaceType>::Data(context) {}
 
 template <typename FunctionSpaceType, typename FunctionSpaceFatType>
+bool MultidomainWithFat<FunctionSpaceType, FunctionSpaceFatType>::restoreState(
+    const InputReader::Generic &r) {
+  std::vector<double> phi_b;
+  if (!r.readDoubleVector(extraCellularPotentialFat_->uniqueName().c_str(),
+                          phi_b)) {
+    return false;
+  }
+
+  this->extraCellularPotentialFat_->setValues(phi_b);
+
+  return this->dataMultidomain_->restoreState(r);
+}
+
+template <typename FunctionSpaceType, typename FunctionSpaceFatType>
 void MultidomainWithFat<FunctionSpaceType,
                         FunctionSpaceFatType>::createPetscObjects() {
   LOG(DEBUG) << "MultidomainWithFat::createPetscObjects";
 
   this->extraCellularPotentialFat_ =
       this->functionSpace_->template createFieldVariable<1>("phi_b");
+  this->extraCellularPotentialFat_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "multidomain_with_fat_") +
+      "phi_b");
 }
 
 //! initialize the function space
@@ -62,6 +79,14 @@ MultidomainWithFat<FunctionSpaceType,
   return std::tuple_cat(
       dataMultidomain_->getFieldVariablesForOutputWriter(),
       std::make_tuple(geometryFieldFat, this->extraCellularPotentialFat_));
+}
+
+template <typename FunctionSpaceType, typename FunctionSpaceFatType>
+typename MultidomainWithFat<
+    FunctionSpaceType, FunctionSpaceFatType>::FieldVariablesForCheckpointing
+MultidomainWithFat<FunctionSpaceType,
+                   FunctionSpaceFatType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
 }
 
 } // namespace Data

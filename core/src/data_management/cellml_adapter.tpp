@@ -269,6 +269,41 @@ void CellmlAdapter<nStates, nAlgebraics, FunctionSpaceType>::
 }
 
 template <int nStates, int nAlgebraics, typename FunctionSpaceType>
+bool CellmlAdapter<nStates, nAlgebraics, FunctionSpaceType>::restoreState(
+    const InputReader::Generic &r) {
+  std::vector<double> algebraics, states, parameters;
+  if (!r.readDoubleVector(this->algebraics_->uniqueName().c_str(),
+                          algebraics)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->states_->uniqueName().c_str(), states)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->parameters_->uniqueName().c_str(),
+                          parameters)) {
+    return false;
+  }
+
+  std::array<std::vector<double>, 3> geometryValues;
+  if (!r.template readDoubleVecD<3>(
+          this->functionSpace_->geometryField().name().c_str(), geometryValues,
+          "3D/")) {
+    return false;
+  }
+
+  this->algebraics_->setValues(algebraics);
+  this->states_->setValues(states);
+  this->parameters_->setValues(parameters);
+
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
+
+  return true;
+}
+
+template <int nStates, int nAlgebraics, typename FunctionSpaceType>
 void CellmlAdapter<nStates, nAlgebraics,
                    FunctionSpaceType>::createPetscObjects() {
   LOG(DEBUG) << "CellmlAdapter::createPetscObjects";
@@ -280,6 +315,9 @@ void CellmlAdapter<nStates, nAlgebraics,
   this->algebraics_ =
       this->functionSpace_->template createFieldVariable<nAlgebraics>(
           "algebraics", algebraicNames_);
+  this->algebraics_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "cellml_adapter_") +
+      "algebraics");
   this->algebraics_->setRepresentationContiguous();
 
   std::vector<std::string> parameterNames;
@@ -308,6 +346,9 @@ void CellmlAdapter<nStates, nAlgebraics,
   this->parameters_ =
       this->functionSpace_->template createFieldVariable<nAlgebraics>(
           "parameters", parameterNames);
+  this->parameters_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "cellml_adapter_") +
+      "parameters");
 }
 
 //! return a reference to the parameters vector
@@ -519,4 +560,16 @@ CellmlAdapter<nStates, nAlgebraics,
   return std::make_tuple(geometryField, algebraics_, states_, parameters_);
 }
 
+template <int nStates, int nAlgebraics, typename FunctionSpaceType>
+typename CellmlAdapter<nStates, nAlgebraics,
+                       FunctionSpaceType>::FieldVariablesForCheckpointing
+CellmlAdapter<nStates, nAlgebraics,
+              FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
+      geometryField =
+          std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+              this->functionSpace_->geometryField());
+
+  return std::make_tuple(geometryField, algebraics_, states_, parameters_);
+}
 } // namespace Data

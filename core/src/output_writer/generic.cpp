@@ -42,9 +42,8 @@ Generic::Generic(DihuContext context, PythonConfig specificSettings,
   }
 }
 
-Generic::~Generic() {}
-
-void Generic::openFile(std::ofstream &file, std::string filename, bool append) {
+void Generic::openFile(std::ofstream &file, const std::string &filename,
+                       bool append) {
   // open file
   if (append) {
     file.open(filename.c_str(),
@@ -55,9 +54,9 @@ void Generic::openFile(std::ofstream &file, std::string filename, bool append) {
 
   if (!file.is_open()) {
     // try to create directories
-    if (filename.rfind("/") != std::string::npos) {
+    if (filename.rfind('/') != std::string::npos) {
       // extract directory from filename
-      std::string path = filename.substr(0, filename.rfind("/"));
+      std::string path = filename.substr(0, filename.rfind('/'));
 
       // create directory and wait until system has created it
       if (path != "") {

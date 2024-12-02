@@ -68,6 +68,12 @@ parser.add_argument('--v',                                   help='Enable full v
 parser.add_argument('-v',                                    help='Enable verbosity level in c++ code', action="store_true")
 parser.add_argument('-vmodule',                              help='Enable verbosity level for given file in c++ code')
 parser.add_argument('-pause',                                help='Stop at parallel debugging barrier', action="store_true")
+parser.add_argument("--enable_checkpointing",                help="Enable checkpointing", default=variables.enable_checkpointing, action="store_true")
+parser.add_argument("--checkpointing_dir",                   help="Set a Checkpointing directory, only used if Checkpointing is enabled", default=variables.checkpointing_dir)
+parser.add_argument("--checkpointing_interval",              help="Set a specific Checkpointing Timestep Interval, only used if Checkpointing is enabled", default=variables.checkpointing_interval)
+parser.add_argument("--checkpointing_system",                help="Set a specific Checkpointing System, only used if Checkpointing is enabled", default=variables.checkpointing_system)
+parser.add_argument("--checkpointing_autorestore",           help="Enable automatic restore if a Checkpoint is found, only used if Checkpointing is enabled", default=variables.checkpointing_autorestore, action="store_true")
+parser.add_argument("--checkpointing_restore_checkpoint",    help="Restore a specific Checkpoint, only used if Checkpointing is enabled", default=variables.checkpointing_restore_checkpoint)
 
 variables.use_analytic_jacobian = True  # force analytic jacobian, otherwise it will take too long
 
@@ -494,6 +500,15 @@ config = {
     }
   }
 }
+
+if args.enable_checkpointing:
+    config["checkpointing"] = {
+        "directory": args.checkpointing_dir,
+        "interval": args.checkpointing_interval,
+        "type": args.checkpointing_system,
+        "autoRestore": args.checkpointing_autorestore,
+        "checkpointToRestore": args.checkpointing_restore_checkpoint,
+    }
 
 # stop timer and calculate how long parsing lasted
 if rank_no == 0:

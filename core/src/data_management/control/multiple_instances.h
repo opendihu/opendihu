@@ -41,6 +41,17 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  // FieldVariablesForCheckpointing from BaseDataType
+  //! field variables that will be output by checkpointing
+  typedef std::tuple<
+      std::vector<typename BaseDataType::FieldVariablesForCheckpointing>>
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  bool restoreState(const InputReader::Generic &r);
+
 protected:
   //! initializes the vectors with size
   virtual void createPetscObjects();

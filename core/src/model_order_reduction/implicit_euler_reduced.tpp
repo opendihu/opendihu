@@ -12,7 +12,8 @@ ImplicitEulerReduced<TimeSteppingImplicitType>::ImplicitEulerReduced(
 
 template <typename TimeSteppingImplicitType>
 void ImplicitEulerReduced<TimeSteppingImplicitType>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   // start duration measurement, the name of the output variable can be set by
   // "durationLogKey" in the config
   if (this->durationLogKey_ != "")
@@ -40,8 +41,12 @@ void ImplicitEulerReduced<TimeSteppingImplicitType>::advanceTimeSpan(
 
   // loop over time steps
   double currentTime = this->startTime_;
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(*this->data_, timeStepNo, currentTime);
+  }
 
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
+  for (; timeStepNo < this->numberTimeSteps_;) {
     if (timeStepNo % this->timeStepOutputInterval_ == 0 && timeStepNo > 0) {
       LOG(INFO) << "Implicit Euler, timestep " << timeStepNo << "/"
                 << this->numberTimeSteps_ << ", t=" << currentTime;
@@ -89,6 +94,16 @@ void ImplicitEulerReduced<TimeSteppingImplicitType>::advanceTimeSpan(
       // write the current output values of the (reduced) timestepping
       this->outputWriterManager().writeOutput(*this->data_, timeStepNo,
                                               currentTime);
+    }
+
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(*this->data_, timeStepNo, currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
     }
 
     // start duration measurement

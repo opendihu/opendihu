@@ -252,7 +252,8 @@ MultipleInstances<TimeSteppingScheme>::MultipleInstances(DihuContext context)
 
 template <typename TimeSteppingScheme>
 void MultipleInstances<TimeSteppingScheme>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement
@@ -263,7 +264,7 @@ void MultipleInstances<TimeSteppingScheme>::advanceTimeSpan(
   // needed when this MultipleInstances object is part of a parent control
   // element, like a coupling to 3D model.
   for (int i = 0; i < nInstancesLocal_; i++) {
-    instancesLocal_[i].advanceTimeSpan(withOutputWritersEnabled);
+    instancesLocal_[i].advanceTimeSpan(withOutputWritersEnabled, checkpointing);
   }
 
   // stop duration measurement
@@ -340,6 +341,8 @@ void MultipleInstances<TimeSteppingScheme>::initialize() {
 
     // call initialize on the current instance
     LOG(DEBUG) << "instance " << i << " initialize";
+    instancesLocal_[i].setUniqueDataPrefix(StringUtility::optionalConcat(
+        uniqueDataPrefix_, "multiple_instances_i[" + std::to_string(i) + "]"));
     instancesLocal_[i].initialize();
 
     // indicate that the initialize of the child is finished
@@ -389,6 +392,12 @@ void MultipleInstances<TimeSteppingScheme>::initialize() {
   // #ifdef HAVE_PAT
   // PAT_region_end(1);    // end region "initialization", id 1
   // #endif
+}
+
+template <typename TimeSteppingScheme>
+void MultipleInstances<TimeSteppingScheme>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 template <typename TimeSteppingScheme>
@@ -463,6 +472,13 @@ template <typename TimeSteppingScheme>
 ::Data::MultipleInstances<typename TimeSteppingScheme::FunctionSpace,
                           TimeSteppingScheme> &
 MultipleInstances<TimeSteppingScheme>::data() {
+  return data_;
+}
+
+template <typename TimeSteppingScheme>
+::Data::MultipleInstances<typename TimeSteppingScheme::FunctionSpace,
+                          TimeSteppingScheme> &
+MultipleInstances<TimeSteppingScheme>::fullData() {
   return data_;
 }
 

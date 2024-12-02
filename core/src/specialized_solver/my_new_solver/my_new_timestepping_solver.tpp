@@ -30,7 +30,8 @@ MyNewTimesteppingSolver<TimeStepping>::MyNewTimesteppingSolver(
 
 template <typename TimeStepping>
 void MyNewTimesteppingSolver<TimeStepping>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // This method computes some time steps of the simulation by running a for
@@ -53,7 +54,12 @@ void MyNewTimesteppingSolver<TimeStepping>::advanceTimeSpan(
 
   // loop over time steps
   double currentTime = this->startTime_;
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(this->data_, timeStepNo, currentTime);
+  }
+
+  for (; timeStepNo < this->numberTimeSteps_;) {
     // in defined intervals (settings "timeStepOutputInterval") print out the
     // current timestep
     if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
@@ -101,6 +107,16 @@ void MyNewTimesteppingSolver<TimeStepping>::advanceTimeSpan(
       this->outputWriterManager_.writeOutput(this->data_, timeStepNo,
                                              currentTime);
 
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->data_, timeStepNo, currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
+
     // start duration measurement
     if (this->durationLogKey_ != "")
       Control::PerformanceMeasurement::start(this->durationLogKey_);
@@ -136,6 +152,8 @@ void MyNewTimesteppingSolver<TimeStepping>::initialize() {
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // call initialize of the nested timestepping solver
+  timeSteppingScheme_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "my_new_timestepping_solver"));
   timeSteppingScheme_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization
@@ -159,6 +177,8 @@ void MyNewTimesteppingSolver<TimeStepping>::initialize() {
   data_.setFunctionSpace(functionSpace);
 
   // now call initialize, data will then create all variables (Petsc Vec's)
+  data_.setUniquePrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "my_new_timestepping_solver"));
   data_.initialize();
 
   // set the slotConnectorData for the solverStructureVisualizer to appear in
@@ -178,7 +198,8 @@ void MyNewTimesteppingSolver<TimeStepping>::run() {
   // enclosing solver will call initialize() and advanceTimeSpan().
   initialize();
 
-  advanceTimeSpan();
+  auto checkpointing = this->context_.getCheckpointing();
+  advanceTimeSpan(true, checkpointing);
 }
 
 template <typename TimeStepping>
@@ -232,6 +253,12 @@ void MyNewTimesteppingSolver<TimeStepping>::executeMyHelperMethod() {
 }
 
 template <typename TimeStepping>
+void MyNewTimesteppingSolver<TimeStepping>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename TimeStepping>
 typename MyNewTimesteppingSolver<TimeStepping>::Data &
 MyNewTimesteppingSolver<TimeStepping>::data() {
   // get a reference to the data object
@@ -240,6 +267,12 @@ MyNewTimesteppingSolver<TimeStepping>::data() {
   // The timeSteppingScheme_ object also has a data object, we could also
   // directly use this and avoid having an own data object:
   //  return timeSteppingScheme_.data();
+}
+
+template <typename TimeStepping>
+typename MyNewTimesteppingSolver<TimeStepping>::Data &
+MyNewTimesteppingSolver<TimeStepping>::fullData() {
+  return data_;
 }
 
 //! get the data that will be transferred in the operator splitting to the other

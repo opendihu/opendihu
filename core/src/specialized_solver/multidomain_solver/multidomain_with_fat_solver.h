@@ -24,6 +24,7 @@ public:
   typedef
       typename FiniteElementMethodDiffusionMuscle::FunctionSpace FunctionSpace;
   typedef DataFat Data;
+  typedef DataFat FullData;
 
   //! constructor
   MultidomainWithFatSolver(DihuContext context);
@@ -37,6 +38,9 @@ public:
 
   //! return the data object
   DataFat &data();
+
+  //! return the data object
+  FullData &fullData();
 
 protected:
   //! update the system matrix after the geometry has changed, this is done in

@@ -43,6 +43,196 @@ void QuasiStaticHyperelasticityBase<PressureFunctionSpace,
 
 template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
           typename Term, bool withLargeOutput>
+typename QuasiStaticHyperelasticityBase<
+    PressureFunctionSpace, DisplacementsFunctionSpace, Term,
+    withLargeOutput>::FieldVariablesForCheckpointing
+QuasiStaticHyperelasticityBase<
+    PressureFunctionSpace, DisplacementsFunctionSpace, Term,
+    withLargeOutput>::getFieldVariablesForCheckpointing() {
+  auto geometryField = std::shared_ptr<DisplacementsFieldVariableType>(
+      std::make_shared<typename DisplacementsFunctionSpace::GeometryFieldType>(
+          this->displacementsFunctionSpace_->geometryField()));
+  geometryField->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      geometryField->name());
+
+  return std::make_tuple(
+      geometryField,
+      std::shared_ptr<DisplacementsFieldVariableType>(this->displacements_),
+
+      std::shared_ptr<DisplacementsFieldVariableType>(
+          this->displacementsPreviousTimestep_),
+
+      std::shared_ptr<DisplacementsFieldVariableType>(this->velocities_),
+      std::shared_ptr<DisplacementsFieldVariableType>(
+          this->velocitiesPreviousTimestep_),
+
+      std::shared_ptr<DisplacementsFieldVariableType>(this->fiberDirection_),
+      std::shared_ptr<DisplacementsFieldVariableType>(this->traction_),
+      std::shared_ptr<DisplacementsFieldVariableType>(this->materialTraction_),
+
+      std::shared_ptr<DisplacementsLinearFieldVariableType>(
+          this->displacementsLinearMesh_),
+      std::shared_ptr<DisplacementsLinearFieldVariableType>(
+          this->velocitiesLinearMesh_),
+      std::shared_ptr<PressureFieldVariableType>(this->pressure_),
+      std::shared_ptr<PressureFieldVariableType>(
+          this->pressurePreviousTimestep_),
+
+      std::shared_ptr<StressFieldVariableType>(this->pK2Stress_),
+      std::shared_ptr<StressFieldVariableType>(this->activePK2Stress_),
+
+      std::shared_ptr<DeformationGradientFieldVariableType>(
+          this->deformationGradient_),
+      std::shared_ptr<DeformationGradientFieldVariableType>(
+          this->deformationGradientTimeDerivative_),
+
+      std::shared_ptr<DeformationGradientFieldVariableType>(this->pK1Stress_),
+      std::shared_ptr<DeformationGradientFieldVariableType>(
+          this->cauchyStress_),
+      std::shared_ptr<
+          FieldVariable::FieldVariable<DisplacementsFunctionSpace, 1>>(
+          this->deformationGradientDeterminant_));
+}
+
+template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
+          typename Term, bool withLargeOutput>
+bool QuasiStaticHyperelasticityBase<
+    PressureFunctionSpace, DisplacementsFunctionSpace, Term,
+    withLargeOutput>::restoreState(const InputReader::Generic &r) {
+  std::vector<double> displacements, displacementsPT, velocities, velocitiesPT,
+      fiberDirection, traction, materialTraction, displacementsLinearMesh,
+      velocitiesLinearMesh, pressure, pressurePreviousTimestep, pK2Stress,
+      activePK2Stress, deformationGradient, deformationGradientTimeDerivative,
+      pK1Stress, cauchyStress, deformationGradientDeterminant;
+  if (!r.readDoubleVector(this->displacements_->uniqueName().c_str(),
+                          displacements)) {
+    return false;
+  }
+  if (!r.readDoubleVector(
+          this->displacementsPreviousTimestep_->uniqueName().c_str(),
+          displacementsPT)) {
+    return false;
+  }
+
+  if (!r.readDoubleVector(this->velocities_->uniqueName().c_str(),
+                          velocities)) {
+    return false;
+  }
+  if (!r.readDoubleVector(
+          this->velocitiesPreviousTimestep_->uniqueName().c_str(),
+          velocitiesPT)) {
+    return false;
+  }
+
+  if (!r.readDoubleVector(this->fiberDirection_->uniqueName().c_str(),
+                          fiberDirection)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->traction_->uniqueName().c_str(), traction)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->materialTraction_->uniqueName().c_str(),
+                          materialTraction)) {
+    return false;
+  }
+
+  if (!r.readDoubleVector(this->displacementsLinearMesh_->uniqueName().c_str(),
+                          displacementsLinearMesh)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->velocitiesLinearMesh_->uniqueName().c_str(),
+                          velocitiesLinearMesh)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->pressure_->uniqueName().c_str(), pressure)) {
+    return false;
+  }
+  bool hasPressurePreviousTimestep =
+      pressurePreviousTimestep_
+          ? r.readDoubleVector(
+                this->pressurePreviousTimestep_->uniqueName().c_str(),
+                pressurePreviousTimestep)
+          : false;
+
+  if (!r.readDoubleVector(this->pK2Stress_->uniqueName().c_str(), pK2Stress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->activePK2Stress_->uniqueName().c_str(),
+                          activePK2Stress)) {
+    return false;
+  }
+
+  if (!r.readDoubleVector(this->deformationGradient_->uniqueName().c_str(),
+                          deformationGradient)) {
+    return false;
+  }
+  if (!r.readDoubleVector(
+          this->deformationGradientTimeDerivative_->uniqueName().c_str(),
+          deformationGradientTimeDerivative)) {
+    return false;
+  }
+
+  bool haspK1Stress =
+      r.readDoubleVector(this->pK1Stress_->uniqueName().c_str(), pK1Stress);
+  bool hasCauchyStress = r.readDoubleVector(
+      this->cauchyStress_->uniqueName().c_str(), cauchyStress);
+  bool hasDeformationGradientDeterminant_ = r.readDoubleVector(
+      this->deformationGradientDeterminant_->uniqueName().c_str(),
+      deformationGradientDeterminant);
+
+  std::array<std::vector<double>, 3> geometryValues;
+  if (!r.template readDoubleVecD<3>(
+          this->displacementsFunctionSpace_->geometryField().name().c_str(),
+          geometryValues, "3D/")) {
+    return false;
+  }
+
+  this->displacements_->setValues(displacements);
+  this->displacementsPreviousTimestep_->setValues(displacementsPT);
+
+  this->velocities_->setValues(velocities);
+  this->velocitiesPreviousTimestep_->setValues(velocitiesPT);
+
+  this->fiberDirection_->setValues(fiberDirection);
+  this->traction_->setValues(traction);
+  this->materialTraction_->setValues(materialTraction);
+
+  this->displacementsLinearMesh_->setValues(displacementsLinearMesh);
+  this->velocitiesLinearMesh_->setValues(velocitiesLinearMesh);
+  this->pressure_->setValues(pressure);
+  if (hasPressurePreviousTimestep && pressurePreviousTimestep_) {
+    pressurePreviousTimestep_->setValues(pressurePreviousTimestep);
+  }
+
+  this->pK2Stress_->setValues(pK2Stress);
+
+  this->deformationGradient_->setValues(deformationGradient);
+  this->deformationGradientTimeDerivative_->setValues(
+      deformationGradientTimeDerivative);
+
+  if (haspK1Stress) {
+    this->pK1Stress_->setValues(pK1Stress);
+  }
+  if (hasCauchyStress) {
+    this->cauchyStress_->setValues(cauchyStress);
+  }
+  if (hasDeformationGradientDeterminant_) {
+    this->deformationGradientDeterminant_->setValues(
+        deformationGradientDeterminant);
+  }
+
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->displacementsFunctionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
+
+  return true;
+}
+
+template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
+          typename Term, bool withLargeOutput>
 void QuasiStaticHyperelasticityBase<PressureFunctionSpace,
                                     DisplacementsFunctionSpace, Term,
                                     withLargeOutput>::createPetscObjects() {
@@ -53,40 +243,84 @@ void QuasiStaticHyperelasticityBase<PressureFunctionSpace,
   assert(this->functionSpace_);
 
   std::vector<std::string> displacementsComponentNames({"x", "y", "z"});
+
   displacements_ =
       this->displacementsFunctionSpace_->template createFieldVariable<3>(
           "u", displacementsComponentNames);
+  displacements_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "u");
   displacementsPreviousTimestep_ =
       this->displacementsFunctionSpace_->template createFieldVariable<3>(
           "u_previous", displacementsComponentNames);
+  displacementsPreviousTimestep_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "u_previous");
+
   velocities_ =
       this->displacementsFunctionSpace_->template createFieldVariable<3>(
           "v", displacementsComponentNames);
+  velocities_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "v");
   velocitiesPreviousTimestep_ =
       this->displacementsFunctionSpace_->template createFieldVariable<3>(
           "v_previous", displacementsComponentNames);
+  velocitiesPreviousTimestep_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "v_previous");
+
   fiberDirection_ =
       this->displacementsFunctionSpace_->template createFieldVariable<3>(
           "fiberDirection", displacementsComponentNames);
+  fiberDirection_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "fiberDirection");
   traction_ =
       this->displacementsFunctionSpace_->template createFieldVariable<3>(
           "t (current traction)", displacementsComponentNames);
+  traction_->setUniqueName(StringUtility::getFirstNE(
+                               this->uniquePrefix_, "hyperelasticity_solver_") +
+                           "t (current traction)");
   materialTraction_ =
       this->displacementsFunctionSpace_->template createFieldVariable<3>(
           "T (material traction)", displacementsComponentNames);
+  materialTraction_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "T (material traction)");
   displacementsLinearMesh_ =
       this->pressureFunctionSpace_->template createFieldVariable<3>(
           "uLin", displacementsComponentNames); //< u, the displacements
+  displacementsLinearMesh_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "uLin"); //< u, the displacements
   velocitiesLinearMesh_ =
       this->pressureFunctionSpace_->template createFieldVariable<3>(
           "vLin", displacementsComponentNames); //< v, the velocities
+  velocitiesLinearMesh_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "vLin"); //< v, the velocities
   pressure_ = this->pressureFunctionSpace_->template createFieldVariable<1>(
       "p"); //<  p, the pressure variable
-
+  pressure_->setUniqueName(StringUtility::getFirstNE(
+                               this->uniquePrefix_, "hyperelasticity_solver_") +
+                           "p"); //<  p, the pressure variable
   if (Term::isIncompressible) {
     pressurePreviousTimestep_ =
         this->pressureFunctionSpace_->template createFieldVariable<1>(
             "p_previous"); //<  p, the pressure variable
+    pressurePreviousTimestep_->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_,
+                                  "hyperelasticity_solver_") +
+        "p_previous"); //<  p, the pressure variable
   } else {
     pressurePreviousTimestep_ = nullptr;
   }
@@ -98,20 +332,36 @@ void QuasiStaticHyperelasticityBase<PressureFunctionSpace,
       this->displacementsFunctionSpace_->template createFieldVariable<6>(
           "PK2-Stress (Voigt)", componentNamesS); //<  the symmetric PK2 stress
                                                   // tensor in Voigt notation
+  pK2Stress_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "PK2-Stress (Voigt)");
   activePK2Stress_ =
       this->displacementsFunctionSpace_->template createFieldVariable<6>(
           "active PK2-Stress (Voigt)",
           componentNamesS); //<  the symmetric active PK2 stress tensor in Voigt
                             // notation
+  activePK2Stress_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "active PK2-Stress (Voigt)");
 
   std::vector<std::string> componentNamesF{
       "F_11", "F_12", "F_13", "F_21", "F_22", "F_23", "F_31", "F_32", "F_33"};
   deformationGradient_ =
       this->displacementsFunctionSpace_->template createFieldVariable<9>(
           "F", componentNamesF);
+  deformationGradient_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "F");
   deformationGradientTimeDerivative_ =
       this->displacementsFunctionSpace_->template createFieldVariable<9>(
           "Fdot", componentNamesF);
+  deformationGradientTimeDerivative_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "Fdot");
 
   if (withLargeOutput) {
     std::vector<std::string> componentNamesP{
@@ -119,14 +369,26 @@ void QuasiStaticHyperelasticityBase<PressureFunctionSpace,
     pK1Stress_ =
         this->displacementsFunctionSpace_->template createFieldVariable<9>(
             "P (PK1 stress)", componentNamesP);
+    pK1Stress_->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_,
+                                  "hyperelasticity_solver_") +
+        "P (PK1 stress)");
     std::vector<std::string> componentNamesSigma{
         "σ_11", "σ_12", "σ_13", "σ_21", "σ_22", "σ_23", "σ_31", "σ_32", "σ_33"};
     cauchyStress_ =
         this->displacementsFunctionSpace_->template createFieldVariable<9>(
             "σ (Cauchy stress)", componentNamesSigma);
+    cauchyStress_->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_,
+                                  "hyperelasticity_solver_") +
+        "σ (Cauchy stress)");
     deformationGradientDeterminant_ =
         this->displacementsFunctionSpace_->template createFieldVariable<1>(
             "J"); // J=det(F)
+    deformationGradientDeterminant_->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_,
+                                  "hyperelasticity_solver_") +
+        "J");
   }
 }
 
@@ -736,7 +998,6 @@ QuasiStaticHyperelasticity<PressureFunctionSpace, DisplacementsFunctionSpace,
 
 // --------------------------------
 // QuasiStaticHyperelasticityPressureOutput
-
 template <typename PressureFunctionSpace>
 void QuasiStaticHyperelasticityPressureOutput<PressureFunctionSpace>::
     initialize(
@@ -769,6 +1030,64 @@ QuasiStaticHyperelasticityPressureOutput<
       std::tuple<std::shared_ptr<DisplacementsLinearFieldVariableType>>(
           this->velocitiesLinearMesh_),
       std::tuple<std::shared_ptr<PressureFieldVariableType>>(this->pressure_));
+}
+
+template <typename PressureFunctionSpace>
+typename QuasiStaticHyperelasticityPressureOutput<
+    PressureFunctionSpace>::FieldVariablesForCheckpointing
+QuasiStaticHyperelasticityPressureOutput<
+    PressureFunctionSpace>::getFieldVariablesForCheckpointing() {
+  auto geometryField =
+      std::make_shared<typename PressureFunctionSpace::GeometryFieldType>(
+          this->functionSpace_->geometryField());
+  geometryField->setUniqueName(
+      StringUtility::getFirstNE(
+          this->uniquePrefix_, "quasi_static_hyperelasticity_pressure_output") +
+      geometryField->name());
+
+  return std::tuple_cat(
+      std::tuple<std::shared_ptr<DisplacementsLinearFieldVariableType>>(
+          geometryField),
+      std::tuple<std::shared_ptr<DisplacementsLinearFieldVariableType>>(
+          this->displacementsLinearMesh_),
+      std::tuple<std::shared_ptr<DisplacementsLinearFieldVariableType>>(
+          this->velocitiesLinearMesh_),
+      std::tuple<std::shared_ptr<PressureFieldVariableType>>(this->pressure_));
+}
+
+template <typename PressureFunctionSpace>
+bool QuasiStaticHyperelasticityPressureOutput<
+    PressureFunctionSpace>::restoreState(const InputReader::Generic &r) {
+  std::vector<double> displacementsLinearMesh, velocitiesLinearMesh, pressure;
+  if (!r.readDoubleVector(this->displacementsLinearMesh_->uniqueName().c_str(),
+                          displacementsLinearMesh)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->velocitiesLinearMesh_->uniqueName().c_str(),
+                          velocitiesLinearMesh)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->pressure_->uniqueName().c_str(), pressure)) {
+    return false;
+  }
+
+  std::array<std::vector<double>, 3> geometryValues;
+  if (!r.template readDoubleVecD<3>(
+          this->functionSpace_->geometryField().name().c_str(), geometryValues,
+          "3D/")) {
+    return false;
+  }
+
+  this->displacementsLinearMesh_->setValues(displacementsLinearMesh);
+  this->velocitiesLinearMesh_->setValues(velocitiesLinearMesh);
+  this->pressure_->setValues(pressure);
+
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
+
+  return true;
 }
 
 } // namespace Data

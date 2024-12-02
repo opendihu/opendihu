@@ -48,6 +48,9 @@ public:
   void setName(std::string name,
                std::string exfileBasisFunctionSpecification = "");
 
+  //! assign the uniqueName of the component
+  void setUniqueName(const std::string &uniqueName);
+
   //! set the exfileRepresentation pointer
   void setExfileRepresentation(
       std::shared_ptr<ExfileRepresentation> exfileRepresentation);
@@ -77,6 +80,9 @@ public:
 
   //! return the name of the component
   std::string name() const;
+
+  //! return the unique name of the component
+  std::string uniqueName() const;
 
   //! return the exfileBasisFunctionSpecification
   std::string exfileBasisFunctionSpecification() const;
@@ -126,7 +132,8 @@ private:
                        // variable, starts with 0, important for interpreting
                        // values_
 
-  std::string name_; //< identifier of the component, e.g. 'x'
+  std::string name_;       //< identifier of the component, e.g. 'x'
+  std::string uniqueName_; //< identifier of the component, e.g. 'x'
   std::string
       exfileBasisFunctionSpecification_; //< the basis function specification in
                                          // the exelem file, e.g.

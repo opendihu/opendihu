@@ -191,3 +191,50 @@ MegaMol
 The MegaMol output writer outputs files in the `Adaptable Input/Output System 2 (ADIOS2) <https://adios2.readthedocs.io/en/latest/>`_ format. MegaMol can directly read this format. If the file is written to ``/dev/shm/``, *In-Situ* visualization is performed that completely avoids the disc to generate visualization output.
 
 Since the file format is binary packed and self-descriptive, it is also suited for long-term storage of the data or for large simulation output in general. However, it cannot be directly visualization with e.g. Paraview.
+
+HDF5
+----
+
+Uses `HDF5 <https://support.hdfgroup.org/documentation/hdf5/latest/>`_ for writing output files and supports combined.
+HDF5 is a binary file protocol with a C interface.
+
+When combined is enabled it uses HDF5 MPI module to write output collaberative to the file and the same dataset. It stores the offset to the data for each rank in an additional attribute.
+When combined is disabled it writes each ranks state in a separate file.
+
+Additional Metadata, like the used OpenDiHu Version is stored as Attributes on the root node.
+
+This output writer is mainly used for :doc:`checkpointing` but can also used in isolation as a normal output writer.
+Iternally this output writer can be enabled to write every field variable with a unique name (required for checkpointing), but this is currently not exposed via the python interface.
+
+JSON
+----
+
+Uses `JSON <https://www.json.org/json-en.html/>`_ for writing output files and supports combined.
+JSON is a data format, mostly used in webapplications.
+
+When combined is enabled it uses MPI to collect all data on rank 0 which will then write this data alone into the json datastructure and in the end writes the file alone to disk.
+It stores the offset to the data for each rank in an additional object.
+When combined is disabled it writes each ranks state in a separate file.
+
+General metadata, like the used OpenDiHu version is stored in an ``__attributes`` object on the root object.
+
+This output writer is mainly used for :doc:`checkpointing` but can also used in isolation as a normal output writer.
+Iternally this output writer can be enabled to write every field variable with a unique name (required for checkpointing), but this is currently not exposed via the python interface.
+
+The structure of the JSON output writer is as follows.
+The ``__attributes`` object for field variables is currently only present if the combined output writer was used, but could be used in future for the independent writer as well if more metadata needs to be written for the Field variables.
+
+.. code-block:: json
+  {
+    "__attributes": {
+      "version": "..."
+    },
+    "groupName": {
+      "fieldVariableName": {
+        "__data": [],
+        "__attributes": {
+          "chunkDims": []
+        },
+      }
+    }
+  }

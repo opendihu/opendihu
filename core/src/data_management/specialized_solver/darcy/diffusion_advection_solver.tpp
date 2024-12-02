@@ -92,6 +92,36 @@ void DiffusionAdvectionSolver<FunctionSpaceType>::getPetscMemoryParameters(
 }
 
 template <typename FunctionSpaceType>
+bool DiffusionAdvectionSolver<FunctionSpaceType>::restoreState(
+    const InputReader::Generic &r) {
+  std::vector<double> solution, increment;
+  if (!r.readDoubleVector(this->solution_->uniqueName().c_str(), solution)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->increment_->uniqueName().c_str(), increment)) {
+    return false;
+  }
+
+  std::array<std::vector<double>, 3> geometryValues;
+  if (!r.template readDoubleVecD<3>(
+          this->functionSpace_->geometryField().name().c_str(), geometryValues,
+          "3D/")) {
+    return false;
+  }
+
+  this->solution_->setValues(solution);
+  this->increment_->setValues(increment);
+
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
+
+  // TODO: restore vMatrix (???)
+  return true;
+}
+
+template <typename FunctionSpaceType>
 void DiffusionAdvectionSolver<FunctionSpaceType>::createPetscObjects() {
   assert(this->functionSpace_);
 
@@ -104,8 +134,16 @@ void DiffusionAdvectionSolver<FunctionSpaceType>::createPetscObjects() {
   // field variable. It will also be used in the VTK output files.
   this->solution_ =
       this->functionSpace_->template createFieldVariable<1>("solution");
+  this->solution_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "diffusion_advection_solver_") +
+      "solution");
   this->increment_ =
       this->functionSpace_->template createFieldVariable<1>("increment");
+  this->increment_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "diffusion_advection_solver_") +
+      "increment");
 
   // create PETSc matrix object
 
@@ -177,4 +215,22 @@ DiffusionAdvectionSolver<
   );
 }
 
+template <typename FunctionSpaceType>
+typename DiffusionAdvectionSolver<
+    FunctionSpaceType>::FieldVariablesForCheckpointing
+DiffusionAdvectionSolver<
+    FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
+      geometryField =
+          std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+              this->functionSpace_->geometryField());
+  geometryField->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "diffusion_advection_solver_") +
+      geometryField->name());
+
+  return std::make_tuple(geometryField, this->solution_, this->increment_
+
+  );
+}
 } // namespace Data

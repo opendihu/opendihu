@@ -52,6 +52,31 @@ void MyNewTimesteppingSolver<FunctionSpaceType>::initialize() {
 }
 
 template <typename FunctionSpaceType>
+bool MyNewTimesteppingSolver<FunctionSpaceType>::restoreState(
+    const InputReader::Generic &r) {
+  std::vector<double> a, b;
+  // std::vector<std::array<double, 3>> geometry;
+  if (!r.readDoubleVector(this->fieldVariableA_->uniqueName().c_str(), a)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->fieldVariableB_->uniqueName().c_str(), b)) {
+    return false;
+  }
+  // if (!r.readNestedDoubleVector<3>(
+  //         this->functionSpace_->geometryField().name().c_str(), geometry)) {
+  //   return false;
+  // }
+
+  this->fieldVariableA_->setValues(a);
+  this->fieldVariableB_->setValues(b);
+  // this->functionSpace_->geometryField().setValuesWithoutGhosts(geometry);
+  // this->functionSpace_->geometryField().zeroGhostBuffer();
+  // this->functionSpace_->geometryField().setRepresentationGlobal();
+  // this->functionSpace_->geometryField().startGhostManipulation();
+  return true;
+}
+
+template <typename FunctionSpaceType>
 void MyNewTimesteppingSolver<FunctionSpaceType>::createPetscObjects() {
   assert(this->functionSpace_);
 
@@ -60,8 +85,16 @@ void MyNewTimesteppingSolver<FunctionSpaceType>::createPetscObjects() {
   // field variable. It will also be used in the VTK output files.
   this->fieldVariableA_ =
       this->functionSpace_->template createFieldVariable<1>("a");
+  this->fieldVariableA_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "my_new_timestepping_solver_") +
+      "a");
   this->fieldVariableB_ =
       this->functionSpace_->template createFieldVariable<3>("b");
+  this->fieldVariableB_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "my_new_timestepping_solver_") +
+      "b");
 }
 
 // ... add a "getter" method for each fieldvariable with the same name as the
@@ -106,4 +139,11 @@ MyNewTimesteppingSolver<FunctionSpaceType>::getFieldVariablesForOutputWriter() {
   );
 }
 
+template <typename FunctionSpaceType>
+typename MyNewTimesteppingSolver<
+    FunctionSpaceType>::FieldVariablesForCheckpointing
+MyNewTimesteppingSolver<
+    FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

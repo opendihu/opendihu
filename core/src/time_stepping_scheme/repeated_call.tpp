@@ -32,6 +32,8 @@ template <typename Solver> void RepeatedCall<Solver>::initialize() {
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // initialize underlying Solver object, also with time step width
+  solver_.setUniqueDataPrefix(
+      StringUtility::optionalConcat(uniqueDataPrefix_, "repeated_call"));
   solver_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization
@@ -40,7 +42,9 @@ template <typename Solver> void RepeatedCall<Solver>::initialize() {
 }
 
 template <typename Solver>
-void RepeatedCall<Solver>::advanceTimeSpan(bool withOutputWritersEnabled) {
+void RepeatedCall<Solver>::advanceTimeSpan(
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   // start duration measurement, the name of the output variable can be set by
   // "durationLogKey" in the config
   if (this->durationLogKey_ != "")
@@ -55,7 +59,12 @@ void RepeatedCall<Solver>::advanceTimeSpan(bool withOutputWritersEnabled) {
 
   // loop over time steps
   double currentTime = this->startTime_;
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(this->solver_.fullData(), timeStepNo, currentTime);
+  }
+
+  for (; timeStepNo < this->numberTimeSteps_;) {
     if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
         (this->timeStepOutputInterval_ <= 10 ||
          timeStepNo >
@@ -75,6 +84,17 @@ void RepeatedCall<Solver>::advanceTimeSpan(bool withOutputWritersEnabled) {
     timeStepNo++;
     currentTime = this->startTime_ +
                   double(timeStepNo) / this->numberTimeSteps_ * timeSpan;
+
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->solver_.fullData(), timeStepNo,
+                                        currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
   }
 
   // stop duration measurement
@@ -84,7 +104,8 @@ void RepeatedCall<Solver>::advanceTimeSpan(bool withOutputWritersEnabled) {
 
 template <typename Solver> void RepeatedCall<Solver>::run() {
   initialize();
-  advanceTimeSpan();
+  auto checkpointing = this->context_.getCheckpointing();
+  advanceTimeSpan(true, checkpointing);
 }
 
 //! call the output writer on the data object, output files will contain
@@ -93,6 +114,11 @@ template <typename Solver>
 void RepeatedCall<Solver>::callOutputWriter(int timeStepNo, double currentTime,
                                             int callCountIncrement) {
   this->solver_.callOutputWriter(timeStepNo, currentTime, callCountIncrement);
+}
+
+template <typename Solver>
+void RepeatedCall<Solver>::setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 } // namespace TimeSteppingScheme

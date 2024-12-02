@@ -52,6 +52,8 @@ void MyNewStaticSolver<NestedSolver>::initialize() {
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // call initialize of the nested solver
+  nestedSolver_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "my_new_static_solver"));
   nestedSolver_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization
@@ -75,6 +77,8 @@ void MyNewStaticSolver<NestedSolver>::initialize() {
   data_.setFunctionSpace(functionSpace);
 
   // now call initialize, data will then create all variables (Petsc Vec's)
+  data_.setUniquePrefix(StringUtility::optionalConcat(this->uniqueDataPrefix_,
+                                                      "my_new_static_solver"));
   data_.initialize();
 
   // it is also possible to pass some field variables from the data of the
@@ -164,6 +168,12 @@ void MyNewStaticSolver<NestedSolver>::executeMyHelperMethod() {
 }
 
 template <typename NestedSolver>
+void MyNewStaticSolver<NestedSolver>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename NestedSolver>
 typename MyNewStaticSolver<NestedSolver>::Data &
 MyNewStaticSolver<NestedSolver>::data() {
   // get a reference to the data object
@@ -172,6 +182,12 @@ MyNewStaticSolver<NestedSolver>::data() {
   // The nestedSolver_ object also has a data object, we could also directly use
   // this and avoid having an own data object:
   //  return nestedSolver_.data();
+}
+
+template <typename NestedSolver>
+typename MyNewStaticSolver<NestedSolver>::Data &
+MyNewStaticSolver<NestedSolver>::fullData() {
+  return data_;
 }
 
 //! get the data that will be transferred in the operator splitting to the other

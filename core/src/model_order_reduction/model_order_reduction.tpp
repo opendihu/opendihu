@@ -158,6 +158,7 @@ void MORBase<FunctionSpaceRowsType>::initialize() {
 
   LOG(TRACE) << "MORBase::initialize()";
 
+  // ->DI()
   dataMOR_->initialize();
 
   setBasis();

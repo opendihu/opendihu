@@ -44,6 +44,35 @@ void MyNewStaticSolver<FunctionSpaceType>::initialize() {
 }
 
 template <typename FunctionSpaceType>
+bool MyNewStaticSolver<FunctionSpaceType>::restoreState(
+    const InputReader::Generic &r) {
+  std::vector<double> solution, fieldVariableB;
+  if (!r.readDoubleVector(this->solution_->uniqueName().c_str(), solution)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->fieldVariableB_->uniqueName().c_str(),
+                          fieldVariableB)) {
+    return false;
+  }
+  this->solution_->setValues(solution);
+  this->fieldVariableB_->setValues(fieldVariableB);
+
+  std::array<std::vector<double>, 3> geometryValues;
+  if (!r.template readDoubleVecD<3>(
+          this->functionSpace_->geometryField().name().c_str(), geometryValues,
+          "3D/")) {
+    return false;
+  }
+
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
+
+  return true;
+}
+
+template <typename FunctionSpaceType>
 void MyNewStaticSolver<FunctionSpaceType>::createPetscObjects() {
   assert(this->functionSpace_);
 
@@ -52,6 +81,9 @@ void MyNewStaticSolver<FunctionSpaceType>::createPetscObjects() {
   // field variable. It will also be used in the VTK output files.
   this->fieldVariableB_ =
       this->functionSpace_->template createFieldVariable<1>("b");
+  this->fieldVariableB_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "my_new_static_solver_") +
+      "b");
 }
 
 // ... add a "getter" method for each fieldvariable with the same name as the
@@ -105,4 +137,19 @@ MyNewStaticSolver<FunctionSpaceType>::getFieldVariablesForOutputWriter() {
   );
 }
 
+template <typename FunctionSpaceType>
+typename MyNewStaticSolver<FunctionSpaceType>::FieldVariablesForCheckpointing
+MyNewStaticSolver<FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
+      geometryField =
+          std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+              this->functionSpace_->geometryField());
+
+  return std::make_tuple(
+      geometryField, this->solution_,
+      this->fieldVariableB_ // add all field variables that should appear in the
+                            // output file. Of course, this list has to match
+                            // the type in the header file.
+  );
+}
 } // namespace Data

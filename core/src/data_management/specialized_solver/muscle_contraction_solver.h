@@ -92,6 +92,30 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  //! field variables that will be output by checkpointing
+  typedef std::tuple<
+      std::shared_ptr<VectorFieldVariableType>, // geometry, this always has to
+                                                // be the first field variable,
+                                                // such that the output writer
+                                                // knows the geometry of the
+                                                // mesh
+      std::shared_ptr<ScalarFieldVariableType>, // lambda,
+      std::shared_ptr<ScalarFieldVariableType>, // lambdaDot
+      std::shared_ptr<ScalarFieldVariableType>, // gamma
+      std::shared_ptr<VectorFieldVariableType>, // displacements
+      std::shared_ptr<VectorFieldVariableType>, // velocities
+      std::shared_ptr<StressFieldVariableType>, // pK2Stress_
+      std::shared_ptr<StressFieldVariableType>, // activePK2Stress_
+      std::shared_ptr<VectorFieldVariableType>, // fiber direction
+      std::shared_ptr<VectorFieldVariableType>  // material traction
+      >
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  bool restoreState(const InputReader::Generic &r);
+
   //! set field variables that were created outside of this object
   //! @param setGeometryFieldForTransfer: if the geometry field should be
   //! transferred via the connector slots

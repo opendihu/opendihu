@@ -54,4 +54,9 @@ Data<FunctionSpaceType>::functionSpace() const {
   return this->functionSpace_;
 }
 
+template <typename FunctionSpaceType>
+void Data<FunctionSpaceType>::setUniquePrefix(const std::string &prefix) {
+  uniquePrefix_ = prefix;
+}
+
 } // namespace Data

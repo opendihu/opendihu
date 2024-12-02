@@ -40,7 +40,8 @@ template <typename FiniteElementMethodPotentialFlow,
           typename FiniteElementMethodDiffusion>
 void StaticBidomainSolver<FiniteElementMethodPotentialFlow,
                           FiniteElementMethodDiffusion>::
-    advanceTimeSpan(bool withOutputWritersEnabled) {
+    advanceTimeSpan(bool withOutputWritersEnabled,
+                    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement, the name of the output variable can be set by
@@ -130,6 +131,9 @@ void StaticBidomainSolver<FiniteElementMethodPotentialFlow,
 
   // initialize the potential flow finite element method, this also creates the
   // function space
+  finiteElementMethodPotentialFlow_.setUniqueDataPrefix(
+      StringUtility::optionalConcat(this->uniqueDataPrefix_,
+                                    "static_bidomain_solver"));
   finiteElementMethodPotentialFlow_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization
@@ -138,6 +142,8 @@ void StaticBidomainSolver<FiniteElementMethodPotentialFlow,
 
   // initialize the data object
   data_.setFunctionSpace(finiteElementMethodPotentialFlow_.functionSpace());
+  data_.setUniquePrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "static_bidomain_solver"));
   data_.initialize();
 
   LOG(INFO) << "Run potential flow simulation for fiber directions.";
@@ -388,10 +394,27 @@ void StaticBidomainSolver<FiniteElementMethodPotentialFlow,
 
 template <typename FiniteElementMethodPotentialFlow,
           typename FiniteElementMethodDiffusion>
+void StaticBidomainSolver<FiniteElementMethodPotentialFlow,
+                          FiniteElementMethodDiffusion>::
+    setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename FiniteElementMethodPotentialFlow,
+          typename FiniteElementMethodDiffusion>
 typename StaticBidomainSolver<FiniteElementMethodPotentialFlow,
                               FiniteElementMethodDiffusion>::Data &
 StaticBidomainSolver<FiniteElementMethodPotentialFlow,
                      FiniteElementMethodDiffusion>::data() {
+  return data_;
+}
+
+template <typename FiniteElementMethodPotentialFlow,
+          typename FiniteElementMethodDiffusion>
+typename StaticBidomainSolver<FiniteElementMethodPotentialFlow,
+                              FiniteElementMethodDiffusion>::Data &
+StaticBidomainSolver<FiniteElementMethodPotentialFlow,
+                     FiniteElementMethodDiffusion>::fullData() {
   return data_;
 }
 

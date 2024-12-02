@@ -116,6 +116,24 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  //! field variables that will be output by checkpointing
+  typedef std::tuple<
+      std::shared_ptr<
+          FieldVariable::FieldVariable<FunctionSpaceType, 3>>, // geometry
+      std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType,
+                                                   nComponents>>, // solution
+      std::shared_ptr<
+          FieldVariable::FieldVariable<FunctionSpaceType, nComponents>>, // rhs
+      std::shared_ptr<FieldVariable::FieldVariable<
+          FunctionSpaceType, nComponents>> // neumann BC rhs
+      >
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  bool restoreState(const InputReader::Generic &r);
+
 private:
   //! initializes the vectors and stiffness matrix with size
   void createPetscObjects();

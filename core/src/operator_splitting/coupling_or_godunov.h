@@ -18,7 +18,9 @@ public:
   using OperatorSplitting<TimeStepping1, TimeStepping2>::OperatorSplitting;
 
   //! advance time stepping by span
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
 protected:
 };

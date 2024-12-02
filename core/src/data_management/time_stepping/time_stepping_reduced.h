@@ -53,6 +53,17 @@ public:
 
   virtual void initialize() override;
 
+  //! field variables that will be output by checkpointing
+  typedef decltype(std::tuple_cat(
+      std::declval<typename TimeStepping<::FunctionSpace::Generic,
+                                         1>::FieldVariablesForCheckpointing>(),
+      std::declval<std::tuple<std::shared_ptr<FieldVariableType>,
+                              std::shared_ptr<FieldVariableType>>>()))
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
 private:
   // Data<FunctionSpaceRowsType> fullData_;
 

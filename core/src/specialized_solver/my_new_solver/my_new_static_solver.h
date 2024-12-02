@@ -24,6 +24,7 @@ public:
   typedef ::Data::MyNewStaticSolver<typename NestedSolver::FunctionSpace>
       Data; // or, define your own data class, stored under
             // "data_management/my_new_static_solver.h"
+  typedef Data FullData;
 
   //! Define the type of data that will be transferred between solvers when
   //! there is a coupling scheme. Usually you define this type in the "Data"
@@ -44,9 +45,16 @@ public:
   //! ("uninitialize")
   void reset();
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object, with the call to this method the output writers
   //! get the data to create their output files
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! Get the data that will be transferred in the operator splitting or
   //! coupling to the other term of the splitting/coupling. the transfer is done
@@ -70,6 +78,7 @@ protected:
 
   Data data_; //< the data object that stores at least all field variables that
               // should be output by output writers.
+  std::string uniqueDataPrefix_;
 
   bool initialized_; //< if initialize() was already called
 };

@@ -36,6 +36,31 @@ void ParallelFiberEstimation<FunctionSpaceType>::setProblem(
 }
 
 template <typename FunctionSpaceType>
+bool ParallelFiberEstimation<FunctionSpaceType>::restoreState(
+    const InputReader::Generic &r) {
+  std::vector<double> gradient;
+  std::vector<double> dirichletValues;
+  std::vector<double> jacobianConditionNumber;
+  if (!r.readDoubleVector(this->gradient_->uniqueName().c_str(), gradient)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->dirichletValues_->uniqueName().c_str(),
+                          dirichletValues)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->jacobianConditionNumber_->uniqueName().c_str(),
+                          jacobianConditionNumber)) {
+    return false;
+  }
+
+  this->gradient_->setValues(gradient);
+  this->dirichletValues_->setValues(dirichletValues);
+  this->jacobianConditionNumber_->setValues(jacobianConditionNumber);
+
+  return this->problem_->data().restoreState(r);
+}
+
+template <typename FunctionSpaceType>
 void ParallelFiberEstimation<FunctionSpaceType>::createPetscObjects() {
   LOG(DEBUG)
       << "ParallelFiberEstimation<FunctionSpaceType>::createPetscObjects()"
@@ -45,11 +70,23 @@ void ParallelFiberEstimation<FunctionSpaceType>::createPetscObjects() {
   // create field variables on local partition
   this->gradient_ =
       this->functionSpace_->template createFieldVariable<3>("gradient");
+  this->gradient_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "parallel_fiber_estimation_") +
+      "gradient");
   this->dirichletValues_ =
       this->functionSpace_->template createFieldVariable<1>("dirichletValues");
+  this->dirichletValues_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "parallel_fiber_estimation_") +
+      "dirichletValues");
   this->jacobianConditionNumber_ =
       this->functionSpace_->template createFieldVariable<1>(
           "jacobianConditionNumber");
+  this->jacobianConditionNumber_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "parallel_fiber_estimation_") +
+      "jacobianConditionNumber");
 }
 
 template <typename FunctionSpaceType>
@@ -98,4 +135,11 @@ ParallelFiberEstimation<FunctionSpaceType>::getFieldVariablesForOutputWriter() {
           this->jacobianConditionNumber_));
 }
 
+template <typename FunctionSpaceType>
+typename ParallelFiberEstimation<
+    FunctionSpaceType>::FieldVariablesForCheckpointing
+ParallelFiberEstimation<
+    FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

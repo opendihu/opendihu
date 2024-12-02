@@ -53,6 +53,10 @@ std::string demangle(const char *typeidName);
 //! unicode charactors, such as λ,γ etc.
 std::size_t stringLength(std::string string);
 
+std::string optionalConcat(const std::string &lhs, const std::string &rhs);
+
+std::string getFirstNE(const std::string &lhs, const std::string &rhs);
+
 } // namespace StringUtility
 
 #include "utility/string_utility.tpp"

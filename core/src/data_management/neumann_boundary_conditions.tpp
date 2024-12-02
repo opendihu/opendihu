@@ -29,6 +29,7 @@ void NeumannBoundaryConditions<FunctionSpaceType,
   LOG(TRACE) << "NeumannBoundaryConditions::createPetscObjects";
 
   assert(this->functionSpace_);
+  // we can ommit uniqueName here
   this->rhs_ = this->functionSpace_->template createFieldVariable<nComponents>(
       "-rhsNeumannBC");
 }

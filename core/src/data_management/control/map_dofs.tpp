@@ -53,12 +53,32 @@ void MapDofs<FunctionSpaceType, NestedSolverType>::initialize(
 }
 
 template <typename FunctionSpaceType, typename NestedSolverType>
+bool MapDofs<FunctionSpaceType, NestedSolverType>::restoreState(
+    const InputReader::Generic &r) {
+  std::vector<std::vector<double>> stateData;
+  stateData.resize(additionalFieldVariables_.size());
+  for (size_t i = 0; i < additionalFieldVariables_.size(); i++) {
+    if (!r.readDoubleVector(additionalFieldVariables_[i]->uniqueName().c_str(),
+                            stateData[i])) {
+      return false;
+    }
+  }
+  for (size_t i = 0; i < additionalFieldVariables_.size(); i++) {
+    additionalFieldVariables_[i]->setValues(stateData[i]);
+  }
+  return true;
+}
+
+template <typename FunctionSpaceType, typename NestedSolverType>
 void MapDofs<FunctionSpaceType, NestedSolverType>::createPetscObjects() {
   for (int i = 0; i < nAdditionalFieldVariables_; i++) {
     std::stringstream name;
     name << "additionalFieldVariable" << i;
     std::shared_ptr<FieldVariableType> additionalFieldVariable =
         this->functionSpace_->template createFieldVariable<1>(name.str());
+    additionalFieldVariable->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "control_map_dofs_") +
+        name.str());
 
     additionalFieldVariables_.push_back(additionalFieldVariable);
   }
@@ -94,4 +114,11 @@ MapDofs<FunctionSpaceType,
   return std::make_tuple(additionalFieldVariables_);
 }
 
+template <typename FunctionSpaceType, typename NestedSolverType>
+typename MapDofs<FunctionSpaceType,
+                 NestedSolverType>::FieldVariablesForCheckpointing
+MapDofs<FunctionSpaceType,
+        NestedSolverType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

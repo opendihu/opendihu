@@ -34,6 +34,8 @@ void MultidomainWithFatSolver<FiniteElementMethodPotentialFlow,
   LOG(DEBUG) << "initialize fat FEM";
   // initialize the potential flow finite element method, this also creates the
   // function space
+  finiteElementMethodFat_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "multidomain_with_fat_solver"));
   finiteElementMethodFat_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization
@@ -51,6 +53,8 @@ void MultidomainWithFatSolver<FiniteElementMethodPotentialFlow,
                                      FiniteElementMethodDiffusionMuscle>::Data>(
           this->dataMultidomain_));
 
+  dataFat_.setUniquePrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "multidomain_with_fat_solver"));
   dataFat_.initialize();
 
   // get θ value for Crank-Nicolson scheme
@@ -1131,6 +1135,18 @@ typename MultidomainWithFatSolver<FiniteElementMethodPotentialFlow,
 MultidomainWithFatSolver<FiniteElementMethodPotentialFlow,
                          FiniteElementMethodDiffusionMuscle,
                          FiniteElementMethodDiffusionFat>::data() {
+  return dataFat_;
+}
+
+template <typename FiniteElementMethodPotentialFlow,
+          typename FiniteElementMethodDiffusionMuscle,
+          typename FiniteElementMethodDiffusionFat>
+typename MultidomainWithFatSolver<FiniteElementMethodPotentialFlow,
+                                  FiniteElementMethodDiffusionMuscle,
+                                  FiniteElementMethodDiffusionFat>::FullData &
+MultidomainWithFatSolver<FiniteElementMethodPotentialFlow,
+                         FiniteElementMethodDiffusionMuscle,
+                         FiniteElementMethodDiffusionFat>::fullData() {
   return dataFat_;
 }
 

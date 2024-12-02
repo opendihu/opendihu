@@ -18,7 +18,9 @@ template <typename LowOrderFunctionSpaceType,
           typename HighOrderFunctionSpaceType>
 void Mixed<LowOrderFunctionSpaceType,
            HighOrderFunctionSpaceType>::initialize() {
+  // ->DI()
   lowOrderFunctionSpace_->initialize();
+  // ->DI()
   highOrderFunctionSpace_->initialize();
 }
 

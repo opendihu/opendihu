@@ -50,6 +50,7 @@ std::shared_ptr<SolverType> Manager::solver(PythonConfig settings,
           solverConfiguration_.at(solverName), mpiCommunicator, solverName);
 
       // initialize solver
+      // ->DI()
       solver->initialize();
 
       solvers_[mpiCommunicator][solverName] = solver;

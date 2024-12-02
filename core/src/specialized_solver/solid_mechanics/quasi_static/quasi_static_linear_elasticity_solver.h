@@ -13,6 +13,61 @@
 
 namespace TimeSteppingScheme {
 
+template <typename FiniteElementMethod>
+class FullQuasiStaticLinearDataForCheckpointing {
+  typedef typename FiniteElementMethod::FunctionSpace FunctionSpace;
+  typedef typename Data::FiniteElements<
+      FunctionSpace, 3, Equation::Static::LinearElasticityActiveStress>
+      DataLinearElasticityType;
+  typedef Data::QuasiStaticLinearElasticity<DataLinearElasticityType> Data;
+
+  typedef ::SpatialDiscretization::
+      FiniteElementMethod< // FEM for initial potential flow, fiber directions
+          typename FunctionSpace::Mesh, typename FunctionSpace::BasisFunction,
+          Quadrature::Gauss<3>, Equation::Static::Laplace>
+          FiniteElementMethodPotentialFlow;
+
+public:
+  FullQuasiStaticLinearDataForCheckpointing(
+      Data &data, FiniteElementMethodPotentialFlow &potential,
+      FiniteElementMethod &elasticity);
+
+  //! field variables that will be output by checkpointing
+  typedef decltype(std::tuple_cat(
+      std::declval<typename Data::FieldVariablesForCheckpointing>(),
+      std::declval<typename FiniteElementMethodPotentialFlow::FullData::
+                       FieldVariablesForCheckpointing>(),
+      std::declval<typename FiniteElementMethod::FullData::
+                       FieldVariablesForCheckpointing>()))
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  //! field variables that will be output by checkpointing
+  typedef FieldVariablesForCheckpointing FieldVariablesForOutputWriter;
+
+  //! Not needed for this implementation, shadowing checkpointing function
+  FieldVariablesForCheckpointing getFieldVariablesForOutputWriter();
+
+  bool restoreState(const InputReader::Generic &r);
+
+  const std::shared_ptr<FunctionSpace> functionSpace() const;
+
+private:
+  Data &data_; //< data object
+
+  FiniteElementMethodPotentialFlow
+      &finiteElementMethodPotentialFlow_; //< the finite element object that is
+                                          // used for the Laplace problem of the
+                                          // potential flow, needed for the
+                                          // fiber directions
+  FiniteElementMethod
+      &finiteElementMethodLinearElasticity_; //< the finite element object that
+                                             // solves the linear elasticity
+                                             // equation
+};
+
 /** A specialized solver for 3D linear elasticity, as quasi-static timestepping
  * scheme (a new static solution every timestep)
  */
@@ -24,6 +79,8 @@ public:
       FunctionSpace, 3, Equation::Static::LinearElasticityActiveStress>
       DataLinearElasticityType;
   typedef Data::QuasiStaticLinearElasticity<DataLinearElasticityType> Data;
+  typedef FullQuasiStaticLinearDataForCheckpointing<FiniteElementMethod>
+      FullData;
   typedef FieldVariable::FieldVariable<FunctionSpace, 1> FieldVariableType;
   typedef typename Data::SlotConnectorDataType SlotConnectorDataType;
 
@@ -38,7 +95,9 @@ public:
 
   //! advance simulation by the given time span, data in solution is used,
   //! afterwards new data is in solution
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! initialize components of the simulation
   void initialize();
@@ -57,8 +116,15 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  FullData fullData();
 
   //! get the data that will be transferred in the operator splitting to the
   //! other term of the splitting the transfer is done by the
@@ -80,6 +146,7 @@ protected:
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writer
   Data data_;               //< data object
+  std::string uniqueDataPrefix_;
 
   FiniteElementMethodPotentialFlow
       finiteElementMethodPotentialFlow_; //< the finite element object that is

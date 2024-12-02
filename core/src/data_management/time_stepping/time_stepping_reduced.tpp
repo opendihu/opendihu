@@ -82,8 +82,14 @@ void TimeSteppingReduced<functionSpaceRowsType>::createPetscObjects() {
   this->redSolution_ =
       this->functionSpace_->template createFieldVariable<nComponents>(
           "redSolution");
+  this->redSolution_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "time_stepping_reduced") +
+      "_redSolution");
   this->redIncrement_ = std::static_pointer_cast<FieldVariableType>(
       this->functionSpace_->createFieldVariable("redIncrement", 1));
+  this->redIncrement_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "time_stepping_reduced") +
+      "_redIncrement");
 
   // get the partitioning from the function space
   std::shared_ptr<Partition::MeshPartition<functionSpaceRowsType>>
@@ -101,6 +107,18 @@ void TimeSteppingReduced<functionSpaceRowsType>::createPetscObjects() {
   this->redSysMatrix_ = std::make_shared<
       PartitionedPetscMat<::FunctionSpace::Generic, ::FunctionSpace::Generic>>(
       meshPartitionColumns, meshPartitionColumns, 1, "redSysMatrix");
+}
+
+template <typename functionSpaceRowsType>
+typename TimeSteppingReduced<
+    functionSpaceRowsType>::FieldVariablesForCheckpointing
+TimeSteppingReduced<
+    functionSpaceRowsType>::getFieldVariablesForCheckpointing() {
+  return std::tuple_cat(TimeStepping<::FunctionSpace::Generic,
+                                     1>::getFieldVariablesForCheckpointing(),
+                        std::tuple<std::shared_ptr<FieldVariableType>,
+                                   std::shared_ptr<FieldVariableType>>(
+                            redSolution_, redIncrement_));
 }
 
 } // namespace Data

@@ -35,11 +35,26 @@ void FastMonodomainSolverBase<nStates, nAlgebraics,
 }
 
 template <int nStates, int nAlgebraics, typename DiffusionTimeSteppingScheme>
+void FastMonodomainSolverBase<nStates, nAlgebraics,
+                              DiffusionTimeSteppingScheme>::
+    setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <int nStates, int nAlgebraics, typename DiffusionTimeSteppingScheme>
 typename FastMonodomainSolverBase<nStates, nAlgebraics,
                                   DiffusionTimeSteppingScheme>::Data &
 FastMonodomainSolverBase<nStates, nAlgebraics,
                          DiffusionTimeSteppingScheme>::data() {
   return nestedSolvers_.data();
+}
+
+template <int nStates, int nAlgebraics, typename DiffusionTimeSteppingScheme>
+typename FastMonodomainSolverBase<nStates, nAlgebraics,
+                                  DiffusionTimeSteppingScheme>::FullData &
+FastMonodomainSolverBase<nStates, nAlgebraics,
+                         DiffusionTimeSteppingScheme>::fullData() {
+  return nestedSolvers_.fullData();
 }
 
 template <int nStates, int nAlgebraics, typename DiffusionTimeSteppingScheme>

@@ -27,7 +27,9 @@ void Heun<DiscretizableInTime>::initialize() {
 }
 
 template <typename DiscretizableInTime>
-void Heun<DiscretizableInTime>::advanceTimeSpan(bool withOutputWritersEnabled) {
+void Heun<DiscretizableInTime>::advanceTimeSpan(
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement, the name of the output variable can be set by
@@ -62,7 +64,12 @@ void Heun<DiscretizableInTime>::advanceTimeSpan(bool withOutputWritersEnabled) {
 
   // loop over time steps
   double currentTime = this->startTime_;
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(*this->data_, timeStepNo, currentTime);
+  }
+
+  for (; timeStepNo < this->numberTimeSteps_;) {
     if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
         (this->timeStepOutputInterval_ <= 10 ||
          timeStepNo >
@@ -128,6 +135,16 @@ void Heun<DiscretizableInTime>::advanceTimeSpan(bool withOutputWritersEnabled) {
       this->outputWriterManager_.writeOutput(*this->data_, timeStepNo,
                                              currentTime);
 
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(*this->data_, timeStepNo, currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
+
     // start duration measurement
     if (this->durationLogKey_ != "")
       Control::PerformanceMeasurement::start(this->durationLogKey_);
@@ -140,6 +157,17 @@ void Heun<DiscretizableInTime>::advanceTimeSpan(bool withOutputWritersEnabled) {
 
 template <typename DiscretizableInTime> void Heun<DiscretizableInTime>::run() {
   TimeSteppingSchemeOde<DiscretizableInTime>::run();
+}
+
+template <typename DiscretizableInTime>
+typename Heun<DiscretizableInTime>::FullData
+Heun<DiscretizableInTime>::fullData() {
+  return FullHeunDataForCheckpointing<DiscretizableInTime>(
+      std::static_pointer_cast<
+          Data::TimeSteppingHeun<typename DiscretizableInTime::FunctionSpace,
+                                 DiscretizableInTime::nComponents()>>(
+          this->data_),
+      this->discretizableInTime_.fullData());
 }
 
 } // namespace TimeSteppingScheme

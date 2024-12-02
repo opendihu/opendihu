@@ -64,9 +64,25 @@ FiniteElementMethodBase<FunctionSpaceType, QuadratureType, nComponents,
 
 template <typename FunctionSpaceType, typename QuadratureType, int nComponents,
           typename Term>
+void FiniteElementMethodBase<FunctionSpaceType, QuadratureType, nComponents,
+                             Term>::setUniqueDataPrefix(const std::string
+                                                            &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename FunctionSpaceType, typename QuadratureType, int nComponents,
+          typename Term>
 Data::FiniteElements<FunctionSpaceType, nComponents, Term> &
 FiniteElementMethodBase<FunctionSpaceType, QuadratureType, nComponents,
                         Term>::data() {
+  return data_;
+}
+
+template <typename FunctionSpaceType, typename QuadratureType, int nComponents,
+          typename Term>
+Data::FiniteElements<FunctionSpaceType, nComponents, Term> &
+FiniteElementMethodBase<FunctionSpaceType, QuadratureType, nComponents,
+                        Term>::fullData() {
   return data_;
 }
 
@@ -86,6 +102,8 @@ void FiniteElementMethodBase<FunctionSpaceType, QuadratureType, nComponents,
   if (initialized_)
     return;
 
+  data_.setUniquePrefix(StringUtility::optionalConcat(this->uniqueDataPrefix_,
+                                                      "finite_element_method"));
   data_.initialize();
 
   if (specificSettings_.hasKey("updatePrescribedValuesFromSolution")) {
@@ -215,7 +233,7 @@ void FiniteElementMethodBase<FunctionSpaceType, QuadratureType, nComponents,
   setInformationToPreconditioner();
 
   // non-zero initial values
-#if 0  
+#if 0
   PetscScalar scalar = 0.5;
   ierr = VecSet(data_.solution()->values(), scalar); CHKERRV(ierr);
   ierr = KSPSetInitialGuessNonzero(*ksp, PETSC_TRUE); CHKERRV(ierr);

@@ -96,7 +96,8 @@ template <typename FiniteElementMethodPotentialFlow,
           typename FiniteElementMethodDiffusion>
 void MultidomainSolver<FiniteElementMethodPotentialFlow,
                        FiniteElementMethodDiffusion>::
-    advanceTimeSpan(bool withOutputWritersEnabled) {
+    advanceTimeSpan(bool withOutputWritersEnabled,
+                    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement, the name of the output variable can be set by
@@ -115,9 +116,13 @@ void MultidomainSolver<FiniteElementMethodPotentialFlow,
   double currentTime = this->startTime_;
 
   static int globalTimeStepCounter = 0;
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(this->dataMultidomain_, timeStepNo, currentTime);
+  }
 
   // loop over time steps
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
+  for (; timeStepNo < this->numberTimeSteps_;) {
     if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
         (this->timeStepOutputInterval_ <= 10 ||
          timeStepNo >
@@ -223,6 +228,17 @@ void MultidomainSolver<FiniteElementMethodPotentialFlow,
     if (withOutputWritersEnabled)
       callOutputWriter(timeStepNo, currentTime);
 
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->dataMultidomain_, timeStepNo,
+                                        currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
+
     // start duration measurement
     if (this->durationLogKey_ != "")
       Control::PerformanceMeasurement::start(this->durationLogKey_);
@@ -243,7 +259,8 @@ void MultidomainSolver<FiniteElementMethodPotentialFlow,
   // initialize everything
   initialize();
 
-  this->advanceTimeSpan();
+  auto checkpointing = this->context_.getCheckpointing();
+  this->advanceTimeSpan(true, checkpointing);
 }
 
 template <typename FiniteElementMethodPotentialFlow,
@@ -300,6 +317,9 @@ void MultidomainSolver<FiniteElementMethodPotentialFlow,
 
   // initialize the potential flow finite element method, this also creates the
   // function space
+  finiteElementMethodPotentialFlow_.setUniqueDataPrefix(
+      StringUtility::optionalConcat(this->uniqueDataPrefix_,
+                                    "multidomain_solver"));
   finiteElementMethodPotentialFlow_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization
@@ -1130,10 +1150,27 @@ void MultidomainSolver<
 
 template <typename FiniteElementMethodPotentialFlow,
           typename FiniteElementMethodDiffusion>
+void MultidomainSolver<FiniteElementMethodPotentialFlow,
+                       FiniteElementMethodDiffusion>::
+    setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename FiniteElementMethodPotentialFlow,
+          typename FiniteElementMethodDiffusion>
 typename MultidomainSolver<FiniteElementMethodPotentialFlow,
                            FiniteElementMethodDiffusion>::Data &
 MultidomainSolver<FiniteElementMethodPotentialFlow,
                   FiniteElementMethodDiffusion>::data() {
+  return dataMultidomain_;
+}
+
+template <typename FiniteElementMethodPotentialFlow,
+          typename FiniteElementMethodDiffusion>
+typename MultidomainSolver<FiniteElementMethodPotentialFlow,
+                           FiniteElementMethodDiffusion>::Data &
+MultidomainSolver<FiniteElementMethodPotentialFlow,
+                  FiniteElementMethodDiffusion>::fullData() {
   return dataMultidomain_;
 }
 
