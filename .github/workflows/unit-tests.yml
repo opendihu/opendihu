@@ -6,10 +6,11 @@ jobs:
     container: carmehp/opendihu:latest
     steps:
       - name: Get code
-      uses: actions/checkout@v4
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2
-      run: git checkout HEAD^
+      - name: Checkout head
+        run: git checkout HEAD^
       - name: Build 
         working-directory: opendihu
         run: python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE no_examples=TRUE
