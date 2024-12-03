@@ -13,7 +13,7 @@ The docker image serves all the available functionality for executing simulation
 Using docker
 ----------------
 With the docker image, you can use the framework directly without having to build and install any dependencies. Parallel execution with MPI is possible.
-The disadvantage is that you only have a shell and can't plot anything. However, you may copy the files from the docker container to your machine and do the plotting there. 
+The disadvantage is that you only have a shell and can't plot anything. However, you may copy the files from the docker container to your machine (or directly mount the respective directory) and do the plotting there. 
 
 You can either download a pre-built image or building the container from source using one of the available `Dockerfile`s. 
 In either case, you will have to install Docker first. For that we refer you to the official `docker installation instructions <https://docs.docker.com/engine/install/>`_ .
