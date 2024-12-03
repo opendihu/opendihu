@@ -5,11 +5,11 @@ jobs:
     runs-on: ubuntu-latest
     container: carmehp/opendihu:latest
     steps:
-      - name: Go to directory
+      - name: Checkout and rebuild
         run: |
           cd /workspace/opendihu
-          pwd
-          echo "Listing files in the root directory:"
-          ls -lah
+          {{ github.event.pull_request.head.sha }
+          echo "Show git status:"
+          git status
           python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE no_examples=TRUE
 
