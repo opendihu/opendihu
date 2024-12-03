@@ -42,7 +42,7 @@ In either case, you will have to install Docker first. For that we refer you to 
   * Run a container of the image. The ``<image_name>`` can be choosen freely.
     .. code-block:: bash
 
-    docker run -i -t <image_name>  
+    docker run -it <image_name>  
 
 
 .. _Native installation:
