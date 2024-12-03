@@ -8,7 +8,8 @@ RUN apt-get update && \
     build-essential petsc-dev bison flex libeigen3-dev libxml2-dev libboost-all-dev \
     cmake \
     libffi-dev \
-    vim
+    vim \
+    python-is-python3
 
 # git -> Dockerfile
 # wget unzip -> Download dependencies
@@ -16,9 +17,7 @@ RUN apt-get update && \
 # cmake -> base64
 # libffi-dev -> Solves error at run time: ModuleNotFoundError: No module named '_ctypes’
 # vim -> optional
-
-# make `python` point to python3 (needed for some scripts that call python instead of python3)
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 100
+# python-is-python3 -> make `python` point to python3 (needed for some scripts that call python instead of python3)
 
 WORKDIR /workspace
 
