@@ -8,7 +8,7 @@ jobs:
       - name: Checkout and rebuild
         run: |
           cd /workspace/opendihu
-          {{ github.event.pull_request.head.sha }
+          git pull {{ github.ref }
           echo "Show git status:"
           git status
           python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE no_examples=TRUE
