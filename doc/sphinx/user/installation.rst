@@ -26,7 +26,7 @@ In either case, you will have to install Docker first. For that we refer you to 
   * Run the image
     .. code-block:: bash
 
-    docker run -i -t carmehp/opendihu
+    docker run -it carmehp/opendihu
 
   By default, carmehp/opendihu is equivalent to ``carmehp/opendihu:latest``. If you want to use a different image, then you have to specify its tag: `carmehp/opendihu:<tag_name>`.
 
