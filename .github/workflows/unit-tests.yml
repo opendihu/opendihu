@@ -3,13 +3,11 @@ on: [push, pull_request]
 jobs:
   container-test-job:
     runs-on: ubuntu-latest
-    container: carmehp/opendihu:latest
+    container: carmehp/opendihu:ci
     steps:
       - name: Checkout and rebuild
         run: |
           cd /workspace/opendihu
           git pull origin ${{ github.event.pull_request.head.sha }}
-          echo "Show git status:"
-          git status
           python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE no_examples=TRUE
 
