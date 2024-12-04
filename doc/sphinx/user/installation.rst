@@ -13,9 +13,9 @@ The docker image serves all the available functionality for executing simulation
 Using docker
 ----------------
 With the docker image, you can use the framework directly without having to build and install any dependencies. Parallel execution with MPI is possible.
-The disadvantage is that you only have a shell and can't plot anything. However, you may copy the files from the docker container to your machine and do the plotting there. 
+The disadvantage is that you only have a shell and can't plot anything. However, you may copy the files from the docker container to your machine (or directly mount the respective directory) and do the plotting there. 
 
-You can either download a pre-built image or building the container from source using one of the available `Dockerfile`s. 
+You can either download a pre-built image or build an image from source using one of the available `Dockerfile`. 
 In either case, you will have to install Docker first. For that we refer you to the official `docker installation instructions <https://docs.docker.com/engine/install/>`_ .
 
 * Using the pre-built docker image
@@ -26,7 +26,7 @@ In either case, you will have to install Docker first. For that we refer you to 
   * Run the image
     .. code-block:: bash
 
-    docker run -i -t carmehp/opendihu
+    docker run -it carmehp/opendihu
 
   By default, carmehp/opendihu is equivalent to ``carmehp/opendihu:latest``. If you want to use a different image, then you have to specify its tag: `carmehp/opendihu:<tag_name>`.
 
@@ -42,7 +42,7 @@ In either case, you will have to install Docker first. For that we refer you to 
   * Run a container of the image. The ``<image_name>`` can be choosen freely.
     .. code-block:: bash
 
-    docker run -i -t <image_name>  
+    docker run -it <image_name>  
 
 
 .. _Native installation:
