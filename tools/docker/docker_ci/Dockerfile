@@ -28,3 +28,12 @@ WORKDIR opendihu
 # Build opendihu, debug and release target for core, build release unit tests and run tests, build all examples
 RUN make release_without_tests; echo "Build and run tests";
 
+# Set environment variable such that OpenMPI works inside docker container (run as root)
+ENV OMPI_ALLOW_RUN_AS_ROOT=1
+ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+ENV OMPI_MCA_btl_vader_single_copy_mechanism=none
+ENV OMPI_MCA_osc=ucx 
+
+# Add aliases
+ADD .bash_aliases /workspace
+RUN echo ". /workspace/.bash_aliases " >> ~/.bashrc 
