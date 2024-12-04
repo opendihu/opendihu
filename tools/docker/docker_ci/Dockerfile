@@ -26,5 +26,5 @@ RUN git clone --branch update-docker --depth=1 https://github.com/opendihu/opend
 WORKDIR opendihu
 
 # Build opendihu, debug and release target for core, build release unit tests and run tests, build all examples
-RUN python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE no_examples=TRUE; echo "Build core and run tests"; cat config.log
+RUN make release_without_tests; echo "Build and run tests";
 

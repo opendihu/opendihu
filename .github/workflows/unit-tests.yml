@@ -3,7 +3,7 @@ on: [push, pull_request]
 jobs:
   container-test-job:
     runs-on: ubuntu-latest
-    container: carmehp/opendihu:ci
+    container: carmehp/opendihu-ci
     steps:
       - name: Checkout and rebuild
         run: |
