@@ -101,8 +101,8 @@ vars.Add(BoolVariable('USE_STDSIMD', 'Use the std::experimental::simd library wh
 vars.Add(BoolVariable('USE_MPI_ALLOC', 'Use calls to MPI_Win_allocate instead of MPI_Win_create.', False))
 vars.Add('mpicc', help='The mpicc compiler wrapper', default='mpicc')
 vars.Add('mpiCC', help='The mpic++ compiler wrapper', default='mpic++')
-vars.Add('cc', help='The c compiler', default='gcc')
-vars.Add('CC', help='The c++ compiler', default='g++')
+vars.Add('cc', help='The c compiler', default='clang')
+vars.Add('CC', help='The c++ compiler', default='clang++')
 vars.Add('cmake', help='The cmake executable', default='cmake')
     
 # Add options from any packages we want to use.
@@ -110,7 +110,9 @@ sconsconfig.add_options(vars)
 
 # initialize environment object containing build system settings such as compilers and flags
 # command line options are considered
+#env = Environment(tools = ['default', 'unity_build'], toolpath = ['config/tools'], variables = vars, ENV = os.environ, COMPILATIONDB_USE_ABSPATH=True, UNITY_MAX_SOURCES = 5    )
 env = Environment(tools = ['default'], toolpath = ['config/tools'], variables = vars, ENV = os.environ, COMPILATIONDB_USE_ABSPATH=True)
+
 vars.Save('out.py',env)
 
 # check for unknown variables and output warning
@@ -311,6 +313,7 @@ else:
       print("ERROR: $ZLIB_ROOT is not set. Did you forget to `module load zlib`?")
     env["CXX"] = os.path.join(opendihu_home, "scripts/fake-scorep.sh")
 
+env.MergeFlags('-ftime-trace')
 
 # flags to always include, except with cray compiler
 if os.environ.get("PE_ENV") != "CRAY" and "pg" not in env["cc"]:

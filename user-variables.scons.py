@@ -16,8 +16,8 @@
 # 4. Set <PACKAGE>_DOWNLOAD=True or additionally <PACKAGE>_REDOWNLOAD=True to let the build system download and install everything on their own.
 
 # set compiler to use
-cc = "gcc"         # C compiler
-CC = "g++"         # C++ compiler
+cc = "clang"         # C compiler
+CC = "clang++"         # C++ compiler
 mpiCC = "mpic++"   # MPI C++ wrapper
 cmake="cmake"      # cmake command
 
