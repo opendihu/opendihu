@@ -26,7 +26,7 @@ RUN git clone --branch update-docker --depth=1 https://github.com/opendihu/opend
 WORKDIR opendihu
 
 # Build opendihu, debug and release target for core, build release unit tests and run tests, build all examples
-RUN make release_without_tests; echo "Build and run tests";
+RUN make release; echo "Build and run tests";
 
 # Set environment variable such that OpenMPI works inside docker container (run as root)
 ENV OMPI_ALLOW_RUN_AS_ROOT=1
