@@ -22,7 +22,7 @@ RUN apt-get update && \
 WORKDIR /workspace
 
 # Clone opendihu
-RUN git clone --branch update-docker --depth=1 https://github.com/opendihu/opendihu.git  
+RUN git clone --branch develop --depth=1 https://github.com/opendihu/opendihu.git  
 WORKDIR opendihu
 
 # Build opendihu, debug and release target for core, build release unit tests and run tests, build all examples
