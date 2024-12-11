@@ -3,13 +3,11 @@ on: [push, pull_request]
 jobs:
   container-test-job:
     runs-on: ubuntu-latest
-    container: maierbn/opendihu:latest
+    container: carmehp/opendihu-ci
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          path: opendihu
-      - name: Build 
-        working-directory: opendihu
-        run: python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE no_examples=TRUE
+      - name: Checkout and rebuild
+        run: |
+          cd /workspace/opendihu
+          git pull origin ${{ github.event.pull_request.head.sha }}
+          python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE no_examples=TRUE
 

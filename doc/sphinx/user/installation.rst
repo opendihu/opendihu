@@ -13,36 +13,37 @@ The docker image serves all the available functionality for executing simulation
 Using docker
 ----------------
 With the docker image, you can use the framework directly without having to build and install any dependencies. Parallel execution with MPI is possible.
-The disadvantage is that you only have a shell and can't plot anything. 
-We provide docker images on docker hub that contain the latest release as of November 2023. They are based on recent Ubuntu 22.04 as well as legacy Ubuntu 16.04 to 20.04:
+The disadvantage is that you only have a shell and can't plot anything. However, you may copy the files from the docker container to your machine (or directly mount the respective directory) and do the plotting there. 
 
-* ``maierbn/opendihu:2204`` or alias ``maierbn/opendihu:latest``: 
+You can either download a pre-built image or build an image from source using one of the available `Dockerfile`. 
+In either case, you will have to install Docker first. For that we refer you to the official `docker installation instructions <https://docs.docker.com/engine/install/>`_ .
 
-  * image based on Ubuntu 22.04
-  * all dependencies are installed
-  * petsc has all extra dependencies such as, e.g., HYPRE, PARMETIS etc.
-  * the core is built in debug and release target
-  * all examples are built in release target
-* ``maierbn/opendihu:2004``, ``maierbn/opendihu:1804``, ``maierbn/opendihu:1604``:
+* Using the pre-built docker image
+  * Pull the image from `DockerHub <https://hub.docker.com/r/carmehp/opendihu/tags>`_ 
+    .. code-block:: bash
 
-  * images based on Ubuntu 20.04, 18.04, and 16.04
-  * dependencies are installed (except preCICE), petsc only has standard functionality
-  * the core is built in release target
-  * examples are not yet built
+    docker image pull carmehp/opendihu
+  * Run the image
+    .. code-block:: bash
 
-First install `docker <https://docs.docker.com/engine/install/ubuntu/>`_ following the instructions on the website. Then, you can run the provided docker image with the following command:
+    docker run -it carmehp/opendihu
 
-.. code-block:: bash
+  By default, carmehp/opendihu is equivalent to ``carmehp/opendihu:latest``. If you want to use a different image, then you have to specify its tag: `carmehp/opendihu:<tag_name>`.
 
-  docker run -it maierbn/opendihu:latest bash
+* Building the docker image from source
+  * Select the image you want to build. All the available options are found in ``tools/docker/``. For example if you want to use the docker image based on Ubuntu 22.04, change to the corresponding directory where the Dockerfile is located.
+    .. code-block:: bash
 
-You can also build docker images yourself. We provide Dockerfiles to set up OpenDiHu containers that import Ubuntu 16.04, 18.04, 20.04 or 22.04. 
-To build one of the provided OpenDiHu container you have to
+    cd tools/docker/ubuntu22
+  * Build the image. The ``<image_name>`` can be choosen freely. This step will take some time, e.g., 30 minutes - 1 hour.
+    .. code-block:: bash
 
-  1. Change to the directory where `Dockerfile` is located, under ``tools/docker/ubuntu*``
-  2. Execute ``docker build -t workspace .``
+    docker build -t <image_name> .
+  * Run a container of the image. The ``<image_name>`` can be choosen freely.
+    .. code-block:: bash
 
-You can run the container you just built by executing ``docker run -it workspace``
+    docker run -it <image_name>  
+
 
 .. _Native installation:
 
