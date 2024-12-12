@@ -87,7 +87,6 @@ if not env['no_tests']:
                  'src/6_ranks/partitioned_petsc_vec.cpp', 
                  'src/6_ranks/main.cpp', 
                  'src/utility.cpp']
-    #src_files = ['src/6_ranks/partitioned_petsc_vec.cpp', 'src/6_ranks/main.cpp', 'src/utility.cpp']
 
     program = env.UnityProgram(target='6_ranks_tests', source=src_files)
 
