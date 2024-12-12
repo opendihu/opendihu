@@ -45,60 +45,57 @@ if not env['no_tests']:
     #print("")
     #print("WARNING: only compiling tests ",src_files)
 
-    #program = env.UnityProgram('1_rank_tests', source=src_files)
     program = env.UnityProgram(target='1_rank_tests', source=src_files)
 
     # add command that runs the tests after build
     # "--allow-run-as-root" is required for the run in a docker container
     test = env.Command(target = 'test1', source = './1_rank_tests', action = 
-      'cd testing/unit_testing/'+variant_directory)
+      'cd testing/unit_testing/'+variant_directory+' && mpirun -n 1 --allow-run-as-root -quiet ./1_rank_tests || [ -f "SUCCESS1" ]')
 
     AlwaysBuild(test)
 
 
-  # # ---- parallel unit tests: 2 ranks ----
-  # if True:
-  #   src_files = ['src/2_ranks/laplace_1d.cpp',
-  #                'src/2_ranks/laplace_2d.cpp',
-  #                'src/2_ranks/laplace_3d.cpp',
-  #                'src/2_ranks/diffusion.cpp',
-  #                'src/2_ranks/poisson.cpp',
-  #                'src/2_ranks/neumann_boundary_conditions.cpp',
-  #                'src/2_ranks/solid_mechanics.cpp',
-  #                'src/2_ranks/main.cpp',
-  #                'src/utility.cpp',
-  #                'src/2_ranks/partitioned_petsc_vec.cpp',
-  #                'src/2_ranks/composite_mesh.cpp']
-  #   #src_files = ['src/2_ranks/solid_mechanics.cpp', 'src/2_ranks/main.cpp', 'src/utility.cpp']
-  #   #print("")
-  #   #print("WARNING: only compiling tests ",src_files)
+  # ---- parallel unit tests: 2 ranks ----
+  if True:
+    src_files = ['src/2_ranks/laplace_1d.cpp',
+                 'src/2_ranks/laplace_2d.cpp',
+                 'src/2_ranks/laplace_3d.cpp',
+                 'src/2_ranks/diffusion.cpp',
+                 'src/2_ranks/poisson.cpp',
+                 'src/2_ranks/neumann_boundary_conditions.cpp',
+                 'src/2_ranks/solid_mechanics.cpp',
+                 'src/2_ranks/main.cpp',
+                 'src/utility.cpp',
+                 'src/2_ranks/partitioned_petsc_vec.cpp',
+                 'src/2_ranks/composite_mesh.cpp']
+    #src_files = ['src/2_ranks/solid_mechanics.cpp', 'src/2_ranks/main.cpp', 'src/utility.cpp']
+    #print("")
+    #print("WARNING: only compiling tests ",src_files)
 
-  #   program = env.Program(target='2_ranks_tests', source=src_files)
-  #   #program = env.Program('2_ranks_tests', source=src_files)
+    program = env.UnityProgram(target='2_ranks_tests', source=src_files)
 
-  #   # Add command that runs the tests after build, there is a construction that some MPI ranks can fail after they are successfully done because they are aborted because MPI_Finalize cannot be called in unit tests because after that MPI_Init cannot be called again and this would be needed to run multiple unit tests in one executable.
-  #   test = env.Command(target = 'test2', source = './2_ranks_tests', action = 
-  #     'cd testing/unit_testing/'+variant_directory)
+    # Add command that runs the tests after build, there is a construction that some MPI ranks can fail after they are successfully done because they are aborted because MPI_Finalize cannot be called in unit tests because after that MPI_Init cannot be called again and this would be needed to run multiple unit tests in one executable.
+    test = env.Command(target = 'test2', source = './2_ranks_tests', action = 
+      'cd testing/unit_testing/'+variant_directory+' && mpirun -n 2 --allow-run-as-root -quiet ./2_ranks_tests || [ -f "SUCCESS2" ]')
 
-  #   AlwaysBuild(test)
+    AlwaysBuild(test)
 
-  # # ---- parallel unit tests: 6 ranks ----
-  # if True:
-  #   src_files = ['src/6_ranks/numberings.cpp', 
-  #                'src/6_ranks/diffusion.cpp', 
-  #                'src/6_ranks/partitioned_petsc_vec.cpp', 
-  #                'src/6_ranks/main.cpp', 
-  #                'src/utility.cpp']
-  #   #src_files = ['src/6_ranks/partitioned_petsc_vec.cpp', 'src/6_ranks/main.cpp', 'src/utility.cpp']
+  # ---- parallel unit tests: 6 ranks ----
+  if True:
+    src_files = ['src/6_ranks/numberings.cpp', 
+                 'src/6_ranks/diffusion.cpp', 
+                 'src/6_ranks/partitioned_petsc_vec.cpp', 
+                 'src/6_ranks/main.cpp', 
+                 'src/utility.cpp']
+    #src_files = ['src/6_ranks/partitioned_petsc_vec.cpp', 'src/6_ranks/main.cpp', 'src/utility.cpp']
 
-  #   #program = env.UnityProgram('6_ranks_tests', source=src_files)
-  #   program = env.UnityProgram(target='6_ranks_tests', source=src_files)
+    program = env.UnityProgram(target='6_ranks_tests', source=src_files)
 
-  #   # add command that runs the tests after build
-  #   test = env.Command(target = 'test6', source = './6_ranks_tests', action = 
-  #     'cd testing/unit_testing/'+variant_directory) #Use oversubscribe because of resource limitations in GitHub Actions
+    # add command that runs the tests after build
+    test = env.Command(target = 'test6', source = './6_ranks_tests', action = 
+      'cd testing/unit_testing/'+variant_directory+' && mpirun -n 6 --oversubscribe -allow-run-as-root -quiet ./6_ranks_tests || [ -f "SUCCESS6" ]') #Use oversubscribe because of resource limitations in GitHub Actions
 
-  #   AlwaysBuild(test)
+    AlwaysBuild(test)
 
   # ---- test compilation of examples ----
   if True and not env["no_examples"]:
