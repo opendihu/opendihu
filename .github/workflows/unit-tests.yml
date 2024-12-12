@@ -1,5 +1,5 @@
 name: unit-tests
-on: [pull_request]
+on: [push]
 jobs:
   container-test-job:
     runs-on: ubuntu-latest
@@ -8,6 +8,6 @@ jobs:
       - name: Checkout and rebuild
         run: |
           cd /workspace/opendihu
-          git pull origin ${{ github.event.pull_request.head.sha }}
+          git pull origin ${{ github.event.push.head.sha }}
           python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE no_examples=TRUE
 
