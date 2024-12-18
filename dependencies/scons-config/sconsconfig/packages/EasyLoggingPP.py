@@ -19,8 +19,8 @@ int main(int argc, char* argv[])
 '''
 #VERSION='https://github.com/zuhd-org/easyloggingpp/archive/v9.96.7.tar.gz'
 #VERSION = 'https://github.com/muflihun/easyloggingpp/releases/download/v9.95.3/easyloggingpp_v9.95.3.tar.gz'
-VERSION='https://github.com/maierbn/easyloggingpp/archive/master.zip'
-
+#VERSION='https://github.com/maierbn/easyloggingpp/archive/master.zip'
+VERSION='https://github.com/abumq/easyloggingpp/archive/refs/tags/v9.97.1.zip'
 class EasyLoggingPP(Package):
   
     def __init__(self, **kwargs):
