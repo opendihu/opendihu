@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
 <<<<<<< HEAD
   Control::PreciceAdapter<                             // use precice coupling
 =======
-  Control::PreciceAdapterVolumeCoupling<               // use precice coupling
+  Control::PreciceAdapterVolumeCoupling< // use precice coupling
 >>>>>>> develop
       FastMonodomainSolver<Control::MultipleInstances< // subdomains in xy-plane
           OperatorSplitting::Strang<
