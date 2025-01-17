@@ -9,7 +9,7 @@ src_files = Glob('src/*/*.cpp') + Glob('src/*.cpp') + Glob('src/*/*/*.cpp') + Gl
 
 # define include directory for header files
 env.Append(CPPPATH = 'src')
-  
+
 # depending on the variable BUILD_TYPE either build with debug, releasewithdebuginfo or release settings
 if env["BUILD_TYPE"] == "debug":    # will build debug version
   target = 'opendihud'
@@ -21,12 +21,14 @@ else:
 # precompiled headers
 if env["ph"]:
   import gch
-  
+
   gch.generate(env)
   env['precompiled_header'] = File('src/opendihu.h')
   env['Gch'] = env.Gch(target='src/opendihu.h.gch', source=env['precompiled_header'])
 
-# build the library  
+# build the library
+env.Tool('compilation_db')
+env.CompilationDatabase()
 env.Library(target = target, source = src_files)
 
 # simple test program

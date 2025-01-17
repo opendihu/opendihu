@@ -10,6 +10,7 @@ There are reference pages that explain frequently used classes.
 .. toctree::
    :maxdepth: 2
    
+   developer/source_documentation
    developer/conventions
    developer/reference
    developer/supercomputer

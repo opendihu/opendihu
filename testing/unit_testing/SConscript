@@ -45,7 +45,7 @@ if not env['no_tests']:
     #print("")
     #print("WARNING: only compiling tests ",src_files)
 
-    program = env.Program('1_rank_tests', source=src_files)
+    program = env.UnityProgram(target='1_rank_tests', source=src_files)
 
     # add command that runs the tests after build
     # "--allow-run-as-root" is required for the run in a docker container
@@ -72,7 +72,7 @@ if not env['no_tests']:
     #print("")
     #print("WARNING: only compiling tests ",src_files)
 
-    program = env.Program('2_ranks_tests', source=src_files)
+    program = env.UnityProgram(target='2_ranks_tests', source=src_files)
 
     # Add command that runs the tests after build, there is a construction that some MPI ranks can fail after they are successfully done because they are aborted because MPI_Finalize cannot be called in unit tests because after that MPI_Init cannot be called again and this would be needed to run multiple unit tests in one executable.
     test = env.Command(target = 'test2', source = './2_ranks_tests', action = 
@@ -87,9 +87,8 @@ if not env['no_tests']:
                  'src/6_ranks/partitioned_petsc_vec.cpp', 
                  'src/6_ranks/main.cpp', 
                  'src/utility.cpp']
-    #src_files = ['src/6_ranks/partitioned_petsc_vec.cpp', 'src/6_ranks/main.cpp', 'src/utility.cpp']
 
-    program = env.Program('6_ranks_tests', source=src_files)
+    program = env.UnityProgram(target='6_ranks_tests', source=src_files)
 
     # add command that runs the tests after build
     test = env.Command(target = 'test6', source = './6_ranks_tests', action = 
@@ -112,7 +111,7 @@ if not env['no_tests']:
     (([ ! -f "SUCCESS1" ] || [ ! -f "SUCCESS2" ] || [ ! -f "SUCCESS6" ]) && exit 1) || exit 0')
 
   if env["no_examples"]:
-    Depends(test, ['test1', 'test2', 'test6'])
+    Depends(test, ['test1'])
   else:
     Depends(test, ['test_examples', 'test1', 'test2', 'test6'])
 

@@ -55,7 +55,9 @@ sconsconfig.select(
     packages.ADIOS(required=False),    # ADIOS, a library that handles efficient and parallel data output
     #packages.MegaMol(required=False),  # Adds the MegaMol visualization framework
     #packages.VTK(required=False),     # VTK, needed only for chaste
-    #packages.HDF5(required=False),    # The parallel output library HDF5, compiled with --enable-parallel as needed for chaste, the version that Petsc can download does not have this feature
+    packages.HDF5(required=True),    # The parallel output library HDF5, compiled with --enable-parallel as needed for chaste, the version that Petsc can download does not have this feature
+    packages.NlohmannJson(required=True),
+    packages.SCR(required=True),
     #packages.XercesC(required=False), # XML-parser, needed for chaste
     #packages.xsd(required=False),     # XML Schema to C++ data binding compiler, needed for chaste
     #packages.boost(required=False),   # boost C++ library, needed for chaste
@@ -108,7 +110,7 @@ sconsconfig.add_options(vars)
 
 # initialize environment object containing build system settings such as compilers and flags
 # command line options are considered
-env = Environment(tools = ['default'], toolpath = ['config/tools'], variables = vars, ENV = os.environ)
+env = Environment(tools = ['default', 'unity_build'], toolpath = ['config/tools'], variables = vars, ENV = os.environ, COMPILATIONDB_USE_ABSPATH=True,UNITY_MAX_SOURCES=20)
 vars.Save('out.py',env)
 
 # check for unknown variables and output warning

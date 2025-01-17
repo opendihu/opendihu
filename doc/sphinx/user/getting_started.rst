@@ -21,7 +21,7 @@ Getting started
   .. code-block:: bash
 
     cd build_release
-    ./laplace_regular settings_lagrange_quadratic.py
+    ./laplace_regular ../settings_lagrange_quadratic.py
 
 * Output files in this example (and likewise in the other examples) will be created under the `out` subdirectory. 
   If you look into `out`, you'll find two files: `laplace.py` and `laplace.vtr`.

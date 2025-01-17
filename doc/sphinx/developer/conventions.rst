@@ -5,7 +5,7 @@ Conventions and Tips
 Style guide
 -------------
 
-OpenDiHu follows the [LLVM style guide]. If you make changes to OpenDiHu, you can use the [clang-format](https://clang.llvm.org/docs/ClangFormat.html) tool to format the code according to the style guide.
+OpenDiHu follows the [LLVM style guide]. If you make changes to OpenDiHu, you can use the `clang-format <https://clang.llvm.org/docs/ClangFormat.html>`_ tool to format the code according to the style guide.
 
 You can install clang-format with `sudo apt install clang-format`. To format a specific file, run `clang-format -i file.cpp`. You can also format all files if you run `. tools/formatting/format-all` in the parent directory. 
 
@@ -75,7 +75,7 @@ This runs the tests.
 When working on unit tests, you can temporarily enable just the test you are working on in the file `testing/unit_testing/SConscript`.
 There you can set the file names to be included in the executable and fully enable/disable the 1_rank/2_ranks/6_ranks tests. This reduces compile time.
 
-Howto debug
+How to debug
 ---------------
 
 Using GDB 

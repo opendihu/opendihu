@@ -1,4 +1,4 @@
-case_name = "case1"
+case_name = "default"
 precice_config_file = "default"
 
 # scenario name for log file
