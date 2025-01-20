@@ -13,7 +13,7 @@ public:
   ExplicitEulerReduced(DihuContext context);
 
   //! destructor
-  virtual ~ExplicitEulerReduced(){};
+  virtual ~ExplicitEulerReduced() {};
 
   //! run simulation
   void run();

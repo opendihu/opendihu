@@ -79,10 +79,10 @@ void FunctionSpacePartition<Mesh::CompositeOfDimension<D>,
 }
 
 template <int D, typename BasisFunctionType>
-const std::vector<std::shared_ptr<
-    FunctionSpace<Mesh::StructuredDeformableOfDimension<D>, BasisFunctionType>>>
-    &FunctionSpacePartition<Mesh::CompositeOfDimension<D>,
-                            BasisFunctionType>::subFunctionSpaces() {
+const std::vector<std::shared_ptr<FunctionSpace<
+    Mesh::StructuredDeformableOfDimension<D>, BasisFunctionType>>> &
+FunctionSpacePartition<Mesh::CompositeOfDimension<D>,
+                       BasisFunctionType>::subFunctionSpaces() {
   return subFunctionSpaces_;
 }
 

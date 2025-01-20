@@ -13,7 +13,7 @@ std::array<T, nComponents> operator-(const std::array<T, nComponents> vector1,
                                      const std::array<T, nComponents> vector2) {
   std::array<T, nComponents> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nComponents; i++) {
     result[i] = vector1[i] - vector2[i];
   }
@@ -26,7 +26,7 @@ std::array<T, nComponents>
 operator-(const std::array<T, nComponents> &vector1) {
   std::array<T, nComponents> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nComponents; i++) {
     result[i] = -vector1[i];
   }
@@ -39,7 +39,7 @@ std::array<T, nComponents> operator+(const std::array<T, nComponents> vector1,
                                      const std::array<T, nComponents> vector2) {
   std::array<T, nComponents> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nComponents; i++) {
     result[i] = vector1[i] + vector2[i];
   }
@@ -51,7 +51,7 @@ template <typename T, std::size_t nComponents>
 std::array<T, nComponents> &
 operator+=(std::array<T, nComponents> &vector1,
            const std::array<T, nComponents> vector2) {
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nComponents; i++) {
     vector1[i] += vector2[i];
   }
@@ -62,7 +62,7 @@ operator+=(std::array<T, nComponents> &vector1,
 template <std::size_t nComponents>
 std::array<double, nComponents> &
 operator*=(std::array<double, nComponents> &vector1, double lambda) {
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nComponents; i++) {
     vector1[i] *= lambda;
   }
@@ -73,7 +73,7 @@ operator*=(std::array<double, nComponents> &vector1, double lambda) {
 template <std::size_t nComponents>
 std::array<double, nComponents> &
 operator/=(std::array<double, nComponents> &vector1, double lambda) {
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nComponents; i++) {
     vector1[i] /= lambda;
   }
@@ -113,7 +113,7 @@ std::array<T, nComponents> operator/(const std::array<T, nComponents> vector1,
                                      const std::array<T, nComponents> vector2) {
   std::array<T, nComponents> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nComponents; i++) {
     result[i] = vector1[i] / vector2[i];
   }
@@ -126,7 +126,7 @@ std::array<T, nComponents> operator/(const std::array<T, nComponents> vector1,
                                      const double value) {
   std::array<T, nComponents> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nComponents; i++) {
     result[i] = vector1[i] / value;
   }

@@ -9,9 +9,9 @@
 #include "utility/petsc_utility.h"
 #include "easylogging++.h"
 
-//#define USE_NESTED_MAT      // this disables this utility and directly uses
-// the nested Vecs and Mats. This is faster in the handling of the Petsc
-// variables but only GMRES solver is possible, no direct solvers.
+// #define USE_NESTED_MAT      // this disables this utility and directly uses
+//  the nested Vecs and Mats. This is faster in the handling of the Petsc
+//  variables but only GMRES solver is possible, no direct solvers.
 
 namespace TimeSteppingScheme {
 

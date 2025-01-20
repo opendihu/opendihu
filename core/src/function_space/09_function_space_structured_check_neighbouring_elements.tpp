@@ -625,7 +625,7 @@ bool FunctionSpaceStructuredCheckNeighbouringElements<
         }
       }
     } // x
-  }   // y
+  } // y
 
   // if at least one element was found that contains the point, use it and
   // return true
@@ -1439,8 +1439,8 @@ bool FunctionSpaceStructuredCheckNeighbouringElements<
           }
         }
       } // x
-    }   // y
-  }     // z
+    } // y
+  } // z
 
   // if at least one element was found that contains the point, use it and
   // return true

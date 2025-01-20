@@ -225,59 +225,59 @@ void ReadWriteDataBase::preciceWriteVolumeData(
 }
 
 void ReadWriteDataBase::preciceReadSurfaceData(
-    std::shared_ptr<precice::Participant> &preciceParticipant){
-    // LOG(DEBUG) << "read data from precice";
-    // double preciceDt = this->preciceParticipant_->getMaxTimeStepSize();
-    // // loop over surface data
-    // for (auto &preciceData : this->preciceSurfaceData_) {
-    // // bool tmp = preciceData.ioType == ;
-    //     // preciceData.ioType = "tmp";
-    //     // if (preciceData.ioType == decltype(preciceData.ioType)::ioRead) {
-    //     // using typename
-    //     Control::PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData::ReadWrite;
-    //     if (preciceData.ioType ==
-    //     PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData::ioRead) {
+    std::shared_ptr<precice::Participant> &preciceParticipant) {
+  // LOG(DEBUG) << "read data from precice";
+  // double preciceDt = this->preciceParticipant_->getMaxTimeStepSize();
+  // // loop over surface data
+  // for (auto &preciceData : this->preciceSurfaceData_) {
+  // // bool tmp = preciceData.ioType == ;
+  //     // preciceData.ioType = "tmp";
+  //     // if (preciceData.ioType == decltype(preciceData.ioType)::ioRead) {
+  //     // using typename
+  //     Control::PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData::ReadWrite;
+  //     if (preciceData.ioType ==
+  //     PreciceAdapterInitialize<NestedSolver>::PreciceSurfaceData::ioRead) {
 
-    //     // allocate memory
-    //     int nEntries = preciceData.preciceMesh->nNodesLocal * 3;
+  //     // allocate memory
+  //     int nEntries = preciceData.preciceMesh->nNodesLocal * 3;
 
-    //     // if the data is displacements and velocities
-    //     if (!preciceData.displacementsName.empty()) {
-    //         displacementValues_.resize(nEntries);
-    //         velocityValues_.resize(nEntries);
+  //     // if the data is displacements and velocities
+  //     if (!preciceData.displacementsName.empty()) {
+  //         displacementValues_.resize(nEntries);
+  //         velocityValues_.resize(nEntries);
 
-    //         // get all data at once
-    //         this->preciceParticipant_->readData(
-    //             preciceData.preciceMesh->preciceMeshName,
-    //             preciceData.displacementsName,
-    //             preciceData.preciceMesh->preciceVertexIds, preciceDt,
-    //             displacementValues_);
+  //         // get all data at once
+  //         this->preciceParticipant_->readData(
+  //             preciceData.preciceMesh->preciceMeshName,
+  //             preciceData.displacementsName,
+  //             preciceData.preciceMesh->preciceVertexIds, preciceDt,
+  //             displacementValues_);
 
-    //         this->preciceParticipant_->readData(
-    //             preciceData.preciceMesh->preciceMeshName,
-    //             preciceData.velocitiesName,
-    //             preciceData.preciceMesh->preciceVertexIds, preciceDt,
-    //             velocityValues_);
+  //         this->preciceParticipant_->readData(
+  //             preciceData.preciceMesh->preciceMeshName,
+  //             preciceData.velocitiesName,
+  //             preciceData.preciceMesh->preciceVertexIds, preciceDt,
+  //             velocityValues_);
 
-    //         setDirichletBoundaryConditions(preciceData);
-    //     }
-    //     // if the data is traction
-    //     else if (!preciceData.tractionName.empty()) {
-    //         tractionValues_.resize(nEntries);
-    //         this->preciceParticipant_->readData(
-    //             preciceData.preciceMesh->preciceMeshName,
-    //             preciceData.tractionName,
-    //             preciceData.preciceMesh->preciceVertexIds, preciceDt,
-    //             tractionValues_);
+  //         setDirichletBoundaryConditions(preciceData);
+  //     }
+  //     // if the data is traction
+  //     else if (!preciceData.tractionName.empty()) {
+  //         tractionValues_.resize(nEntries);
+  //         this->preciceParticipant_->readData(
+  //             preciceData.preciceMesh->preciceMeshName,
+  //             preciceData.tractionName,
+  //             preciceData.preciceMesh->preciceVertexIds, preciceDt,
+  //             tractionValues_);
 
-    //         setNeumannBoundaryConditions(preciceData);
-    //     } else {
-    //         LOG(FATAL) << "Unknown precice data (read), none of
-    //         displacements, "
-    //                     "velocities or traction is set.";
-    //     }
-    //     }
-    // }
+  //         setNeumannBoundaryConditions(preciceData);
+  //     } else {
+  //         LOG(FATAL) << "Unknown precice data (read), none of
+  //         displacements, "
+  //                     "velocities or traction is set.";
+  //     }
+  //     }
+  // }
 };
 
 void ReadWriteDataBase::preciceWriteSurfaceData(

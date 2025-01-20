@@ -62,7 +62,7 @@ public:
   FiniteElements(DihuContext context);
 
   //! dummy method
-  virtual void initialize(){};
+  virtual void initialize() {};
 
   // !initialize base class and diffusion tensor which needs the direction field
   // and the number of compartments in the multidomain context

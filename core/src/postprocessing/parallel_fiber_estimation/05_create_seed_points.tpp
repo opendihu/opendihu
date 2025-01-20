@@ -129,8 +129,8 @@ void ParallelFiberEstimation<BasisFunctionType>::createSeedPoints(
       std::pair<int, int>{1, 1},                    // bottom left
       std::pair<int, int>{subdomainNNodesX - 2, 1}, // bottom right
       std::pair<int, int>{1, subdomainNNodesY - 2}, // top left
-      std::pair<int, int>{subdomainNNodesX - 2,
-                          subdomainNNodesY - 2} // top right
+      std::pair<int, int>{subdomainNNodesX - 2, subdomainNNodesY - 2}
+      // top right
   };
 
   for (std::vector<std::pair<int, int>>::iterator iter = coordinates.begin();

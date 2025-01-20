@@ -118,7 +118,7 @@ void ParallelFiberEstimation<BasisFunctionType>::traceStreamlines(
 
 #ifndef NDEBUG
 #ifdef STL_OUTPUT
-        //#ifdef STL_OUTPUT_VERBOSE
+        // #ifdef STL_OUTPUT_VERBOSE
         std::stringstream name;
         name << "04_raw_invalid_streamline_" << i << "_";
         PyObject_CallFunction(
@@ -128,7 +128,7 @@ void ParallelFiberEstimation<BasisFunctionType>::traceStreamlines(
                 streamlinePoints[i]),
             0.1);
         PythonUtility::checkForError();
-//#endif
+// #endif
 #endif
 #endif
       }

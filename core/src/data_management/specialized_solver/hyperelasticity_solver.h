@@ -416,7 +416,7 @@ public:
 
 private:
   //! this class does not create any petsc objects
-  void createPetscObjects(){};
+  void createPetscObjects() {};
 
   std::shared_ptr<PressureFieldVariableType>
       pressure_; //<  p, the pressure variable

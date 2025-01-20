@@ -8,7 +8,7 @@
 #include "mesh/mapping_between_meshes/manager/04_manager.h"
 #include "mesh/mapping_between_meshes/manager/target_element_no_estimator.h"
 
-//#define OUTPUT_INTERPOLATION_LEAP    // debugging output
+// #define OUTPUT_INTERPOLATION_LEAP    // debugging output
 
 namespace MappingBetweenMeshes {
 

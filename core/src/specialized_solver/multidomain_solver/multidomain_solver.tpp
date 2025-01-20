@@ -9,7 +9,7 @@
 #include "specialized_solver/multidomain_solver/nested_mat_vec_utility.h"
 #include "control/diagnostic_tool/memory_leak_finder.h"
 
-//#define MONODOMAIN
+// #define MONODOMAIN
 
 namespace TimeSteppingScheme {
 

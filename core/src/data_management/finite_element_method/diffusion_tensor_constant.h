@@ -29,7 +29,7 @@ private:
       FunctionSpaceType,
       MathUtility::Matrix<FunctionSpaceType::dim(), FunctionSpaceType::dim()>>
       diffusionTensor_; //< the diffusion/conductivity tensor A in an equation
-                        //∇•A∇ = f
+                        // ∇•A∇ = f
 };
 
 } // namespace Data

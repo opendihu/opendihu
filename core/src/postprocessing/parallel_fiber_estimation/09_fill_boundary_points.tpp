@@ -496,8 +496,8 @@ void ParallelFiberEstimation<BasisFunctionType>::fillBoundaryPoints(
         }
 
       } // if subdomain is at boundary
-    }   // for face
-  }     // for z level
+    } // for face
+  } // for z level
 
 #ifndef NDEBUG
 #ifdef STL_OUTPUT

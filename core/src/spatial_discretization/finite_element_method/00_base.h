@@ -7,8 +7,8 @@
 #include "interfaces/multipliable.h"
 #include "output_writer/manager.h"
 
-//#define QUADRATURE_TEST    //< if evaluation of quadrature accuracy takes
-// place #define EXACT_QUADRATURE Quadrature::Gauss<20>
+// #define QUADRATURE_TEST    //< if evaluation of quadrature accuracy takes
+//  place #define EXACT_QUADRATURE Quadrature::Gauss<20>
 
 namespace SpatialDiscretization {
 

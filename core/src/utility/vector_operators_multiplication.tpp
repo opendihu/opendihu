@@ -13,7 +13,7 @@ std::array<double_v_t, nComponents>
 operator*(std::array<double_v_t, nComponents> vector, double lambda) {
   std::array<double_v_t, nComponents> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nComponents; i++) {
     result[i] = lambda * vector[i];
   }
@@ -26,7 +26,7 @@ std::array<double_v_t, nComponents>
 operator*(std::array<double_v_t, nComponents> vector, Vc::double_v lambda) {
   std::array<double_v_t, nComponents> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nComponents; i++) {
     result[i] = lambda * vector[i];
   }
@@ -39,7 +39,7 @@ std::array<double_v_t, nComponents>
 operator/(std::array<double_v_t, nComponents> vector, Vc::double_v lambda) {
   std::array<double_v_t, nComponents> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nComponents; i++) {
     result[i] = lambda / vector[i];
   }
@@ -52,7 +52,7 @@ std::array<double_v_t, nComponents>
 operator*(Vc::double_v lambda, std::array<double_v_t, nComponents> vector) {
   std::array<double_v_t, nComponents> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nComponents; i++) {
     result[i] = lambda * vector[i];
   }
@@ -65,7 +65,7 @@ std::array<double_v_t, nComponents>
 operator*(double lambda, std::array<double_v_t, nComponents> vector) {
   std::array<double_v_t, nComponents> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nComponents; i++) {
     result[i] = lambda * vector[i];
   }
@@ -79,7 +79,7 @@ operator*(const std::array<double, nComponents> vector1,
           const std::array<double, nComponents> vector2) {
   std::array<double, nComponents> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nComponents; i++) {
     result[i] = vector1[i] * vector2[i];
   }
@@ -93,7 +93,7 @@ operator*(const std::array<double, nComponents2> vector1,
           const std::array<double, nComponents1> vector2) {
   std::array<std::array<double, nComponents1>, nComponents2> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nComponents2; i++) {
     result[i] = vector1[i] * vector2;
   }

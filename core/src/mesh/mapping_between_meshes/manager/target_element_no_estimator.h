@@ -18,10 +18,10 @@ class TargetElementNoEstimator {
 public:
   TargetElementNoEstimator(
       std::shared_ptr<SourceFunctionSpaceType> sourceFunctionSpace,
-      std::shared_ptr<TargetFunctionSpaceType> targetFunctionSpace){};
+      std::shared_ptr<TargetFunctionSpaceType> targetFunctionSpace) {};
 
   void estimateElementNo(dof_no_t sourceDofNoLocal,
-                         element_no_t &targetElementNo){};
+                         element_no_t &targetElementNo) {};
 
 protected:
 };

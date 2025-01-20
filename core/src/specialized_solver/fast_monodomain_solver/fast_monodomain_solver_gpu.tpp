@@ -6,7 +6,7 @@
 #include <random>
 #include <fstream>
 
-//#define NFIBERS_TO_COMPUTE 1
+// #define NFIBERS_TO_COMPUTE 1
 #define NFIBERS_TO_COMPUTE nFibersToCompute_
 
 template <int nStates, int nAlgebraics, typename DiffusionTimeSteppingScheme>

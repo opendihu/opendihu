@@ -4,9 +4,9 @@
 
 #include "spatial_discretization/spatial_discretization.h"
 #include "spatial_discretization/finite_element_method/01_matrix.h"
-//#include
+// #include
 //"spatial_discretization/finite_element_method/solid_mechanics/02_stiffness_matrix_compressible.h"
-//#include
+// #include
 //"spatial_discretization/finite_element_method/solid_mechanics/02_stiffness_matrix_incompressible.h"
 #include "spatial_discretization/finite_element_method/04_rhs.h"
 #include "spatial_discretization/finite_element_method/05_time_stepping.h"
