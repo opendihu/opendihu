@@ -89,8 +89,7 @@ void ParaviewWriter<
          << "<VTKFile type=\"PRectilinearGrid\" version=\"1.0\" "
             "byte_order=\"LittleEndian\">"
          << std::endl // intel cpus are LittleEndian
-         << std::string(1, '\t') << "<PRectilinearGrid "
-         << "WholeExtent=\""
+         << std::string(1, '\t') << "<PRectilinearGrid " << "WholeExtent=\""
          << "0 " << globalExtent[0] << " 0 " << globalExtent[1] << " 0 "
          << globalExtent[2] << "\" GhostLevel=\"0\"> " << std::endl;
 
@@ -123,18 +122,15 @@ void ParaviewWriter<
     } else {
       format = "ascii";
     }
-    file << std::string(3, '\t') << "<PDataArray "
-         << "type=\"Float32\" "
-         << "NumberOfComponents=\"1\" "
-         << "format=\"" << format << "\" />" << std::endl
-         << std::string(3, '\t') << "<PDataArray "
-         << "type=\"Float32\" "
-         << "NumberOfComponents=\"1\" "
-         << "format=\"" << format << "\" />" << std::endl
-         << std::string(3, '\t') << "<PDataArray "
-         << "type=\"Float32\" "
-         << "NumberOfComponents=\"1\" "
-         << "format=\"" << format << "\" />" << std::endl
+    file << std::string(3, '\t') << "<PDataArray " << "type=\"Float32\" "
+         << "NumberOfComponents=\"1\" " << "format=\"" << format << "\" />"
+         << std::endl
+         << std::string(3, '\t') << "<PDataArray " << "type=\"Float32\" "
+         << "NumberOfComponents=\"1\" " << "format=\"" << format << "\" />"
+         << std::endl
+         << std::string(3, '\t') << "<PDataArray " << "type=\"Float32\" "
+         << "NumberOfComponents=\"1\" " << "format=\"" << format << "\" />"
+         << std::endl
          << std::string(2, '\t') << "</PCoordinates>" << std::endl;
 
     for (int rankNo = 0; rankNo < mesh->meshPartition()->nRanks(); rankNo++) {
@@ -237,8 +233,7 @@ void ParaviewWriter<
        << "<VTKFile type=\"RectilinearGrid\" version=\"1.0\" "
           "byte_order=\"LittleEndian\">"
        << std::endl // intel cpus are LittleEndian
-       << std::string(1, '\t') << "<RectilinearGrid "
-       << "WholeExtent=\""
+       << std::string(1, '\t') << "<RectilinearGrid " << "WholeExtent=\""
        << "0 " << globalExtent[0] << " 0 " << globalExtent[1] << " 0 "
        << globalExtent[2] << "\"> " << std::endl // dataset element
        << std::string(2, '\t') << "<Piece Extent=\"" << localExtent[0];
@@ -272,52 +267,40 @@ void ParaviewWriter<
        << std::string(3, '\t') << "<Coordinates>" << std::endl;
 
   if (binaryOutput) {
-    file << std::string(4, '\t') << "<DataArray "
-         << "type=\"Float32\" "
-         << "NumberOfComponents=\"1\" "
-         << "format=\"binary\" >" << std::endl
+    file << std::string(4, '\t') << "<DataArray " << "type=\"Float32\" "
+         << "NumberOfComponents=\"1\" " << "format=\"binary\" >" << std::endl
          << std::string(5, '\t')
          << Paraview::encodeBase64Float(coordinates[0].begin(),
                                         coordinates[0].end())
          << std::endl
          << std::string(4, '\t') << "</DataArray>" << std::endl
-         << std::string(4, '\t') << "<DataArray "
-         << "type=\"Float32\" "
-         << "NumberOfComponents=\"1\" "
-         << "format=\"binary\" >" << std::endl
+         << std::string(4, '\t') << "<DataArray " << "type=\"Float32\" "
+         << "NumberOfComponents=\"1\" " << "format=\"binary\" >" << std::endl
          << std::string(5, '\t')
          << Paraview::encodeBase64Float(coordinates[1].begin(),
                                         coordinates[1].end())
          << std::endl
          << std::string(4, '\t') << "</DataArray>" << std::endl
-         << std::string(4, '\t') << "<DataArray "
-         << "type=\"Float32\" "
-         << "NumberOfComponents=\"1\" "
-         << "format=\"binary\" >" << std::endl
+         << std::string(4, '\t') << "<DataArray " << "type=\"Float32\" "
+         << "NumberOfComponents=\"1\" " << "format=\"binary\" >" << std::endl
          << std::string(5, '\t')
          << Paraview::encodeBase64Float(coordinates[2].begin(),
                                         coordinates[2].end())
          << std::endl
          << std::string(4, '\t') << "</DataArray>" << std::endl;
   } else {
-    file << std::string(4, '\t') << "<DataArray "
-         << "type=\"Float32\" "
-         << "NumberOfComponents=\"1\" "
-         << "format=\"ascii\" >" << std::endl
+    file << std::string(4, '\t') << "<DataArray " << "type=\"Float32\" "
+         << "NumberOfComponents=\"1\" " << "format=\"ascii\" >" << std::endl
          << std::string(5, '\t')
          << Paraview::convertToAscii(coordinates[0], fixedFormat) << std::endl
          << std::string(4, '\t') << "</DataArray>" << std::endl
-         << std::string(4, '\t') << "<DataArray "
-         << "type=\"Float32\" "
-         << "NumberOfComponents=\"1\" "
-         << "format=\"ascii\" >" << std::endl
+         << std::string(4, '\t') << "<DataArray " << "type=\"Float32\" "
+         << "NumberOfComponents=\"1\" " << "format=\"ascii\" >" << std::endl
          << std::string(5, '\t')
          << Paraview::convertToAscii(coordinates[1], fixedFormat) << std::endl
          << std::string(4, '\t') << "</DataArray>" << std::endl
-         << std::string(4, '\t') << "<DataArray "
-         << "type=\"Float32\" "
-         << "NumberOfComponents=\"1\" "
-         << "format=\"ascii\" >" << std::endl
+         << std::string(4, '\t') << "<DataArray " << "type=\"Float32\" "
+         << "NumberOfComponents=\"1\" " << "format=\"ascii\" >" << std::endl
          << std::string(5, '\t')
          << Paraview::convertToAscii(coordinates[2], fixedFormat) << std::endl
          << std::string(4, '\t') << "</DataArray>" << std::endl;
@@ -407,8 +390,7 @@ void ParaviewWriter<
          << "<VTKFile type=\"PStructuredGrid\" version=\"1.0\" "
             "byte_order=\"LittleEndian\">"
          << std::endl // intel cpus are LittleEndian
-         << std::string(1, '\t') << "<PStructuredGrid "
-         << "WholeExtent=\""
+         << std::string(1, '\t') << "<PStructuredGrid " << "WholeExtent=\""
          << "0 " << globalExtent[0] << " 0 " << globalExtent[1] << " 0 "
          << globalExtent[2] << "\" GhostLevel=\"0\"> " << std::endl;
 
@@ -441,10 +423,9 @@ void ParaviewWriter<
     } else {
       format = "ascii";
     }
-    file << std::string(3, '\t') << "<PDataArray "
-         << "type=\"Float32\" "
-         << "NumberOfComponents=\"3\" "
-         << "format=\"" << format << "\" />" << std::endl
+    file << std::string(3, '\t') << "<PDataArray " << "type=\"Float32\" "
+         << "NumberOfComponents=\"3\" " << "format=\"" << format << "\" />"
+         << std::endl
          << std::string(2, '\t') << "</PPoints>" << std::endl;
 
     for (int rankNo = 0; rankNo < mesh->meshPartition()->nRanks(); rankNo++) {
@@ -522,9 +503,8 @@ void ParaviewWriter<
        << "<VTKFile type=\"StructuredGrid\" version=\"1.0\" "
           "byte_order=\"LittleEndian\">"
        << std::endl // intel cpus are LittleEndian
-       << std::string(1, '\t') << "<StructuredGrid "
-       << "WholeExtent=\""
-       << "0 " << globalExtent[0] << " 0 " << globalExtent[1] << " 0 "
+       << std::string(1, '\t') << "<StructuredGrid " << "WholeExtent=\"" << "0 "
+       << globalExtent[0] << " 0 " << globalExtent[1] << " 0 "
        << globalExtent[2] << "\"> " << std::endl // dataset element
        << std::string(2, '\t') << "<Piece Extent=\"" << localExtent[0];
 
@@ -614,8 +594,8 @@ void ParaviewWriter<
           "byte_order=\"LittleEndian\">"
        << std::endl // intel cpus are LittleEndian
        << std::string(1, '\t') << "<UnstructuredGrid> " << std::endl
-       << std::string(2, '\t') << "<Piece "
-       << "NumberOfPoints=\"" << mesh->nNodesGlobal() << "\" NumberOfCells=\""
+       << std::string(2, '\t') << "<Piece " << "NumberOfPoints=\""
+       << mesh->nNodesGlobal() << "\" NumberOfCells=\""
        << mesh->nElementsLocal() << "\">" << std::endl;
 
   // collect field variable names that are defined on the current mesh

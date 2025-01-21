@@ -51,8 +51,7 @@ void HyperelasticitySolver<Term, withLargeOutput, MeshType,
     if (currentLoadFactor_ < loadFactorGiveUpThreshold_) {
       LOG(WARNING) << "Nonlinear solver reached load factor "
                    << currentLoadFactor_ << " (no. " << loadFactorIndex
-                   << "), which "
-                   << "is below give-up threshold of "
+                   << "), which " << "is below give-up threshold of "
                    << loadFactorGiveUpThreshold_ << ". "
                    << "Now abort, use best found solution with residual norm "
                    << bestResidualNorm_;

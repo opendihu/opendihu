@@ -71,15 +71,15 @@ std::string ManagerLog::produceLogContents() {
     switch (logEntry.logEvent) {
     case mappingLogEntry_t::logEvent_t::eventParseSettings:
       log << "* Parse settings for mapping between meshes \""
-          << logEntry.meshNameFrom << "\" "
-          << "-> \"" << logEntry.meshNameTo << "\".";
+          << logEntry.meshNameFrom << "\" " << "-> \"" << logEntry.meshNameTo
+          << "\".";
       break;
 
     case mappingLogEntry_t::logEvent_t::eventCreateMapping:
       log << "* Create mapping between meshes \"" << logEntry.meshNameFrom
-          << "\" (" << logEntry.dimensionalityFrom << "D) "
-          << "-> \"" << logEntry.meshNameTo << "\" ("
-          << logEntry.dimensionalityTo << "D).";
+          << "\" (" << logEntry.dimensionalityFrom << "D) " << "-> \""
+          << logEntry.meshNameTo << "\" (" << logEntry.dimensionalityTo
+          << "D).";
       break;
 
     case mappingLogEntry_t::logEvent_t::eventMapForward:

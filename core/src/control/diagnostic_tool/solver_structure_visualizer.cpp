@@ -52,8 +52,8 @@ void SolverStructureVisualizer::addSolver(
 //! visualization, to be called after addSolver
 void SolverStructureVisualizer::setSolverDescription(std::string description) {
   LOG(DEBUG) << "SolverStructureVisualizer::setSolverDescription(\""
-             << description << "\")"
-             << " under \"" << currentSolver_->parent->name
+             << description << "\")" << " under \""
+             << currentSolver_->parent->name
              << "\", nDisableCalls_: " << nDisableCalls_
              << ", enabled: " << enabled_ << ", currently at \""
              << currentSolver_->name << "\".";

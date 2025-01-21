@@ -393,8 +393,7 @@ void Paraview::writePolyDataFile(
 
   outputFileParts[outputFilePartNo]
       << std::string(2, '\t') << "<Piece NumberOfPoints=\"" << nPointsGlobal1D_
-      << "\" NumberOfVerts=\"0\" "
-      << "NumberOfLines=\"" << nLinesGlobal1D_
+      << "\" NumberOfVerts=\"0\" " << "NumberOfLines=\"" << nLinesGlobal1D_
       << "\" NumberOfStrips=\"0\" NumberOfPolys=\"0\">" << std::endl
       << std::string(3, '\t') << "<PointData";
 
@@ -441,13 +440,11 @@ void Paraview::writePolyDataFile(
 
     // write normal data element
     outputFileParts[outputFilePartNo]
-        << std::string(4, '\t') << "<DataArray "
-        << "Name=\"" << pointDataArrayIter->name << "\" "
-        << "type=\""
+        << std::string(4, '\t') << "<DataArray " << "Name=\""
+        << pointDataArrayIter->name << "\" " << "type=\""
         << (pointDataArrayIter->name == "partitioning" ? "Int32" : "Float32")
-        << "\" "
-        << "NumberOfComponents=\"" << pointDataArrayIter->nComponents << "\" "
-        << componentNames.str() << "format=\""
+        << "\" " << "NumberOfComponents=\"" << pointDataArrayIter->nComponents
+        << "\" " << componentNames.str() << "format=\""
         << (binaryOutput_ ? "binary" : "ascii") << "\" >" << std::endl
         << std::string(5, '\t');
 

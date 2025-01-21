@@ -27,7 +27,7 @@ public:
   TimeSteppingSchemeOdeReduced(DihuContext context, std::string name);
 
   //! destructor
-  virtual ~TimeSteppingSchemeOdeReduced() {};
+  virtual ~TimeSteppingSchemeOdeReduced(){};
 
   //! run simulation
   virtual void run();

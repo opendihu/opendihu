@@ -176,8 +176,7 @@ void MegaMol::write(DataType &data, int timeStepNo, double currentTime,
       }
       currentWriter->nOpenWriters = 0;
       LOG(DEBUG) << "closing time step and writer \"" << this->filenameBase_
-                 << "\""
-                 << ", next currentOpenWriterIndex will be "
+                 << "\"" << ", next currentOpenWriterIndex will be "
                  << currentOpenWriterIndex_;
 
 #ifdef HAVE_MEGAMOL

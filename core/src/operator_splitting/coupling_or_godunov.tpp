@@ -20,8 +20,7 @@ void CouplingOrGodunov<TimeStepping1, TimeStepping2>::advanceTimeSpan(
 
   LOG(DEBUG) << "  CouplingOrGodunov(\"" << this->description_
              << "\")::advanceTimeSpan: timeSpan=[" << this->startTime_ << ","
-             << this->endTime_ << "]"
-             << ", n steps: " << this->numberTimeSteps_
+             << this->endTime_ << "]" << ", n steps: " << this->numberTimeSteps_
              << ", timeStepWidth=" << this->timeStepWidth_;
 
   // loop over time steps

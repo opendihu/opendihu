@@ -612,8 +612,8 @@ void CellmlAdapterBase<nStates_, nAlgebraics_, FunctionSpaceType>::
 
             LOG(DEBUG) << "Constant " << valueTuple.second
                        << " was set as connector slot " << slotNo << " (\""
-                       << slotName << "\")"
-                       << " and is mapped to parameter " << parameterNo;
+                       << slotName << "\")" << " and is mapped to parameter "
+                       << parameterNo;
           } else {
             LOG(ERROR) << "In " << this->specificSettings_
                        << "[\"mappings\"], you can only connect states, "

@@ -145,8 +145,8 @@ void CellmlSourceCodeGeneratorBase::initializeSourceCode(
     if (!firstEntry)
       s << ", ";
     s << "\n  parameter " << parameterIndex << " maps to \""
-      << algebraicNames_[algebraicIndex] << "\" ("
-      << "ALGEBRAIC[" << algebraicIndex << "]), "
+      << algebraicNames_[algebraicIndex] << "\" (" << "ALGEBRAIC["
+      << algebraicIndex << "]), "
       << "initial value: " << parameterValues[parameterIndex * nInstances_]
       << "";
 
@@ -158,8 +158,8 @@ void CellmlSourceCodeGeneratorBase::initializeSourceCode(
     if (!firstEntry)
       s << ", ";
     s << "\n  parameter " << parameterIndex << " maps to \""
-      << constantNames_[constantIndex] << "\" ("
-      << "CONSTANTS[" << constantIndex << "]), "
+      << constantNames_[constantIndex] << "\" (" << "CONSTANTS["
+      << constantIndex << "]), "
       << "initial value: " << parameterValues[parameterIndex * nInstances_]
       << "";
 

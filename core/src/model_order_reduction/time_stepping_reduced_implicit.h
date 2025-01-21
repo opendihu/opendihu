@@ -16,7 +16,7 @@ public:
   TimeSteppingSchemeOdeReducedImplicit(DihuContext context, std::string name);
 
   //! destructor
-  virtual ~TimeSteppingSchemeOdeReducedImplicit() {};
+  virtual ~TimeSteppingSchemeOdeReducedImplicit(){};
 
   //! initialize timestepping member and set the system matrix
   void initialize();

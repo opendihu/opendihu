@@ -176,8 +176,7 @@ void SlotConnectorDataHelper<SlotConnectorDataType>::slotSetGeometryValues(
 
     // set the values in the field variable
     LOG(DEBUG) << "slot " << slotNo << ": in fieldVariable \""
-               << fieldVariable->name() << "\", "
-               << "function space \""
+               << fieldVariable->name() << "\", " << "function space \""
                << fieldVariable->functionSpace()->meshName() << "\", "
                << "set dofs " << dofNosLocal << " of geometry field to values "
                << values;
@@ -196,8 +195,7 @@ void SlotConnectorDataHelper<SlotConnectorDataType>::slotSetGeometryValues(
 
     // set the values in the field variable
     LOG(DEBUG) << "slot " << slotNo << ": in fieldVariable \""
-               << fieldVariable->name() << "\", "
-               << "function space \""
+               << fieldVariable->name() << "\", " << "function space \""
                << fieldVariable->functionSpace()->meshName() << "\", "
                << "set dofs " << dofNosLocal << " of geometry field to values "
                << values;
@@ -236,8 +234,7 @@ void SlotConnectorDataHelper<SlotConnectorDataType>::slotGetGeometryValues(
 
     LOG(DEBUG) << "slot " << slotNo
                << ": from geometry field of fieldVariable \""
-               << fieldVariable->name() << "\", "
-               << "function space \""
+               << fieldVariable->name() << "\", " << "function space \""
                << fieldVariable->functionSpace()->meshName() << "\", "
                << "at dofs " << dofNosLocal << " get values " << values;
   } else {
@@ -252,8 +249,7 @@ void SlotConnectorDataHelper<SlotConnectorDataType>::slotGetGeometryValues(
 
     LOG(DEBUG) << "slot " << slotNo
                << ": from geometry field of fieldVariable \""
-               << fieldVariable->name() << "\", "
-               << "function space \""
+               << fieldVariable->name() << "\", " << "function space \""
                << fieldVariable->functionSpace()->meshName() << "\", "
                << ", at dofs " << dofNosLocal << " get values " << values;
   }

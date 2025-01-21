@@ -13,7 +13,7 @@ public:
   TimeSteppingSchemeOdeReducedExplicit(DihuContext context, std::string name);
 
   //! destructor
-  virtual ~TimeSteppingSchemeOdeReducedExplicit() {};
+  virtual ~TimeSteppingSchemeOdeReducedExplicit(){};
 
   //! initialize timestepping member
   void initialize();

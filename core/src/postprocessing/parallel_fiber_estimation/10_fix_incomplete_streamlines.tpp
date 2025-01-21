@@ -540,8 +540,8 @@ void ParallelFiberEstimation<BasisFunctionType>::fixStreamlinesCorner(
     // if at least one of the two instances of the corner streamline is invalid
     if (!boundaryPointsSubdomainAreValid[subdomainIndex0][face0][pointIndex0] ||
         !boundaryPointsSubdomainAreValid[subdomainIndex1][face1][pointIndex1]) {
-      LOG(ERROR) << "found invalid streamline at corner, "
-                 << "subdomain " << subdomainIndex0 << " "
+      LOG(ERROR) << "found invalid streamline at corner, " << "subdomain "
+                 << subdomainIndex0 << " "
                  << Mesh::getString((Mesh::face_t)face0) << ","
                  << Mesh::getString((Mesh::face_t)face1);
       fixCorner = true;

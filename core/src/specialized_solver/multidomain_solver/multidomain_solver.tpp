@@ -622,8 +622,7 @@ void MultidomainSolver<
           << dataMultidomain_.compartmentRelativeFactor(k)
                  ->functionSpace()
                  ->meshName()
-          << "\""
-          << " has "
+          << "\"" << " has "
           << dataMultidomain_.compartmentRelativeFactor(k)
                  ->nDofsLocalWithoutGhosts()
           << " local dofs.\n"
