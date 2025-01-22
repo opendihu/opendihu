@@ -177,21 +177,13 @@ config = {
     "timestepWidth":            variables.dt_elasticity,                          # coupling time step width, must match the value in the precice config
     "preciceConfigFilename":    variables.precice_file,    # the preCICE configuration file
     "preciceParticipantName":   "MuscleSolver",             # name of the own precice participant, has to match the name given in the precice xml config file
-<<<<<<< HEAD
     "preciceSurfaceMeshes": [                                      # the precice meshes get created as the top or bottom surface of the main geometry mesh of the nested solver
-=======
-    "preciceMeshes": [                                      # the precice meshes get created as the top or bottom surface of the main geometry mesh of the nested solver
->>>>>>> develop
       {
         "meshName":      "MuscleMesh",         # precice name of the 2D coupling mesh
         "face":                 "2+",                       # face of the 3D mesh where the 2D mesh is located, "2-" = left, "2+" = right (z-coordinate)
       }
     ],
-<<<<<<< HEAD
     "preciceSurfaceData": [
-=======
-    "preciceData": [
->>>>>>> develop
       {
         "mode":                 "read-displacements-velocities",    # mode is one of "read-displacements-velocities", "read-traction", "write-displacements-velocities", "write-traction"
         "meshName":      "MuscleMesh",                 # name of the precice coupling surface mesh, as given in the precice xml settings file

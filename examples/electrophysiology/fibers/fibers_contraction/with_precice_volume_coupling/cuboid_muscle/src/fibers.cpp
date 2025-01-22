@@ -10,11 +10,7 @@ int main(int argc, char *argv[]) {
   DihuContext settings(argc, argv);
 
   // define fast monodomain solver with hodgkin-huxley-razumova cellml
-<<<<<<< HEAD
   Control::PreciceAdapter<                             // use precice coupling
-=======
-  Control::PreciceAdapterVolumeCoupling< // use precice coupling
->>>>>>> develop
       FastMonodomainSolver<Control::MultipleInstances< // subdomains in xy-plane
           OperatorSplitting::Strang<
               Control::MultipleInstances< // fiber reaction term

@@ -135,21 +135,13 @@ config = {
       "couplingEnabled":          True,                       # if the precice coupling is enabled, if not, it simply calls the nested solver, for debugging
       "preciceConfigFilename":    variables.precice_file,    # the preCICE configuration file
       "preciceParticipantName":   "TendonSolver",             # name of the own precice participant, has to match the name given in the precice xml config file
-<<<<<<< HEAD
       "preciceSurfaceMeshes": [                                      # the precice meshes get created as the top or bottom surface of the main geometry mesh of the nested solver
-=======
-      "preciceMeshes": [                                      # the precice meshes get created as the top or bottom surface of the main geometry mesh of the nested solver
->>>>>>> develop
         {
           "meshName":      "TendonMesh",            # precice name of the 2D coupling mesh
           "face":                 "2-",                       # face of the 3D mesh where the 2D mesh is located, "2-" = bottom, "2+" = top
         }
       ],
-<<<<<<< HEAD
       "preciceSurfaceData": [  
-=======
-      "preciceData": [  
->>>>>>> develop
         {
           "mode":                 "write-displacements-velocities",   # mode is one of "read-displacements-velocities", "read-traction", "write-displacements-velocities", "write-traction"
           "meshName":      "TendonMesh",                    # name of the precice coupling surface mesh, as given in the precice xml settings file
