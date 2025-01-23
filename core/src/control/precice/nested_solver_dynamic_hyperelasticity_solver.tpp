@@ -469,7 +469,7 @@ void PreciceAdapterNestedSolver<
         NestedSolverType &nestedSolver,
         std::vector<std::pair<global_no_t, std::array<double, 6>>>
             newDirichletBoundaryConditionValues) {
-  LOG(INFO) << "update dirichlet BC \n";
+  LOG(DEBUG) << "update dirichlet BC \n";
   nestedSolver.updateDirichletBoundaryConditions(
       newDirichletBoundaryConditionValues);
 }
@@ -482,7 +482,7 @@ void PreciceAdapterNestedSolver<
         std::shared_ptr<SpatialDiscretization::NeumannBoundaryConditions<
             FunctionSpace, Quadrature::Gauss<3>, 3>>
             neumannBoundaryConditions) {
-  LOG(INFO) << "update neumann BC \n";
+  LOG(DEBUG) << "update neumann BC \n";
   nestedSolver.hyperelasticitySolver().updateNeumannBoundaryConditions(
       neumannBoundaryConditions);
 }
