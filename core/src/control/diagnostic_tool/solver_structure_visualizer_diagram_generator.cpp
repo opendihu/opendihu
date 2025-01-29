@@ -40,8 +40,7 @@ void SolverStructureVisualizer::DiagramGenerator::generateDiagramRecursion(
 
   if (currentSolver_->description != "") {
     result << lineStart.str() << "│   (\"" << currentSolver_->description
-           << "\")"
-           << "\n";
+           << "\")" << "\n";
   }
 
   // print the output slots of the solver, store the line nos of each slot to

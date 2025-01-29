@@ -161,8 +161,8 @@ void AssembleRightHandSide<FunctionSpaceType, QuadratureType, nComponents, Term,
           }
         }
       } // j
-    }   // i
-  }     // elementNoLocalv
+    } // i
+  } // elementNoLocalv
 
   // merge local changes on the vector, parallel assembly
   rightHandSide->finishGhostManipulation();

@@ -193,13 +193,13 @@ config = {
     "timestepWidth":            1,                          # coupling time step width, must match the value in the precice config
     "preciceConfigFilename":    variables.precice_config_file,    # the preCICE configuration file
     "preciceParticipantName":   "MuscleSolver",             # name of the own precice participant, has to match the name given in the precice xml config file
-    "preciceMeshes": [                                      # the precice meshes get created as the top or bottom surface of the main geometry mesh of the nested solver
+    "preciceSurfaceMeshes": [                                      # the precice meshes get created as the top or bottom surface of the main geometry mesh of the nested solver
       {
         "preciceMeshName":      "MuscleMeshBottom",         # precice name of the 2D coupling mesh
         "face":                 "2-",                       # face of the 3D mesh where the 2D mesh is located, "2-" = bottom, "2+" = top
       }
     ],
-    "preciceData": [
+    "preciceSurfaceData": [
       {
         "mode":                 "read-displacements-velocities",    # mode is one of "read-displacements-velocities", "read-traction", "write-displacements-velocities", "write-traction"
         "preciceMeshName":      "MuscleMeshBottom",                 # name of the precice coupling surface mesh, as given in the precice xml settings file
@@ -294,7 +294,7 @@ config = {
                         "stimulationLogFilename":                 "out/stimulation.log",                          # a file that will contain the times of stimulations
                       },      
                       "OutputWriter" : [
-                        {"format": "Paraview", "outputInterval": 1, "filename": "out/" + variables.case_name + '/' + variables.scenario_name+ "/0D_states({},{})".format(fiber_in_subdomain_coordinate_x,fiber_in_subdomain_coordinate_y), "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
+                        # {"format": "Paraview", "outputInterval": 1, "filename": "out/" + variables.case_name + '/' + variables.scenario_name+ "/0D_states({},{})".format(fiber_in_subdomain_coordinate_x,fiber_in_subdomain_coordinate_y), "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
                       ] if variables.states_output else []
                       
                     },
@@ -379,7 +379,7 @@ config = {
                       "additionalArgument":  fiber_no,         # a custom argument to the fieldVariables callback functions, this will be passed on as the last argument
                       
                       "OutputWriter" : [
-                        {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_fibers), "filename": "out/" + variables.case_name + '/' + variables.scenario_name+ "/prescribed_fibers", "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
+                        # {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_fibers), "filename": "out/" + variables.case_name + '/' + variables.scenario_name+ "/prescribed_fibers", "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
                       ]
                     },      
                   } for fiber_in_subdomain_coordinate_y in range(n_fibers_in_subdomain_y(subdomain_coordinate_y)) \
@@ -389,7 +389,7 @@ config = {
                           
                   #"OutputWriter" : variables.output_writer_fibers,
                   "OutputWriter": [
-                    {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_fibers), "filename": "out/" + variables.case_name + '/' + variables.scenario_name+ "/fibers", "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
+                    {"format": "Paraview", "outputInterval": variables.output_timestep_fibers, "filename": "out/" + variables.case_name + '/' + variables.scenario_name+ "/fibers", "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
                   ]
                 }
               },
@@ -415,7 +415,7 @@ config = {
           "Pmax":                         variables.pmax,            # maximum PK2 active stress
           "slotNames":                    [],                        # names of the data connector slots
           "OutputWriter" : [
-            {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_3D), "filename": "out/" + variables.case_name + '/' + variables.scenario_name+ "/mechanics_3D", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
+            {"format": "Paraview", "outputInterval": variables.output_timestep_3D, "filename": "out/" + variables.case_name + '/' + variables.scenario_name+ "/mechanics_3D", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
           ],
           "mapGeometryToMeshes":          [],                        # the mesh names of the meshes that will get the geometry transferred
           "dynamic":                      True,                      # if the dynamic solid mechanics solver should be used, else it computes the quasi-static problem

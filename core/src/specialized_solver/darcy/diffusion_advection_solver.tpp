@@ -456,8 +456,8 @@ void DiffusionAdvectionSolver<FiniteElementMethod>::computeVMatrix() {
           }
         }
       } // j
-    }   // i
-  }     // elementNoLocalv
+    } // i
+  } // elementNoLocalv
 
   vMatrix->assembly(MAT_FINAL_ASSEMBLY);
 }

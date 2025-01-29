@@ -16,7 +16,7 @@ public:
   using LoadBalancingBase<TimeStepping>::LoadBalancingBase;
 
 protected:
-  virtual void rebalance(){};
+  virtual void rebalance() {};
 };
 
 /** This is the partial specialization for strang splitting, for which load

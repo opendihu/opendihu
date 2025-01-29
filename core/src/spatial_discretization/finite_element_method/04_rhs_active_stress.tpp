@@ -28,8 +28,8 @@ void FiniteElementMethodRhs<
   // get shortcuts to variables
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, nComponents>>
       rightHandSide = this->data_.rightHandSide();
-  std::shared_ptr<
-      FieldVariable::FieldVariable<FunctionSpaceType, nComponents *nComponents>>
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType,
+                                               nComponents * nComponents>>
       activeStress = this->data_.activeStress();
   std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, nComponents>>
       rightHandSideActive = this->data_.rightHandSideActive();
@@ -122,7 +122,7 @@ void FiniteElementMethodRhs<
               entryLa * integrationFactor;
         }
       } // index L
-    }   // function evaluations
+    } // function evaluations
 
     // integrate all values at once
     EvaluationsType integratedValues =
@@ -159,7 +159,7 @@ void FiniteElementMethodRhs<
                                         value, ADD_VALUES);
       }
     } // index L
-  }   // elementNoLocal
+  } // elementNoLocal
 
   // merge local changes on the vector, parallel assembly
   rightHandSide->finishGhostManipulation();

@@ -95,8 +95,7 @@ Manager::functionSpace(std::string meshName) {
   } else if (meshConfiguration_.find(meshName) != meshConfiguration_.end()) {
     // mesh was preconfigured, create new mesh from stored meshConfiguration
     LOG(DEBUG) << "Mesh configuration for \"" << meshName
-               << "\" found and requested, will be created now. "
-               << "Type is "
+               << "\" found and requested, will be created now. " << "Type is "
                << StringUtility::demangle(typeid(FunctionSpaceType).name())
                << ".";
 

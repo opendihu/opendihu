@@ -92,10 +92,9 @@ bool FunctionSpaceStructuredFindPositionBase<MeshType, BasisFunctionType>::
         // douuble zLength = zMax - zMin;
 
         VLOG(1) << "point " << point << " is in element " << elementNoLocal
-                << ", which has "
-                << "bounding box x: [" << xMin << "," << xMax << "], y: ["
-                << yMin << "," << yMax << "], z: [" << zMin << "," << zMax
-                << "]";
+                << ", which has " << "bounding box x: [" << xMin << "," << xMax
+                << "], y: [" << yMin << "," << yMax << "], z: [" << zMin << ","
+                << zMax << "]";
       }
 
       // check if point is really inside the element by a tighter tolerance

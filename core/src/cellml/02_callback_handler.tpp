@@ -205,8 +205,7 @@ void CallbackHandler<nStates, nAlgebraics_, FunctionSpaceType>::
                    << "parameters[(coordinatesGlobal=" << coordinatesGlobal
                    << ", nodalDofIndex=" << nodalDofIndex
                    << ", parameterNo=" << parameterNo << ")] = " << value
-                   << ".\n "
-                   << "The global coordinates, " << coordinatesGlobal
+                   << ".\n " << "The global coordinates, " << coordinatesGlobal
                    << " refer to local dof " << dofNoLocal << ". There are "
                    << nDofsLocalWithoutGhosts << " local dofs in total.\n"
                    << "There are "

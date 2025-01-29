@@ -242,10 +242,10 @@ void Manager::loadGeometryFromFile() {
           LOG(DEBUG) << "for mesh \"" << nodePositionsFromFileIter->first
                      << "\" read from file \"" << openFileName << "\" offset "
                      << offset << ", nValues (number of values): " << nValues
-                     << ", last 3 values: "
-                     << "[" << nodePositions.data[nodePositions.data.size() - 3]
-                     << "," << nodePositions.data[nodePositions.data.size() - 2]
-                     << "," << nodePositions.data[nodePositions.data.size() - 1]
+                     << ", last 3 values: " << "["
+                     << nodePositions.data[nodePositions.data.size() - 3] << ","
+                     << nodePositions.data[nodePositions.data.size() - 2] << ","
+                     << nodePositions.data[nodePositions.data.size() - 1]
                      << "]";
 
           nNodePositionsRead++;

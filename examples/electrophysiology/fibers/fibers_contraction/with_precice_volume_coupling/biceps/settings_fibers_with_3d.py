@@ -207,7 +207,7 @@ config = {
     "scalingFactor":            1,                          # a factor to scale the exchanged data, prior to communication
     "outputOnlyConvergedTimeSteps": True,                   # if the output writers should be called only after a time window of precice is complete, this means the timestep has converged
     
-    "preciceData": [
+    "preciceVolumeData": [
       {
         "mode":                 "read",                     # mode is one of "read" or "write"
         "preciceDataName":      "Geometry",                 # name of the vector or scalar to transfer, as given in the precice xml settings file

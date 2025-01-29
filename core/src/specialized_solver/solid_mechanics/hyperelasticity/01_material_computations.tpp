@@ -415,7 +415,7 @@ bool HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
                            (faB * dphiL_dXA + faA * dphiL_dXB);
 
             } // B, bInternal
-          }   // A, aInternal
+          } // A, aInternal
 
           VLOG(2) << "   (L,a)=(" << aDof << "," << aComponent
                   << "), integrand: " << integrand;
@@ -425,7 +425,7 @@ bool HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
               integrand * integrationFactor;
 
         } // a
-      }   // L
+      } // L
 
       // for the incompressible formulation, also integrate the
       // incompressibility constraint
@@ -493,7 +493,7 @@ bool HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
                 << " at dofNoLocal: " << dofNoLocal
                 << ", component: " << aComponent;
       } // aComponent
-    }   // aDof
+    } // aDof
 
     // only for the incompressible formulation, also integrate the
     // incompressibility constraint add entries in result vector for pressure
@@ -839,8 +839,8 @@ void HyperelasticityMaterialComputations<
               dimensionNo, dofNoLocal, integratedValue, ADD_VALUES);
 
         } // D
-      }   // L
-    }     // elementNoLocal
+      } // L
+    } // elementNoLocal
   }
 
   combinedVecExternalVirtualWorkDead_
@@ -1128,8 +1128,8 @@ void HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
 #endif
 
       } // D
-    }   // L
-  }     // elementNoLocal
+    } // L
+  } // elementNoLocal
 
   if (communicateGhosts) {
     combinedVecResidual_->finishGhostManipulation(); // communicate and add up
@@ -1285,9 +1285,9 @@ bool HyperelasticityMaterialComputations<
                                                 entryVV, INSERT_VALUES);
             }
           } // b
-        }   // M
-      }     // a
-    }       // L
+        } // M
+      } // a
+    } // L
 
     // initialize top right and bottom left sub matrices to zero, those entries
     // are only present for the incompressible formulation
@@ -1325,8 +1325,8 @@ bool HyperelasticityMaterialComputations<
                                               INSERT_VALUES);
 
           } // aComponent
-        }   // aDof
-      }     // lDof
+        } // aDof
+      } // lDof
 
       // loop over diagonal matrix entries in p-part (bottom right submatrix),
       // set diagonal entries to 0 This allocates nonzero entries and sets them
@@ -1665,12 +1665,12 @@ bool HyperelasticityMaterialComputations<
 
                       k_abBD += faA * fbC * cABCD;
                     } // A
-                  }   // C
+                  } // C
 
                   integrand += dphiL_dXB * k_abBD * dphiM_dXD;
 
                 } // D
-              }   // B
+              } // B
 
               VLOG(2) << "   (L,a)=(" << aDof << "," << aComponent
                       << "), integrand: " << integrand;
@@ -1686,9 +1686,9 @@ bool HyperelasticityMaterialComputations<
                   integrand * integrationFactor;
 
             } // b, bComponent
-          }   // M, bDof
-        }     // a, aComponent
-      }       // L, aDof
+          } // M, bDof
+        } // a, aComponent
+      } // L, aDof
 
       // add contributions of submatrix up and pu (lower left and upper right),
       // only for incompressible formulation
@@ -1747,9 +1747,9 @@ bool HyperelasticityMaterialComputations<
                   integrand * integrationFactor;
 
             } // a
-          }   // M
-        }     // L
-      }       // if incompressible
+          } // M
+        } // L
+      } // if incompressible
 
       // add contributions of submatrix uv (top-center, only for dynamic
       // problem)
@@ -1776,10 +1776,10 @@ bool HyperelasticityMaterialComputations<
             evaluationsArrayUV[samplingPointIndex][index] =
                 integrand * integrationFactor;
           } // M, mDof
-        }   // L, lDof
+        } // L, lDof
 
       } // if dynamic problem
-    }   // sampling points
+    } // sampling points
 
     // integrate all values for result vector entries at once
     EvaluationsDisplacementsType integratedValuesDisplacements =
@@ -1847,9 +1847,9 @@ bool HyperelasticityMaterialComputations<
                                               integratedValue, ADD_VALUES);
 
           } // bComponent
-        }   // bDof
-      }     // aComponent
-    }       // aDof
+        } // bDof
+      } // aComponent
+    } // aDof
 
     // add entries in result stiffness matrix for pressure (lower left and upper
     // right parts, up and pu, symmetric), only for incompressible formulation
@@ -1897,8 +1897,8 @@ bool HyperelasticityMaterialComputations<
                                               integratedValue, ADD_VALUES);
 
           } // aComponent
-        }   // aDof
-      }     // lDof
+        } // aDof
+      } // lDof
     }
 
     // add entries in resulting stiffness matrix for submatrix uv (top-center,
@@ -1944,9 +1944,9 @@ bool HyperelasticityMaterialComputations<
                                                 resultingValue, ADD_VALUES);
 
             } // bComponent
-          }   // aComponent
-        }     // M
-      }       // L
+          } // aComponent
+        } // M
+      } // L
     }
   } // local elements
 

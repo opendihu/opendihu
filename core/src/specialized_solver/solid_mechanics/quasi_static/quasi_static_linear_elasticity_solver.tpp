@@ -170,7 +170,7 @@ void QuasiStaticLinearElasticitySolver<
 #endif
 
       // assign the computed active stress to the field variable
-      std::array<double, D *D> stressTensorValues =
+      std::array<double, D * D> stressTensorValues =
           std::array<double, D * D>(stressTensor);
       this->data_.activeStress()->setValue(dofNo, stressTensorValues,
                                            INSERT_VALUES);

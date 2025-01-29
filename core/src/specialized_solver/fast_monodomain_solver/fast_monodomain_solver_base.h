@@ -35,7 +35,9 @@ template <int nStates>
 class allocator<FiberPointBuffers<nStates>>
     : public ::Vc::Allocator<FiberPointBuffers<nStates>> {
 public:
-  template <typename U> struct rebind { typedef ::std::allocator<U> other; };
+  template <typename U> struct rebind {
+    typedef ::std::allocator<U> other;
+  };
 };
 } // namespace std
 #endif
@@ -203,7 +205,7 @@ protected:
                     std::vector<Vc::double_v> &parameters, double currentTime,
                     double timeStepWidth, bool stimulate,
                     bool storeAlgebraicsForTransfer,
-                    std::vector<Vc::double_v> &algebraicsForTransfer){};
+                    std::vector<Vc::double_v> &algebraicsForTransfer) {};
 
   //! solve the 1D problem (diffusion), starting from startTime
   void compute1D(double startTime, double timeStepWidth, int nTimeSteps,
@@ -227,7 +229,7 @@ protected:
                                                      int pointBuffersNo);
 
   //! set the initial values for all states
-  virtual void initializeStates(Vc::double_v states[]){};
+  virtual void initializeStates(Vc::double_v states[]) {};
 
   //! initialize the states vector and other static data that is used for GPU
   //! computation
@@ -317,7 +319,7 @@ protected:
                         // changed. This means the own value has to be computed
                         // because it can change due to diffusion.
     active //< the state values at the own point change and have to be computed
-  };       //< type for fiberPointBuffersStatesAreCloseToEquilibrium_
+  }; //< type for fiberPointBuffersStatesAreCloseToEquilibrium_
   std::vector<state_t> fiberPointBuffersStatesAreCloseToEquilibrium_;
 
   int nFiberPointBufferStatesCloseToEquilibrium_; //< number of "inactive"

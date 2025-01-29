@@ -20,8 +20,8 @@ void SpatialParameterBase<FunctionSpaceType, ValueType>::initialize(
   // default value
   if (pyObject == Py_None) {
     LOG(WARNING) << path.str() << " not set in \"" << Control::settingsFileName
-                 << "\"."
-                 << " Assuming default value \"" << defaultValue << "\".";
+                 << "\"." << " Assuming default value \"" << defaultValue
+                 << "\".";
     values_.resize(1, defaultValue);
     valueIndices_.resize(functionSpace->nElementsLocal(), 0);
   } else {
@@ -253,9 +253,8 @@ void SetValueNos<FunctionSpace::FunctionSpace<Mesh::CompositeOfDimension<D>,
     if (inputMeshIsGlobal) {
       if (values.size() != nElementsGlobal && values.size() != 1) {
         LOG(ERROR) << path << ": The number of entries given (" << values.size()
-                   << ") does not match "
-                   << "the global number of elements (" << nElementsGlobal
-                   << "). \"inputMeshIsGlobal\" is True.";
+                   << ") does not match " << "the global number of elements ("
+                   << nElementsGlobal << "). \"inputMeshIsGlobal\" is True.";
       } else {
         std::vector<ValueType> localValues;
         localValues.reserve(nElementsLocal);
@@ -276,9 +275,8 @@ void SetValueNos<FunctionSpace::FunctionSpace<Mesh::CompositeOfDimension<D>,
     } else {
       if (values.size() != nElementsLocal && values.size() != 1) {
         LOG(ERROR) << path << ": The number of entries given (" << values.size()
-                   << ") does not match "
-                   << "the local number of elements (" << nElementsLocal
-                   << "). \"inputMeshIsGlobal\" is False.";
+                   << ") does not match " << "the local number of elements ("
+                   << nElementsLocal << "). \"inputMeshIsGlobal\" is False.";
       }
     }
   }

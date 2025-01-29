@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<precice-configuration>
+  <log>
+    <sink
+      filter="%Severity% > debug"
+      format="---[precice] %ColorizedSeverity% %Message%"
+      enabled="true" />
+  </log>
+
+  <data:scalar name="Gamma" />
+  <data:vector name="Geometry"/>
+  <data:vector name="Velocity"/>
+  <data:vector name="Displacement"/>
+  <data:vector name="Traction"/>
+
+  <mesh name="SurfaceTendonMesh" dimensions="3">
+      <use-data name="Displacement"/>
+      <use-data name="Velocity"/>
+      <use-data name="Traction"/>
+  </mesh>
+
+  <mesh name="SurfaceMuscleMesh" dimensions="3">
+      <use-data name="Displacement"/>
+      <use-data name="Velocity"/>
+      <use-data name="Traction"/>
+  </mesh>
+
+  <mesh name="VolumeMuscleMesh" dimensions="3">
+      <use-data name="Geometry"/>
+      <use-data name="Gamma"/>
+  </mesh>
+
+  <mesh name="VolumeFibersMesh" dimensions="3">
+    <use-data name="Geometry"/>
+    <use-data name="Gamma"/>
+  </mesh>
+
+  <participant name="Fibers">
+    <provide-mesh name="VolumeFibersMesh"/>
+    <receive-mesh name="VolumeMuscleMesh" from="Muscle"/>
+
+    <read-data name="Geometry" mesh="VolumeFibersMesh"/>
+    <write-data name="Gamma" mesh="VolumeFibersMesh"/>
+
+    <mapping:rbf-pum-direct project-to-input="false" vertices-per-cluster="100" relative-overlap="0.2" constraint="consistent" direction="read" from="VolumeMuscleMesh" to="VolumeFibersMesh" >
+        <basis-function:compact-polynomial-c6 support-radius="3" />
+    </mapping:rbf-pum-direct>
+
+    <export:vtu directory="preCICE-output" />
+  </participant>
+
+  <participant name="Muscle">
+    <provide-mesh name="SurfaceMuscleMesh"/>
+    <provide-mesh name="VolumeMuscleMesh"/>
+    <receive-mesh name="SurfaceTendonMesh" from="Tendon"/>
+    <receive-mesh name="VolumeFibersMesh" from="Fibers"/>
+
+    <read-data name="Gamma" mesh="VolumeMuscleMesh"/>
+    <write-data name="Geometry" mesh="VolumeMuscleMesh"/>
+
+    <read-data  name="Displacement" mesh="SurfaceMuscleMesh"/>
+    <read-data  name="Velocity" mesh="SurfaceMuscleMesh"/>
+    <write-data name="Traction" mesh="SurfaceMuscleMesh"/>
+
+    <mapping:rbf-pum-direct project-to-input="false" vertices-per-cluster="100" relative-overlap="0.2" constraint="consistent" direction="read" from="VolumeFibersMesh" to="VolumeMuscleMesh" >
+        <basis-function:compact-polynomial-c6 support-radius="3" />
+    </mapping:rbf-pum-direct>
+
+    <mapping:nearest-neighbor direction="read" from="SurfaceTendonMesh" to="SurfaceMuscleMesh" constraint="consistent"/>
+
+    <export:vtu directory="preCICE-output" />
+  </participant>
+
+<participant name="Tendon"> 
+    <provide-mesh name="SurfaceTendonMesh" />
+    <receive-mesh name="SurfaceMuscleMesh" from="Muscle"/>
+
+    <write-data name="Displacement" mesh="SurfaceTendonMesh"/>
+    <write-data name="Velocity" mesh="SurfaceTendonMesh"/>
+    <read-data  name="Traction" mesh="SurfaceTendonMesh"/>
+
+    <mapping:nearest-neighbor direction="read" from="SurfaceMuscleMesh" to="SurfaceTendonMesh" constraint="consistent"/>
+    
+    <export:vtu directory="preCICE-output" />
+  </participant>
+
+  <m2n:sockets acceptor="Fibers" connector="Muscle"/>
+  <m2n:sockets acceptor="Muscle" connector="Tendon"/>
+
+  <coupling-scheme:serial-explicit>
+    <participants first="Fibers" second="Muscle" />
+    <time-window-size value="1e-1" />
+    <max-time value="30.0" />
+    <exchange data="Geometry" mesh="VolumeMuscleMesh" from="Muscle" to="Fibers" initialize="yes"/>
+    <exchange data="Gamma" mesh="VolumeFibersMesh" from="Fibers" to="Muscle"/>
+  </coupling-scheme:serial-explicit>
+
+   <coupling-scheme:parallel-implicit>
+    <participants first="Muscle" second="Tendon"/>
+
+    <max-time value="30.0"/>          
+    <time-window-size value="1e-1"/>   
+
+    <max-iterations value="20" />
+
+    <acceleration:IQN-ILS>
+      <data name="Displacement" mesh="SurfaceTendonMesh"/>
+      <data name="Velocity" mesh="SurfaceTendonMesh"/>
+      <data name="Traction" mesh="SurfaceMuscleMesh"/>
+      <preconditioner type="residual-sum"/>
+      <filter type="QR1" limit="1e-6"/>
+      <initial-relaxation value="0.4"/>
+      <max-used-iterations value="40"/>
+      <time-windows-reused value="15"/>
+    </acceleration:IQN-ILS>
+
+    <relative-convergence-measure limit="1e-2" data="Displacement" mesh="SurfaceTendonMesh" strict="1"/>
+    <relative-convergence-measure limit="1e-2" data="Velocity" mesh="SurfaceTendonMesh" strict="1"/>
+    <absolute-convergence-measure limit="1e-2" data="Traction" mesh="SurfaceMuscleMesh" strict="1"/>
+
+    <exchange data="Traction" mesh="SurfaceMuscleMesh" from="Muscle" to="Tendon"/>  
+    <exchange data="Displacement" mesh="SurfaceTendonMesh" from="Tendon" to="Muscle"/>  
+    <exchange data="Velocity" mesh="SurfaceTendonMesh" from="Tendon" to="Muscle"/>  
+
+  </coupling-scheme:parallel-implicit>
+</precice-configuration>

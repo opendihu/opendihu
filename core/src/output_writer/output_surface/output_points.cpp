@@ -110,9 +110,8 @@ void OutputPoints::writeVtpFile(std::string filename, double currentTime,
 
   // write emg values
   if (!values.empty()) {
-    file << std::string(4, '\t') << "<DataArray "
-         << "Name=\"" << fieldVariableName << "\" "
-         << "type=\"Float32\" "
+    file << std::string(4, '\t') << "<DataArray " << "Name=\""
+         << fieldVariableName << "\" " << "type=\"Float32\" "
          << "NumberOfComponents=\"" << nComponents << "\" "
          << "format=\"binary\" >" << std::endl
          << std::string(5, '\t')
@@ -122,10 +121,8 @@ void OutputPoints::writeVtpFile(std::string filename, double currentTime,
   }
 
   // write partitioning values
-  file << std::string(4, '\t') << "<DataArray "
-       << "Name=\"partitioning\" "
-       << "type=\"Int32\" "
-       << "NumberOfComponents=\"1\" "
+  file << std::string(4, '\t') << "<DataArray " << "Name=\"partitioning\" "
+       << "type=\"Int32\" " << "NumberOfComponents=\"1\" "
        << "format=\"binary\" >" << std::endl
        << std::string(5, '\t')
        << Paraview::encodeBase64Int32(partitioning.begin(), partitioning.end())

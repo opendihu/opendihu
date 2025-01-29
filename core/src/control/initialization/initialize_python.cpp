@@ -76,8 +76,7 @@ void DihuContext::initializePython(int argc, char *argv[],
                     << "sys.path.append('" << OPENDIHU_HOME << "/scripts"
                     << "')" << std::endl
                     << "sys.path.append('" << OPENDIHU_HOME
-                    << "/scripts/geometry_manipulation"
-                    << "')" << std::endl;
+                    << "/scripts/geometry_manipulation" << "')" << std::endl;
   PyRun_SimpleString(codeForPythonPath.str().c_str());
 
   // pass on command line arguments to python config script

@@ -423,8 +423,7 @@ void CellmlAdapter<nStates, nAlgebraics,
             << " (name "
             << slotConnectorDataTimestepping_->variable2[offset + i]
                    .values->name()
-            << ")"
-            << " but the own stored parameters_ is " << this->parameters_
+            << ")" << " but the own stored parameters_ is " << this->parameters_
             << " (name " << this->parameters_->name()
             << "). Now set the parameters_ pointer to the field variable in "
                "slotConnectorData.";

@@ -78,4 +78,4 @@ compositeUseOnlyInitializedMappings=false, bool isEnabledFixUnmappedDofs=true);
 
 // the following include is in mapping_between_meshes/manager/04_manager.h to
 // prevent cyclic dependencies
-//#include "mesh/mapping_between_meshes/mapping/02_composite.tpp"
+// #include "mesh/mapping_between_meshes/mapping/02_composite.tpp"

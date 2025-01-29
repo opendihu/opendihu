@@ -41,8 +41,7 @@ std::shared_ptr<SolverType> Manager::solver(PythonConfig settings,
       // solver was preconfigured, do nothing specific here, created standard
       // solver
       LOG(DEBUG) << "Solver configuration for \"" << solverName
-                 << "\" requested and found, create solver. "
-                 << "Type is "
+                 << "\" requested and found, create solver. " << "Type is "
                  << StringUtility::demangle(typeid(SolverType).name()) << ".";
 
       // create new solver object

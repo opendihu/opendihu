@@ -1,0 +1,234 @@
+<?xml version="1.0"?>
+
+<precice-configuration>
+  <log>
+    <sink type="stream" output="stdout"  filter='(%Severity% >= debug) and (not (%Function% = "advance")) and (%Rank% = 0)' format="\033[0;33m%Rank% [precice]\033[0m %ColorizedSeverity%\033[0;33m%Message%\033[0m" enabled="true" />
+  </log>
+  
+  <data:vector name="Displacement"/>
+  <data:vector name="Velocity"/>
+  <data:vector name="Traction"/>
+
+  <data:vector name="Geometry"/>
+  <data:scalar name="Gamma"/>
+ 
+  <mesh name="TendonBottomMesh" dimensions="3">
+    <use-data name="Displacement"/>
+    <use-data name="Velocity"/>
+    <use-data name="Traction"/>
+  </mesh>
+
+   <mesh name="TendonTopAMesh" dimensions="3">
+    <use-data name="Displacement"/>
+    <use-data name="Velocity"/>
+    <use-data name="Traction"/>
+  </mesh>
+  
+  <mesh name="TendonTopBMesh" dimensions="3">
+    <use-data name="Displacement"/>
+    <use-data name="Velocity"/>
+    <use-data name="Traction"/>
+  </mesh>
+
+  <mesh name="MuscleMeshBottom" dimensions="3">
+    <use-data name="Displacement"/>
+    <use-data name="Velocity"/>
+    <use-data name="Traction"/>
+  </mesh>
+
+  <mesh name="MuscleMeshTopA" dimensions="3">
+    <use-data name="Displacement"/>
+    <use-data name="Velocity"/>
+    <use-data name="Traction"/>
+  </mesh>
+
+  <mesh name="MuscleMeshTopB" dimensions="3">
+    <use-data name="Displacement"/>
+    <use-data name="Velocity"/>
+    <use-data name="Traction"/>
+  </mesh>
+
+  <mesh name="MuscleMechanicsMesh" dimensions="3">
+    <use-data name="Geometry"/>
+    <use-data name="Gamma"/>
+  </mesh>
+
+  <mesh name="MuscleFibersMesh" dimensions="3">
+    <use-data name="Geometry"/>
+    <use-data name="Gamma"/>
+  </mesh>
+
+  <participant name="TendonBottom">
+
+    <provide-mesh name="TendonBottomMesh"/>
+    <receive-mesh name="MuscleMeshBottom" from="MuscleMechanics"/>
+    
+    <write-data name="Displacement"  mesh="TendonBottomMesh"/>
+    <write-data name="Velocity"      mesh="TendonBottomMesh"/>
+    <read-data  name="Traction"      mesh="TendonBottomMesh"/>
+
+    <mapping:rbf direction="read" from="MuscleMeshBottom" to="TendonBottomMesh" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf> 
+  
+    <!-- <export:vtu directory="precice-output" every-n-time-windows="10"/> -->
+
+  </participant>
+
+  <participant name="TendonTopA">
+
+    <provide-mesh name="TendonTopAMesh"/>
+    <receive-mesh name="MuscleMeshTopA" from="MuscleMechanics"/>
+    
+    <write-data name="Displacement"  mesh="TendonTopAMesh"/>
+    <write-data name="Velocity"      mesh="TendonTopAMesh"/>
+    <read-data  name="Traction"      mesh="TendonTopAMesh"/>
+
+    <mapping:rbf direction="read" from="MuscleMeshTopA" to="TendonTopAMesh" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf>  
+  
+    <!-- <export:vtu directory="precice-output" every-n-time-windows="10"/> -->
+
+  </participant>
+
+  <participant name="TendonTopB">
+
+    <provide-mesh name="TendonTopBMesh"/>
+    <receive-mesh name="MuscleMeshTopB" from="MuscleMechanics"/>
+    
+    <write-data name="Displacement"  mesh="TendonTopBMesh"/>
+    <write-data name="Velocity"      mesh="TendonTopBMesh"/>
+    <read-data  name="Traction"      mesh="TendonTopBMesh"/>
+
+    <mapping:rbf direction="read" from="MuscleMeshTopB" to="TendonTopBMesh" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf>  
+
+    <!-- <export:vtu directory="precice-output" every-n-time-windows="10"/> -->
+
+  </participant>
+  
+  <participant name="MuscleMechanics">
+    
+    <provide-mesh name="MuscleMeshBottom"/>
+    <provide-mesh name="MuscleMeshTopA"/>
+    <provide-mesh name="MuscleMeshTopB"/>
+    <receive-mesh name="TendonBottomMesh" from="TendonBottom"/>
+    <receive-mesh name="TendonTopAMesh" from="TendonTopA"/>
+    <receive-mesh name="TendonTopBMesh" from="TendonTopB"/>
+
+    <provide-mesh name="MuscleMechanicsMesh"/>
+    <receive-mesh name="MuscleFibersMesh" from="MuscleFibers"/>
+    
+    <read-data  name="Displacement"  mesh="MuscleMeshBottom"/>
+    <read-data  name="Velocity"      mesh="MuscleMeshBottom"/>
+    <write-data name="Traction"      mesh="MuscleMeshBottom"/>
+    <read-data  name="Displacement"  mesh="MuscleMeshTopA"/>
+    <read-data  name="Velocity"      mesh="MuscleMeshTopA"/>
+    <write-data name="Traction"      mesh="MuscleMeshTopA"/>
+    <read-data  name="Displacement"  mesh="MuscleMeshTopB"/>
+    <read-data  name="Velocity"      mesh="MuscleMeshTopB"/>
+    <write-data name="Traction"      mesh="MuscleMeshTopB"/>
+
+    <write-data name="Geometry" mesh="MuscleMechanicsMesh"/>
+    <read-data  name="Gamma"    mesh="MuscleMechanicsMesh"/>
+     
+    <mapping:nearest-neighbor constraint="consistent" direction="read" from="MuscleFibersMesh" to="MuscleMechanicsMesh"/>
+
+    <mapping:rbf direction="read" from="TendonBottomMesh" to="MuscleMeshBottom" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf> 
+
+    <mapping:rbf direction="read" from="TendonTopAMesh" to="MuscleMeshTopA" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf> 
+
+    <mapping:rbf direction="read" from="TendonTopBMesh" to="MuscleMeshTopB" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf> 
+
+    <!-- <export:vtu directory="precice-output" every-n-time-windows="10"/> -->
+
+  </participant>
+
+  <participant name="MuscleFibers">
+    
+    <provide-mesh name="MuscleFibersMesh"/>
+    <receive-mesh name="MuscleMechanicsMesh" from="MuscleMechanics"/>
+    
+    <write-data name="Gamma" mesh="MuscleFibersMesh"/>
+    <read-data  name="Geometry" mesh="MuscleFibersMesh"/>
+    
+    <mapping:rbf-pum-direct direction="read" from="MuscleMechanicsMesh" to="MuscleFibersMesh" constraint="consistent" relative-overlap="0.15" vertices-per-cluster="20" project-to-input="false" polynomial="separate">
+      <basis-function:compact-polynomial-c6 support-radius="1" />
+    </mapping:rbf-pum-direct>
+    <!-- <export:vtu directory="precice-output" every-n-time-windows="10"/> -->
+
+  </participant>
+
+  <m2n:sockets acceptor="MuscleMechanics" connector="TendonBottom" network="lo" />
+  <m2n:sockets acceptor="MuscleMechanics" connector="TendonTopA" network="lo" />
+  <m2n:sockets acceptor="MuscleMechanics" connector="TendonTopB" network="lo" />
+  <m2n:sockets acceptor="MuscleFibers" connector="MuscleMechanics" network="lo" />
+
+  <coupling-scheme:serial-explicit>
+    <participants first="MuscleFibers" second="MuscleMechanics"/>
+    <max-time value="50.0"/>           
+    <time-window-size value="0.01"/>   
+    
+    <exchange data="Gamma"    mesh="MuscleFibersMesh" from="MuscleFibers" to="MuscleMechanics"/>
+    <exchange data="Geometry" mesh="MuscleMechanicsMesh" from="MuscleMechanics" to="MuscleFibers" initialize="yes"/> 
+  </coupling-scheme:serial-explicit>
+  
+  <coupling-scheme:multi>
+    <participant name="MuscleMechanics" control="yes"/>
+    <participant name="TendonBottom"/>
+    <participant name="TendonTopA"/>
+    <participant name="TendonTopB"/>
+    
+    <max-time value="50.0"/>           <!-- end time of the whole simulation -->
+    <time-window-size value="0.01"/>   <!-- timestep width for coupling -->
+    <max-iterations value="25" />
+    
+    <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonBottomMesh" />
+    <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonTopAMesh" />
+    <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonTopBMesh" />
+    <relative-convergence-measure limit="0.01" data="Velocity" mesh="TendonBottomMesh" />
+    <relative-convergence-measure limit="0.01" data="Velocity" mesh="TendonTopAMesh" />
+    <relative-convergence-measure limit="0.01" data="Velocity" mesh="TendonTopBMesh" />
+    <relative-convergence-measure limit="0.1" data="Traction" mesh="MuscleMeshBottom" />
+    <relative-convergence-measure limit="0.1" data="Traction" mesh="MuscleMeshTopA" />
+    <relative-convergence-measure limit="0.1" data="Traction" mesh="MuscleMeshTopB" />
+    
+    <acceleration:IQN-ILS>
+      <data name="Displacement" mesh="TendonBottomMesh"/>
+      <data name="Displacement" mesh="TendonTopAMesh"/>
+      <data name="Displacement" mesh="TendonTopBMesh"/>
+      <data name="Velocity" mesh="TendonBottomMesh"/>
+      <data name="Velocity" mesh="TendonTopAMesh"/>
+      <data name="Velocity" mesh="TendonTopBMesh"/>
+      <data name="Traction" mesh="MuscleMeshBottom"/>
+      <data name="Traction" mesh="MuscleMeshTopA"/>
+      <data name="Traction" mesh="MuscleMeshTopB"/>
+      <preconditioner type="residual-sum"/>
+      <filter type="QR2" limit="5e-3"/>
+      <initial-relaxation value="0.4"/>
+      <max-used-iterations value="40"/>
+      <time-windows-reused value="15"/>
+    </acceleration:IQN-ILS>
+
+    <exchange data="Displacement"    mesh="TendonBottomMesh"      from="TendonBottom" to="MuscleMechanics"/>
+    <exchange data="Velocity"        mesh="TendonBottomMesh"      from="TendonBottom" to="MuscleMechanics"/>
+    <exchange data="Traction"        mesh="MuscleMeshBottom"   from="MuscleMechanics"       to="TendonBottom"/>
+    
+    <exchange data="Displacement"    mesh="TendonTopAMesh"  from="TendonTopA"   to="MuscleMechanics"/>
+    <exchange data="Velocity"        mesh="TendonTopAMesh"  from="TendonTopA"   to="MuscleMechanics"/>
+    <exchange data="Traction"        mesh="MuscleMeshTopA"     from="MuscleMechanics"       to="TendonTopA"/>
+    
+    <exchange data="Displacement"    mesh="TendonTopBMesh"  from="TendonTopB"   to="MuscleMechanics"/>
+    <exchange data="Velocity"        mesh="TendonTopBMesh"  from="TendonTopB"   to="MuscleMechanics"/>
+    <exchange data="Traction"        mesh="MuscleMeshTopB"     from="MuscleMechanics"       to="TendonTopB"/>
+  </coupling-scheme:multi>
+
+</precice-configuration>

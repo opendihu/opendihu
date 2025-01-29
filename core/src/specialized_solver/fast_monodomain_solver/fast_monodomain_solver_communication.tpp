@@ -187,8 +187,8 @@ void FastMonodomainSolverBase<nStates, nAlgebraics,
       if (VLOG_IS_ON(1)) {
         VLOG(1) << "Gatherv of parameters to rank " << computingRank
                 << ", send buffer: " << parametersSendBuffer << " contains "
-                << nParametersLocal << " parameters "
-                << " " << nParametersPerInstance << " per instances with "
+                << nParametersLocal << " parameters " << " "
+                << nParametersPerInstance << " per instances with "
                 << fiberFunctionSpace->nDofsLocalWithoutGhosts()
                 << " local instances.";
       }

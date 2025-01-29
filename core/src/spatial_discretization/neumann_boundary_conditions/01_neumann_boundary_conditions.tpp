@@ -316,7 +316,7 @@ void NeumannBoundaryConditionsInitializeRhs<FunctionSpaceType, QuadratureType,
       surfaceArea += integratedValuesSurfaceArea[dofIndex];
 
     } // dofIndex
-  }   // elementGlobalNo
+  } // elementGlobalNo
 
   // allreduce surface area
   double surfaceAreaGlobal = 0;

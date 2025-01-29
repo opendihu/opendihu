@@ -365,7 +365,7 @@ protected:
       localSizesOnPartitions_; //< the sizes of different partitions in each
                                // coordinate direction, i.e.
                                // localSizesOnPartitions_[0] is (width partition
-                               //#0, width partition #1, ...)
+                               // #0, width partition #1, ...)
 
   std::array<bool, MeshType::dim()>
       hasFullNumberOfNodes_; //< if the own local partition has nodes on both

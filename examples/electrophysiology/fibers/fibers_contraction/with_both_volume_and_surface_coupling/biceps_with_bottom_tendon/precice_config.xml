@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+
+<precice-configuration>
+  <log>
+    <sink type="stream" output="stdout"  filter='(%Severity% >= debug) and (not (%Function% = "advance")) and (%Rank% = 0)' format="\033[0;33m%Rank% [precice]\033[0m %ColorizedSeverity%\033[0;33m%Message%\033[0m" enabled="true" />
+  </log>
+  
+  <data:vector name="Displacement"/>
+  <data:vector name="Velocity"/>
+  <data:vector name="Traction"/>
+
+  <data:vector name="Geometry"/>
+  <data:scalar name="Gamma"/>
+ 
+  <mesh name="TendonMeshTop" dimensions="3">
+    <use-data name="Displacement"/>
+    <use-data name="Velocity"/>
+    <use-data name="Traction"/>
+  </mesh>
+
+  <mesh name="MuscleMeshBottom" dimensions="3">
+    <use-data name="Displacement"/>
+    <use-data name="Velocity"/>
+    <use-data name="Traction"/>
+  </mesh>
+
+  <mesh name="PartitionedFibersMesh" dimensions="3">
+    <use-data name="Geometry"/>
+    <use-data name="Gamma"/>
+  </mesh>
+
+  <mesh name="MuscleContractionMesh" dimensions="3">
+    <use-data name="Geometry"/>
+    <use-data name="Gamma"/>
+  </mesh>
+  
+  <participant name="PartitionedFibers">
+    
+    <provide-mesh name="PartitionedFibersMesh"/>
+    <receive-mesh name="MuscleContractionMesh" from="MuscleContraction"/>
+    
+    <write-data name="Gamma" mesh="PartitionedFibersMesh"/>
+    <read-data  name="Geometry" mesh="PartitionedFibersMesh"/>
+    
+    <mapping:rbf-pum-direct direction="read" from="MuscleContractionMesh" to="PartitionedFibersMesh" constraint="consistent" relative-overlap="0.15" vertices-per-cluster="20" project-to-input="false" polynomial="separate">
+      <basis-function:compact-polynomial-c6 support-radius="1" />
+    </mapping:rbf-pum-direct>
+  </participant>
+  
+  <participant name="MuscleContraction">
+    
+    <provide-mesh name="MuscleMeshBottom"/>
+    <provide-mesh name="MuscleContractionMesh"/>
+    <receive-mesh name="PartitionedFibersMesh" from="PartitionedFibers"/>
+    <receive-mesh name="TendonMeshTop" from="BottomTendon"/>
+    
+    <read-data  name="Displacement"  mesh="MuscleMeshBottom"/>
+    <read-data  name="Velocity"      mesh="MuscleMeshBottom"/>
+    <write-data name="Traction"      mesh="MuscleMeshBottom"/>
+
+    <write-data name="Geometry" mesh="MuscleContractionMesh"/>
+    <read-data  name="Gamma"    mesh="MuscleContractionMesh"/>
+
+    <mapping:nearest-neighbor constraint="consistent" direction="read" from="PartitionedFibersMesh" to="MuscleContractionMesh"/>
+
+    <mapping:rbf direction="read" from="TendonMeshTop" to="MuscleMeshBottom" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf> 
+
+    <!-- <export:vtu directory="precice-output" /> -->
+
+  </participant>
+
+  <participant name="BottomTendon">
+
+    <provide-mesh name="TendonMeshTop"/>
+    <receive-mesh name="MuscleMeshBottom" from="MuscleContraction"/>
+    
+    <write-data name="Displacement"  mesh="TendonMeshTop"/>
+    <write-data name="Velocity"      mesh="TendonMeshTop"/>
+    <read-data  name="Traction"      mesh="TendonMeshTop"/>
+
+    <mapping:rbf direction="read" from="MuscleMeshBottom" to="TendonMeshTop" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf>  
+  
+    <!-- <export:vtu directory="precice-output" /> -->
+
+  </participant>
+
+  <m2n:sockets acceptor="PartitionedFibers" connector="MuscleContraction" network="lo" />
+  <m2n:sockets acceptor="MuscleContraction" connector="BottomTendon" network="lo" />
+
+  <coupling-scheme:serial-explicit>
+    <participants first="PartitionedFibers" second="MuscleContraction"/>
+    <max-time value="1000.0"/>           
+    <time-window-size value="1e-1"/>   
+    
+    <exchange data="Gamma"    mesh="PartitionedFibersMesh" from="PartitionedFibers" to="MuscleContraction"/>
+    <exchange data="Geometry" mesh="MuscleContractionMesh" from="MuscleContraction" to="PartitionedFibers" initialize="yes"/> 
+  </coupling-scheme:serial-explicit>
+  
+
+  <coupling-scheme:parallel-implicit>
+    <participants second="BottomTendon" first="MuscleContraction"/>
+    <max-time value="1000.0"/>           
+    <time-window-size value="1e-1"/>   
+    <max-iterations value="25" />
+
+    <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonMeshTop" />
+    <relative-convergence-measure limit="0.01" data="Velocity" mesh="TendonMeshTop" />
+    <relative-convergence-measure limit="0.1" data="Traction" mesh="MuscleMeshBottom" />
+    
+    <acceleration:IQN-ILS>
+      <data name="Displacement" mesh="TendonMeshTop"/>
+      <data name="Velocity" mesh="TendonMeshTop"/>
+      <data name="Traction" mesh="MuscleMeshBottom"/>
+      <preconditioner type="residual-sum"/>
+      <filter type="QR2" limit="5e-3"/>
+      <initial-relaxation value="0.4"/>
+      <max-used-iterations value="40"/>
+      <time-windows-reused value="15"/>
+    </acceleration:IQN-ILS>
+    
+    <exchange data="Displacement"    mesh="TendonMeshTop"    from="BottomTendon" to="MuscleContraction"/>
+    <exchange data="Velocity"        mesh="TendonMeshTop"    from="BottomTendon" to="MuscleContraction"/>
+    <exchange data="Traction"        mesh="MuscleMeshBottom" from="MuscleContraction" to="BottomTendon"/>  
+  </coupling-scheme:parallel-implicit>
+</precice-configuration>
