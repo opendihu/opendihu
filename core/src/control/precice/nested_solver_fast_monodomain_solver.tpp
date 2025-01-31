@@ -581,7 +581,11 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::getTractionValues(
 
 template <typename T1>
 Vec PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::currentState(
-    NestedSolverType &nestedSolver) {}
+    NestedSolverType &nestedSolver) {
+  LOG(ERROR) << "Implicit coupling not supported! curentState is not "
+                "implemented for this preCICE adapter nested solver";
+  return nullptr;
+};
 
 template <typename T1>
 std::shared_ptr<
