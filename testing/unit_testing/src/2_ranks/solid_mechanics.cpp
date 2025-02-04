@@ -102,7 +102,8 @@ config = {
         {"format": "Paraview", "outputInterval": 1, "filename": "out/p", "binary": False, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True},
         {"format": "PythonFile", "filename": "out_solid_mechanics3d_p", "outputInterval": 1, "binary":False, "onlyNodalValues":True},
       ]
-    }
+    },
+    "LoadIncrements": {}
   },
 }
 
