@@ -82,8 +82,7 @@ void CellmlSourceCodeGeneratorBase::initializeSourceCode(
     LOG(WARNING) << "In CellML: There should be " << nParameters_ << " = "
                  << parametersUsedAsAlgebraic_.size() << "+"
                  << parametersUsedAsConstant_.size()
-                 << " parameters (algebraics: " << parametersUsedAsAlgebraic_
-                 << ", constants: " << parametersUsedAsConstant_ << ") or "
+                 << " parameters or "
                  << nParameters_ * nInstances_
                  << " parameters in array of struct format, but "
                  << parametersInitialValues.size()
