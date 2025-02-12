@@ -17,5 +17,5 @@ List known related issues, upcomming work, etc.
 
 * [ ] I used clang-formating.
 * [ ] I updated the documentation.
-* [ ] Versions hard-coded numbers have been updated. 
+* [ ] I updated hard-coded version numbers. 
 
