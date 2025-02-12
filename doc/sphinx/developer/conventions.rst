@@ -7,7 +7,12 @@ Style guide
 
 OpenDiHu follows the [LLVM style guide]. If you make changes to OpenDiHu, you can use the `clang-format <https://clang.llvm.org/docs/ClangFormat.html>`_ tool to format the code according to the style guide.
 
-You can install clang-format with `sudo apt install clang-format`. To format a specific file, run `clang-format -i file.cpp`. You can also format all files if you run `. tools/formatting/format-all` in the parent directory. 
+We include clang-format in a `pre-commit <https://pre-commit.com/>`_, which automatically checks the format of the code before you commit. The same checks are executed in the CI. To format the code:
+
+1. Install pre-commit (e.g., with `pip install pre-commit`).
+2. Enable in this repository with `pre-commit install`.
+3. The pre-commit will be executed automatically before whenever a `git commit` is attempted, and modify the files. Stage the files again with `git add` and commit.
+4. Alternatively, run manually with `pre-commit run -a`.
 
 Commonly used terms
 -----------------------
