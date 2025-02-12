@@ -14,6 +14,7 @@ preCICE configuration
 
 To run a simulation using preCICE you will need a `precice-config.xml <https://precice.org/configuration-overview.html>_` file. This file is used at run time by OpenDiHu and it is where the user can configure what data is coupled and how it is coupled. 
 Here is an example for how we configure volume coupling between a participant named *PartitionedFibers* and a participant named *MuscleContraction*. In this case, the fibers send *Gamma* to the mechanics participant, which sends back *Geometry*. The coupling takes place using a *serial-explicit* scheme and the mapping between the meshes follows a kernel approach. 
+Currently, *serial-explicit* is the only option for OpenDiHu participants that do not include a solid mechanics solver. 
 
 .. code-block:: xml
 

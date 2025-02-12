@@ -51,10 +51,8 @@ core                 | This contains the C++ code of the framework, implementing
 dependencies         | Here all external dependencies are stored and installed in an own folder for each.
                      | This directory will be populated by the build system `scons` that can download
                      | and build all dependencies.
-doc                  | This directory is for documentation and contains useful pdfs, some own theory 
-                     | documentation under `doc/derivations` and some symbolic computations using the
-                     | python symbolic toolbox `sympy`.
-examples              This contains all examples that use the framework. Users should work in this directory.
+doc                  | This directory is for documentation and contains the sphinx documentation (what you are reading) and the doxygen documentation.              
+examples             | This contains all examples that use the framework. Users should work in this directory.
 scripts              | This is a collection of useful Python scripts, such as the plot script or a
                      | reader utility for the python output format of opendihu.
 testing              This contains unit tests and system tests.

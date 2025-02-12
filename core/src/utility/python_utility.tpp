@@ -274,8 +274,7 @@ void PythonUtility::getOptionVector(const PyObject *settings,
       }
     } else {
       LOG(WARNING) << "" << pathString << "[\"" << keyString
-                   << "\"] not set in \"" << Control::settingsFileName
-                   << "\". Assuming vector " << values;
+                   << "\"] not set in \"" << Control::settingsFileName << "\".";
     }
     Py_CLEAR(key);
   }
