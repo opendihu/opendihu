@@ -19,8 +19,8 @@ int main(int argc, char* argv[])
 '''
 #VERSION='https://github.com/zuhd-org/easyloggingpp/archive/v9.96.7.tar.gz'
 #VERSION = 'https://github.com/muflihun/easyloggingpp/releases/download/v9.95.3/easyloggingpp_v9.95.3.tar.gz'
-VERSION='https://github.com/maierbn/easyloggingpp/archive/master.zip'
-
+#VERSION='https://github.com/maierbn/easyloggingpp/archive/master.zip'
+VERSION='https://github.com/abumq/easyloggingpp/archive/refs/tags/v9.97.1.zip'
 class EasyLoggingPP(Package):
   
     def __init__(self, **kwargs):
@@ -55,7 +55,7 @@ class EasyLoggingPP(Package):
             'cp ${SOURCE_DIR}/src/easylogging++.cc ${PREFIX}/src/easylogging++.cpp',
             env["CXX"]+' -std=c++11 -c ${PREFIX}/src/easylogging++.cpp -I${PREFIX}/include -DELPP_FEATURE_CRASH_LOG -DELPP_NO_DEFAULT_LOG_FILE -o ${PREFIX}/src/easylogging++.o',
             env["CXX"]+' -std=c++11 -c ${PREFIX}/src/easylogging++.cpp -I${PREFIX}/include -DELPP_FEATURE_CRASH_LOG -DELPP_NO_DEFAULT_LOG_FILE \
-              -DELPP_DISABLE_DEBUG_LOGS -DELPP_DISABLE_VERBOSE_LOGS -DELPP_DISABLE_TRACE_LOGS -DELPP_DISABLE_LOGGING_FLAGS_FROM_ARG -DNDEBUG -o ${PREFIX}/src/easylogging++.release.o',
+              -DELPP_DISABLE_DEBUG_LOGS -DELPP_DISABLE_VERBOSE_LOGS -DELPP_DISABLE_TRACE_LOGS -DELPP_LOGGING_FLAGS_FROM_ARG -DNDEBUG -o ${PREFIX}/src/easylogging++.release.o',
         ])
         
         self.check_options(env)

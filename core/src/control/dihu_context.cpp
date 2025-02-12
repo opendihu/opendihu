@@ -17,6 +17,7 @@
 #include <csignal>
 #include <cstdlib>
 #include <cctype>
+#include <execinfo.h>
 
 #include "utility/python_utility.h"
 // #include "output_writer/paraview/paraview.h"
