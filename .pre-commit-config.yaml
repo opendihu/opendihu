@@ -3,4 +3,4 @@ repos:
   rev: 'v18.1.0'
   hooks:
   - id: clang-format
-    exclude: "^dependencies|examples"
+    exclude: "^dependencies|examples|testing/unit_testing/input"
