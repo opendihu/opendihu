@@ -77,7 +77,7 @@ There you can set the file names to be included in the executable and fully enab
 
 .. note::
   
-  **IMPORTANT:** The tests require configuring PETSc with ParMETIS, which is not necessary to run many of the examples. To check if your PETSc installation is configured with ParMETIS use
+  **IMPORTANT:** The tests require configuring PETSc with ParMETIS, which is not necessary to run many of the examples. To check if your PETSc installation is configured with ParMETIS,
   use `ldd libpetsc.so` in `opendihu/dependencies/petsc/install/lib`. If you use Ubuntu 22.04, you will need to install the app packages `bison flex`. 
 
 
