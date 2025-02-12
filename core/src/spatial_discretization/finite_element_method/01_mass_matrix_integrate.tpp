@@ -196,8 +196,8 @@ void FiniteElementMethodMatrix<FunctionSpaceType, QuadratureType, nComponents,
           }
         }
       } // j
-    }   // i
-  }     // elementNoLocalv
+    } // i
+  } // elementNoLocalv
 
   // merge local changes in parallel and assemble the matrix (MatAssemblyBegin,
   // MatAssemblyEnd)

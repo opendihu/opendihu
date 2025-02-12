@@ -459,13 +459,13 @@ void ParallelFiberEstimation<BasisFunctionType>::fixInvalidFibersInFile(
                          1e-12);
                   if (firstPoint[2] - neighbouringFiberFirstPoint[1][2] >
                       1e-12) {
-                    LOG(WARNING) << "Could not fixe fiber (" << fiberIndexX
-                                 << "," << fiberIndexY << ") / (" << nFibersX
-                                 << "," << nFibersX << "),"
-                                 << " first point: " << firstPoint
-                                 << ", neighbouring points: "
-                                 << neighbouringFiberFirstPoint[0] << ","
-                                 << neighbouringFiberFirstPoint[1];
+                    LOG(WARNING)
+                        << "Could not fixe fiber (" << fiberIndexX << ","
+                        << fiberIndexY << ") / (" << nFibersX << "," << nFibersX
+                        << ")," << " first point: " << firstPoint
+                        << ", neighbouring points: "
+                        << neighbouringFiberFirstPoint[0] << ","
+                        << neighbouringFiberFirstPoint[1];
 
                     int zIndex = nPointsPerFiber - 1;
                     file.seekg(32 + headerLength + validIndex0 * fiberDataSize +
@@ -481,13 +481,13 @@ void ParallelFiberEstimation<BasisFunctionType>::fixInvalidFibersInFile(
 
                   if (firstPoint[2] - neighbouringFiberFirstPoint[1][2] >
                       1e-12) {
-                    LOG(WARNING) << "Could not fix fiber (" << fiberIndexX
-                                 << "," << fiberIndexY << ") / (" << nFibersX
-                                 << "," << nFibersX << "),"
-                                 << " first point: " << firstPoint
-                                 << ", neighbouring points: "
-                                 << neighbouringFiberFirstPoint[0] << ","
-                                 << neighbouringFiberFirstPoint[1];
+                    LOG(WARNING)
+                        << "Could not fix fiber (" << fiberIndexX << ","
+                        << fiberIndexY << ") / (" << nFibersX << "," << nFibersX
+                        << ")," << " first point: " << firstPoint
+                        << ", neighbouring points: "
+                        << neighbouringFiberFirstPoint[0] << ","
+                        << neighbouringFiberFirstPoint[1];
 
                     int zIndex = int(nPointsPerFiber / 2);
                     file.seekg(32 + headerLength + validIndex0 * fiberDataSize +
@@ -503,13 +503,13 @@ void ParallelFiberEstimation<BasisFunctionType>::fixInvalidFibersInFile(
 
                   if (firstPoint[2] - neighbouringFiberFirstPoint[1][2] >
                       1e-12) {
-                    LOG(WARNING) << "Could not fix fiber (" << fiberIndexX
-                                 << "," << fiberIndexY << ") / (" << nFibersX
-                                 << "," << nFibersX << "),"
-                                 << " first point: " << firstPoint
-                                 << ", neighbouring points: "
-                                 << neighbouringFiberFirstPoint[0] << ","
-                                 << neighbouringFiberFirstPoint[1];
+                    LOG(WARNING)
+                        << "Could not fix fiber (" << fiberIndexX << ","
+                        << fiberIndexY << ") / (" << nFibersX << "," << nFibersX
+                        << ")," << " first point: " << firstPoint
+                        << ", neighbouring points: "
+                        << neighbouringFiberFirstPoint[0] << ","
+                        << neighbouringFiberFirstPoint[1];
 
                     int zIndex = int(nPointsPerFiber / 2) + 1;
                     file.seekg(32 + headerLength + validIndex0 * fiberDataSize +
@@ -525,13 +525,13 @@ void ParallelFiberEstimation<BasisFunctionType>::fixInvalidFibersInFile(
 
                   if (firstPoint[2] - neighbouringFiberFirstPoint[1][2] >
                       1e-12) {
-                    LOG(ERROR) << "Could not fix fiber (" << fiberIndexX << ","
-                               << fiberIndexY << ") / (" << nFibersX << ","
-                               << nFibersX << "),"
-                               << " first point: " << firstPoint
-                               << ", neighbouring points: "
-                               << neighbouringFiberFirstPoint[0] << ","
-                               << neighbouringFiberFirstPoint[1];
+                    LOG(ERROR)
+                        << "Could not fix fiber (" << fiberIndexX << ","
+                        << fiberIndexY << ") / (" << nFibersX << "," << nFibersX
+                        << ")," << " first point: " << firstPoint
+                        << ", neighbouring points: "
+                        << neighbouringFiberFirstPoint[0] << ","
+                        << neighbouringFiberFirstPoint[1];
                   } else {
                     // assert(firstPoint[2] - neighbouringFiberFirstPoint[1][2]
                     // < 1e-12);

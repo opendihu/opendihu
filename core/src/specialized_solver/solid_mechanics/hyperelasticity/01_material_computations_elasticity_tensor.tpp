@@ -587,7 +587,7 @@ void HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
             pCbar_abgh += p_abef * ccBar_efgh;
 
           } // f
-        }   // e
+        } // e
 
         int delta_cg = (c == g ? 1 : 0);
         int delta_dh = (d == h ? 1 : 0);
@@ -601,7 +601,7 @@ void HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
         pCbarPT_abcd += pCbar_abgh * pT_ghcd;
 
       } // h
-    }   // g
+    } // g
 
     // compute contribution from  2/3*J^{-2/3}*Sbar : C P_tilde
     double_v_t sBarC_abcd = 0.;
@@ -609,7 +609,7 @@ void HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
       for (int h = 0; h < D; h++) {
         sBarC_abcd += fictitiousPK2Stress[h][g] * rightCauchyGreen[h][g];
       } // h
-    }   // g
+    } // g
 
     const double_v_t pTilde_abcd = cInvDotCInv - 1. / 3 * cInvDyadCInv;
 

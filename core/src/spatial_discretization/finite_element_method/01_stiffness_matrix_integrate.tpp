@@ -243,8 +243,8 @@ void FiniteElementMethodMatrix<FunctionSpaceType, QuadratureType, nComponents,
           }
         }
       } // j
-    }   // i
-  }     // elementNoLocalv
+    } // i
+  } // elementNoLocalv
 
   if (outputAssemble3DStiffnessMatrixHere &&
       this->context_.ownRankNoCommWorld() == 0) {

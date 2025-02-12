@@ -406,7 +406,7 @@ void MultipleInstances<TimeSteppingScheme>::run() {
   LOG(INFO) << "PAT_region_begin(" << label << ")";
 #endif
 
-  //#pragma omp parallel for // does not work with the python interpreter
+  // #pragma omp parallel for // does not work with the python interpreter
   for (int i = 0; i < nInstancesLocal_; i++) {
     if (omp_get_thread_num() == 0) {
       std::stringstream msg;

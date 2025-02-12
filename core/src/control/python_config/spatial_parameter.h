@@ -130,21 +130,27 @@ class allocator<SpatialParameterBase<FunctionSpaceType, ValueType>>
     : public ::Vc::Allocator<
           SpatialParameterBase<FunctionSpaceType, ValueType>> {
 public:
-  template <typename U> struct rebind { typedef ::std::allocator<U> other; };
+  template <typename U> struct rebind {
+    typedef ::std::allocator<U> other;
+  };
 };
 
 template <typename FunctionSpaceType, typename ValueType>
 class allocator<SpatialParameter<FunctionSpaceType, ValueType>>
     : public ::Vc::Allocator<SpatialParameter<FunctionSpaceType, ValueType>> {
 public:
-  template <typename U> struct rebind { typedef ::std::allocator<U> other; };
+  template <typename U> struct rebind {
+    typedef ::std::allocator<U> other;
+  };
 };
 
 template <typename FunctionSpaceType>
 class allocator<SpatialParameter<FunctionSpaceType, double>>
     : public ::Vc::Allocator<SpatialParameter<FunctionSpaceType, double>> {
 public:
-  template <typename U> struct rebind { typedef ::std::allocator<U> other; };
+  template <typename U> struct rebind {
+    typedef ::std::allocator<U> other;
+  };
 };
 
 template <typename FunctionSpaceType, int nRows, int nColumns>
@@ -153,7 +159,9 @@ class allocator<
     : public ::Vc::Allocator<SpatialParameter<
           FunctionSpaceType, MathUtility::Matrix<nRows, nColumns>>> {
 public:
-  template <typename U> struct rebind { typedef ::std::allocator<U> other; };
+  template <typename U> struct rebind {
+    typedef ::std::allocator<U> other;
+  };
 };
 
 } // namespace std

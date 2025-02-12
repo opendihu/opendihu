@@ -6,7 +6,7 @@
 #include <random>
 #include <fstream>
 
-//#define NFIBERS_TO_COMPUTE 1
+// #define NFIBERS_TO_COMPUTE 1
 #define NFIBERS_TO_COMPUTE nFibersToCompute_
 
 template <int nStates, int nAlgebraics, typename DiffusionTimeSteppingScheme>
@@ -514,8 +514,7 @@ void initializeArrays(const double *statesOneInstanceParameter, const int *algeb
   sourceCode << "// compute the total monodomain equation\n"
              << "#ifdef __cplusplus\n"
              << "extern \"C\"\n"
-             << "#endif"
-             << R"(
+             << "#endif" << R"(
 void computeMonodomain(const float *parameters,
                        double *algebraicsForTransfer, double *statesForTransfer, const float *elementLengths,
                        double startTime, double timeStepWidthSplitting, int nTimeStepsSplitting, double dt0D, int nTimeSteps0D, double dt1D, int nTimeSteps1D,

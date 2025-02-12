@@ -141,9 +141,8 @@ void PerformanceMeasurement::writeLogFile(std::string logFileName) {
     // write measurement values
     for (std::pair<std::string, Measurement> measurement : measurements_) {
       data << ",\"" << measurement.first
-           << "\":" << measurement.second.totalDuration << ","
-           << "\"" << measurement.first
-           << " n\":" << measurement.second.nTimeSpans;
+           << "\":" << measurement.second.totalDuration << "," << "\""
+           << measurement.first << " n\":" << measurement.second.nTimeSpans;
     }
 
     // write parameters

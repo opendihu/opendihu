@@ -485,8 +485,7 @@ bool SlotsConnection::getSlotInformationUncached(
 
     LOG(DEBUG) << "  yes, transfer fromVectorNo=" << fromVectorNo
                << ", fromVectorIndex=" << fromVectorIndex << " (fromIndex "
-               << fromIndex << ")"
-               << " to toVectorNo=" << toVectorNo
+               << fromIndex << ")" << " to toVectorNo=" << toVectorNo
                << ", toVectorIndex=" << toVectorIndex << " (toIndex=" << toIndex
                << ")";
   } else {
@@ -596,8 +595,7 @@ bool SlotsConnection::getSlotInformationUncached(
 
     LOG(DEBUG) << "  yes, transfer fromVectorNo=" << fromVectorNo
                << ", fromVectorIndex=" << fromVectorIndex << " (fromIndex "
-               << fromIndex << ") "
-               << "to toVectorNo=" << toVectorNo
+               << fromIndex << ") " << "to toVectorNo=" << toVectorNo
                << ", toVectorIndex=" << toVectorIndex << " (toIndex=" << toIndex
                << ")";
   }

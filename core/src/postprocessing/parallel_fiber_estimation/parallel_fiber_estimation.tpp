@@ -10,19 +10,19 @@
 
 // write or load various checkpoints, this is for debugging to only run part of
 // the algorithm on prescribed data
-//#define USE_CHECKPOINT_BOUNDARY_POINTS
-//#define USE_CHECKPOINT_MESH
-//#define WRITE_CHECKPOINT_MESH
-//#define WRITE_CHECKPOINT_BOUNDARY_POINTS
-//#define WRITE_CHECKPOINT_GHOST_MESH
-//#define USE_CHECKPOINT_GHOST_MESH
+// #define USE_CHECKPOINT_BOUNDARY_POINTS
+// #define USE_CHECKPOINT_MESH
+// #define WRITE_CHECKPOINT_MESH
+// #define WRITE_CHECKPOINT_BOUNDARY_POINTS
+// #define WRITE_CHECKPOINT_GHOST_MESH
+// #define USE_CHECKPOINT_GHOST_MESH
 
 // output STl files for debugging
 #define STL_OUTPUT // output some stl files
-//#define STL_OUTPUT_VERBOSE     // output more stl files
+// #define STL_OUTPUT_VERBOSE     // output more stl files
 
-//#define FILE_COMMUNICATION        // when sending boundary points between
-// ranks, do not use MPI but file I/O instead
+// #define FILE_COMMUNICATION        // when sending boundary points between
+//  ranks, do not use MPI but file I/O instead
 
 // include files that implement various methods of this class, these make use
 // the previous defines
@@ -238,7 +238,7 @@ void ParallelFiberEstimation<BasisFunctionType>::generateParallelMeshRecursion(
 
 #ifndef NDEBUG
 #ifdef STL_OUTPUT
-  //#ifdef STL_OUTPUT_VERBOSE
+  // #ifdef STL_OUTPUT_VERBOSE
   if (currentRankSubset_->ownRankIsContained()) {
     PyObject_CallFunction(
         functionOutputBoundaryPoints_, "s i i O f", "01_boundary_points_old",
@@ -251,7 +251,7 @@ void ParallelFiberEstimation<BasisFunctionType>::generateParallelMeshRecursion(
   }
 
 #endif
-//#endif
+// #endif
 #endif
 
   // check if all vectors are filled with points

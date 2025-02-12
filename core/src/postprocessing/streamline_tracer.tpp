@@ -93,7 +93,7 @@ void StreamlineTracer<DiscretizableInTimeType>::traceStreamlines() {
   LOG(DEBUG) << "trace streamline, seedPositions: " << seedPositions_;
 
   // loop over seed points
-  //#pragma omp parallel for shared(streamlines)
+  // #pragma omp parallel for shared(streamlines)
   for (int seedPointNo = 0; seedPointNo < nSeedPoints; seedPointNo++) {
     // get starting point
     Vec3 startingPoint = seedPositions_[seedPointNo];

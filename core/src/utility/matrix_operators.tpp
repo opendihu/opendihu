@@ -7,7 +7,7 @@ operator-(const MathUtility::Matrix<nRows, nColumns, double_v_t> matrix1,
           const MathUtility::Matrix<nRows, nColumns, double_v_t> matrix2) {
   MathUtility::Matrix<nRows, nColumns, double_v_t> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nRows * nColumns; i++) {
     result[i] = matrix1[i] - matrix2[i];
   }
@@ -21,7 +21,7 @@ operator+(const MathUtility::Matrix<nRows, nColumns, double_v_t> matrix1,
           const MathUtility::Matrix<nRows, nColumns, double_v_t> matrix2) {
   MathUtility::Matrix<nRows, nColumns, double_v_t> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nRows * nColumns; i++) {
     result[i] = matrix1[i] + matrix2[i];
   }
@@ -33,7 +33,7 @@ template <int nRows, int nColumns, typename double_v_t>
 MathUtility::Matrix<nRows, nColumns, double_v_t> &
 operator+=(MathUtility::Matrix<nRows, nColumns, double_v_t> &matrix1,
            const MathUtility::Matrix<nRows, nColumns, double_v_t> matrix2) {
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nRows * nColumns; i++) {
     matrix1[i] += matrix2[i];
   }
@@ -47,7 +47,7 @@ operator*(double_v1_t lambda,
           const MathUtility::Matrix<nRows, nColumns, double_v2_t> matrix) {
   MathUtility::Matrix<nRows, nColumns, double_v2_t> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nRows * nColumns; i++) {
     result[i] = lambda * matrix[i];
   }
@@ -61,7 +61,7 @@ operator*(MathUtility::Matrix<nRows, nColumns, double_v1_t> matrix,
           double_v1_t lambda) {
   MathUtility::Matrix<nRows, nColumns, double_v1_t> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nRows * nColumns; i++) {
     result[i] = lambda * matrix[i];
   }
@@ -78,7 +78,7 @@ operator*(MathUtility::Matrix<nRows, nColumns, double_v1_t> matrix,
           double lambda) {
   MathUtility::Matrix<nRows, nColumns, double_v1_t> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nRows * nColumns; i++) {
     result[i] = lambda * matrix[i];
   }
@@ -94,7 +94,7 @@ operator*(MathUtility::Matrix<nRows, nColumns, double_v_t> matrix1,
           MathUtility::Matrix<nColumns, nColumns2, double_v_t> matrix2) {
   MathUtility::Matrix<nRows, nColumns2, double_v_t> result;
 
-  //#pragma omp simd
+  // #pragma omp simd
   for (int i = 0; i < nRows; i++) {
     for (int j = 0; j < nColumns2; j++) {
       result[i * nColumns2 + j] = 0;

@@ -10,4 +10,3 @@ jobs:
           cd /workspace/opendihu
           git pull origin ${{ github.event.pull_request.head.sha }}
           python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE no_examples=TRUE
-

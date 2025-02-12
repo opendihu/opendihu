@@ -635,13 +635,8 @@ void SlotsConnection::initializeSlotInformation(
              << " " << fieldVariableNamesTerm1Vector2_;
   LOG(DEBUG) << "  fieldVariableNamesTerm2: " << fieldVariableNamesTerm2Vector1_
              << " " << fieldVariableNamesTerm2Vector2_;
-  LOG(DEBUG) << "  slotInformation_["
-             << "1To2?"
-             << "]["
-             << "fromVectorNo"
-             << "]["
-             << "i"
-             << "] = "
+  LOG(DEBUG) << "  slotInformation_[" << "1To2?" << "][" << "fromVectorNo"
+             << "][" << "i" << "] = "
              << "success, toVectorNo, toVectorIndex, avoidCopyIfPossible";
   for (int transferDirectionTerm1To2 = 0; transferDirectionTerm1To2 < 2;
        transferDirectionTerm1To2++) {

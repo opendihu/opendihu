@@ -81,9 +81,7 @@ void CellmlSourceCodeGeneratorBase::initializeSourceCode(
     // values in the settings
     LOG(WARNING) << "In CellML: There should be " << nParameters_ << " = "
                  << parametersUsedAsAlgebraic_.size() << "+"
-                 << parametersUsedAsConstant_.size()
-                 << " parameters (algebraics: " << parametersUsedAsAlgebraic_
-                 << ", constants: " << parametersUsedAsConstant_ << ") or "
+                 << parametersUsedAsConstant_.size() << " parameters or "
                  << nParameters_ * nInstances_
                  << " parameters in array of struct format, but "
                  << parametersInitialValues.size()
@@ -145,8 +143,8 @@ void CellmlSourceCodeGeneratorBase::initializeSourceCode(
     if (!firstEntry)
       s << ", ";
     s << "\n  parameter " << parameterIndex << " maps to \""
-      << algebraicNames_[algebraicIndex] << "\" ("
-      << "ALGEBRAIC[" << algebraicIndex << "]), "
+      << algebraicNames_[algebraicIndex] << "\" (" << "ALGEBRAIC["
+      << algebraicIndex << "]), "
       << "initial value: " << parameterValues[parameterIndex * nInstances_]
       << "";
 
@@ -158,8 +156,8 @@ void CellmlSourceCodeGeneratorBase::initializeSourceCode(
     if (!firstEntry)
       s << ", ";
     s << "\n  parameter " << parameterIndex << " maps to \""
-      << constantNames_[constantIndex] << "\" ("
-      << "CONSTANTS[" << constantIndex << "]), "
+      << constantNames_[constantIndex] << "\" (" << "CONSTANTS["
+      << constantIndex << "]), "
       << "initial value: " << parameterValues[parameterIndex * nInstances_]
       << "";
 

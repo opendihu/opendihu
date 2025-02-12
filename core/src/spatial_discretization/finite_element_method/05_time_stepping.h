@@ -94,7 +94,7 @@ public:
   friend class StiffnessMatrixTester; //< a class used for testing
 protected:
   //! do nothing, needed for initialize of base class that is overridden anyway
-  void setRightHandSide(){};
+  void setRightHandSide() {};
 
   //! Compute from the rhs in weak formulation the rhs vector in strong
   //! formulation

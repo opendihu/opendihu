@@ -232,7 +232,7 @@ std::shared_ptr<NodeToDofMapping> ElementToDofMapping::setup(
 #endif
 
     } // nodeIdx
-  }   // elementGlobalNo
+  } // elementGlobalNo
 
   nDofs_ = dofGlobalNo;
 

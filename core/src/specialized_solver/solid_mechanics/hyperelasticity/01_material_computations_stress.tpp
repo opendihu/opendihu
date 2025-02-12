@@ -315,7 +315,7 @@ HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
       //   factorJ23: " << factorJ23 << ", Svol_" << i << j << " = " << sVol <<
       //   ", Siso_" << i << j << " = " << sIso << ", S = " << pK2Stress[j][i];
     } // j
-  }   // i
+  } // i
 
   // coupled form of strain energy function
   // compute S += γ1*I + γ2*C + γ3*C^-1   (Holzapfel, p.248)

@@ -125,8 +125,7 @@ void TargetElementNoEstimator<
           << sourceFunctionSpace_->meshPartition()->nNodesLocalWithoutGhosts(1)
           << ","
           << sourceFunctionSpace_->meshPartition()->nNodesLocalWithoutGhosts(2)
-          << ") "
-          << "[y:" << targetElementForYChange_
+          << ") " << "[y:" << targetElementForYChange_
           << ",z:" << targetElementForZChange_ << "] -> " << targetElementNo;
 }
 

@@ -117,13 +117,12 @@ void scaleFibersInFile(std::string inputFilename, std::string outputFilename,
   fileOld.close();
   fileNew.close();
 
-  std::cout << "Input file \"" << inputFilename << "\",\n  bounding box "
-            << "[" << oldBoundingBoxMinimum[0] << ","
-            << oldBoundingBoxMaximum[0] << "] x "
-            << "[" << oldBoundingBoxMinimum[1] << ","
-            << oldBoundingBoxMaximum[1] << "] x "
-            << "[" << oldBoundingBoxMinimum[2] << ","
-            << oldBoundingBoxMaximum[2] << "],\n"
+  std::cout << "Input file \"" << inputFilename << "\",\n  bounding box " << "["
+            << oldBoundingBoxMinimum[0] << "," << oldBoundingBoxMaximum[0]
+            << "] x " << "[" << oldBoundingBoxMinimum[1] << ","
+            << oldBoundingBoxMaximum[1] << "] x " << "["
+            << oldBoundingBoxMinimum[2] << "," << oldBoundingBoxMaximum[2]
+            << "],\n"
             << "  size " << oldBoundingBoxMaximum[0] - oldBoundingBoxMinimum[0]
             << " x " << oldBoundingBoxMaximum[1] - oldBoundingBoxMinimum[1]
             << " x " << oldBoundingBoxMaximum[2] - oldBoundingBoxMinimum[2]
@@ -131,10 +130,9 @@ void scaleFibersInFile(std::string inputFilename, std::string outputFilename,
 
   std::cout << "Output file \"" << outputFilename << "\",\n  bounding box "
             << "[" << newBoundingBoxMinimum[0] << ","
-            << newBoundingBoxMaximum[0] << "] x "
-            << "[" << newBoundingBoxMinimum[1] << ","
-            << newBoundingBoxMaximum[1] << "] x "
-            << "[" << newBoundingBoxMinimum[2] << ","
+            << newBoundingBoxMaximum[0] << "] x " << "["
+            << newBoundingBoxMinimum[1] << "," << newBoundingBoxMaximum[1]
+            << "] x " << "[" << newBoundingBoxMinimum[2] << ","
             << newBoundingBoxMaximum[2] << "],\n"
             << "  size " << newBoundingBoxMaximum[0] - newBoundingBoxMinimum[0]
             << " x " << newBoundingBoxMaximum[1] - newBoundingBoxMinimum[1]

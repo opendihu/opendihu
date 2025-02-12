@@ -81,7 +81,7 @@ public:
   //! if the class should handle Dirichlet boundary conditions, this does not
   //! apply here
   void
-  setBoundaryConditionHandlingEnabled(bool boundaryConditionHandlingEnabled){};
+  setBoundaryConditionHandlingEnabled(bool boundaryConditionHandlingEnabled) {};
 
   //! after this call, getSlotConnectorData() will be called, transfer algebraic
   //! field variable to global representation

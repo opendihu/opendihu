@@ -43,9 +43,9 @@ void SlotConnectorDataTransfer<
     LOG(ERROR) << "Trying to transfer data from "
                << transferableSolutionData1->size() << " variables to "
                << transferableSolutionData2->size()
-               << ", number has to be equal. "
-               << "Now only using the first " << nTransferableVariables
-               << " variable" << (nTransferableVariables != 1 ? "s" : "")
+               << ", number has to be equal. " << "Now only using the first "
+               << nTransferableVariables << " variable"
+               << (nTransferableVariables != 1 ? "s" : "")
                << ". Types: " << std::endl
                << StringUtility::demangle(typeid(SlotConnectorDataType1).name())
                << std::endl
