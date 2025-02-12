@@ -169,7 +169,7 @@ In order for the variable assignments to take effect, either close and reopen th
 
 .. note::
   
-  **IMPORTANT:** Ubuntu 22.04 users need to add ``export OMPI_MCA_osc="^ucx"`` to their `~/.bashrc` file. 
+  **IMPORTANT:** Ubuntu 22.04 users need to add ``export OMPI_MCA_osc="^ucx"`` to their `~/.bashrc` file. Also, if you experience run time error problems like "MPI_err_win", adding `export OMPI_MCA_btl="self,tcp"` should solve it. 
 
 Building with scons
 ----------------------
