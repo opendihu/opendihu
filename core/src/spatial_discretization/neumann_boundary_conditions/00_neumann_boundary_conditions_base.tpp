@@ -93,8 +93,8 @@ void NeumannBoundaryConditionsBase<
       if (elementNoGlobal < 0 ||
           elementNoGlobal >= functionSpace->nElementsGlobal()) {
         LOG(ERROR) << "In Neumann boundary conditions, global element no. "
-                   << elementNoGlobal << " is invalid "
-                   << "(mesh \"" << functionSpace->meshName()
+                   << elementNoGlobal << " is invalid " << "(mesh \""
+                   << functionSpace->meshName()
                    << "\" has global number of elements: "
                    << functionSpace->nElementsGlobal() << "). \n"
                    << "Note, you can use negative indices to count from the "

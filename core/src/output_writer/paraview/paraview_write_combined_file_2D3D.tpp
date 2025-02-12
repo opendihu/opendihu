@@ -798,12 +798,10 @@ void Paraview::writeCombinedUnstructuredGridFile(
 
     // write normal data element
     outputFileParts[outputFilePartNo]
-        << std::string(4, '\t') << "<DataArray "
-        << "Name=\"" << pointDataArrayIter->name << "\" "
-        << "type=\""
+        << std::string(4, '\t') << "<DataArray " << "Name=\""
+        << pointDataArrayIter->name << "\" " << "type=\""
         << (pointDataArrayIter->name == "partitioning" ? "Int32" : "Float32")
-        << "\" "
-        << "NumberOfComponents=\"" << nComponentsParaview << "\" "
+        << "\" " << "NumberOfComponents=\"" << nComponentsParaview << "\" "
         << componentNames.str() << " format=\""
         << (binaryOutput_ ? "binary" : "ascii") << "\" >" << std::endl
         << std::string(5, '\t');

@@ -1335,9 +1335,8 @@ void PartitionedPetscVecNComponentsStructured<
 
     VLOG(1) << "  copy "
             << this->meshPartition_->nDofsLocalWithoutGhosts() * sizeof(double)
-            << " bytes to "
-            << "(\"" << this->name_ << "\" component " << componentNo
-            << ") from \"" << name << "\"";
+            << " bytes to " << "(\"" << this->name_ << "\" component "
+            << componentNo << ") from \"" << name << "\"";
     memcpy(valuesTarget + dofStart, valuesSource,
            this->meshPartition_->nDofsLocalWithoutGhosts() * sizeof(double));
 
@@ -1406,9 +1405,9 @@ void PartitionedPetscVecNComponentsStructured<
 
   // ident 3 tabs + 1 space to get a better alignment with
   // slot_connector_data.tpp operator<<
-  stream << "\t\t\t "
-         << "vector \"" << this->name_ << "\" (" << nEntries << " global, "
-         << nEntriesLocal << " local entries (per component), representation: "
+  stream << "\t\t\t " << "vector \"" << this->name_ << "\" (" << nEntries
+         << " global, " << nEntriesLocal
+         << " local entries (per component), representation: "
          << this->getCurrentRepresentationString()
          << ", vectors local[0]: " << vectorLocal_[0]
          << ", global[0]: " << vectorGlobal_[0]

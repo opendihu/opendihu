@@ -4,8 +4,8 @@
 
 #include "specialized_solver/fast_monodomain_solver/fast_monodomain_solver_base.h"
 
-//#include "hodgkin_huxley.h"
-//#include "tk2014.h"
+// #include "hodgkin_huxley.h"
+// #include "tk2014.h"
 
 /** \brief An efficient solver for the monodomain equation, as used in the
  * fibers_emg example.

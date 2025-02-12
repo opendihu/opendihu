@@ -19,7 +19,7 @@
 #include <cctype>
 
 #include "utility/python_utility.h"
-//#include "output_writer/paraview/paraview.h"
+// #include "output_writer/paraview/paraview.h"
 #include "output_writer/python_callback/python_callback.h"
 #include "output_writer/python_file/python_file.h"
 #include "output_writer/exfile/exfile.h"
@@ -171,9 +171,9 @@ DihuContext::DihuContext(int argc, char *argv[], bool doNotFinalizeMpi,
 
     // the following three lines output the MPI version during compilation, use
     // for debugging
-    //#define XSTR(x) STR(x)
-    //#define STR(x) #x
-    //#pragma message "The value of MPI_VERSION: " XSTR(MPI_VERSION)
+    // #define XSTR(x) STR(x)
+    // #define STR(x) #x
+    // #pragma message "The value of MPI_VERSION: " XSTR(MPI_VERSION)
 
 #if MPI_VERSION >= 3
     MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN); // MPI >= 4
@@ -445,7 +445,7 @@ std::string DihuContext::versionText() {
   std::stringstream versionTextStr;
 
   versionTextStr
-      << "opendihu 1.3, built "
+      << "opendihu 1.5, built "
       << __DATE__; // << " " << __TIME__; // do not add time otherwise it wants
                    // to recompile this file every time
 #ifdef __cplusplus

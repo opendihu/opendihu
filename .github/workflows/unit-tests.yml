@@ -1,5 +1,5 @@
 name: unit-tests
-on: [push, pull_request]
+on: [pull_request]
 jobs:
   container-test-job:
     runs-on: ubuntu-latest
@@ -9,5 +9,9 @@ jobs:
         run: |
           cd /workspace/opendihu
           git pull origin ${{ github.event.pull_request.head.sha }}
+<<<<<<< HEAD
           python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE no_examples=TRUE
 
+=======
+          python3 dependencies/scons/scons.py BUILD_TYPE=RELEASE no_examples=TRUE
+>>>>>>> b50951f370bbc5026d2bc378d07b2623b87e0de1

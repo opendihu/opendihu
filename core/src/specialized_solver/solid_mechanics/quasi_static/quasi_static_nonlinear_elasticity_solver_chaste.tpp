@@ -128,8 +128,8 @@ void QuasiStaticNonlinearElasticitySolverChaste<D>::advanceTimeSpan(
     if (functionSpace_->meshPartition()->nNodesGlobal() != mesh.GetNumNodes()) {
       LOG(ERROR) << "Number of nodes in opendihu parsed mesh ("
                  << functionSpace_->meshPartition()->nNodesGlobal()
-                 << ") does not match "
-                 << "number of nodes in chaste mesh (" << mesh.GetNumNodes()
+                 << ") does not match " << "number of nodes in chaste mesh ("
+                 << mesh.GetNumNodes()
                  << "). This means that transfer of the mesh from opendihu to "
                     "chaste did not work.";
     }

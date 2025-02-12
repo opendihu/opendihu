@@ -35,14 +35,10 @@
     <write-data name="Traction"      mesh="MuscleMeshBottom"/>
     <export:vtu directory="precice-output" />
     
-    <mapping:rbf 
-      direction="read" 
-      from="TendonMeshTop" 
-      to="MuscleMeshBottom" 
-      constraint="consistent">
-      <basis-function:gaussian shape-parameter="91.05" />
-    </mapping:rbf>
-    
+    <mapping:rbf direction="read" from="TendonMeshTop" to="MuscleMeshBottom" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
+    </mapping:rbf> 
+  
   </participant>
 
   <participant name="TendonSolver">
@@ -55,12 +51,8 @@
     <write-data name="Velocity"      mesh="TendonMeshTop"/>
     <read-data  name="Traction"      mesh="TendonMeshTop"/>
 
-    <mapping:rbf 
-      direction="read" 
-      from="MuscleMeshBottom" 
-      to="TendonMeshTop" 
-      constraint="consistent">
-      <basis-function:gaussian shape-parameter="50" />
+    <mapping:rbf direction="read" from="MuscleMeshBottom" to="TendonMeshTop" constraint="consistent">
+      <basis-function:compact-polynomial-c4 support-radius="8" />
     </mapping:rbf> 
   
   </participant>
@@ -73,7 +65,7 @@
     <participants second="TendonSolver" first="MuscleSolver"/>
     <max-time value="2000.0"/>           <!-- end time of the whole simulation -->
     <time-window-size value="1"/>   <!-- timestep width for coupling -->
-    <max-iterations value="30" />
+    <max-iterations value="25" />
 
     <relative-convergence-measure limit="0.01" data="Displacement" mesh="TendonMeshTop" />
     <relative-convergence-measure limit="0.1" data="Traction" mesh="MuscleMeshBottom" />
@@ -82,9 +74,9 @@
       <data name="Displacement" mesh="TendonMeshTop"/>
       <data name="Traction" mesh="MuscleMeshBottom"/>
       <preconditioner type="residual-sum"/>
-      <filter type="QR1" limit="1e-2"/>
+      <filter type="QR2" limit="5e-3"/>
       <initial-relaxation value="0.4"/>
-      <max-used-iterations value="40"/>
+      <max-used-iterations value="50"/>
       <time-windows-reused value="15"/>
     </acceleration:IQN-ILS>
     

@@ -159,10 +159,10 @@ void DihuContext::initializeLogging(int &argc, char *argv[]) {
 
   // el::Loggers::addFlag(el::LoggingFlag::HierarchicalLogging);
 
-  //#ifdef NDEBUG      // if release
-  //  conf.set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
-  //  std::cout<< "DISABLE Debug" << std::endl;
-  //#endif
+  // #ifdef NDEBUG      // if release
+  //   conf.set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
+  //   std::cout<< "DISABLE Debug" << std::endl;
+  // #endif
 
   // reconfigure all loggers
   el::Loggers::reconfigureAllLoggers(conf);

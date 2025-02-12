@@ -11,7 +11,7 @@
 #include <string>
 #include <sys/param.h>
 #include <iomanip>
-//#include <stdlib.h>  //was only for function getenv()
+// #include <stdlib.h>  //was only for function getenv()
 
 #include "output_writer/generic.h"
 

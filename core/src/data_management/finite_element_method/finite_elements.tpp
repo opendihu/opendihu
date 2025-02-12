@@ -190,7 +190,7 @@ void FiniteElements<FunctionSpaceType, nComponents, Term,
       }
 
     } // dofIndexL
-  }   // elementNoLocal
+  } // elementNoLocal
 }
 
 } // namespace Data

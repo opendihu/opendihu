@@ -110,9 +110,7 @@ sconsconfig.add_options(vars)
 
 # initialize environment object containing build system settings such as compilers and flags
 # command line options are considered
-#env = Environment(tools = ['default', 'unity_build'], toolpath = ['config/tools'], variables = vars, ENV = os.environ, COMPILATIONDB_USE_ABSPATH=True, UNITY_MAX_SOURCES = 5    )
-env = Environment(tools = ['default'], toolpath = ['config/tools'], variables = vars, ENV = os.environ, COMPILATIONDB_USE_ABSPATH=True)
-
+env = Environment(tools = ['default', 'unity_build'], toolpath = ['config/tools'], variables = vars, ENV = os.environ, COMPILATIONDB_USE_ABSPATH=True,UNITY_MAX_SOURCES=20)
 vars.Save('out.py',env)
 
 # check for unknown variables and output warning

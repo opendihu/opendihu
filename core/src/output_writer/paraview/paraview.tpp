@@ -133,9 +133,8 @@ void Paraview::writeParaviewFieldVariable(FieldVariableType &fieldVariable,
   // files, should be written
   if (onlyParallelDatasetElement) {
 
-    file << std::string(3, '\t') << "<PDataArray "
-         << "Name=\"" << fieldVariable.name() << "\" "
-         << "type=\"Float32\" "
+    file << std::string(3, '\t') << "<PDataArray " << "Name=\""
+         << fieldVariable.name() << "\" " << "type=\"Float32\" "
          << "NumberOfComponents=\"" << nComponentsParaview << "\" ";
 
     if (binaryOutput) {
@@ -145,9 +144,8 @@ void Paraview::writeParaviewFieldVariable(FieldVariableType &fieldVariable,
     }
   } else {
     // write normal data element
-    file << std::string(4, '\t') << "<DataArray "
-         << "Name=\"" << fieldVariable.name() << "\" "
-         << "type=\"Float32\" "
+    file << std::string(4, '\t') << "<DataArray " << "Name=\""
+         << fieldVariable.name() << "\" " << "type=\"Float32\" "
          << "NumberOfComponents=\"" << nComponentsParaview << "\" ";
 
     const int nComponents = FieldVariableType::nComponents();
@@ -225,10 +223,8 @@ void Paraview::writeParaviewPartitionFieldVariable(
   // if only the "parallel dataset element" stub which is needed in the master
   // files, should be written
   if (onlyParallelDatasetElement) {
-    file << std::string(3, '\t') << "<PDataArray "
-         << "Name=\"partitioning\" "
-         << "type=\"Int32\" "
-         << "NumberOfComponents=\"1\" ";
+    file << std::string(3, '\t') << "<PDataArray " << "Name=\"partitioning\" "
+         << "type=\"Int32\" " << "NumberOfComponents=\"1\" ";
 
     if (binaryOutput) {
       file << "format=\"binary\" />" << std::endl;
@@ -237,10 +233,8 @@ void Paraview::writeParaviewPartitionFieldVariable(
     }
   } else {
     // write normal data element
-    file << std::string(4, '\t') << "<DataArray "
-         << "Name=\"partitioning\" "
-         << "type=\"Int32\" "
-         << "NumberOfComponents=\"1\" ";
+    file << std::string(4, '\t') << "<DataArray " << "Name=\"partitioning\" "
+         << "type=\"Int32\" " << "NumberOfComponents=\"1\" ";
 
     std::string stringData;
 

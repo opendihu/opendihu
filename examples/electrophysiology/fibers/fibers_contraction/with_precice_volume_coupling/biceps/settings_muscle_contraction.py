@@ -143,7 +143,7 @@ config = {
       "dumpFormat":          "matlab",
     }
   },
-  "PreciceAdapterVolumeCoupling": {
+  "PreciceAdapter": {
     "timeStepOutputInterval":   100,                        # interval in which to display current timestep and time in console
     "timestepWidth":            1,                          # coupling time step width, must match the value in the precice config
     "couplingEnabled":          True,                       # if the precice coupling is enabled, if not, it simply calls the nested solver, for debugging
@@ -152,7 +152,7 @@ config = {
     "scalingFactor":            1,                          # a factor to scale the exchanged data, prior to communication
     "outputOnlyConvergedTimeSteps": True,                   # if the output writers should be called only after a time window of precice is complete, this means the timestep has converged
     
-    "preciceData": [
+    "preciceVolumeData": [
       {
         "mode":                 "write",                    # mode is one of "read" or "write"
         "preciceDataName":      "Geometry",                 # name of the vector or scalar to transfer, as given in the precice xml settings file
@@ -180,7 +180,7 @@ config = {
       "enableForceLengthRelation":    True,                      # if the factor f_l(λ_f) modeling the force-length relation (as in Heidlauf2013) should be multiplied. Set to false if this relation is already considered in the CellML model.
       "lambdaDotScalingFactor":       1.0,                       # scaling factor for the output of the lambda dot slot, i.e. the contraction velocity. Use this to scale the unit-less quantity to, e.g., micrometers per millisecond for the subcellular model.
       "slotNames":                    ["lambda", "ldot", "gamma", "T"],   # names of the data connector slots
-      "dynamic":                      False,                     # if the dynamic formulation with velocity or the quasi-static formulation is computed
+      "dynamic":                      True,                     # if the dynamic formulation with velocity or the quasi-static formulation is computed
       
       "OutputWriter" : [
         {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep), "filename": "out/" + variables.scenario_name + "/mechanics", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},

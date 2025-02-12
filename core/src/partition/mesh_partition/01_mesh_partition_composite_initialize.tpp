@@ -1522,8 +1522,7 @@ MeshPartition<FunctionSpace::FunctionSpace<Mesh::CompositeOfDimension<D>,
     }
     result << ", ";
   }
-  result << "]"
-         << ", nElementsLocal: " << nElementsLocal_
+  result << "]" << ", nElementsLocal: " << nElementsLocal_
          << ", nElementsGlobal: " << nElementsGlobal_
          << ", elementNoGlobalBegin: " << elementNoGlobalBegin_
          << ", nNodesSharedLocal: " << nNodesSharedLocal_
@@ -1532,13 +1531,11 @@ MeshPartition<FunctionSpace::FunctionSpace<Mesh::CompositeOfDimension<D>,
   for (int nRemovedNodesNonGhost : nRemovedNodesNonGhost_) {
     result << nRemovedNodesNonGhost << ", ";
   }
-  result << "]"
-         << ", nNonDuplicateNodesWithoutGhosts: [";
+  result << "]" << ", nNonDuplicateNodesWithoutGhosts: [";
   for (int a : nNonDuplicateNodesWithoutGhosts_) {
     result << a << ", ";
   }
-  result << "]"
-         << ", nNodesLocalWithoutGhosts: " << nNodesLocalWithoutGhosts_
+  result << "]" << ", nNodesLocalWithoutGhosts: " << nNodesLocalWithoutGhosts_
          << ", nNodesLocalWithGhosts: " << nNodesLocalWithGhosts_
          << ", nNodesGlobal: " << nNodesGlobal_
          << ", nonDuplicateNodeNoGlobalBegin: "
@@ -1551,8 +1548,7 @@ MeshPartition<FunctionSpace::FunctionSpace<Mesh::CompositeOfDimension<D>,
       result << b << ",";
     result << "],";
   }
-  result << "]"
-         << ", meshAndNodeNoLocalToNodeNoNonDuplicateLocal: [";
+  result << "]" << ", meshAndNodeNoLocalToNodeNoNonDuplicateLocal: [";
 
   for (std::vector<int> a : meshAndNodeNoLocalToNodeNoNonDuplicateLocal_) {
     result << "[";
@@ -1560,8 +1556,7 @@ MeshPartition<FunctionSpace::FunctionSpace<Mesh::CompositeOfDimension<D>,
       result << b << ",";
     result << "],";
   }
-  result << "]"
-         << ", isDuplicate: [";
+  result << "]" << ", isDuplicate: [";
 
   for (std::vector<bool> a : isDuplicate_) {
     result << "[";
@@ -1569,23 +1564,19 @@ MeshPartition<FunctionSpace::FunctionSpace<Mesh::CompositeOfDimension<D>,
       result << b << ",";
     result << "],";
   }
-  result << "]"
-         << ", nodeNoNonDuplicateLocalToMeshAndDuplicateLocal: [";
+  result << "]" << ", nodeNoNonDuplicateLocalToMeshAndDuplicateLocal: [";
 
   for (std::pair<int, node_no_t> a :
        nodeNoNonDuplicateLocalToMeshAndDuplicateLocal_) {
     result << "<" << a.first << "," << a.second << ">,";
   }
-  result << "]"
-         << ", nonDuplicateGhostNodeNosGlobal: [";
+  result << "]" << ", nonDuplicateGhostNodeNosGlobal: [";
   for (PetscInt a : nonDuplicateGhostNodeNosGlobal_)
     result << a << ",";
-  result << "]"
-         << ", onlyNodalDofLocalNos: [";
+  result << "]" << ", onlyNodalDofLocalNos: [";
   for (node_no_t a : onlyNodalDofLocalNos_)
     result << a << ",";
-  result << "]"
-         << ", ghostDofNosGlobalPetsc: [";
+  result << "]" << ", ghostDofNosGlobalPetsc: [";
   for (PetscInt a : ghostDofNosGlobalPetsc_)
     result << a << ",";
   result << "]";

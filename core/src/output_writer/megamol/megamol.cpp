@@ -147,8 +147,7 @@ void MegaMol::writeGeometryField() {
                   rankSubset->mpiCommunicator());
 
     LOG(DEBUG) << ownRankNo << "/" << nRanks << ": \"" << this->filenameBase_
-               << "\" "
-               << "define variable \"xyz\", localSize: " << localSize
+               << "\" " << "define variable \"xyz\", localSize: " << localSize
                << ", offset: " << offset << ", globalSize: " << globalSize;
 
     // name, global size, offset, local size

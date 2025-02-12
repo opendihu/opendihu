@@ -159,8 +159,8 @@ bool SlotConnectorDataHelper<std::vector<
 
     // set the values in the field variable
     LOG(DEBUG) << "slot " << slotNo << ", array index " << arrayIndex << " = ["
-               << arrayIndex1 << "," << arrayIndex2 << "]: "
-               << " in fieldVariable \"" << fieldVariable->name()
+               << arrayIndex1 << "," << arrayIndex2
+               << "]: " << " in fieldVariable \"" << fieldVariable->name()
                << "\", component " << componentNo << ", set dofs "
                << dofNosLocal << " to values " << values;
     fieldVariable->setValues(componentNo, dofNosLocal, values, petscInsertMode);
@@ -177,8 +177,8 @@ bool SlotConnectorDataHelper<std::vector<
 
     // set the values in the field variable
     LOG(DEBUG) << "slot " << slotNo << ", array index " << arrayIndex << " = ["
-               << arrayIndex1 << "," << arrayIndex2 << "]: "
-               << "in fieldVariable \"" << fieldVariable->name()
+               << arrayIndex1 << "," << arrayIndex2
+               << "]: " << "in fieldVariable \"" << fieldVariable->name()
                << "\", component " << componentNo << ", set dofs "
                << dofNosLocal << " to values " << values;
     fieldVariable->setValues(componentNo, dofNosLocal, values, petscInsertMode);
@@ -227,8 +227,8 @@ void SlotConnectorDataHelper<std::vector<
     fieldVariable->getValues(componentNo, dofNosLocal, values);
 
     LOG(DEBUG) << "slot " << slotNo << ", array index " << arrayIndex << " = ["
-               << arrayIndex1 << "," << arrayIndex2 << "]: "
-               << "from fieldVariable \"" << fieldVariable->name()
+               << arrayIndex1 << "," << arrayIndex2
+               << "]: " << "from fieldVariable \"" << fieldVariable->name()
                << "\", component " << componentNo << ", at dofs " << dofNosLocal
                << " get values " << values;
   } else {
@@ -245,8 +245,8 @@ void SlotConnectorDataHelper<std::vector<
     fieldVariable->getValues(componentNo, dofNosLocal, values);
 
     LOG(DEBUG) << "slot " << slotNo << ": array index " << arrayIndex << " = ["
-               << arrayIndex1 << "," << arrayIndex2 << "]: "
-               << "from fieldVariable \"" << fieldVariable->name()
+               << arrayIndex1 << "," << arrayIndex2
+               << "]: " << "from fieldVariable \"" << fieldVariable->name()
                << "\", component " << componentNo << ", at dofs " << dofNosLocal
                << " get values " << values;
   }
@@ -298,8 +298,8 @@ void SlotConnectorDataHelper<std::vector<
 
     // set the values in the field variable
     LOG(DEBUG) << "slot " << slotNo << ", array index " << arrayIndex << " = ["
-               << arrayIndex1 << "," << arrayIndex2 << "]: "
-               << "in fieldVariable \"" << fieldVariable->name()
+               << arrayIndex1 << "," << arrayIndex2
+               << "]: " << "in fieldVariable \"" << fieldVariable->name()
                << "\", function space \""
                << fieldVariable->functionSpace()->meshName() << "\""
                << ", set dofs " << dofNosLocal << " to values " << values;
@@ -314,8 +314,8 @@ void SlotConnectorDataHelper<std::vector<
 
     // set the values in the field variable
     LOG(DEBUG) << "slot " << slotNo << ", array index " << arrayIndex << " = ["
-               << arrayIndex1 << "," << arrayIndex2 << "]: "
-               << "in fieldVariable \"" << fieldVariable->name()
+               << arrayIndex1 << "," << arrayIndex2
+               << "]: " << "in fieldVariable \"" << fieldVariable->name()
                << "\", function space \""
                << fieldVariable->functionSpace()->meshName() << "\""
                << ", set dofs " << dofNosLocal << " to values " << values;
@@ -373,8 +373,8 @@ void SlotConnectorDataHelper<std::vector<
                                                               values);
 
     LOG(DEBUG) << "slot " << slotNo << ", array index " << arrayIndex << " = ["
-               << arrayIndex1 << "," << arrayIndex2 << "]: "
-               << "from fieldVariable \"" << fieldVariable->name()
+               << arrayIndex1 << "," << arrayIndex2
+               << "]: " << "from fieldVariable \"" << fieldVariable->name()
                << "\", function space \""
                << fieldVariable->functionSpace()->meshName() << "\""
                << ", at dofs " << dofNosLocal << " get values " << values;
@@ -390,8 +390,8 @@ void SlotConnectorDataHelper<std::vector<
                                                               values);
 
     LOG(DEBUG) << "slot " << slotNo << ": array index " << arrayIndex << " = ["
-               << arrayIndex1 << "," << arrayIndex2 << "]: "
-               << "from fieldVariable \"" << fieldVariable->name()
+               << arrayIndex1 << "," << arrayIndex2
+               << "]: " << "from fieldVariable \"" << fieldVariable->name()
                << "\", function space \""
                << fieldVariable->functionSpace()->meshName() << "\""
                << ", at dofs " << dofNosLocal << " get values " << values;

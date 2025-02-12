@@ -625,7 +625,7 @@ bool FunctionSpaceStructuredCheckNeighbouringElements<
         }
       }
     } // x
-  }   // y
+  } // y
 
   // if at least one element was found that contains the point, use it and
   // return true
@@ -648,8 +648,7 @@ bool FunctionSpaceStructuredCheckNeighbouringElements<
                               int &ghostMeshNo,
                               std::array<double, MeshType::dim()> &xi,
                               double &residual, double xiTolerance) {
-  VLOG(1) << "  "
-          << "checkNeighbouringElements(elementNo = " << elementNo
+  VLOG(1) << "  " << "checkNeighbouringElements(elementNo = " << elementNo
           << ", ghostMeshNo = " << ghostMeshNo << ", initial xi = " << xi;
 
   const int D = 3;
@@ -905,8 +904,7 @@ bool FunctionSpaceStructuredCheckNeighbouringElements<
                       << this->ghostMesh_[ghostMeshNo]
                              ->meshPartition()
                              ->nElementsLocal(2)
-                      << ")"
-                      << ", (x,y,z) = (" << x << "," << y << "," << z
+                      << ")" << ", (x,y,z) = (" << x << "," << y << "," << z
                       << "), coords " << coordinatesLocal << "->"
                       << neighbourCoordinatesLocal;
             } else {
@@ -961,8 +959,7 @@ bool FunctionSpaceStructuredCheckNeighbouringElements<
                       << this->ghostMesh_[ghostMeshNo]
                              ->meshPartition()
                              ->nElementsLocal(2)
-                      << ")"
-                      << ", (x,y,z) = (" << x << "," << y << "," << z
+                      << ")" << ", (x,y,z) = (" << x << "," << y << "," << z
                       << "), coords " << coordinatesLocal << "->"
                       << neighbourCoordinatesLocal;
             } else {
@@ -1017,8 +1014,7 @@ bool FunctionSpaceStructuredCheckNeighbouringElements<
                       << this->ghostMesh_[ghostMeshNo]
                              ->meshPartition()
                              ->nElementsLocal(2)
-                      << ")"
-                      << ", (x,y,z) = (" << x << "," << y << "," << z
+                      << ")" << ", (x,y,z) = (" << x << "," << y << "," << z
                       << "), coords " << coordinatesLocal << "->"
                       << neighbourCoordinatesLocal;
             } else {
@@ -1073,8 +1069,7 @@ bool FunctionSpaceStructuredCheckNeighbouringElements<
                       << this->ghostMesh_[ghostMeshNo]
                              ->meshPartition()
                              ->nElementsLocal(2)
-                      << ")"
-                      << ", (x,y,z) = (" << x << "," << y << "," << z
+                      << ")" << ", (x,y,z) = (" << x << "," << y << "," << z
                       << "), coords " << coordinatesLocal << "->"
                       << neighbourCoordinatesLocal;
             } else {
@@ -1123,8 +1118,7 @@ bool FunctionSpaceStructuredCheckNeighbouringElements<
                       << this->ghostMesh_[ghostMeshNo]
                              ->meshPartition()
                              ->nElementsLocal(2)
-                      << ")"
-                      << ", (x,y,z) = (" << x << "," << y << "," << z
+                      << ")" << ", (x,y,z) = (" << x << "," << y << "," << z
                       << "), coords " << coordinatesLocal << "->"
                       << neighbourCoordinatesLocal;
             } else {
@@ -1174,8 +1168,7 @@ bool FunctionSpaceStructuredCheckNeighbouringElements<
                       << this->ghostMesh_[ghostMeshNo]
                              ->meshPartition()
                              ->nElementsLocal(2)
-                      << ")"
-                      << ", (x,y,z) = (" << x << "," << y << "," << z
+                      << ")" << ", (x,y,z) = (" << x << "," << y << "," << z
                       << "), coords " << coordinatesLocal << "->"
                       << neighbourCoordinatesLocal;
             } else {
@@ -1224,8 +1217,7 @@ bool FunctionSpaceStructuredCheckNeighbouringElements<
                       << this->ghostMesh_[ghostMeshNo]
                              ->meshPartition()
                              ->nElementsLocal(2)
-                      << ")"
-                      << ", (x,y,z) = (" << x << "," << y << "," << z
+                      << ")" << ", (x,y,z) = (" << x << "," << y << "," << z
                       << "), coords " << coordinatesLocal << "->"
                       << neighbourCoordinatesLocal;
             }
@@ -1271,8 +1263,7 @@ bool FunctionSpaceStructuredCheckNeighbouringElements<
                       << this->ghostMesh_[ghostMeshNo]
                              ->meshPartition()
                              ->nElementsLocal(2)
-                      << ")"
-                      << ", (x,y,z) = (" << x << "," << y << "," << z
+                      << ")" << ", (x,y,z) = (" << x << "," << y << "," << z
                       << "), coords " << coordinatesLocal << "->"
                       << neighbourCoordinatesLocal;
             } else {
@@ -1329,8 +1320,7 @@ bool FunctionSpaceStructuredCheckNeighbouringElements<
                       << this->ghostMesh_[ghostMeshNo]
                              ->meshPartition()
                              ->nElementsLocal(2)
-                      << ")"
-                      << ", (x,y,z) = (" << x << "," << y << "," << z
+                      << ")" << ", (x,y,z) = (" << x << "," << y << "," << z
                       << "), coords " << coordinatesLocal << "->"
                       << neighbourCoordinatesLocal;
             } else {
@@ -1377,8 +1367,7 @@ bool FunctionSpaceStructuredCheckNeighbouringElements<
                       << this->ghostMesh_[ghostMeshNo]
                              ->meshPartition()
                              ->nElementsLocal(2)
-                      << ")"
-                      << ", (x,y,z) = (" << x << "," << y << "," << z
+                      << ")" << ", (x,y,z) = (" << x << "," << y << "," << z
                       << "), coords " << coordinatesLocal << "->"
                       << neighbourCoordinatesLocal;
             } else {
@@ -1439,8 +1428,8 @@ bool FunctionSpaceStructuredCheckNeighbouringElements<
           }
         }
       } // x
-    }   // y
-  }     // z
+    } // y
+  } // z
 
   // if at least one element was found that contains the point, use it and
   // return true

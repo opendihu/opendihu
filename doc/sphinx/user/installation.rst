@@ -20,6 +20,7 @@ In either case, you will have to install Docker first. For that we refer you to 
 
 * Using the pre-built docker image
   * Pull the image from `DockerHub <https://hub.docker.com/r/carmehp/opendihu/tags>`_ 
+<<<<<<< HEAD
     .. code-block:: bash
 
     docker image pull carmehp/opendihu
@@ -27,22 +28,39 @@ In either case, you will have to install Docker first. For that we refer you to 
     .. code-block:: bash
 
     docker run -it carmehp/opendihu
+=======
+    
+    .. code-block:: bash
+
+      docker image pull carmehp/opendihu
+      
+  * Run the image
+    
+    .. code-block:: bash
+
+      docker run -it carmehp/opendihu
+>>>>>>> b50951f370bbc5026d2bc378d07b2623b87e0de1
 
   By default, carmehp/opendihu is equivalent to ``carmehp/opendihu:latest``. If you want to use a different image, then you have to specify its tag: `carmehp/opendihu:<tag_name>`.
 
 * Building the docker image from source
   * Select the image you want to build. All the available options are found in ``tools/docker/``. For example if you want to use the docker image based on Ubuntu 22.04, change to the corresponding directory where the Dockerfile is located.
+    
     .. code-block:: bash
 
-    cd tools/docker/ubuntu22
+      cd tools/docker/ubuntu22
+
   * Build the image. The ``<image_name>`` can be choosen freely. This step will take some time, e.g., 30 minutes - 1 hour.
+    
     .. code-block:: bash
 
-    docker build -t <image_name> .
+      docker build -t <image_name> .
+
   * Run a container of the image. The ``<image_name>`` can be choosen freely.
+    
     .. code-block:: bash
 
-    docker run -it <image_name>  
+      docker run -it <image_name>  
 
 
 .. _Native installation:
@@ -161,7 +179,7 @@ In order for the variable assignments to take effect, either close and reopen th
 
 .. note::
   
-  **IMPORTANT:** Ubuntu 22.04 users need to add ``export OMPI_MCA_osc="^ucx"`` to their `~/.bashrc` file. 
+  **IMPORTANT:** Ubuntu 22.04 users need to add ``export OMPI_MCA_osc="^ucx"`` to their `~/.bashrc` file. Also, if you experience run time error problems like "MPI_err_win", adding `export OMPI_MCA_btl="self,tcp"` should solve it. 
 
 Building with scons
 ----------------------

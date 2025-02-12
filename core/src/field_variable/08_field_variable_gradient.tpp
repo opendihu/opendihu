@@ -4,11 +4,11 @@
 
 namespace FieldVariable {
 
-//#define USE_APPROXIMATE_GRADIENT    // if the method of approximating the
-// gradient by difference quotients between neighouring nodes should be used
+// #define USE_APPROXIMATE_GRADIENT    // if the method of approximating the
+//  gradient by difference quotients between neighouring nodes should be used
 //(this is not so good in general)
-// the alternative is to compute the gradient from the ansatz functions (this is
-// more accurate but bad for badly conditioned elements)
+//  the alternative is to compute the gradient from the ansatz functions (this
+//  is more accurate but bad for badly conditioned elements)
 
 const int CONDITION_TOLERANCE =
     1000; // condition number value, if the condition number is higher, the dof
@@ -230,7 +230,7 @@ void FieldVariableGradient<
                                             ADD_VALUES);
       }
     } // dofIndex
-  }   // elementNoLocal
+  } // elementNoLocal
 
   gradientField->zeroGhostBuffer();
   gradientField->finishGhostManipulation();
@@ -445,7 +445,7 @@ void FieldVariableGradient<
 
       gradientField->setValue(dofNo, gradPhiWorldSpace, ADD_VALUES);
     } // dofIndex
-  }   // elementNoLocal
+  } // elementNoLocal
 
   gradientField->finishGhostManipulation();
 }

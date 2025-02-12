@@ -68,7 +68,7 @@ public:
 protected:
   //! fill auxiliary ghost element data structures, this is only needed for
   //! Dirichlet boundary conditions on scalar fields
-  virtual void initializeGhostElements(){};
+  virtual void initializeGhostElements() {};
 
   //! parse config and extract boundary conditions specified under key
   //! "dirichletBoundaryConditions", store in boundaryConditions
