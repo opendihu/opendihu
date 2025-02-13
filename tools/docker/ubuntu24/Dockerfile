@@ -10,7 +10,7 @@ RUN apt-get update && \
     cmake \
     libffi-dev \
     vim \
-    python-is-python3
+    python-is-python3 python-setuptools
 
 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100
@@ -27,7 +27,7 @@ RUN update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-1
 WORKDIR /workspace
 
 # Clone opendihu
-RUN git clone --branch develop --depth=1 https://github.com/opendihu/opendihu.git  
+RUN git clone --branch develop https://github.com/opendihu/opendihu.git  
 WORKDIR opendihu
 
 # Build opendihu, debug and release target for core, build release unit tests and run tests, build all examples
