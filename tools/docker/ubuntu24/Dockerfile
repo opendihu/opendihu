@@ -19,6 +19,7 @@ RUN apt-get update && \
 # libffi-dev -> Solves error at run time: ModuleNotFoundError: No module named '_ctypes’
 # vim -> optional
 # python-is-python3 -> make `python` point to python3 (needed for some scripts that call python instead of python3)
+# python3-setuptools -> provides `distutils`, needed for PETSc
 
 WORKDIR /workspace
 
