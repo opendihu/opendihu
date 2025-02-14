@@ -6,16 +6,12 @@ RUN apt-get update && \
     git \
     wget unzip \
     build-essential petsc-dev bison flex libeigen3-dev libxml2-dev libboost-all-dev \
-    gcc-11 g++-11 gfortran-11 \
     cmake \
     libffi-dev \
     vim \
-    python-is-python3 python-setuptools
+    python-is-python3 python3-setuptools
 
 
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100
-RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 100
-RUN update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-11 100
 # git -> Dockerfile
 # wget unzip -> Download dependencies
 # build-essential petsc-dev bison flex libeigen3-dev libxml2-dev libboost-all-dev -> PETSc
