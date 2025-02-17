@@ -15,7 +15,7 @@ List known related issues, upcomming work, etc.
 
 ## Author's checklist
 
-* [ ] I used clang-formating.
+* [ ] I used pre-commit.
 * [ ] I updated the documentation.
 * [ ] I updated hard-coded version numbers. 
 
