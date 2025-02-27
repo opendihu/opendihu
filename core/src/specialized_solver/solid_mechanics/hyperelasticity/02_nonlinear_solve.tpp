@@ -45,8 +45,7 @@ void HyperelasticitySolver<Term, withLargeOutput, MeshType,
     previousLoadFactor_ = currentLoadFactor_;
     currentLoadFactor_ = loadFactor;
     if (loadFactors.size() > 1) {
-      LOG(INFO) << "Nonlinear Solver: load factor " << loadFactor << " of list "
-                << loadFactors;
+      LOG(INFO) << "Nonlinear Solver: load factor " << loadFactor;
     }
     if (currentLoadFactor_ < loadFactorGiveUpThreshold_) {
       LOG(WARNING) << "Nonlinear solver reached load factor "

@@ -345,13 +345,7 @@ bool HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
               1e-12)) // if any entry of the deformation gradient is negative
       {
 #ifndef HAVE_STDSIMD
-        LOG(WARNING) << "Deformation gradient " << deformationGradient
-                     << " has zero or negative determinant "
-                     << deformationGradientDeterminant << std::endl
-                     << "Geometry values in element " << elementNoLocal << ": "
-                     << geometryReferenceValues << std::endl
-                     << "Displacements at xi " << xi << ": "
-                     << displacementsValues;
+        LOG(WARNING) << "Deformation gradient has zero or negative determinant.";
 #else
         LOG(WARNING)
             << "Deformation gradient has zero or negative determinant.";
@@ -854,8 +848,7 @@ void HyperelasticityMaterialComputations<
     LOG(FATAL)
         << "The external virtual work, δW_ext,dead contains nan or inf values. "
         << std::endl
-        << "Check that the constantBodyForce (" << this->constantBodyForce_
-        << ") and the Neumann boundary condition values are valid.";
+        << "Check that the constantBodyForce and the Neumann boundary condition values are valid.";
   }
 
   LOG(DEBUG)
@@ -1570,13 +1563,6 @@ bool HyperelasticityMaterialComputations<
               1e-12)) // if any entry of the deformation gradient is negative
       {
 #ifndef HAVE_STDSIMD
-        LOG(WARNING) << "Deformation gradient " << deformationGradient
-                     << " has zero or negative determinant "
-                     << deformationGradientDeterminant << std::endl
-                     << "Geometry values in element " << elementNoLocal << ": "
-                     << geometryReferenceValues << std::endl
-                     << "Displacements at xi " << xi << ": "
-                     << displacementsValues;
 #else
         LOG(WARNING) << "Deformation gradient has zero or negative determinant";
 #endif

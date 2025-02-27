@@ -170,17 +170,10 @@ MappingBetweenMeshesConstruct<FunctionSpaceSourceType,
                     << functionSpaceTarget->meshName()
                     << "\", source dof local " << sourceDofNoLocal
                     << " of mesh \"" << functionSpaceSource->meshName()
-                    << "\" at position " << position
                     << " is outside of target mesh \""
                     << functionSpaceTarget->meshName() << "\" with tolerance "
                     << xiTolerance
                     << ". Try increasing parameter \"xiTolerance\".";
-          LOG(INFO) << "position: " << position
-                    << ", startSearchInCurrentElement: "
-                    << startSearchInCurrentElement << ", xi: " << xi
-                    << ", residual: " << residual
-                    << ", elementNo: " << elementNo
-                    << ", searchedAllElements: " << searchedAllElements;
         }
 
         nSourceDofsOutsideTargetMesh++;
@@ -442,8 +435,7 @@ double MappingBetweenMeshesConstruct<FunctionSpaceSourceType,
 
   if (sourceDofHasContributionToTargetDof)
     LOG(INFO) << "dof: " << targetDofIndex << " -> " << targetDofIndexSubElement
-              << ", xi: " << xi << " -> " << xiSubElement
-              << " phiContribution: " << phiContribution;
+              << ", phiContribution: " << phiContribution;
 
   return phiContribution;
 }

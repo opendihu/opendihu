@@ -181,8 +181,7 @@ PythonUtility::getOptionArray(PyObject *settings, std::string keyString,
       }
     } else {
       LOG(WARNING) << pathString << "[\"" << keyString
-                   << "\"] not found in config, assuming default values "
-                   << defaultValue << ".";
+                   << "\"] not found in config.";
 
       Py_CLEAR(key);
       return defaultValue;

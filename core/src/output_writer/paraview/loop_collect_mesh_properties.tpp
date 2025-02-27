@@ -54,22 +54,12 @@ collectMeshProperties(
     std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
     std::vector<std::string> &meshNamesVector, int i) {
   if (currentFieldVariable == nullptr) {
-    LOG(FATAL) << "In collectMeshProperties, currentFieldVariable is nullptr.\n"
-               << " meshProperties: " << meshProperties
-               << ", fielVariableType: "
-               << StringUtility::demangle(
-                      typeid(CurrentFieldVariableType).name())
-               << " fieldVariables: " << fieldVariables << ", i: " << i;
+    LOG(FATAL) << "In collectMeshProperties, currentFieldVariable is nullptr.";
   }
   assert(currentFieldVariable != nullptr);
   if (!currentFieldVariable->functionSpace()) {
     LOG(DEBUG) << "In collectMeshProperties, "
-                  "currentFieldVariable->functionSpace() is nullptr.\n"
-               << " meshProperties: " << meshProperties
-               << ", fielVariableType: "
-               << StringUtility::demangle(
-                      typeid(CurrentFieldVariableType).name())
-               << " fieldVariables: " << fieldVariables << ", i: " << i;
+                  "currentFieldVariable->functionSpace() is nullptr.";
     return false;
   }
   assert(currentFieldVariable->functionSpace());

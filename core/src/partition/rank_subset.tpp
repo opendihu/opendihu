@@ -75,8 +75,7 @@ RankSubset::RankSubset(Iter ranksBegin, Iter ranksEnd,
         LOG(WARNING) << "Resizing nRanks from " << rankNo_.size() << " entr"
                      << (rankNo_.size() == 1 ? "y" : "ies") << " to "
                      << nRanksInCommunicator << " entr"
-                     << (nRanksInCommunicator == 1 ? "y" : "ies")
-                     << ", rankNo_: " << rankNo_ << ", parentRankSubset: ";
+                     << (nRanksInCommunicator == 1 ? "y" : "ies");
 
         if (parentRankSubset)
           LOG(INFO) << *parentRankSubset;

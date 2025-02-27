@@ -460,15 +460,12 @@ void CellmlAdapterBase<nStates_, nAlgebraics_, FunctionSpaceType>::
                   << "\" is not valid. "
                   << "But it is an algebraic! Use (\"algebraic\", \""
                   << stateName
-                  << "\") instead or only specify the name without the tuple.\n"
-                  << "In case you really wanted a state, the valid state names "
-                     "are: "
-                  << stateNames << ".";
+                  << "\") instead or only specify the name without the tuple.";
+             
             } else {
               LOG(ERROR) << "In " << this->specificSettings_
                          << "[\"mappings\"], state \"" << stateName
                          << "\" is not valid. "
-                         << "Valid state names are: " << stateNames << ".\n"
                          << "You can also specify the state no. (index of "
                             "STATES[] array in C file) instead of the name.";
             }
@@ -500,16 +497,12 @@ void CellmlAdapterBase<nStates_, nAlgebraics_, FunctionSpaceType>::
                   << "[\"mappings\"], algebraic \"" << algebraicName
                   << "\" is not valid. "
                   << "But it is a state! Use (\"state\", \"" << algebraicName
-                  << "\") instead or only specify the name without the tuple.\n"
-                  << "In case you really wanted an algebraic, the valid "
-                     "algebraic names are: "
-                  << algebraicNames << ".\n";
+                  << "\") instead or only specify the name without the tuple.";
             } else {
               LOG(ERROR)
                   << "In " << this->specificSettings_
                   << "[\"mappings\"], algebraic \"" << algebraicName
                   << "\" is not valid. "
-                  << "Valid algebraic names are: " << algebraicNames << ".\n"
                   << "You can also specify the algebraic no. (index of "
                      "ALGEBRAICS[] array in C file) instead of the name.";
             }
@@ -534,7 +527,6 @@ void CellmlAdapterBase<nStates_, nAlgebraics_, FunctionSpaceType>::
             LOG(ERROR) << "In " << this->specificSettings_
                        << "[\"mappings\"], constant \"" << constantName
                        << "\" is not valid. "
-                       << "Valid constant names are: " << constantNames << ".\n"
                        << "You can also specify the constant no. (index of "
                           "CONSTANTS[] array in C file) instead of the name.";
           }

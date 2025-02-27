@@ -34,8 +34,7 @@ Structured<D>::Structured(PythonConfig specificSettings)
       if (this->nElementsPerCoordinateDirectionGlobal_[i] > global_no_t(-10)) {
         LOG(FATAL) << "For mesh \"" << this->meshName_
                    << "\" the option \"nElements\" is set to "
-                   << this->nElementsPerCoordinateDirectionGlobal_
-                   << " (probably negative).";
+                   << " probably negative.";
       }
     }
     LOG(DEBUG) << "set global number of elements from settings: "

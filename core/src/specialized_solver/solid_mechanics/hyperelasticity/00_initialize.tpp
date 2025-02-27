@@ -67,12 +67,7 @@ HyperelasticityInitialize<
              << materialParameters_;
 
   if (materialParameters_.size() != Term::nMaterialParameters) {
-    LOG(FATAL) << "A wrong number of material parameters was specified. "
-                  "Specified parameters: "
-               << materialParameters_.size() << " (" << materialParameters_
-               << "), needed parameters by "
-               << StringUtility::demangle(typeid(Term).name()) << ": "
-               << Term::nMaterialParameters;
+    LOG(FATAL) << "A wrong number of material parameters was specified.";
   }
 
   // initialize material parameters

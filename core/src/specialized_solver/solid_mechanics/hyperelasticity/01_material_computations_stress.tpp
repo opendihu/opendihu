@@ -445,7 +445,6 @@ HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
         if (Vc::any_of(MathUtility::abs(sBar - fictitiousPK2Stress[b][a]) >
                        errorTolerance)) {
           LOG(ERROR) << "mismatch in Sbar_" << a << b
-                     << ": derived: " << fictitiousPK2Stress
                      << ", Mooney Rivlin explicit formula: " << sBar;
           mismatch = true;
         }
@@ -670,17 +669,7 @@ void HyperelasticityMaterialComputations<
             << "J = det(F) is negative, in computation of PK2 stresses.\n";
 #else
         LOG(ERROR) << "J = det(F) = " << deformationGradientDeterminant
-                   << " is negative, in computation of PK2 stresses.\n"
-                   << "Element no. " << elementNoLocal << " ("
-                   << elementNoLocalv << "), xi=" << xi
-                   << ", det(material jacobian): " << jacobianDeterminant
-                   << ", displacementsValues: " << displacementsValues[0] << ","
-                   << displacementsValues[1]
-                   << ", deformationGradient: " << deformationGradient
-                   << ", inverseJacobianMaterial: " << inverseJacobianMaterial
-                   << ", geometryReferenceValues: "
-                   << geometryReferenceValues[0] << ","
-                   << geometryReferenceValues[1];
+                   << " is negative, in computation of PK2 stresses.";
 #endif
       }
 

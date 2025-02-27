@@ -286,8 +286,6 @@ void MuscleContractionSolver<
     Control::PerformanceMeasurement::stop(this->durationLogKey_ +
                                           std::string("_map_geometry"));
 
-  LOG(INFO) << "initializeMappingBetweenMeshes, meshNamesOfGeometryToMapTo_="
-            << meshNamesOfGeometryToMapTo_;
 
   if (!meshNamesOfGeometryToMapTo_.empty()) {
     bool reverseMappingOrder =

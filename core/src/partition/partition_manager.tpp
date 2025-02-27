@@ -98,7 +98,7 @@ Manager::createPartitioningStructuredLocal(
 
   if (rankSubset->size() != nRanksTotal && !nextRankSubset_) {
     LOG(ERROR) << specificSettings.getStringPath() << ": You specified "
-               << nRanksTotal << " ranks (" << nRanks << ") but only "
+               << nRanksTotal << " ranks but only "
                << nRanksSubsetCommunicator << " are available.\n";
 
     LOG(FATAL) << specificSettings.getStringPath()
@@ -107,7 +107,7 @@ Manager::createPartitioningStructuredLocal(
                << "Therefore, it is not known which ranks should be on this "
                   "mesh. However, you could set \"rankNos\".\n"
                << "rankSubset: " << *rankSubset << " contains "
-               << rankSubset->size() << " ranks, nRanks: " << nRanks
+               << rankSubset->size() << " ranks"
                << ", (total " << nRanksTotal
                << "), nextRankSubset_ is nullptr.";
   }
@@ -116,7 +116,7 @@ Manager::createPartitioningStructuredLocal(
     LOG(ERROR) << specificSettings.getStringPath() << ": Number of ranks ("
                << nRanksSubsetCommunicator
                << ") in rank subset does not match given nRanks in config "
-               << nRanks << ", total " << nRanksTotal << ".";
+               << ", total " << nRanksTotal << ".";
   }
 
   std::array<int, 3> rankGridCoordinate(
@@ -250,17 +250,7 @@ Manager::createPartitioningStructuredLocal(
     LOG(FATAL) << specificSettings.getStringPath()
                << ": The specified partitioning is invalid. "
                << "You set \"inputMeshIsGlobal\": False and specified "
-               << "the local number of elements for each rank with \"nRanks\": "
-               << nRanks << "\n"
-               << "On rank " << rankNoSubsetCommunicator
-               << " (rank grid coordinates " << rankGridCoordinate << ")"
-               << ", the local number of elements is: " << nElementsLocal
-               << ".\n"
-               << "The determined global number of elements is: "
-               << ownGlobalSizeMpi
-               << ", however, rank 0 determines the global number of elements "
-                  "differently, as: "
-               << globalSizeMpi << ".\n"
+               << "the local number of elements for each rank."
                << "Make sure that the \"nElements\" options on every rank "
                   "define a regular grid in space.";
   }

@@ -198,9 +198,7 @@ void MeshPartition<FunctionSpace::FunctionSpace<MeshType, BasisFunctionType>,
       CHKERRV(ierr);
       ierr = DMSetUp(*dmElements_);
       if (ierr)
-        LOG(ERROR) << "Could not create 1D decomposition of domain with "
-                   << nElementsGlobal_ << " global elements for " << nRanks_
-                   << " MPI ranks";
+        LOG(ERROR) << "Could not create 1D decomposition of domain.";
       CHKERRV(ierr);
 
       // get global coordinates of local partition
@@ -248,9 +246,7 @@ void MeshPartition<FunctionSpace::FunctionSpace<MeshType, BasisFunctionType>,
       CHKERRV(ierr);
       ierr = DMSetUp(*dmElements_);
       if (ierr)
-        LOG(ERROR) << "Could not create 2D decomposition of domain with "
-                   << nElementsGlobal_ << " global elements for " << nRanks_
-                   << " MPI ranks";
+        LOG(ERROR) << "Could not create 2D decomposition of domain.";
       CHKERRV(ierr);
 
       // get global coordinates of local partition
@@ -308,9 +304,7 @@ void MeshPartition<FunctionSpace::FunctionSpace<MeshType, BasisFunctionType>,
         CHKERRV(ierr);
         ierr = DMSetUp(*dmElements_);
         if (ierr)
-          LOG(ERROR) << "Could not create 3D decomposition of domain with "
-                     << nElementsGlobal_ << " global elements for " << nRanks_
-                     << " MPI ranks";
+          LOG(ERROR) << "Could not create 3D decomposition of domain.";
         CHKERRV(ierr);
 
         // get global coordinates of local partition
@@ -376,9 +370,7 @@ void MeshPartition<FunctionSpace::FunctionSpace<MeshType, BasisFunctionType>,
           CHKERRV(ierr);
           ierr = DMSetUp(*dmElements_);
           if (ierr)
-            LOG(ERROR) << "Could not create 2D decomposition of domain with "
-                       << nElementsGlobal_ << " global elements for " << nRanks_
-                       << " MPI ranks";
+            LOG(ERROR) << "Could not create 2D decomposition of domain.";
           CHKERRV(ierr);
 
           // get global coordinates of local partition
@@ -424,9 +416,7 @@ void MeshPartition<FunctionSpace::FunctionSpace<MeshType, BasisFunctionType>,
           CHKERRV(ierr);
           ierr = DMSetUp(*dmElements_);
           if (ierr)
-            LOG(ERROR) << "Could not create 2D decomposition of domain with "
-                       << nElementsGlobal_ << " global elements for " << nRanks_
-                       << " MPI ranks";
+            LOG(ERROR) << "Could not create 2D decomposition of domain.";
           CHKERRV(ierr);
 
           // get global coordinates of local partition
@@ -472,9 +462,7 @@ void MeshPartition<FunctionSpace::FunctionSpace<MeshType, BasisFunctionType>,
           CHKERRV(ierr);
           ierr = DMSetUp(*dmElements_);
           if (ierr)
-            LOG(ERROR) << "Could not create 2D decomposition of domain with "
-                       << nElementsGlobal_ << " global elements for " << nRanks_
-                       << " MPI ranks";
+            LOG(ERROR) << "Could not create 2D decomposition of domain with.";
           CHKERRV(ierr);
 
           // get global coordinates of local partition

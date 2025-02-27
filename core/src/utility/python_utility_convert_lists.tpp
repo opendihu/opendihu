@@ -241,8 +241,7 @@ struct PythonUtility::convertFromPython<std::array<ValueType, nComponents>> {
       if (iEnd < nComponents && enableWarnings) {
         LOG(WARNING) << "Python list only contains " << iEnd << " values, but "
                      << nComponents
-                     << " are required. Filling rest with default values."
-                     << " Parsed values: " << result;
+                     << " are required. Filling rest with default values.";
       }
       return result;
     } else if (PyTuple_Check(object)) {
@@ -261,8 +260,7 @@ struct PythonUtility::convertFromPython<std::array<ValueType, nComponents>> {
       if (iEnd < nComponents && enableWarnings) {
         LOG(WARNING) << "Python tuple only contains " << iEnd << " values, but "
                      << nComponents
-                     << " are required. Filling rest with default values."
-                     << " Parsed values: " << result;
+                     << " are required. Filling rest with default values.";
       }
       return result;
     } else if (PyDict_Check(object)) {
@@ -291,8 +289,7 @@ struct PythonUtility::convertFromPython<std::array<ValueType, nComponents>> {
       if (nComponents > 1 && enableWarnings) {
         LOG(WARNING) << "Expected python list with " << nComponents
                      << " entries, but only a single value was found. Filling "
-                        "rest with default values."
-                     << " Parsed values: " << result;
+                        "rest with default values.";
       }
       return result;
     }

@@ -167,14 +167,7 @@ void CallbackHandler<nStates, nAlgebraics_, FunctionSpaceType>::
 
     // error checking on parameter
     if (parameterNo >= this->cellmlSourceCodeGenerator_.nParameters()) {
-      LOG(FATAL) << "In setSpecificParametersFunction: the parameters have an "
-                    "assignment "
-                 << "parameters[(coordinatesGlobal=" << coordinatesGlobal
-                 << ", nodalDofIndex=" << nodalDofIndex
-                 << ", parameterNo=" << parameterNo << ")] = " << value
-                 << ". But there are only "
-                 << this->cellmlSourceCodeGenerator_.nParameters()
-                 << " specified. Set \"parametersUsedAsAlgebraic\" and "
+      LOG(FATAL) << "Set \"parametersUsedAsAlgebraic\" and "
                     "\"parametersUsedAsConstant\" appropriately.";
     }
 
@@ -200,15 +193,7 @@ void CallbackHandler<nStates, nAlgebraics_, FunctionSpaceType>::
       const int index = parameterNo * nDofsLocalWithoutGhosts + dofNoLocal;
 
       if (index >= nParameters * nDofsLocalWithoutGhosts) {
-        LOG(FATAL) << "in setSpecificParametersFunction: the parameters have "
-                      "an assignment "
-                   << "parameters[(coordinatesGlobal=" << coordinatesGlobal
-                   << ", nodalDofIndex=" << nodalDofIndex
-                   << ", parameterNo=" << parameterNo << ")] = " << value
-                   << ".\n " << "The global coordinates, " << coordinatesGlobal
-                   << " refer to local dof " << dofNoLocal << ". There are "
-                   << nDofsLocalWithoutGhosts << " local dofs in total.\n"
-                   << "There are "
+        LOG(FATAL) << "There are "
                    << this->cellmlSourceCodeGenerator_.nParameters() << "="
                    << nParameters << " parameters.\n"
                    << "The local field of parameters has "

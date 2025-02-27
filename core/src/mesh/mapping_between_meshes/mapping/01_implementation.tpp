@@ -279,8 +279,7 @@ void MappingBetweenMeshesImplementation<FunctionSpaceTargetType,
 
     if (fabs(scalingFactorsSum - 1.0) > 1e-10)
       LOG(ERROR) << "Scaling factors do not sum to 1, scalingFactorsSum: "
-                 << scalingFactorsSum
-                 << ", scalingFactors: " << targetElement.scalingFactors;
+                 << scalingFactorsSum;
 
     VecD<nComponents> targetValue = sourceValues * targetElement.scalingFactors;
     fieldVariableTarget.setValue(targetDofNoLocal, targetValue, INSERT_VALUES);
