@@ -59,7 +59,7 @@ collectMeshProperties(
                << ", fielVariableType: "
                << StringUtility::demangle(
                       typeid(CurrentFieldVariableType).name())
-               << " fieldVariables: " << fieldVariables << ", i: " << i;
+               << " fieldVariables: " << ", i: " << i;
   }
   assert(currentFieldVariable != nullptr);
   if (!currentFieldVariable->functionSpace()) {
@@ -69,7 +69,7 @@ collectMeshProperties(
                << ", fielVariableType: "
                << StringUtility::demangle(
                       typeid(CurrentFieldVariableType).name())
-               << " fieldVariables: " << fieldVariables << ", i: " << i;
+               << " fieldVariables: " << ", i: " << i;
     return false;
   }
   assert(currentFieldVariable->functionSpace());
