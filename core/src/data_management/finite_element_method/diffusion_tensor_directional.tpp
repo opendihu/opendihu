@@ -132,7 +132,7 @@ DiffusionTensorDirectional<FunctionSpaceType>::diffusionTensor(
     if (VLOG_IS_ON(1))
       VLOG(1) << "elementNoLocal " << elementNoLocal
               << ", factor: " << spatiallyVaryingPrefactor
-              << ", scaled diffusionTensor: " << diffusionTensor;
+              << ", scaled diffusionTensor: " << diffusionTensor.data();
   }
 
   // check if diffusion tensor contains nan values
@@ -152,12 +152,12 @@ DiffusionTensorDirectional<FunctionSpaceType>::diffusionTensor(
                 << " elemental direction values: " << elementalValues;
       LOG(INFO) << ", spatiallyVaryingPrefactor: " << spatiallyVaryingPrefactor;
       LOG(INFO) << "diffusionTensor from settings: " << std::endl
-                << this->diffusionTensor_.value(elementNoLocal);
+                << this->diffusionTensor_.value(elementNoLocal).data();
       LOG(INFO) << "additionalDiffusionTensor: " << std::endl
-                << this->additionalDiffusionTensor_.value(elementNoLocal);
+                << this->additionalDiffusionTensor_.value(elementNoLocal).data();
       LOG(INFO) << "resulting diffusion tensor in direction " << directionVector
                 << ":" << std::endl
-                << diffusionTensor;
+                << diffusionTensor.data();
     }
   } else if (D == 2) {
     if (!MathUtility::isFinite(diffusionTensor[0]) ||
@@ -168,9 +168,9 @@ DiffusionTensorDirectional<FunctionSpaceType>::diffusionTensor(
       LOG(INFO) << "elementNoLocal: " << elementNoLocal << ", xi: " << xi;
       LOG(INFO) << "directionVector: " << directionVector
                 << " elemental direction values: " << elementalValues;
-      LOG(INFO) << "diffusionTensor: " << diffusionTensor
+      LOG(INFO) << "diffusionTensor: " << diffusionTensor.data()
                 << ", this->additionalDiffusionTensor: "
-                << this->additionalDiffusionTensor_.value(elementNoLocal)
+                << this->additionalDiffusionTensor_.value(elementNoLocal).data()
                 << ", spatiallyVaryingPrefactor: " << spatiallyVaryingPrefactor;
     }
   } else if (D == 1) {
@@ -179,9 +179,9 @@ DiffusionTensorDirectional<FunctionSpaceType>::diffusionTensor(
       LOG(INFO) << "elementNoLocal: " << elementNoLocal << ", xi: " << xi;
       LOG(INFO) << "directionVector: " << directionVector
                 << " elemental direction values: " << elementalValues;
-      LOG(INFO) << "diffusionTensor: " << diffusionTensor
+      LOG(INFO) << "diffusionTensor: " << diffusionTensor.data()
                 << ", this->additionalDiffusionTensor: "
-                << this->additionalDiffusionTensor_.value(elementNoLocal)
+                << this->additionalDiffusionTensor_.value(elementNoLocal).data()
                 << ", spatiallyVaryingPrefactor: " << spatiallyVaryingPrefactor;
     }
   }
