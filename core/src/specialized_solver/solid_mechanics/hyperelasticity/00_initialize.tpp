@@ -284,8 +284,8 @@ void HyperelasticityInitialize<
       LOG(DEBUG) << "displacements function space type: "
                  << StringUtility::demangle(
                         typeid(DisplacementsFunctionSpace).name());
-      LOG(DEBUG) << "displacements function space mesh partition: "
-                 << *this->displacementsFunctionSpace_->meshPartition();
+      // LOG(DEBUG) << "displacements function space mesh partition: "
+      //            << *this->displacementsFunctionSpace_->meshPartition();
 
       std::vector<Vec3> fiberDirections(
           this->displacementsFunctionSpace_->nDofsLocalWithGhosts(),
