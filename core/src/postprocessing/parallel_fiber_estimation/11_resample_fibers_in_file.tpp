@@ -267,8 +267,6 @@ void ParallelFiberEstimation<BasisFunctionType>::stretchMeshAtCornersInFile(
               sin(indexPhi)); // sin(phi) = g/h = y/maxR => maxR = y/sin(phi)
 
         double relativeR = fabs(indexR / maxR);
-        double m = 0.9; // 0.9        // parameter 0 << m <= 1, how much the
-                        // edge elements will be stretches, higher m means more
         // double xx = (relativeR*m);
         // double scalingFunction1 = asin(xx) / asin(m);
 
