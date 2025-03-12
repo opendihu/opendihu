@@ -4,9 +4,7 @@
 
 #include "control/precice/nested_solver.h"
 
-#ifdef HAVE_PRECICE
 #include "precice/precice.hpp"
-#endif
 
 namespace Control {
 
@@ -25,7 +23,6 @@ public:
   //! initialize the object
   void initialize();
 
-#ifdef HAVE_PRECICE
 
   using PreciceAdapterNestedSolver<NestedSolver>::FunctionSpace;
   // typedef typename NestedSolver::FunctionSpace VolumeFunctionSpace;
@@ -140,8 +137,6 @@ public:
 
   bool inMuscleMeshTopA(const double x, const double y, const double z);
 
-#endif
-
   DihuContext context_; //< object that contains the python config for the
                         // current context and the global singletons meshManager
                         // and solverManager
@@ -151,7 +146,6 @@ public:
   NestedSolver
       nestedSolver_; //< the nested solver that is controlled by this class
 
-#ifdef HAVE_PRECICE
   std::string preciceParticipantName_; //< name of the participant as given in
                                        // the precice config
   std::shared_ptr<precice::Participant>
@@ -169,8 +163,6 @@ public:
   std::shared_ptr<
       typename PreciceAdapterNestedSolver<NestedSolver>::FunctionSpace>
       functionSpace_; //< the function space of the nested solver
-
-#endif
 
   bool ownRankIsInvolved_; //< if the own rank has part of a coupling surface
                            // and is involved in the coupling
