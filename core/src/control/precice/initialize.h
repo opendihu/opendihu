@@ -23,7 +23,6 @@ public:
   //! initialize the object
   void initialize();
 
-
   using PreciceAdapterNestedSolver<NestedSolver>::FunctionSpace;
   // typedef typename NestedSolver::FunctionSpace VolumeFunctionSpace;
 
