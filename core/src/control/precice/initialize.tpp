@@ -505,6 +505,4 @@ void PreciceAdapterInitialize<
                                        dirichletBoundaryConditionElements);
 }
 
-#endif
-
 } // namespace Control
