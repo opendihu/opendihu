@@ -31,7 +31,45 @@ el_x, el_y, el_z = 2, 2, 4                     # number of elements
 fiber_direction = [0, 0, 1] # direction of fiber in element
 
 mesh3D_nodes = []
-for z in [0,1.25,2.5,3.75,5,6.25,7.5,8.75,10]:
+
+ox= 0.6
+oxx = 0.15
+oxxx = 0.05
+
+for z in np.linspace(0, 12, 9):
+    # for y in np.linspace(0, 4, 5):
+    #     for x in np.linspace(0, 4, 5):
+    #         mesh3D_nodes.append([x,y,z])
+    mesh3D_nodes.append([0.0 + ox, 0.0+ox, z])
+    mesh3D_nodes.append([1.0+oxx, 0.0+oxx, z])
+    mesh3D_nodes.append([2.0, 0.0, z])
+    mesh3D_nodes.append([3.0-oxx, 0.0+oxx, z])
+    mesh3D_nodes.append([4.0-ox, 0.0+ox, z])
+
+    mesh3D_nodes.append([0.0 + oxx, 1.0 + oxx, z])
+    mesh3D_nodes.append([1.0+oxxx, 1.0+oxxx, z])
+    mesh3D_nodes.append([2.0, 1.0, z])
+    mesh3D_nodes.append([3.0-oxxx, 1.0+oxxx, z])
+    mesh3D_nodes.append([4.0-oxx, 1.0+oxx, z])
+
+    mesh3D_nodes.append([0.0, 2.0, z])
+    mesh3D_nodes.append([1.0, 2.0, z])
+    mesh3D_nodes.append([2.0, 2.0, z])
+    mesh3D_nodes.append([3.0, 2.0, z])
+    mesh3D_nodes.append([4.0, 2.0, z])
+
+    mesh3D_nodes.append([0.0 + oxx, 3.0-oxx, z])
+    mesh3D_nodes.append([1.0+oxx, 3.0-oxxx, z])
+    mesh3D_nodes.append([2.0, 3.0, z])
+    mesh3D_nodes.append([3.0-oxxx, 3.0-oxxx, z])
+    mesh3D_nodes.append([4.0-oxx, 3.0-oxx, z])
+
+    mesh3D_nodes.append([0.0+ox, 4.0-ox, z])
+    mesh3D_nodes.append([1.0+oxx, 4.0-oxx, z])
+    mesh3D_nodes.append([2.0, 4.0, z])
+    mesh3D_nodes.append([3.0-oxx, 4.0-oxx, z])
+    mesh3D_nodes.append([4.0-ox, 4.0-ox, z])
+# for z in [0,1.25,2.5,3.75,5,6.25,7.5,8.75,10]:
     # for y in [1.5,3.0,4.5,6.0,7.5]:
     #      for x in [1.5,3.0,4.5,6.0,7.5]:
     #           mesh3D_nodes.append([x,y,z])
@@ -44,39 +82,39 @@ for z in [0,1.25,2.5,3.75,5,6.25,7.5,8.75,10]:
     # mesh3D_nodes.append([2.3,6.7,z])
     # mesh3D_nodes.append([4.5,7.5,z])
     # mesh3D_nodes.append([6.7,6.7,z])
-    ox = 0.8
-    oxx = 0.2
-    oxxx = 0.15
+    # ox = 0.8
+    # oxx = 0.2
+    # oxxx = 0.15
 
-    mesh3D_nodes.append([1.5 + ox,1.5 + ox,z])
-    mesh3D_nodes.append([3.0 + oxx,1.5+oxx,z])
-    mesh3D_nodes.append([4.5,1.5,z])
-    mesh3D_nodes.append([6.0-oxx,1.5+oxx,z])
-    mesh3D_nodes.append([7.5-ox,1.5+ox,z])
+    # mesh3D_nodes.append([1.5 + ox,1.5 + ox,z])
+    # mesh3D_nodes.append([3.0 + oxx,1.5+oxx,z])
+    # mesh3D_nodes.append([4.5,1.5,z])
+    # mesh3D_nodes.append([6.0-oxx,1.5+oxx,z])
+    # mesh3D_nodes.append([7.5-ox,1.5+ox,z])
 
-    mesh3D_nodes.append([1.5+oxx,3.0+oxx,z])
-    mesh3D_nodes.append([3.0+oxxx,3.0+oxxx,z])
-    mesh3D_nodes.append([4.5,3.0,z])
-    mesh3D_nodes.append([6.0-oxxx,3.0+oxxx,z])
-    mesh3D_nodes.append([7.5-oxx,3.0+oxx,z])
+    # mesh3D_nodes.append([1.5+oxx,3.0+oxx,z])
+    # mesh3D_nodes.append([3.0+oxxx,3.0+oxxx,z])
+    # mesh3D_nodes.append([4.5,3.0,z])
+    # mesh3D_nodes.append([6.0-oxxx,3.0+oxxx,z])
+    # mesh3D_nodes.append([7.5-oxx,3.0+oxx,z])
 
-    mesh3D_nodes.append([1.5,4.5,z])
-    mesh3D_nodes.append([3.0,4.5,z])
-    mesh3D_nodes.append([4.5,4.5,z])
-    mesh3D_nodes.append([6.0,4.5,z])
-    mesh3D_nodes.append([7.5,4.5,z])
+    # mesh3D_nodes.append([1.5,4.5,z])
+    # mesh3D_nodes.append([3.0,4.5,z])
+    # mesh3D_nodes.append([4.5,4.5,z])
+    # mesh3D_nodes.append([6.0,4.5,z])
+    # mesh3D_nodes.append([7.5,4.5,z])
 
-    mesh3D_nodes.append([1.5+oxx,6.0-oxx,z])
-    mesh3D_nodes.append([3.0+oxxx,6.0-oxxx,z])
-    mesh3D_nodes.append([4.5,6.0,z])
-    mesh3D_nodes.append([6.0-oxxx,6.0-oxxx,z])
-    mesh3D_nodes.append([7.5-oxx,6.0-oxx,z])
+    # mesh3D_nodes.append([1.5+oxx,6.0-oxx,z])
+    # mesh3D_nodes.append([3.0+oxxx,6.0-oxxx,z])
+    # mesh3D_nodes.append([4.5,6.0,z])
+    # mesh3D_nodes.append([6.0-oxxx,6.0-oxxx,z])
+    # mesh3D_nodes.append([7.5-oxx,6.0-oxx,z])
 
-    mesh3D_nodes.append([1.5+ox,7.5-ox,z])
-    mesh3D_nodes.append([3.0+oxx,7.5-oxx,z])
-    mesh3D_nodes.append([4.5,7.5,z])
-    mesh3D_nodes.append([6.0-oxx,7.5-oxx,z])
-    mesh3D_nodes.append([7.5-ox,7.5-ox,z])
+    # mesh3D_nodes.append([1.5+ox,7.5-ox,z])
+    # mesh3D_nodes.append([3.0+oxx,7.5-oxx,z])
+    # mesh3D_nodes.append([4.5,7.5,z])
+    # mesh3D_nodes.append([6.0-oxx,7.5-oxx,z])
+    # mesh3D_nodes.append([7.5-ox,7.5-ox,z])
 
 print(mesh3D_nodes)
 
@@ -91,10 +129,10 @@ meshes = { # create 3D mechanics mesh
     }
 }
 
-with open("../circle.json","r") as f:
+with open("../cylinder.json","r") as f:
 	fdata = json.load(f)
 
-fb_points = 11           # number of points per fiber
+fb_points = 99           # number of points per fiber
 
 fiber_idx = 0
 for fiber in fdata:
