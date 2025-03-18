@@ -38,7 +38,6 @@ bool PreciceAdapterInitialize<NestedSolver>::inMuscleMeshTopA(const double x,
 
 template <typename NestedSolver>
 void PreciceAdapterInitialize<NestedSolver>::initialize() {
-#ifdef HAVE_PRECICE
 
   LOG(DEBUG) << "initialize precice adapter, initialized_=" << initialized_;
 
@@ -138,13 +137,8 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
   //  parse scalingFactor from settings
   scalingFactor_ = this->specificSettings_.getOptionDouble("scalingFactor", 1);
 
-#else
-  LOG(FATAL) << "Failed to initialize PreciceAdapter (surface coupling) "
-                "because opendihu is not compiled with preCICE.";
-#endif
 }
 
-#ifdef HAVE_PRECICE
 template <typename NestedSolver>
 void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceMeshes() {
   if (functionSpace_->dimension() < 3) {
@@ -510,7 +504,5 @@ void PreciceAdapterInitialize<
   this->addDirichletBoundaryConditions(nestedSolver_,
                                        dirichletBoundaryConditionElements);
 }
-
-#endif
 
 } // namespace Control
