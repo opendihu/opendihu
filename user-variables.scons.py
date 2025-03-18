@@ -25,7 +25,6 @@ cmake="cmake"      # cmake command
 PETSC_DOWNLOAD = True
 #PETSC_DIR = "/usr/lib/petsc/"
 
-SCR_DOWNLOAD = True
 HDF5_DOWNLOAD = True
 NLOHMANNJSON_DOWNLOAD = False
 
