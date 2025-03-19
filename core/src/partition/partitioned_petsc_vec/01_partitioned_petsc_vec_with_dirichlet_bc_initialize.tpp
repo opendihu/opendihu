@@ -21,8 +21,6 @@ void PartitionedPetscVecWithDirichletBc<
              << ", ghost dof nos global/petsc: "
              << this->meshPartition_->ghostDofNosGlobalPetsc();
 
-  VLOG(1) << "meshPartition: " << *this->meshPartition_;
-
   if (!nDofRequestedFromRanks_.empty()) {
     LOG(FATAL) << "is already initialized";
   }

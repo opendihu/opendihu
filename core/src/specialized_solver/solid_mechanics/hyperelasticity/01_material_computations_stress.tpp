@@ -126,11 +126,11 @@ HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
 
   // the following line gives linker errors in debug target
   // VLOG(2) << "coupled term: " << Term::strainEnergyDensityFunctionCoupled;
-  VLOG(2) << "invariants: I1: " << Term::I1 << " = " << I1
-          << ", I2: " << Term::I2 << ", I3: " << Term::I3 << " = " << I3;
-  VLOG(2) << "∂ψ/∂I1: " << dPsi_dI1Expression << " = " << dPsi_dI1;
-  VLOG(2) << "∂ψ/∂I2: " << dPsi_dI2Expression << " = " << dPsi_dI2;
-  VLOG(2) << "∂ψ/∂I3: " << dPsi_dI3Expression << " = " << dPsi_dI3;
+  // VLOG(2) << "invariants: I1: " << Term::I1 << " = " << I1
+  //         << ", I2: " << Term::I2 << ", I3: " << Term::I3 << " = " << I3;
+  // VLOG(2) << "∂ψ/∂I1: " << dPsi_dI1Expression << " = " << dPsi_dI1;
+  // VLOG(2) << "∂ψ/∂I2: " << dPsi_dI2Expression << " = " << dPsi_dI2;
+  // VLOG(2) << "∂ψ/∂I3: " << dPsi_dI3Expression << " = " << dPsi_dI3;
 
   double_v_t coupledFormFactor1 = 2 * (dPsi_dI1 + I1 * dPsi_dI2);
   double_v_t coupledFormFactor2 = -2 * dPsi_dI2;

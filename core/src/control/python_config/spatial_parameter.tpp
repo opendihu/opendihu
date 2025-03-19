@@ -20,7 +20,6 @@ void SpatialParameterBase<FunctionSpaceType, ValueType>::initialize(
   // default value
   if (pyObject == Py_None) {
     LOG(WARNING) << path.str() << " not set in \"" << Control::settingsFileName
-                 << "\"." << " Assuming default value \"" << defaultValue
                  << "\".";
     values_.resize(1, defaultValue);
     valueIndices_.resize(functionSpace->nElementsLocal(), 0);

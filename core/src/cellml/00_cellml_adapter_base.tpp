@@ -394,8 +394,6 @@ void CellmlAdapterBase<nStates_, nAlgebraics_, FunctionSpaceType>::
                         std::get<1>(a.first) < std::get<1>(b.first));
               });
 
-    LOG(DEBUG) << "sorted tupleEntries: " << tupleEntries;
-
     // -----------------------------
     // parse the strings in the entries and convert them to stateNo, algebraicNo
     // or constantNo

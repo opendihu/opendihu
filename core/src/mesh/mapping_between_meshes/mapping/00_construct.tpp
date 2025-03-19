@@ -92,8 +92,6 @@ MappingBetweenMeshesConstruct<FunctionSpaceSourceType,
               << functionSpaceTarget->meshName();
       VLOG(1) << "source geometry: " << functionSpaceSource->geometryField();
       VLOG(1) << "target geometry: " << functionSpaceTarget->geometryField();
-      VLOG(1) << "target meshPartition: "
-              << *functionSpaceTarget->meshPartition();
     }
 
     // VLOG(1) << "geometryField: " << functionSpaceTarget->geometryField();

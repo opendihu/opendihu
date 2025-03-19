@@ -847,9 +847,7 @@ void PreciceAdapterNestedSolver<MuscleContractionSolver<T1, T2>>::
                          << preciceData.preciceMesh->nNodesLocal
                          << " elementNoLocal: " << elementNoLocal
                          << ", elementalDofIndex: " << elementalDofIndex
-                         << ", elementalNodeIndexZ: " << elementalNodeIndexZ
-                         << ", meshPartition: "
-                         << *functionSpace->meshPartition();
+                         << ", elementalNodeIndexZ: " << elementalNodeIndexZ;
             }
             assert(valueIndex < preciceData.preciceMesh->nNodesLocal);
 
