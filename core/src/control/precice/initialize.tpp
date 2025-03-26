@@ -368,6 +368,7 @@ void PreciceAdapterInitialize<NestedSolver>::initializePreciceSurfaceData() {
 
     } else if (mode == "write-traction") {
       preciceData.ioType = PreciceSurfaceData::ioWrite;
+      preciceData.average = false;
 
       // get precice names of the variables
       preciceData.tractionName =
