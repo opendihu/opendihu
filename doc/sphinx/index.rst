@@ -24,6 +24,7 @@ If you are new, start with the :ref:`introduction <introduction>` or continue cl
    user/existing_examples
    user/validation
    settings
+   optimization/bayesian_optimization
 
 .. toctree::
    :maxdepth: 2
