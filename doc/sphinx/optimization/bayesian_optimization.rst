@@ -5,7 +5,7 @@ Many optimization problems in OpenDiHu are very time and resource intensive. To 
 
 The general optimization process follows this algorithm:
 
-.. figure:: ../settings/images/General_BO_algorithm.png
+.. figure:: General_BO_algorithm.png
   :width: 100%
 
 The function :math:`f` is usually an OpenDiHu simulation. 
