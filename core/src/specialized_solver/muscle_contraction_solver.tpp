@@ -323,7 +323,7 @@ void MuscleContractionSolver<
             this->context_.meshManager()
                 ->functionSpace<TargetFunctionSpaceType1>(meshName);
 
-        LOG(INFO) << "** create mapping " << functionSpaceSource->meshName()
+        LOG(DEBUG) << "** create mapping " << functionSpaceSource->meshName()
                    << " -> " << functionSpaceTarget->meshName();
 
         // create mapping between functionSpaceSource and functionSpaceTarget
@@ -338,7 +338,7 @@ void MuscleContractionSolver<
                                               TargetFunctionSpaceType1>(
                   functionSpaceSource, functionSpaceTarget);
       } else
-      LOG(DEBUG) << "no";
+        LOG(DEBUG) << "no";
 
       // for second order meshes
       using TargetFunctionSpaceType2 = ::FunctionSpace::FunctionSpace<
@@ -356,7 +356,7 @@ void MuscleContractionSolver<
             this->context_.meshManager()
                 ->functionSpace<TargetFunctionSpaceType2>(meshName);
 
-        LOG(INFO) << "** create mapping " << functionSpaceSource->meshName()
+        LOG(DEBUG) << "** create mapping " << functionSpaceSource->meshName()
                    << " -> " << functionSpaceTarget->meshName();
 
         // create mapping between functionSpaceSource and functionSpaceTarget
@@ -390,7 +390,7 @@ void MuscleContractionSolver<
             this->context_.meshManager()
                 ->functionSpace<TargetFunctionSpaceType3>(meshName);
 
-        LOG(INFO) << "** create mapping " << functionSpaceSource->meshName()
+        LOG(DEBUG) << "** create mapping " << functionSpaceSource->meshName()
                    << " -> " << functionSpaceTarget->meshName();
 
         // create mapping between functionSpaceSource and functionSpaceTarget
@@ -423,7 +423,7 @@ void MuscleContractionSolver<
             this->context_.meshManager()
                 ->functionSpace<TargetFunctionSpaceType4>(meshName);
 
-        LOG(INFO) << "** create mapping " << functionSpaceSource->meshName()
+        LOG(DEBUG) << "** create mapping " << functionSpaceSource->meshName()
                    << " -> " << functionSpaceTarget->meshName();
 
         // create mapping between functionSpaceSource and functionSpaceTarget
@@ -454,7 +454,7 @@ void MuscleContractionSolver<MeshType, Term,
     Control::PerformanceMeasurement::stop(this->durationLogKey_ +
                                           std::string("_map_geometry"));
 
-  LOG(INFO) << "mapGeometryToGivenMeshes: meshNamesOfGeometryToMapTo: "
+  LOG(DEBUG) << "mapGeometryToGivenMeshes: meshNamesOfGeometryToMapTo: "
              << meshNamesOfGeometryToMapTo_;
   if (!meshNamesOfGeometryToMapTo_.empty()) {
     using SourceFunctionSpaceType =
