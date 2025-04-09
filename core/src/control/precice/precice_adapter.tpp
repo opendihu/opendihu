@@ -5,7 +5,6 @@
 namespace Control {
 
 template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
-#ifdef HAVE_PRECICE
 
   // initialize everything
   this->initialize();
@@ -133,10 +132,6 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
 
   // finalize precice interface
   this->preciceParticipant_->finalize();
-
-#else
-  LOG(FATAL) << "Not compiled with preCICE!";
-#endif
 }
 
 template <typename NestedSolver>

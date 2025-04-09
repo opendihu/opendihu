@@ -580,9 +580,6 @@ void DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::
   if (totalForceLogFilename_.empty())
     return;
 
-  LOG(DEBUG) << bottomTopElements_.size()
-             << " elements: " << bottomTopElements_;
-
   // compute the total forces and moments
   Vec3 bearingForceBottom;
   Vec3 bearingMomentBottom;

@@ -8,7 +8,9 @@
 #include "control/load_balancing/load_balancing.h"
 #include "control/map_dofs/map_dofs.h"
 
+#ifdef HAVE_PRECICE
 #include "control/precice/precice_adapter.h"
+#endif
 
 #include "basis_function/lagrange.h"
 #include "basis_function/hermite.h"

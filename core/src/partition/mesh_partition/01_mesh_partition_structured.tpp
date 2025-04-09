@@ -47,7 +47,7 @@ MeshPartition<FunctionSpace::FunctionSpace<MeshType, BasisFunctionType>,
              << ", localSizesOnPartitions_: " << localSizesOnPartitions_
              << ", beginElementGlobal_: " << beginElementGlobal_;
 
-  LOG(DEBUG) << *this;
+  // LOG(DEBUG) << *this;
 }
 
 template <typename MeshType, typename BasisFunctionType>
@@ -145,7 +145,7 @@ MeshPartition<FunctionSpace::FunctionSpace<MeshType, BasisFunctionType>,
     initializeDofNosLocalNaturalOrdering();
   }
 
-  LOG(DEBUG) << *this;
+  // LOG(DEBUG) << *this;
 
   for (int i = 0; i < MeshType::dim(); i++) {
     LOG(DEBUG) << "  beginNodeGlobalNatural(" << i
@@ -267,7 +267,7 @@ void MeshPartition<FunctionSpace::FunctionSpace<MeshType, BasisFunctionType>,
                  << ", beginNodeGlobalNatural(0): " << beginNodeGlobalNatural(0)
                  << ", nNodesLocalWithoutGhosts(0): "
                  << nNodesLocalWithoutGhosts(0)
-                 << ", nDofsPerNode: " << nDofsPerNode << *this;
+                 << ", nDofsPerNode: " << nDofsPerNode;
     }
     assert(vector.size() >=
            (beginNodeGlobalNatural(0) + nNodesLocalWithoutGhosts(0)) *
@@ -389,7 +389,7 @@ void MeshPartition<FunctionSpace::FunctionSpace<MeshType, BasisFunctionType>,
   // initialize local natural ordering if has not yet been done
   initializeDofNosLocalNaturalOrdering();
 
-  LOG(DEBUG) << "mesh partition after refinement: " << *this;
+  //LOG(DEBUG) << "mesh partition after refinement: " << *this;
 }
 
 } // namespace Partition

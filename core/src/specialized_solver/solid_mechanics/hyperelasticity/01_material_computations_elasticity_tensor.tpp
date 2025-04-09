@@ -408,17 +408,6 @@ void HyperelasticityMaterialComputations<Term, withLargeOutput, MeshType,
 
   // output for debugging
   if (false) {
-    LOG(DEBUG) << "elasticity tensor, Ψ: "
-               << Term::strainEnergyDensityFunctionIsochoric;
-    LOG(DEBUG) << "∂Ψ/∂Ibar1: " << dPsi_dIbar1Expression;
-    LOG(DEBUG) << "∂Ψ/∂Ibar2: " << dPsi_dIbar2Expression << " = "
-               << dPsi_dIbar2;
-    LOG(DEBUG) << "∂2Ψ/(∂Ibar1 ∂Ibar1): " << d2Psi_dIbar1Ibar1Expression
-               << " = " << d2Psi_dIbar1Ibar1;
-    LOG(DEBUG) << "∂2Ψ/(∂Ibar1 ∂Ibar1): " << d2Psi_dIbar1Ibar2Expression
-               << " = " << d2Psi_dIbar1Ibar2;
-    LOG(DEBUG) << "∂2Ψ/(∂Ibar1 ∂Ibar1): " << d2Psi_dIbar2Ibar2Expression
-               << " = " << d2Psi_dIbar2Ibar2;
     LOG(DEBUG) << "decoupledFormFactor1: " << decoupledFormFactor1;
     LOG(DEBUG) << "decoupledFormFactor2: " << decoupledFormFactor2;
     LOG(DEBUG) << "decoupledFormFactor3: " << decoupledFormFactor3;

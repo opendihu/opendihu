@@ -366,9 +366,7 @@ void PreciceAdapterNestedSolver<
                          << preciceData.preciceMesh->nNodesLocal
                          << " elementNoLocal: " << elementNoLocal
                          << ", elementalDofIndex: " << elementalDofIndex
-                         << ", elementalNodeIndexZ: " << elementalNodeIndexZ
-                         << ", meshPartition: "
-                         << *functionSpace->meshPartition();
+                         << ", elementalNodeIndexZ: " << elementalNodeIndexZ;
             }
             assert(valueIndex < preciceData.preciceMesh->nNodesLocal);
 

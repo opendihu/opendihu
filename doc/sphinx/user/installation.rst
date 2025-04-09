@@ -300,10 +300,9 @@ There are required dependencies, which need to be present in order for OpenDiHu 
                                                                           | installed, the conversion of cellml input files is 
                                                                           | done automatically. If not, you can only input 
                                                                           | C files of the cellml models.
-`libxml <http://xmlsoft.org/>`_                                    no     | A XML C parser, only needed for the installation of preCICE.
 `preCICE <https://www.precice.org/>`_                              no     | Numerical coupling library, required, e.g., for the 
-                                                                          | simulation of a muscle-tendon complex. This requires
-                                                                          | a `boost <https://www.boost.org/>`_ installation as an additional prerequisite.
+                                                                          | simulation of a muscle-tendon complex. Hence, if you want to compile all examples, it must be installed. This requires
+                                                                          | `libxml <http://xmlsoft.org/>`_ and `boost <https://www.boost.org/>`_ installation as additional prerequisites.
 `Easylogging++ <https://github.com/zuhd-org/easyloggingpp>`_      yes     | This is the logging library. By default, logs are created 
                                                                           | in `/tmp/logs/` and output is written to the standard output.
 ============================================================  ========  =================================================================================== 
