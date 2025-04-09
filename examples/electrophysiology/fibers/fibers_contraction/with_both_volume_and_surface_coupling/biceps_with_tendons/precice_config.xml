@@ -174,7 +174,7 @@
 
   <coupling-scheme:serial-explicit>
     <participants first="MuscleFibers" second="MuscleMechanics"/>
-    <max-time value="50.0"/>           
+    <max-time value="30.0"/>           
     <time-window-size value="0.01"/>   
     
     <exchange data="Gamma"    mesh="MuscleFibersMesh" from="MuscleFibers" to="MuscleMechanics"/>
@@ -187,7 +187,7 @@
     <participant name="TendonTopA"/>
     <participant name="TendonTopB"/>
     
-    <max-time value="50.0"/>           <!-- end time of the whole simulation -->
+    <max-time value="30.0"/>           <!-- end time of the whole simulation. For end time higher than 30ms, the simulation can become unstable -->
     <time-window-size value="0.01"/>   <!-- timestep width for coupling -->
     <max-iterations value="25" />
     
@@ -211,11 +211,9 @@
       <data name="Traction" mesh="MuscleMeshBottom"/>
       <data name="Traction" mesh="MuscleMeshTopA"/>
       <data name="Traction" mesh="MuscleMeshTopB"/>
-      <preconditioner type="residual-sum"/>
-      <filter type="QR2" limit="5e-3"/>
-      <initial-relaxation value="0.4"/>
-      <max-used-iterations value="40"/>
-      <time-windows-reused value="15"/>
+      <preconditioner type="residual-sum" update-on-threshold="false"/>
+      <max-used-iterations value="50"/>
+      <time-windows-reused value="100"/>
     </acceleration:IQN-ILS>
 
     <exchange data="Displacement"    mesh="TendonBottomMesh"      from="TendonBottom" to="MuscleMechanics"/>
