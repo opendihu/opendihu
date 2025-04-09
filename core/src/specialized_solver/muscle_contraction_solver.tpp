@@ -323,7 +323,7 @@ void MuscleContractionSolver<
             this->context_.meshManager()
                 ->functionSpace<TargetFunctionSpaceType1>(meshName);
 
-        LOG(DEBUG) << "** create mapping " << functionSpaceSource->meshName()
+        LOG(INFO) << "** create mapping " << functionSpaceSource->meshName()
                    << " -> " << functionSpaceTarget->meshName();
 
         // create mapping between functionSpaceSource and functionSpaceTarget
@@ -338,7 +338,7 @@ void MuscleContractionSolver<
                                               TargetFunctionSpaceType1>(
                   functionSpaceSource, functionSpaceTarget);
       } else
-        LOG(DEBUG) << "no";
+      LOG(DEBUG) << "no";
 
       // for second order meshes
       using TargetFunctionSpaceType2 = ::FunctionSpace::FunctionSpace<
@@ -356,7 +356,7 @@ void MuscleContractionSolver<
             this->context_.meshManager()
                 ->functionSpace<TargetFunctionSpaceType2>(meshName);
 
-        LOG(DEBUG) << "** create mapping " << functionSpaceSource->meshName()
+        LOG(INFO) << "** create mapping " << functionSpaceSource->meshName()
                    << " -> " << functionSpaceTarget->meshName();
 
         // create mapping between functionSpaceSource and functionSpaceTarget
@@ -390,7 +390,7 @@ void MuscleContractionSolver<
             this->context_.meshManager()
                 ->functionSpace<TargetFunctionSpaceType3>(meshName);
 
-        LOG(DEBUG) << "** create mapping " << functionSpaceSource->meshName()
+        LOG(INFO) << "** create mapping " << functionSpaceSource->meshName()
                    << " -> " << functionSpaceTarget->meshName();
 
         // create mapping between functionSpaceSource and functionSpaceTarget
@@ -423,7 +423,7 @@ void MuscleContractionSolver<
             this->context_.meshManager()
                 ->functionSpace<TargetFunctionSpaceType4>(meshName);
 
-        LOG(DEBUG) << "** create mapping " << functionSpaceSource->meshName()
+        LOG(INFO) << "** create mapping " << functionSpaceSource->meshName()
                    << " -> " << functionSpaceTarget->meshName();
 
         // create mapping between functionSpaceSource and functionSpaceTarget
@@ -454,7 +454,7 @@ void MuscleContractionSolver<MeshType, Term,
     Control::PerformanceMeasurement::stop(this->durationLogKey_ +
                                           std::string("_map_geometry"));
 
-  LOG(DEBUG) << "mapGeometryToGivenMeshes: meshNamesOfGeometryToMapTo: "
+  LOG(INFO) << "mapGeometryToGivenMeshes: meshNamesOfGeometryToMapTo: "
              << meshNamesOfGeometryToMapTo_;
   if (!meshNamesOfGeometryToMapTo_.empty()) {
     using SourceFunctionSpaceType =
@@ -476,6 +476,47 @@ void MuscleContractionSolver<MeshType, Term,
 
     // loop over all given mesh names to which we should transfer the geometry
     for (std::string meshName : meshNamesOfGeometryToMapTo_) {
+      // for first order 1D meshes, e.g., muscle fibers
+      using TargetFunctionSpaceType0 = ::FunctionSpace::FunctionSpace<
+          Mesh::StructuredDeformableOfDimension<1>,
+          BasisFunction::LagrangeOfOrder<1>>;
+      using TargetFieldVariableType0 =
+          FieldVariable::FieldVariable<TargetFunctionSpaceType0, 3>;
+
+      // if the mesh name corresponds to a linear mesh
+      if (this->context_.meshManager()
+              ->hasFunctionSpaceOfType<TargetFunctionSpaceType0>(meshName)) {
+        // get target geometry field variable
+        std::shared_ptr<TargetFieldVariableType0> geometryFieldTarget =
+            std::make_shared<TargetFieldVariableType0>(
+                this->context_.meshManager()
+                    ->functionSpace<TargetFunctionSpaceType0>(meshName)
+                    ->geometryField());
+
+        LOG(DEBUG) << "transfer geometry field to linear mesh, "
+                   << geometryFieldSource->functionSpace()->meshName() << " -> "
+                   << geometryFieldTarget->functionSpace()->meshName();
+        LOG(DEBUG)
+            << StringUtility::demangle(typeid(SourceFunctionSpaceType).name())
+            << " -> "
+            << StringUtility::demangle(typeid(TargetFunctionSpaceType0).name());
+
+        // perform the mapping
+        DihuContext::mappingBetweenMeshesManager()
+            ->template prepareMapping<SourceFieldVariableType,
+                                      TargetFieldVariableType0>(
+                geometryFieldSource, geometryFieldTarget, -1);
+
+        // map the whole geometry field (all components), do not avoid copy
+        DihuContext::mappingBetweenMeshesManager()
+            ->template map<SourceFieldVariableType, TargetFieldVariableType0>(
+                geometryFieldSource, geometryFieldTarget, -1, -1, false);
+        DihuContext::mappingBetweenMeshesManager()
+            ->template finalizeMapping<SourceFieldVariableType,
+                                       TargetFieldVariableType0>(
+                geometryFieldSource, geometryFieldTarget, -1, -1, false);
+      }
+      
       // for first order meshes
       using TargetFunctionSpaceType1 = ::FunctionSpace::FunctionSpace<
           Mesh::StructuredDeformableOfDimension<3>,
