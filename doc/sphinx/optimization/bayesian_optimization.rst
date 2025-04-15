@@ -1,7 +1,7 @@
 Bayesian Optimization
 ==========================
 
-Many optimization problems in OpenDiHu are very time and resource intensive. To minimize those resources, we can use Bayesian optimization. This optimization method is designed for continuous black box functions, because it uses as few function evaluations as possible and statistical methods for searching the maximum. The `optimization <https://github.com/opendihu/optimization>` repository includes different Bayesian optimization methods and is also compatible with OpenDiHu.
+Many optimization problems in OpenDiHu are very time and resource intensive. To minimize those resources, we can use Bayesian optimization. This optimization method is designed for continuous black box functions, because it uses as few function evaluations as possible and statistical methods for searching the maximum. The `optimization <https://github.com/opendihu/optimization>`_ repository includes different Bayesian optimization methods and is also compatible with OpenDiHu.
 
 The general optimization process follows this algorithm:
 
@@ -9,7 +9,24 @@ The general optimization process follows this algorithm:
   :width: 100%
 
 The function :math:`f` is usually an OpenDiHu simulation. 
-The implemented acquisition functions are the Expected improvement, Probability of improvement, Knoledge gradient and Entropy search acquisition function. The default and recommended one is the Entropy search acquisition function.
+
+Acquisition functions
+-------------------------------
+
+The implemented acquisition functions are:
+
+- Expected improvement
+- Probability of improvement
+- Knoledge gradient
+- Entropy search 
+
+The default and recommended one is the Entropy search acquisition function.
+
+Statistical model
+---------------------
+
 As statistical model we are using a Gaussian Process with kernel and mean functions.
+
 Implemented kernel functions are the Matérn kernel with :math:`\nu\in\{0.5, 1.5, 2.5\}` and the RBF kernel. Deafault is the Matérn kernel with :math:`\nu=0.5`.
+
 The mean functions are the constant and zero mean with the constant mean as default.
