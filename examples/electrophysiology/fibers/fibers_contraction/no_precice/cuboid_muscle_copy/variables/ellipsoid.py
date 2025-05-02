@@ -65,10 +65,10 @@ meshes = { # create 3D mechanics mesh
     }
 }
 
-with open("../ellipsoid3d.json","r") as f:
+with open("../ellipsoid3d_r(1).json","r") as f:
 	fdata = json.load(f)
 
-fb_points = 100           # number of points per fiber
+fb_points = 15           # number of points per fiber
 
 fiber_idx = 0
 for fiber in fdata:
@@ -110,5 +110,5 @@ input_dir = os.path.join(os.environ.get('OPENDIHU_HOME', '../../../../../../../'
 # Fiber activation
 fiber_distribution_file = input_dir + "MU_fibre_distribution_3780.txt"
 firing_times_file = input_dir + "MU_firing_times_always.txt"
-specific_states_call_enable_begin = 1.0                     # time of first fiber activation
+specific_states_call_enable_begin = 0.0                     # time of first fiber activation
 specific_states_call_frequency = 1e-3                       # frequency of fiber activation
