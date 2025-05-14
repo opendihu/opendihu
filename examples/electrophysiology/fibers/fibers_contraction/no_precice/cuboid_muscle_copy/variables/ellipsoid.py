@@ -2,6 +2,7 @@ import sys
 import itertools
 import numpy as np
 import json
+import ellipsoid_mesh_generation
 
 rank_no = int(sys.argv[-2])
 n_ranks = int(sys.argv[-1])
@@ -24,35 +25,22 @@ material_parameters = [3.176e-10, 1.813, 1.075e-2, 1.0]     # [c1, c2, b, d]
 diffusion_prefactor = 3.828 / (500.0 * 0.58)                # Conductivity / (Am * Cm)
 
 # Meshes
-el_x, el_y, el_z = 1, 1, 4                     # number of elements
-
+el_x, el_y, el_z = 2, 2, 4  # number of elements
 fiber_direction = [0, 0, 1] # direction of fiber in element
 
 mesh3D_nodes = []
 
-a = 4
-c = 12
-xc = 2
-yc = 2
+el_x = 2
+el_y = 2
+el_z = 6
+c = 4.5 # perpendicular to fiber direction z
+a = 9 # fiber direction z
+zmin = -6.6
+zmax = 7
 
-for z in np.linspace(-5.5,7,9):
-    # analytical solution
-    r=np.sqrt(((1-z**2/c**2)/2*a**2))
-    f = 1/np.sqrt(2)
-    mesh3D_nodes.append([-r*f, -r*f, z])
-    mesh3D_nodes.append([0.0, -r, z])
-    mesh3D_nodes.append([r*f, -r*f, z])
-
-    mesh3D_nodes.append([-r, 0.0, z])
-    mesh3D_nodes.append([0.0, 0.0, z])
-    mesh3D_nodes.append([r, 0.0, z])
-
-    mesh3D_nodes.append([-r*f, r*f, z])
-    mesh3D_nodes.append([0.0, r, z])
-    mesh3D_nodes.append([r*f, r*f, z])
-
-
+mesh3D_nodes = ellipsoid_mesh_generation.mesh_nodes(el_x*2,el_y*2, el_z*2, c, a, zmin, zmax)
 print(mesh3D_nodes)
+print(f"number of nodes in 3d mesh is {len(mesh3D_nodes)}")
 
 meshes = { # create 3D mechanics mesh
     "mesh3D": {
@@ -65,10 +53,10 @@ meshes = { # create 3D mechanics mesh
     }
 }
 
-with open("../ellipsoid3d_r(1).json","r") as f:
+with open("../left.json","r") as f:
 	fdata = json.load(f)
 
-fb_points = 15           # number of points per fiber
+fb_points = 99           # number of points per fiber
 
 fiber_idx = 0
 for fiber in fdata:
@@ -84,8 +72,8 @@ for fiber in fdata:
 	fiber_idx += 1
      
 n_fibers = fiber_idx
-n_fibers_x =5
-n_fibers_y =6
+n_fibers_x =3
+n_fibers_y =3
 
 # Boundary conditions
 dirichlet_bc = {} # fix z=0 with dirichlet boundary conditions
@@ -110,5 +98,5 @@ input_dir = os.path.join(os.environ.get('OPENDIHU_HOME', '../../../../../../../'
 # Fiber activation
 fiber_distribution_file = input_dir + "MU_fibre_distribution_3780.txt"
 firing_times_file = input_dir + "MU_firing_times_always.txt"
-specific_states_call_enable_begin = 0.0                     # time of first fiber activation
+specific_states_call_enable_begin = 1.0                     # time of first fiber activation
 specific_states_call_frequency = 1e-3                       # frequency of fiber activation
