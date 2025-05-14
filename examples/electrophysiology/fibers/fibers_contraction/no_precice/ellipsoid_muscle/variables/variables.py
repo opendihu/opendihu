@@ -129,28 +129,7 @@ meshes = { # create 3D mechanics mesh
     }
 }
 
-with open("../cylinder.json","r") as f:
-	fdata = json.load(f)
 
-fb_points = 99           # number of points per fiber
-
-fiber_idx = 0
-for fiber in fdata:
-	fdict = fdata[fiber]
-	npos = [[fdict[ii]['x'],fdict[ii]['y'],fdict[ii]['z']] for ii in range(len(fdict)-1) ]
-	meshName = "fiber{}".format(fiber_idx)
-	print(meshName)
-	meshes[meshName] = {
-			"nElements":		    [fb_points-1],
-			"nodePositions":	    npos,
-			"inputMeshIsGlobal":	True,
-			"nRanks":				n_ranks
-	}
-	fiber_idx += 1
-     
-n_fibers = fiber_idx
-n_fibers_x =5
-n_fibers_y =6
 
 # Boundary conditions
 dirichlet_bc = {} # fix z=0 with dirichlet boundary conditions

@@ -34,9 +34,9 @@ el_x = 2
 el_y = 2
 el_z = 6
 c = 4.5 # perpendicular to fiber direction z
-a = 9 # fiber direction z
+a = 8.8 # fiber direction z
 zmin = -6.6
-zmax = 7
+zmax = 7.1
 
 mesh3D_nodes = ellipsoid_mesh_generation.mesh_nodes(el_x*2,el_y*2, el_z*2, c, a, zmin, zmax)
 print(mesh3D_nodes)

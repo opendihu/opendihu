@@ -49,7 +49,6 @@ def mesh_nodes(el_x,el_y, el_z,c,a,amin,amax):
 
     nodes = []
     z_points = [(amax-amin)/el_z*i+amin for i in range(el_z+1)]
-    print(z_points)
     for z in z_points:
         # r^2 = c²/2*(1-z^2/a^2)
         rz=np.sqrt(c**2/2*(1-z**2/a**2))
@@ -68,7 +67,6 @@ def create_points(r,el,z):
     nodes = []
     circular_matrix = []
     circular_matrix = circle_points(r,(el+1)*4-4,z)
-    print(circular_matrix)
     
     xpoints = el +1
 
