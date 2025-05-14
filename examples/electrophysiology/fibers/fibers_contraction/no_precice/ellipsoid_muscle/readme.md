@@ -18,7 +18,7 @@ To run the case go into the build directory and choose one of the two options:
 
 - To run the shorten model:
 ```
-./muscle_contraction ../settings_muscle_contraction.py variables.py
+./muscle_contraction ../settings_muscle_contraction.py ellipsoid.py
 ```
 
 > [!WARNING]  
