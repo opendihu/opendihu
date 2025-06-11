@@ -302,9 +302,9 @@ The following has to be installed beforehand.
 
 .. code-block:: bash
 
-  sudo pip install sphinx
-  sudo pip install recommonmark
-  sudo pip install sphinx_rtd_theme
+  pip install sphinx
+  pip install recommonmark
+  pip install sphinx_rtd_theme
   
 To build the newest documentation, change into the opendihu/doc/sphinx directory and run
 
