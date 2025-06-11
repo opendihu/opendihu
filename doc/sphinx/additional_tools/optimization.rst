@@ -1,7 +1,9 @@
 Bayesian Optimization
 ==========================
 
-Many optimization problems in OpenDiHu are very time and resource intensive. To minimize those resources, we can use Bayesian optimization. This optimization method is designed for continuous black box functions, because it uses as few function evaluations as possible and statistical methods for searching the maximum. The `optimization <https://github.com/opendihu/optimization>`_ repository includes different Bayesian optimization methods and is also compatible with OpenDiHu.
+OpenDiHu can be used to find optimal anatomical and physiological parameters. In the `optimization repository <https://github.com/opendihu/optimization>`_. We povide a Bayesian optimization framework designed for OpenDiHu simulations. 
+
+This optimization method is designed for continuous black box functions, because it uses as few function evaluations as possible and statistical methods for searching the maximum. 
 
 The general optimization process follows this algorithm:
 
