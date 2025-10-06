@@ -128,7 +128,7 @@ class precice(Package):
           -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
           -DLIBXML2_INCLUDE_DIR=${PREFIX}/include/libxml2 -DLIBXML2_LIBRARY=${PREFIX}/lib/libxml2.so \
           ..',
-        'cd ${SOURCE_DIR}/build && make precice install'
+        'cd ${SOURCE_DIR}/build && make -j 8 precice install'
       ])
       
       self.check_options(env)
