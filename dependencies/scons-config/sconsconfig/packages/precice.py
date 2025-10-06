@@ -91,9 +91,9 @@ class precice(Package):
         # precice
         'cd ${SOURCE_DIR} && mkdir -p build && cd build && '+ctx.env["cmake"]+' -DCMAKE_INSTALL_PREFIX=${PREFIX} \
           -DCMAKE_BUILD_TYPE=Release \
+          -DPRECICE_RELEASE_WITH_DEBUG_LOG=True \
           -DBUILD_TESTING=OFF \
           -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
-          -DPRECICE_RELEASE_WITH_DEBUG_LOG=True \
           ..',
         'cd ${SOURCE_DIR}/build && make -j 8 precice install'
       ])
@@ -123,6 +123,8 @@ class precice(Package):
         # precice
         'cd ${SOURCE_DIR} && mkdir -p build && cd build && '+ctx.env["cmake"]+' -DCMAKE_INSTALL_PREFIX=${PREFIX} \
           -DCMAKE_BUILD_TYPE=Release \
+          -DPRECICE_RELEASE_WITH_DEBUG_LOG=True \
+          -DBUILD_TESTING=OFF \
           -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
           -DLIBXML2_INCLUDE_DIR=${PREFIX}/include/libxml2 -DLIBXML2_LIBRARY=${PREFIX}/lib/libxml2.so \
           ..',
