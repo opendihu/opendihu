@@ -91,9 +91,11 @@ class precice(Package):
         # precice
         'cd ${SOURCE_DIR} && mkdir -p build && cd build && '+ctx.env["cmake"]+' -DCMAKE_INSTALL_PREFIX=${PREFIX} \
           -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_TESTING=OFF \
           -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
+          -DPRECICE_RELEASE_WITH_DEBUG_LOG=True \
           ..',
-        'cd ${SOURCE_DIR}/build && make precice install'
+        'cd ${SOURCE_DIR}/build && make -j 8 precice install'
       ])
       
       res = super(precice, self).check(ctx)
