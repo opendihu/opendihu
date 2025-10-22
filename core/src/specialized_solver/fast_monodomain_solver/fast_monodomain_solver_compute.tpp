@@ -179,11 +179,27 @@ void FastMonodomainSolverBase<
   fiberPointBuffersStatesAreCloseToEquilibrium_[0] = active;
   fiberPointBuffersStatesAreCloseToEquilibrium_[nPointBuffers - 1] = active;
 
-  const double factorForForDataNo =
-      (double)Vc::double_v::size() / fiberData_[0].valuesLength;
+
+  LOG(DEBUG) << "after setting point buffers active";
+  
+  int fiberDataNo = 0;
+  int pointBuffersNoLastFiberDataNo = 0;
+
   for (global_no_t pointBuffersNo = 0; pointBuffersNo < nPointBuffers;
        pointBuffersNo++) {
-    int fiberDataNo = pointBuffersNo * factorForForDataNo;
+    LOG(DEBUG) << "inside for, iteration " << pointBuffersNo << "/"
+               << nPointBuffers;
+
+    // determine if the point buffer belongs to a new fiberDataNo (0 means no, 1 means yes)
+    const int newFiber = (pointBuffersNo-pointBuffersNoLastFiberDataNo) * (double)Vc::double_v::size() / fiberData_[fiberDataNo].valuesLength;
+
+    if (newFiber > 0) {
+      pointBuffersNoLastFiberDataNo = pointBuffersNo;
+      fiberDataNo++;
+      LOG(DEBUG) << "at pointbuffersNo " << pointBuffersNo << " starts fiberDataNo: " << fiberDataNo << " with size: " << fiberData_[fiberDataNo].valuesLength;
+
+    }
+
     int indexInFiber = pointBuffersNo * Vc::double_v::size() -
                        fiberData_[fiberDataNo].valuesOffset;
 
@@ -217,6 +233,8 @@ void FastMonodomainSolverBase<
 
     // loop over timesteps
     for (int timeStepNo = 0; timeStepNo < nTimeSteps; timeStepNo++) {
+      LOG(DEBUG) << "inside time step loop, iteration " << timeStepNo << "/"
+                 << nTimeSteps;
       // determine if fiber gets stimulated
       double currentTime = startTime + timeStepNo * timeStepWidth;
 
@@ -372,12 +390,14 @@ void FastMonodomainSolverBase<
     // x_i = d'_i - c'_i * x_{i+1}
 
     // helper buffers c', d'
-    static std::vector<double> cAlgebraic(nValues - 1);
-    static std::vector<double> dAlgebraic(nValues);
+    std::vector<double> cAlgebraic(nValues - 1);
+    std::vector<double> dAlgebraic(nValues);
 
     // perform forward substitution
     // loop over entries / rows of matrices
     for (int valueNo = 0; valueNo < nValues; valueNo++) {
+      LOG(DEBUG) << "for fiberDataNo "<< fiberDataNo <<" in config named " << fiberData_[fiberDataNo].fiberNoGlobal << ", forward substitution, valueNo: " << valueNo << "/"
+                 << nValues;
       // new with CN
       double a = 0;
       double b = 0;
