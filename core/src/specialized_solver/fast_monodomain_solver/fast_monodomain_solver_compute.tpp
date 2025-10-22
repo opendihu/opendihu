@@ -194,7 +194,6 @@ void FastMonodomainSolverBase<
       pointBuffersNoLastFiberDataNo = pointBuffersNo;
       fiberDataNo++;
       LOG(DEBUG) << "at pointbuffersNo " << pointBuffersNo << " starts fiberDataNo: " << fiberDataNo << " with size: " << fiberData_[fiberDataNo].valuesLength;
-
     }
 
     int indexInFiber = pointBuffersNo * Vc::double_v::size() -
