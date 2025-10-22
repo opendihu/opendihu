@@ -178,9 +178,6 @@ void FastMonodomainSolverBase<
   // neighbors
   fiberPointBuffersStatesAreCloseToEquilibrium_[0] = active;
   fiberPointBuffersStatesAreCloseToEquilibrium_[nPointBuffers - 1] = active;
-
-
-  LOG(DEBUG) << "after setting point buffers active";
   
   int fiberDataNo = 0;
   int pointBuffersNoLastFiberDataNo = 0;
