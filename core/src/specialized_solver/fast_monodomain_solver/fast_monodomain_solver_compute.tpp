@@ -180,7 +180,7 @@ void FastMonodomainSolverBase<
   fiberPointBuffersStatesAreCloseToEquilibrium_[nPointBuffers - 1] = active;
   
   int fiberDataNo = 0;
-  int pointBuffersNoLastFiberDataNo = 0;
+  int pointBuffersNoAtFiberStart = 0;
 
   for (global_no_t pointBuffersNo = 0; pointBuffersNo < nPointBuffers;
        pointBuffersNo++) {
@@ -188,10 +188,10 @@ void FastMonodomainSolverBase<
                << nPointBuffers;
 
     // determine if the point buffer belongs to a new fiberDataNo
-    const bool newFiber = (pointBuffersNo-pointBuffersNoLastFiberDataNo) * Vc::double_v::size() / fiberData_[fiberDataNo].valuesLength;
+    const bool newFiber = (pointBuffersNo-pointBuffersNoAtFiberStart) * Vc::double_v::size() / fiberData_[fiberDataNo].valuesLength;
 
     if (newFiber) {
-      pointBuffersNoLastFiberDataNo = pointBuffersNo;
+      pointBuffersNoAtFiberStart = pointBuffersNo;
       fiberDataNo++;
       LOG(DEBUG) << "at pointbuffersNo " << pointBuffersNo << " starts fiberDataNo: " << fiberDataNo << " with size: " << fiberData_[fiberDataNo].valuesLength;
     }
