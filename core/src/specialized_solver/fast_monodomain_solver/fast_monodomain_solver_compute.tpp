@@ -184,7 +184,7 @@ void FastMonodomainSolverBase<
 
   for (global_no_t pointBuffersNo = 0; pointBuffersNo < nPointBuffers;
        pointBuffersNo++) {
-    LOG(DEBUG) << "inside for, iteration " << pointBuffersNo << "/"
+    LOG(DEBUG) << "inside loop over pointBuffers, iteration " << pointBuffersNo << "/"
                << nPointBuffers;
 
     // determine if the point buffer belongs to a new fiberDataNo (0 means no, 1 means yes)
