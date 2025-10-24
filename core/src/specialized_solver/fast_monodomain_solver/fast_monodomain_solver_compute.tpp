@@ -187,7 +187,7 @@ void FastMonodomainSolverBase<
     LOG(DEBUG) << "inside loop over pointBuffers, iteration " << pointBuffersNo << "/"
                << nPointBuffers;
 
-    // determine if the point buffer belongs to a new fiberDataNo (0 means no, 1 means yes)
+    // determine if the point buffer belongs to a new fiberDataNo
     const bool newFiber = (pointBuffersNo-pointBuffersNoLastFiberDataNo) * Vc::double_v::size() / fiberData_[fiberDataNo].valuesLength;
 
     if (newFiber) {
