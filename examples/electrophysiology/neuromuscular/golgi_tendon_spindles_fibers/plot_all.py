@@ -8,7 +8,7 @@ import sys, os
 import numpy as np
 import time
 import pickle
-import py_reader    # reader utility for opendihu *.py files
+# import py_reader    # reader utility for opendihu *.py files
 
 show_plot = True
 

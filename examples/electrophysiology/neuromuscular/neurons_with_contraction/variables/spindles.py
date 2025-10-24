@@ -118,7 +118,7 @@ sampling_factor_elasticity_fat_y = 0.5
 
 # neurons and sensors
 # muscle spindles
-n_muscle_spindles = 1
+n_muscle_spindles = 3
 muscle_spindle_cellml_file = "../../../input/hodgkin_huxley_1952.cellml"
 muscle_spindle_mappings = {
   ("parameter", 0):           "membrane/i_Stim",   # stimulation
@@ -129,7 +129,7 @@ muscle_spindle_parameters_initial_values = [0]    # [i_Stim]
 muscle_spindle_delay = 30             # [ms] signal delay between muscle spindle model and motoneuron model
 
 # golgi tendon organs
-n_golgi_tendon_organs = 1
+n_golgi_tendon_organs = 3
 golgi_tendon_organ_cellml_file = "../../../input/hodgkin_huxley_1952.cellml"
 golgi_tendon_organ_mappings = {
   ("parameter", 0):           "membrane/i_Stim",   # stimulation

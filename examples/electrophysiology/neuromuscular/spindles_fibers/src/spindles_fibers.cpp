@@ -35,8 +35,11 @@ int main(int argc, char *argv[]) {
                            TimeSteppingScheme::Heun<
                                CellmlAdapter<8, 23, HelperFunctionSpace>>>,
           // motoneuron solver
-          TimeSteppingScheme::Heun<CellmlAdapter<6, 14, // nStates,nAlgebraics
-                                                 HelperFunctionSpace>>,
+          Control::MapDofs<HelperFunctionSpace,
+
+                           TimeSteppingScheme::Heun<
+                               CellmlAdapter<6, 14, // nStates,nAlgebraics
+                                             HelperFunctionSpace>>>,
           // map from λ in the 3D mesh to muscle spindles input
           Control::MapDofs<
               HelperFunctionSpace,
