@@ -6,7 +6,7 @@ class precice(Package):
 
   def __init__(self, **kwargs):
     defaults = {
-        'download_url': 'https://github.com/precice/precice/archive/refs/tags/v3.2.0.zip',
+        'download_url': 'https://github.com/precice/precice/archive/refs/tags/v3.3.0.zip',
     }
     defaults.update(kwargs)
     super(precice, self).__init__(**defaults)
@@ -91,9 +91,11 @@ class precice(Package):
         # precice
         'cd ${SOURCE_DIR} && mkdir -p build && cd build && '+ctx.env["cmake"]+' -DCMAKE_INSTALL_PREFIX=${PREFIX} \
           -DCMAKE_BUILD_TYPE=Release \
+          -DPRECICE_RELEASE_WITH_DEBUG_LOG=True \
+          -DBUILD_TESTING=OFF \
           -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
           ..',
-        'cd ${SOURCE_DIR}/build && make precice install'
+        'cd ${SOURCE_DIR}/build && make -j 8 precice install'
       ])
       
       res = super(precice, self).check(ctx)
@@ -121,10 +123,12 @@ class precice(Package):
         # precice
         'cd ${SOURCE_DIR} && mkdir -p build && cd build && '+ctx.env["cmake"]+' -DCMAKE_INSTALL_PREFIX=${PREFIX} \
           -DCMAKE_BUILD_TYPE=Release \
+          -DPRECICE_RELEASE_WITH_DEBUG_LOG=True \
+          -DBUILD_TESTING=OFF \
           -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
           -DLIBXML2_INCLUDE_DIR=${PREFIX}/include/libxml2 -DLIBXML2_LIBRARY=${PREFIX}/lib/libxml2.so \
           ..',
-        'cd ${SOURCE_DIR}/build && make precice install'
+        'cd ${SOURCE_DIR}/build && make -j 8 precice install'
       ])
       
       self.check_options(env)
