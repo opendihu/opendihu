@@ -733,9 +733,9 @@ elif "Aliev_Panfilov_Razumova_Titin" in variables.cellml_file:   # this is (4, "
   variables.nodal_stimulation_current = 40.                           # not used
   variables.vm_value_stimulated = 40.                                 # to which value of Vm the stimulated node should be set (option "valueForStimulatedPoint" of FastMonodomainSolver)
   
-elif "hodgkin_huxley-razumova" in variables.cellml_file:   # this is (4, "Titin") in OpenCMISS
+elif "hodgkin_huxley-razumova" in variables.fiber_cellml_file:   # this is (4, "Titin") in OpenCMISS
   # parameters: I_stim, fiber stretch λ, fiber contraction velocity \dot{λ}
-  variables.mappings = {
+  variables.fiber_mappings = {
     ("parameter", 0):           "membrane/i_Stim",          # parameter 0 is I_stim
     ("parameter", 1):           "Razumova/l_hs",            # parameter 1 is fiber stretch λ
     ("connectorSlot", 0): "membrane/V",               # expose Vm to the operator splitting
@@ -758,6 +758,11 @@ variables.firing_times = np.genfromtxt(variables.firing_times_file)
 # callback functions
 def get_motor_unit_no(compartment_no):
   return compartment_no
+
+def get_diffusion_prefactor(fiber_no, mu_no):
+  diffusion_prefactor = variables.get_conductivity(fiber_no, mu_no) / (variables.get_am(fiber_no, mu_no) * variables.get_cm(fiber_no, mu_no))
+  #print("diffusion_prefactor: {}/({}*{}) = {}".format(variables.get_conductivity(fiber_no, mu_no), variables.get_am(fiber_no, mu_no), variables.get_cm(fiber_no, mu_no), diffusion_prefactor))
+  return diffusion_prefactor
 
 def compartment_gets_stimulated(compartment_no, frequency, current_time):
   """

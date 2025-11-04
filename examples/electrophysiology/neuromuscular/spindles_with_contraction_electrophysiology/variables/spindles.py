@@ -94,7 +94,7 @@ output_timestep_neurons = 1         # [ms] timestep for output of files for neur
 output_timestep_motoneuron = 1      # [ms] timestep for output of files for motoneuron
 
 # input files
-#multidomain_cellml_file = "../../../input/hodgkin_huxley-razumova.cellml"
+fiber_cellml_file = "../../../input/hodgkin_huxley-razumova.cellml"
 fiber_file = "../../../input/left_biceps_brachii_9x9fibers.bin"
 fat_mesh_file = fiber_file + "_fat.bin"
 firing_times_file = "../../../input/MU_firing_times_always.txt"    # use setSpecificStatesCallEnableBegin and setSpecificStatesCallFrequency
@@ -486,3 +486,7 @@ def callback_motoneuron_output(input_values, output_values, current_time, slot_n
   n_input_values = len(input_values)      # 1 (1 motoneuron)
   n_output_values = len(output_values[0]) # =N (number of points in neuromuscular junction, this is all nodes in the x-y plane at the center of the muscle)
   
+
+fast_monodomain_solver_optimizations = True # enable the optimizations in the fast multidomain solver
+diffusion_solver_type = "cg"  
+diffusion_preconditioner_type = "none"      # preconditioner

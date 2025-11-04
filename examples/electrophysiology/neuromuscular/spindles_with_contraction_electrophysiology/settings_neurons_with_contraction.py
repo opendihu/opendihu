@@ -129,6 +129,9 @@ if rank_no == 0:
 from helper import *
 
 
+variables.n_subdomains_xy = variables.n_subdomains_x * variables.n_subdomains_y
+variables.n_fibers_total = variables.n_fibers_x * variables.n_fibers_y
+
 # callback function that receives the whole result values and produces plots while the simulation is running
 def handle_result(n_instances, time_step_no, current_time, states, algebraics, name_information, additional_argument):
     
@@ -215,7 +218,16 @@ config = {
       "hypreOptions":        "",                                          # additional options for the hypre solvers could be given here
       "dumpFilename":        "",                                          # dump system matrix and right hand side after every solve
       "dumpFormat":          "matlab",                                    # default, ascii, matlab
-    }
+    },
+    "diffusionTermSolver": {# solver for the implicit timestepping scheme of the diffusion time step
+      "maxIterations":      1e4,
+      "relativeTolerance":  1e-10,
+      "absoluteTolerance":  1e-10,         # 1e-10 absolute tolerance of the residual    
+      "solverType":         variables.diffusion_solver_type,
+      "preconditionerType": variables.diffusion_preconditioner_type,
+      "dumpFilename":       "",   # "out/dump_"
+      "dumpFormat":         "matlab",
+    },
   },
   
   # total solver
@@ -376,14 +388,14 @@ config = {
                             "additionalSlotNames":          [],                                      # names for the additional slots
                               
                             "CellML" : {
-                              "modelFilename":                          variables.cellml_file,                          # input C++ source file or cellml XML file
+                              "modelFilename":                          variables.fiber_cellml_file,                          # input C++ source file or cellml XML file
                               #"statesInitialValues":                   [],                                             # if given, the initial values for the the states of one instance
                               "statesInitialValues":                    variables.states_initial_values,                # initial values for new_slow_TK
                               "initializeStatesToEquilibrium":          False,                                          # if the equilibrium values of the states should be computed before the simulation starts
                               "initializeStatesToEquilibriumTimestepWidth": 1e-4,                                       # if initializeStatesToEquilibrium is enable, the timestep width to use to solve the equilibrium equation
                               
                               # optimization parameters
-                              "optimizationType":                       "vc" if variables.use_vc else "simd",           # "vc", "simd", "openmp" type of generated optimizated source file
+                              "optimizationType":                       "vc",           # "vc", "simd", "openmp" type of generated optimizated source file
                               "approximateExponentialFunction":         True,                                           # if optimizationType is "vc", whether the exponential function exp(x) should be approximate by (1+x/n)^n with n=1024
                               "compilerFlags":                          "-fPIC -O3 -march=native -Wno-deprecated-declarations -shared ",             # compiler flags used to compile the optimized model code
                               "maximumNumberOfThreads":                 0,                                              # if optimizationType is "openmp", the maximum number of threads to use. Default value 0 means no restriction.
@@ -402,7 +414,7 @@ config = {
                               "additionalArgument":                     fiber_no,                                       # last argument that will be passed to the callback functions set_specific_states, set_specific_parameters, etc.
                               
                               # parameters to the cellml model
-                              "mappings":                               variables.mappings,                             # mappings between parameters and algebraics/constants and between outputConnectorSlots and states, algebraics or parameters, they are defined in helper.py
+                              "mappings":                               variables.fiber_mappings,                             # mappings between parameters and algebraics/constants and between outputConnectorSlots and states, algebraics or parameters, they are defined in helper.py
                               "parametersInitialValues":                variables.parameters_initial_values,            #[0.0, 1.0],      # initial values for the parameters: I_Stim, l_hs
                               
                               "meshName":                               "MeshFiber_{}".format(fiber_no),                # reference to the fiber mesh
