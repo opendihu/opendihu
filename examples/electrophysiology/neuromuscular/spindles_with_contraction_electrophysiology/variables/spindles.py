@@ -92,6 +92,7 @@ output_timestep_multidomain = 1     # [ms] timestep for fiber output, 0.5
 output_timestep_elasticity = dt_elasticity  # [ms] timestep for elasticity output files
 output_timestep_neurons = 1         # [ms] timestep for output of files for neurons
 output_timestep_motoneuron = 1      # [ms] timestep for output of files for motoneuron
+output_timestep_fibers = 1         # [ms] timestep for output of files for fibers
 
 # input files
 fiber_cellml_file = "../../../input/hodgkin_huxley-razumova.cellml"
