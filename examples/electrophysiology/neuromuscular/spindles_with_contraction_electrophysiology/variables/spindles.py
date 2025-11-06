@@ -490,3 +490,5 @@ def callback_motoneuron_output(input_values, output_values, current_time, slot_n
 fast_monodomain_solver_optimizations = True # enable the optimizations in the fast multidomain solver
 diffusion_solver_type = "cg"  
 diffusion_preconditioner_type = "none"      # preconditioner
+
+mapping_tolerance = 0.1

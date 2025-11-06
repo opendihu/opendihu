@@ -1,4 +1,4 @@
-# Multidomain helper script
+# Multiple 1D fibers (monodomain) with 3D contraction, biceps geometry
 # This is a helper script that sets a lot of the internal variables which are all defined in variables.py
 
 import numpy as np
@@ -37,13 +37,34 @@ result = create_partitioned_meshes_for_settings(
     variables.n_subdomains_x, variables.n_subdomains_y, variables.n_subdomains_z, 
     variables.fiber_file, variables.load_fiber_data,
     variables.sampling_stride_x, variables.sampling_stride_y, variables.sampling_stride_z, variables.generate_linear_3d_mesh, variables.generate_quadratic_3d_mesh,
-    fiber_set_rank_nos=False, have_fibers=False, include_global_node_positions=include_global_node_positions)
+    include_global_node_positions=include_global_node_positions)
 [variables.meshes, variables.own_subdomain_coordinate_x, variables.own_subdomain_coordinate_y, variables.own_subdomain_coordinate_z, variables.n_fibers_x, variables.n_fibers_y, variables.n_points_whole_fiber] = result
   
 variables.n_subdomains_xy = variables.n_subdomains_x * variables.n_subdomains_y
 variables.n_fibers_total = variables.n_fibers_x * variables.n_fibers_y
 
-#variables.n_compartments = len(variables.motor_units)
+print(f"variables n_fibers_total: {variables.n_fibers_total}")
+
+# create mappings between meshes
+#variables.mappings_between_meshes = {"MeshFiber_{}".format(i) : "3Dmesh" for i in range(variables.n_fibers_total)}
+variables.mappings_between_meshes = {"MeshFiber_{}".format(i) : {"name": "3Dmesh", "xiTolerance": 3e-1, "defaultValue": 0} for i in range(variables.n_fibers_total)}
+
+# a higher tolerance includes more fiber dofs that may be almost out of the 3D mesh
+variables.mappings_between_meshes = {
+  "MeshFiber_{}".format(i) : {
+    "name": "3Dmesh_quadratic",
+    "xiTolerance": variables.mapping_tolerance,
+    "enableWarnings": False, 
+    "compositeUseOnlyInitializedMappings": False,
+    "fixUnmappedDofs": True,
+    "defaultValue": 0,
+  } for i in range(variables.n_fibers_total)
+}
+# set output writer    
+variables.output_writer_fibers = []
+variables.output_writer_elasticity = []
+variables.output_writer_emg = []
+variables.output_writer_0D_states = []
 
 #############################
 # create fat layer mesh
