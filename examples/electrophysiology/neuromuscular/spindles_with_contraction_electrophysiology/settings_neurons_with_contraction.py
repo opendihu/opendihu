@@ -438,7 +438,7 @@ config = {
                         "instances": 
                         [{
                           "ranks":                         list(range(variables.n_subdomains_z)),   # these rank nos are local nos to the outer instance of MultipleInstances, i.e. from 0 to number of ranks in z direction
-                          "CrankNicolson" : {
+                          "ImplicitEuler" : {
                             "initialValues":               [],                                      # no initial values are given
                             #"numberTimeSteps":            1,
                             "timeStepWidth":               variables.dt_1D,                         # timestep width for the diffusion problem
