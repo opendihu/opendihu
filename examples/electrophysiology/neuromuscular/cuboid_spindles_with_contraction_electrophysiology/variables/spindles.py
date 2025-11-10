@@ -139,8 +139,7 @@ fiber_cellml_file = "../../../input/hodgkin_huxley-razumova.cellml"
 fiber_file = "../../../input/left_biceps_brachii_9x9fibers.bin"
 fat_mesh_file = fiber_file + "_fat.bin"
 firing_times_file = "../../../input/MU_firing_times_always.txt"    # use setSpecificStatesCallEnableBegin and setSpecificStatesCallFrequency
-firing_times_file = "../../../input/MU_firing_times_once.txt"    # use setSpecificStatesCallEnableBegin and setSpecificStatesCallFrequency
-fiber_distribution_file = "../../../input/MU_fibre_distribution_10MUs.txt"
+fiber_distribution_file = "../../../input/MU_fibre_distribution_3780.txt"
 
 # stride for sampling the 3D elements from the fiber data
 # a higher number leads to less 3D elements

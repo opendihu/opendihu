@@ -112,6 +112,31 @@ def handle_result(n_instances, time_step_no, current_time, states, algebraics, n
   # asign some states to variables
   Vm = states[name_information["stateNames"].index("membrane/V")]
   print("Vm: {}".format(Vm))
+
+def callback_function_contraction(raw_data):
+  t = raw_data[0]["currentTime"]
+  if True:
+
+    geometry_data_z = raw_data[0]["data"][0]["components"][2]["values"]
+
+    number_of_nodes = variables.bs_x * variables.bs_y
+    z_end = 0
+    z_start = 0
+    for i in range(number_of_nodes):
+      z_start += geometry_data_z[i]
+      z_end += geometry_data_z[number_of_nodes*(variables.bs_z -1) + i]
+
+    length = z_end/number_of_nodes - z_start/number_of_nodes
+    
+
+
+
+    f = open("out/output.csv", "a")   # f = open("out/" + scenario_name + "output_" + str(variables.prestretch_force) + "N.csv", "a")
+    f.write(str(t))
+    f.write(",")
+    f.write(str(length))
+    f.write("\n")
+    f.close()
     
 # add neuron meshes
 variables.meshes.update(
@@ -292,7 +317,7 @@ config = {
         "meshName":                   "muscleSpindleMesh",            # the mesh on which the additional field variables will be defined
         "beforeComputation": [                                        # transfer/mapping of dofs that will be performed before the computation of the nested solver
           {                                                 
-            "fromConnectorSlot":              2,
+            "fromConnectorSlot":              1,
             "toConnectorSlots":               8,
             "fromSlotConnectorArrayIndex":    0,                    # which fiber/compartment, this does not matter here because all compartment meshes have the same displacements
             "toSlotConnectorArrayIndex":      0,
@@ -326,7 +351,7 @@ config = {
             "MultipleInstances": {
                 "logKey":                     "duration_subdomains_xy",
                 "ranksAllComputedInstances":  list(range(n_ranks)),
-                "nInstances":                 variables.n_fibers_total,
+                "nInstances":                 1,
                 "instances":    
                 [{
                   "ranks": [0],
@@ -377,17 +402,13 @@ config = {
                               "maximumNumberOfThreads":                 0,                                              # if optimizationType is "openmp", the maximum number of threads to use. Default value 0 means no restriction.
                               
                               # stimulation callbacks
-                              #"libraryFilename":                       "cellml_simd_lib.so",                           # compiled library
-                              #"setSpecificParametersFunction":         set_specific_parameters,                        # callback function that sets parameters like stimulation current
-                              #"setSpecificParametersCallInterval":     int(1./variables.stimulation_frequency/variables.dt_0D),         # set_specific_parameters should be called every 0.1, 5e-5 * 1e3 = 5e-2 = 0.05
-                              "setSpecificStatesFunction":              set_specific_states,                                             # callback function that sets states like Vm, activation can be implemented by using this method and directly setting Vm values, or by using setParameters/setSpecificParameters
-                              #"setSpecificStatesCallInterval":         2*int(1./variables.stimulation_frequency/variables.dt_0D),       # set_specific_states should be called variables.stimulation_frequency times per ms, the factor 2 is needed because every Heun step includes two calls to rhs
+                              "setSpecificStatesFunction":              None,                                             # callback function that sets states like Vm, activation can be implemented by using this method and directly setting Vm values, or by using setParameters/setSpecificParameters
                               "setSpecificStatesCallInterval":          0,                                                               # 0 means disabled
-                              "setSpecificStatesCallFrequency":         variables.get_specific_states_call_frequency(fiber_no, 1),   # set_specific_states should be called variables.stimulation_frequency times per ms
-                              "setSpecificStatesFrequencyJitter":       variables.get_specific_states_frequency_jitter(fiber_no, 1), # random value to add or substract to setSpecificStatesCallFrequency every stimulation, this is to add random jitter to the frequency
+                              "setSpecificStatesCallFrequency":         0.1,   # set_specific_states should be called variables.stimulation_frequency times per ms
+                              "setSpecificStatesFrequencyJitter":       [0], # random value to add or substract to setSpecificStatesCallFrequency every stimulation, this is to add random jitter to the frequency
                               "setSpecificStatesRepeatAfterFirstCall":  0.01,                                                            # [ms] simulation time span for which the setSpecificStates callback will be called after a call was triggered
-                              "setSpecificStatesCallEnableBegin":       variables.get_specific_states_call_enable_begin(fiber_no, 1),# [ms] first time when to call setSpecificStates
-                              "additionalArgument":                     fiber_no,                                       # last argument that will be passed to the callback functions set_specific_states, set_specific_parameters, etc.
+                              "setSpecificStatesCallEnableBegin":       0.01,# [ms] first time when to call setSpecificStates
+                              "additionalArgument":                     None,                                       # last argument that will be passed to the callback functions set_specific_states, set_specific_parameters, etc.
                               
                               # parameters to the cellml model
                               "mappings":                               variables.fiber_mappings,                             # mappings between parameters and algebraics/constants and between outputConnectorSlots and states, algebraics or parameters, they are defined in helper.py
@@ -520,7 +541,7 @@ config = {
                 # {"format": "Paraview", "outputInterval": int(1./variables.dt_elasticity*variables.output_timestep_elasticity), "filename": "out/mechanics_uv_stress", "binary": True, "fixedFormat": False, "onlyNodalValues":True, "combineFiles":True, "fileNumbering": "incremental"},
                 
                 # Python callback function "postprocess"
-                #{"format": "PythonCallback", "outputInterval": 1, "callback": postprocess, "onlyNodalValues":True, "filename": ""},
+                {"format": "PythonCallback", "outputInterval": 1, "callback": callback_function_contraction, "onlyNodalValues":True, "filename": ""},
               ],
               # 2. additional output writer that writes also the hydrostatic pressure
               "pressure": {   # output files for pressure function space (linear elements), contains pressure values, as well as displacements and velocities
