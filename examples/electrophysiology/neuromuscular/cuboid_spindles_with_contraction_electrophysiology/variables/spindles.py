@@ -246,7 +246,7 @@ def callback_muscle_spindles_input(input_values, output_values, current_time, sl
                         this function every time. Using this buffer, it is possible to implement a time delay of signals.
   """
   # map from λ in the 3D mesh to muscle spindles model input
-  
+
   # get number of input and output values
   n_input_values = len(input_values)      # = n_muscle_spindles
   n_output_values = len(output_values[0]) # = n_muscle_spindles (per output slot if there are multiple)
@@ -259,8 +259,10 @@ def callback_muscle_spindles_input(input_values, output_values, current_time, sl
       stretch = 1
       
     output_values[0][i] = abs(stretch-1) * 150
+    print("stretch at muscle spindle {}/{}: {}, output: {}".format(i, n_input_values, input_values[i], output_values[0][i]))
+  print("slot_nos:", slot_nos)
+
   
-  #print("stretch at muscle spindles: {}, output: {}".format(input_values, output_values))
   
 def callback_muscle_spindles_to_motoneurons(input_values, output_values, current_time, slot_nos, buffer):
   """

@@ -101,7 +101,9 @@ if rank_no == 0:
     
 # initialize all helper variables
 from helper import *
+n_points_global = variables.meshes["3Dmesh"]["nElements"]
 
+print("muscle_spindle_node_nos", muscle_spindle_node_nos, "with length", len(muscle_spindle_node_nos), " and total number of nodes ", n_points_global)
 
 # callback function that receives the whole result values and produces plots while the simulation is running
 def handle_result(n_instances, time_step_no, current_time, states, algebraics, name_information, additional_argument):
@@ -190,17 +192,16 @@ config = {
   "mappingsBetweenMeshesLogFile":   "mappings_between_meshes_log.txt",    # log file for mappings 
   "Meshes":                variables.meshes,
   # "MappingsBetweenMeshes": {"MeshFiber_{}".format(i) : {"name": "3Dmesh", "xiTolerance": 3e-1, "defaultValue": 0} for i in range(variables.n_fibers_total)},
-  # "MappingsBetweenMeshes": {
-  #   "MeshFiber_{}".format(i) : {
-  #     "name": "3Dmesh_quadratic",
-  #     "xiTolerance": variables.mapping_tolerance,
-  #     "enableWarnings": False, 
-  #     "compositeUseOnlyInitializedMappings": False,
-  #     "fixUnmappedDofs": True,
-  #     "defaultValue": 0,
-  #   } for i in range(variables.n_fibers_total)
-  # },
-  "MappingsBetweenMeshes": { "mesh3D": ["MeshFiber_{}".format(i) for i in range(variables.n_fibers_total)]},
+  "MappingsBetweenMeshes": {
+    "MeshFiber_{}".format(i) : {
+      "name": "3Dmesh_quadratic",
+      "xiTolerance": variables.mapping_tolerance,
+      "enableWarnings": True, 
+      "compositeUseOnlyInitializedMappings": True,
+      "fixUnmappedDofs": True,
+    } for i in range(variables.n_fibers_total)
+  },
+  # "MappingsBetweenMeshes": { "mesh3D": ["MeshFiber_{}".format(i) for i in range(variables.n_fibers_total)]},
 
   "Solvers": {
 

@@ -423,11 +423,11 @@ if False:
 # determine positions of muscle spindles
 muscle_spindle_node_nos = []
 for muscle_spindle_no in range(variables.n_muscle_spindles):
-  i = random.randrange(0,variables.bs_x)
-  j = random.randrange(0,variables.bs_y)
-  k = random.randrange(0,variables.bs_z)
+  i = random.randrange(0,variables.el_x+1)
+  j = random.randrange(0,variables.el_y+1)
+  k = random.randrange(0,variables.el_z+1)
   
-  dof_no_global = k*variables.bs_x*variables.bs_y + j*variables.bs_x + i
+  dof_no_global = k*(variables.el_x+1)*(variables.el_y+1) + j*(variables.el_x+1) + i
   muscle_spindle_node_nos.append(dof_no_global)
 
 # determine positions of golgi tendon organs
