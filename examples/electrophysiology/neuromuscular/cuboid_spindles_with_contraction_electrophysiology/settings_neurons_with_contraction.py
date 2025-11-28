@@ -509,7 +509,7 @@ config = {
               
               # mesh
               "inputMeshIsGlobal":          True,                     # the mesh is given locally
-              "meshName":                   ["3Dmesh"],       # name of the 3D mesh, it is defined under "Meshes" at the beginning of this config
+              "meshName":                   "3Dmesh",       # name of the 3D mesh, it is defined under "Meshes" at the beginning of this config
               "fiberMeshNames":             [],                       # fiber meshes that will be used to determine the fiber direction, there are no fibers in multidomain, so this is empty
               "fiberDirection":             [0,0,1],                  # if fiberMeshNames is empty, directly set the constant fiber direction, in element coordinate system
         

@@ -420,16 +420,18 @@ if False:
       print("MU {}, maximum fr: {}".format(i,max(factors_list)))
 
 
-# determine positions of muscle spindles
-muscle_spindle_node_nos = []
-for muscle_spindle_no in range(variables.n_muscle_spindles):
-  i = random.randrange(0,variables.el_x+1)
-  j = random.randrange(0,variables.el_y+1)
-  k = random.randrange(0,variables.el_z+1)
-  
-  dof_no_global = k*(variables.el_x+1)*(variables.el_y+1) + j*(variables.el_x+1) + i
-  muscle_spindle_node_nos.append(dof_no_global)
+muscle_spindle_node_nos =  [4, 22, 58, 75] #[12,112,212,312,412]
+# f = open("spindles_nofs.csv", "a")
 
+# for muscle_spindle_no in range(variables.n_muscle_spindles):
+#   i = random.randrange(0,variables.el_x+1)
+#   j = random.randrange(0,variables.el_y+1)
+#   k = random.randrange(0,variables.el_z+1)
+  
+#   dof_no_global = k*(variables.el_x+1)*(variables.el_y+1) + j*(variables.el_x+1) + i
+#   muscle_spindle_node_nos.append(dof_no_global)
+#   f.write(str(dof_no_global) + " out of " + str((variables.el_x+1)*(variables.el_y+1)*(variables.el_z+1)) + "\n")
+# f.close()
 # determine positions of golgi tendon organs
 golgi_tendon_organ_node_nos = []
 for golgi_tendon_organ_no in range(variables.n_golgi_tendon_organs):

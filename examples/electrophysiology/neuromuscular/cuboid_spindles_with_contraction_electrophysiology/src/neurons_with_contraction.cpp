@@ -54,7 +54,8 @@ int main(int argc, char *argv[]) {
                                     Equation::Dynamic::IsotropicDiffusion>>>>>>,
                 // mechanics solver
                 MuscleContractionSolver<
-                    Mesh::CompositeOfDimension<3>
+                    Mesh::StructuredDeformableOfDimension<3>
+                    // BasisFunction::LagrangeOfOrder<2>
                 >
             >
         >

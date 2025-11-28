@@ -157,7 +157,7 @@ sampling_factor_elasticity_fat_y = 0.5
 
 # neurons and sensors
 # muscle spindles
-n_muscle_spindles = 3
+n_muscle_spindles = 4
 muscle_spindle_cellml_file = "../../../input/hodgkin_huxley_1952.cellml"
 muscle_spindle_mappings = {
   ("parameter", 0):           "membrane/i_Stim",   # stimulation
@@ -251,6 +251,9 @@ def callback_muscle_spindles_input(input_values, output_values, current_time, sl
   n_input_values = len(input_values)      # = n_muscle_spindles
   n_output_values = len(output_values[0]) # = n_muscle_spindles (per output slot if there are multiple)
   
+  f = open("out/output_spindles.csv", "a")
+  f.write(str(current_time))
+
   for i in range(n_input_values):
     stretch = input_values[i]
     
@@ -259,10 +262,15 @@ def callback_muscle_spindles_input(input_values, output_values, current_time, sl
       stretch = 1
       
     output_values[0][i] = abs(stretch-1) * 150
-    print("stretch at muscle spindle {}/{}: {}, output: {}".format(i, n_input_values, input_values[i], output_values[0][i]))
-  print("slot_nos:", slot_nos)
+    f.write(" ")
+    f.write(str(stretch))
+    f.write(" ")
+    f.write(str(output_values[0][i]))
 
-  
+    print("stretch at muscle spindle {}/{}: {}, output: {}".format(i, n_input_values, input_values[i], output_values[0][i]))
+
+  f.write("\n")
+  f.close()
   
 def callback_muscle_spindles_to_motoneurons(input_values, output_values, current_time, slot_nos, buffer):
   """
