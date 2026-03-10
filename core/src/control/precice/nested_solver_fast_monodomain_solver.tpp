@@ -101,7 +101,7 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
             [&currentMeshName](std::shared_ptr<PreciceVolumeMesh> preciceMesh) {
               return preciceMesh->preciceMeshName == currentMeshName;
             });
-
+    int nPreciceNodesFromFibers = 0;
     // if the mesh is not in preciceVolumeMeshes, create it and add it to
     // preciceVolumeMeshes
     if (iter == preciceVolumeMeshes.end()) {
@@ -149,54 +149,78 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
                    << StringUtility::demangle(
                           typeid(SlotConnectorDataType).name());
 
-        // get the mesh partition
-        std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase =
-            SlotConnectorDataHelper<
-                SlotConnectorDataType>::getMeshPartitionBase(slotConnectorData,
-                                                             preciceData.slotNo,
-                                                             0);
 
-        if (!meshPartitionBase) {
-          LOG(FATAL) << "Could not get mesh for slot No " << preciceData.slotNo;
-        } else
-          LOG(DEBUG) << "got mesh partition for slot No " << preciceData.slotNo;
 
         // get opendihu mesh name
         preciceMesh->opendihuMeshName =
             SlotConnectorDataHelper<SlotConnectorDataType>::getMeshName(
                 slotConnectorData, preciceData.slotNo);
 
-        int nDofsLocalWithoutGhosts =
-            meshPartitionBase->nDofsLocalWithoutGhosts();
         nArrayItems =
             SlotConnectorDataHelper<SlotConnectorDataType>::nArrayItems(
                 slotConnectorData,
                 preciceData.slotNo); // number of fibers if there are fibers
 
-        preciceMesh->nNodesLocal = nDofsLocalWithoutGhosts * nArrayItems;
 
-        // get the vector of values [0,1,...,nDofsLocalWithGhosts]
-        const std::vector<PetscInt> &dofNosLocalWithGhosts =
-            meshPartitionBase->dofNosLocal();
-        std::vector<PetscInt> dofNosLocalWithoutGhosts(
-            dofNosLocalWithGhosts.begin(),
-            dofNosLocalWithGhosts.begin() + nDofsLocalWithoutGhosts);
+        
+        std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase;
 
-        // loop over fibers if there are any
         for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
-          static std::vector<Vec3> nodePositionsFiber;
-          nodePositionsFiber.clear();
-          SlotConnectorDataHelper<SlotConnectorDataType>::slotGetGeometryValues(
-              slotConnectorData, preciceData.slotNo, arrayIndex,
-              dofNosLocalWithoutGhosts, nodePositionsFiber);
-          geometryValues.insert(geometryValues.end(),
-                                nodePositionsFiber.begin(),
-                                nodePositionsFiber.end());
+           // get the mesh partition
+            meshPartitionBase =
+                SlotConnectorDataHelper<
+                    SlotConnectorDataType>::getMeshPartitionBase(slotConnectorData,
+                                                                preciceData.slotNo,
+                                                                arrayIndex);
+
+            if (!meshPartitionBase) {
+            LOG(FATAL) << "Could not get mesh for slot No " << preciceData.slotNo;
+            } else
+            LOG(DEBUG) << "got mesh partition for slot No " << preciceData.slotNo;
+            
+
+            int nDofsLocalWithoutGhosts = meshPartitionBase->nDofsLocalWithoutGhosts();
+            nPreciceNodesFromFibers += nDofsLocalWithoutGhosts;
+            LOG(INFO) << "nPreciceNodesFromFibers (after adding fiber " << arrayIndex << "): " << nPreciceNodesFromFibers
+                      << ", nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts
+                      << ", nArrayItems: " << nArrayItems;
+
+                    // get the vector of values [0,1,...,nDofsLocalWithGhosts]
+            const std::vector<PetscInt> &dofNosLocalWithGhosts =
+                meshPartitionBase->dofNosLocal();
+            std::vector<PetscInt> dofNosLocalWithoutGhosts(
+                dofNosLocalWithGhosts.begin(),
+                dofNosLocalWithGhosts.begin() + nDofsLocalWithoutGhosts);
+            LOG(INFO) << "nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts
+                    << ", nArrayItems: " << nArrayItems;
+
+            static std::vector<Vec3> nodePositionsFiber;
+            nodePositionsFiber.clear();
+            SlotConnectorDataHelper<SlotConnectorDataType>::slotGetGeometryValues(
+                slotConnectorData, preciceData.slotNo, arrayIndex,
+                dofNosLocalWithoutGhosts, nodePositionsFiber);
+            LOG(INFO) << "For fiber " << arrayIndex << ", got geometry values for "
+                        << nodePositionsFiber.size() << " nodes.";
+            geometryValues.insert(geometryValues.end(),
+                                    nodePositionsFiber.begin(),
+                                    nodePositionsFiber.end());
+            
         }
 
-        LOG(DEBUG) << "collected " << geometryValues.size()
+        preciceMesh->nNodesLocal = nPreciceNodesFromFibers;
+        LOG(INFO) << "After looping over fibers, nPreciceNodesFromFibers: " << nPreciceNodesFromFibers
+                  << ", nArrayItems: " << nArrayItems;
+
+
+
+
+
+        LOG(INFO) << "collected " << geometryValues.size()
                    << " node positions from the " << nArrayItems << " fibers";
+
       }
+      LOG(INFO) << "after Finished collecting geometry values, nPreciceNodesFromFibers: " << nPreciceNodesFromFibers
+                << ", nArrayItems: " << nArrayItems;
 
       // transform to contiguous memory layout for precice
       std::vector<double> geometryValuesContiguous(3 * geometryValues.size());
@@ -211,6 +235,12 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
 
       // resize buffer for vertex ids
       preciceMesh->preciceVertexIds.resize(preciceMesh->nNodesLocal);
+      LOG(INFO) << "Initialized precice mesh \"" << preciceMesh->preciceMeshName
+                << "\" from opendihu mesh \"" << preciceMesh->opendihuMeshName
+                << "\" with " << geometryValues.size() << " geometry values. ";
+
+      for (auto &value : geometryValuesContiguous)
+        LOG(INFO) << "contiguous geometry value: " << value;
 
       // give the node positions to precice and get the vertex ids
       preciceParticipant->setMeshVertices(preciceMesh->preciceMeshName,
@@ -236,7 +266,6 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
       LOG(DEBUG) << "Use existing precice mesh " << currentMeshName;
       preciceData.preciceMesh = *iter;
     }
-
     // parse mode
     std::string mode = currentPreciceData.getOptionString("mode", "");
     if (mode == "read") {
@@ -249,7 +278,6 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
       LOG(FATAL) << currentPreciceData << "[\"mode\"] is \"" << mode << "\", "
                  << "possible values are: \"read\", \"write\".";
     }
-
     // parse variable name
     preciceData.preciceDataName =
         currentPreciceData.getOptionString("preciceDataName", "variable");
@@ -270,12 +298,31 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
         SlotConnectorDataHelper<SlotConnectorDataType>::nArrayItems(
             slotConnectorData,
             preciceData.slotNo); // number of fibers if there are fibers
+    LOG(INFO) << "after nArrayItems, nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts
+              << ", nArrayItems: " << nArrayItems;
+    nPreciceNodesFromFibers = 0;
+    for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
+    // get the mesh partition
+    meshPartitionBase =
+        SlotConnectorDataHelper<
+            SlotConnectorDataType>::getMeshPartitionBase(slotConnectorData,
+                                                        preciceData.slotNo,
+                                                        arrayIndex);
+    
 
-    if (nDofsLocalWithoutGhosts * nArrayItems !=
+    int nDofsLocalWithoutGhosts = meshPartitionBase->nDofsLocalWithoutGhosts();
+    nPreciceNodesFromFibers += nDofsLocalWithoutGhosts;
+    
+    }
+    
+    if (nPreciceNodesFromFibers !=
         preciceData.preciceMesh->nNodesLocal) {
       LOG(DEBUG) << ", all available slots: "
                  << SlotConnectorDataHelper<SlotConnectorDataType>::getString(
                         slotConnectorData);
+      LOG(INFO) << "After logging all available slots";
+      LOG(INFO)<< "nPreciceNodesFromFibers: " << nPreciceNodesFromFibers
+                << ", preciceMesh->nNodesLocal: " << preciceData.preciceMesh->nNodesLocal;
       LOG(FATAL)
           << currentPreciceData
           << ": Mesh does not match slot in "
@@ -311,7 +358,6 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
           << "  If the desired mesh is not available at the current solver, "
              "maybe insert a MapDofs class.";
     }
-
     LOG(INFO) << "Precice data \"" << preciceData.preciceDataName
               << "\" maps to "
               << (preciceData.isGeometryField ? "the geometry field of " : "")
@@ -495,21 +541,34 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::preciceWriteData(
 
         // loop over fibers if there are any
         for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
-          static std::vector<double> values;
-          values.clear();
+            static std::vector<double> values;
+            values.clear();
+
+            meshPartitionBase =
+            SlotConnectorDataHelper<
+                SlotConnectorDataType>::getMeshPartitionBase(slotConnectorData,
+                                                            preciceData.slotNo,
+                                                            arrayIndex);
+        
+
+            nDofsLocalWithoutGhosts = meshPartitionBase->nDofsLocalWithoutGhosts();
           // static void slotGetValues(std::shared_ptr<SlotConnectorDataType>
           // slotConnectorData,
           //   int slotNo, int arrayIndex, const std::vector<dof_no_t>
           //   &dofNosLocal, std::vector<double> &values);
-          SlotConnectorDataHelper<SlotConnectorDataType>::slotGetValues(
-              slotConnectorData, preciceData.slotNo, arrayIndex,
-              dofNosLocalWithoutGhosts, values);
-          scalarValues_.insert(scalarValues_.end(), values.begin(),
-                               values.end());
+            dofNosLocalWithoutGhosts.resize(nDofsLocalWithoutGhosts);
+            LOG(INFO) << "Getting values for slot No " << preciceData.slotNo
+                    << ", arrayIndex " << arrayIndex
+                    << ", nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts << ", dofNosLocalWithoutGhosts.size(): " << dofNosLocalWithoutGhosts.size();
+            SlotConnectorDataHelper<SlotConnectorDataType>::slotGetValues(
+                slotConnectorData, preciceData.slotNo, arrayIndex,
+                dofNosLocalWithoutGhosts, values);
+            scalarValues_.insert(scalarValues_.end(), values.begin(),
+                                values.end());
 
-          LOG(DEBUG) << "arrayIndex " << arrayIndex << ", add " << values.size()
-                     << " values, now number: " << scalarValues_.size();
-        }
+            LOG(DEBUG) << "arrayIndex " << arrayIndex << ", add " << values.size()
+                        << " values, now number: " << scalarValues_.size();
+        }  
       }
 
       // scale the values by a factor given in the config
@@ -535,6 +594,13 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::preciceWriteData(
       preciceParticipant->writeData(
           preciceData.preciceMesh->preciceMeshName, preciceData.preciceDataName,
           preciceData.preciceMesh->preciceVertexIds, scalarValues_);
+
+          LOG(INFO) << "Wrote " << scalarValues_.size() << " values to precice for data \""
+                     << preciceData.preciceDataName << "\" on mesh \""
+                     << preciceData.preciceMesh->preciceMeshName
+                     << "\" the first three values are: " << 
+                     scalarValues_[0] << ", " << scalarValues_[1] << ", " << scalarValues_[2];
+
     }
   }
   LOG(DEBUG) << "write volume data to precice complete";
