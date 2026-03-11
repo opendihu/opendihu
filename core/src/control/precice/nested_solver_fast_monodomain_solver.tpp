@@ -31,6 +31,8 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
       typename NestedSolverType::SlotConnectorDataType;
   std::shared_ptr<SlotConnectorDataType> slotConnectorData =
       nestedSolver.getSlotConnectorData();
+
+  // intialize the number of precice nodes from fibers to 0    
   int nPreciceNodesFromFibers = 0;
 
 
@@ -213,7 +215,7 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
                    << " node positions from the " << nArrayItems << " fibers";
 
       }
-      LOG(INFO) << "after Finished collecting geometry values, nPreciceNodesFromFibers: " << nPreciceNodesFromFibers
+      LOG(INFO) << "after finished collecting geometry values, nPreciceNodesFromFibers: " << nPreciceNodesFromFibers
                 << ", nArrayItems: " << nArrayItems;
 
       // transform to contiguous memory layout for precice
