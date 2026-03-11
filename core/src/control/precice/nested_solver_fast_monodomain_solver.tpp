@@ -31,6 +31,8 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
       typename NestedSolverType::SlotConnectorDataType;
   std::shared_ptr<SlotConnectorDataType> slotConnectorData =
       nestedSolver.getSlotConnectorData();
+  int nPreciceNodesFromFibers = 0;
+
 
   // get all present slot names
   std::vector<std::string> slotNames;
@@ -164,7 +166,6 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
 
         
         std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase;
-        int nPreciceNodesFromFibers = 0;
 
         for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
            // get the mesh partition
