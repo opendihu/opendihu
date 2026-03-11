@@ -101,7 +101,6 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
             [&currentMeshName](std::shared_ptr<PreciceVolumeMesh> preciceMesh) {
               return preciceMesh->preciceMeshName == currentMeshName;
             });
-    int nPreciceNodesFromFibers = 0;
     // if the mesh is not in preciceVolumeMeshes, create it and add it to
     // preciceVolumeMeshes
     if (iter == preciceVolumeMeshes.end()) {
@@ -164,6 +163,7 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
 
         
         std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase;
+        int nPreciceNodesFromFibers = 0;
 
         for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
            // get the mesh partition
