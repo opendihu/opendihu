@@ -100,7 +100,8 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
             preciceVolumeMeshes.begin(), preciceVolumeMeshes.end(),
             [&currentMeshName](std::shared_ptr<PreciceVolumeMesh> preciceMesh) {
               return preciceMesh->preciceMeshName == currentMeshName;
-            });
+            });  
+                  
     // if the mesh is not in preciceVolumeMeshes, create it and add it to
     // preciceVolumeMeshes
     if (iter == preciceVolumeMeshes.end()) {
@@ -191,8 +192,6 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
             std::vector<PetscInt> dofNosLocalWithoutGhosts(
                 dofNosLocalWithGhosts.begin(),
                 dofNosLocalWithGhosts.begin() + nDofsLocalWithoutGhosts);
-            LOG(INFO) << "nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts
-                    << ", nArrayItems: " << nArrayItems;
 
             static std::vector<Vec3> nodePositionsFiber;
             nodePositionsFiber.clear();
@@ -208,14 +207,8 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
         }
 
         preciceMesh->nNodesLocal = nPreciceNodesFromFibers;
-        LOG(INFO) << "After looping over fibers, nPreciceNodesFromFibers: " << nPreciceNodesFromFibers
-                  << ", nArrayItems: " << nArrayItems;
 
-
-
-
-
-        LOG(INFO) << "collected " << geometryValues.size()
+        LOG(INFO) << "Collected " << geometryValues.size()
                    << " node positions from the " << nArrayItems << " fibers";
 
       }
@@ -235,12 +228,6 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
 
       // resize buffer for vertex ids
       preciceMesh->preciceVertexIds.resize(preciceMesh->nNodesLocal);
-      LOG(INFO) << "Initialized precice mesh \"" << preciceMesh->preciceMeshName
-                << "\" from opendihu mesh \"" << preciceMesh->opendihuMeshName
-                << "\" with " << geometryValues.size() << " geometry values. ";
-
-      for (auto &value : geometryValuesContiguous)
-        LOG(INFO) << "contiguous geometry value: " << value;
 
       // give the node positions to precice and get the vertex ids
       preciceParticipant->setMeshVertices(preciceMesh->preciceMeshName,
