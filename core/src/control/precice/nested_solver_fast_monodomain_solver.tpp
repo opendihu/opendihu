@@ -185,7 +185,7 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
 
             int nDofsLocalWithoutGhosts = meshPartitionBase->nDofsLocalWithoutGhosts();
             nPreciceNodesFromFibers += nDofsLocalWithoutGhosts;
-            LOG(INFO) << "nPreciceNodesFromFibers (after adding fiber " << arrayIndex << "): " << nPreciceNodesFromFibers
+            LOG(DEBUG) << "nPreciceNodesFromFibers (after adding fiber " << arrayIndex << "): " << nPreciceNodesFromFibers
                       << ", nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts
                       << ", nArrayItems: " << nArrayItems;
 
@@ -215,8 +215,6 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
                    << " node positions from the " << nArrayItems << " fibers";
 
       }
-      LOG(INFO) << "after finished collecting geometry values, nPreciceNodesFromFibers: " << nPreciceNodesFromFibers
-                << ", nArrayItems: " << nArrayItems;
 
       // transform to contiguous memory layout for precice
       std::vector<double> geometryValuesContiguous(3 * geometryValues.size());
