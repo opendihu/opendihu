@@ -101,7 +101,7 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
             [&currentMeshName](std::shared_ptr<PreciceVolumeMesh> preciceMesh) {
               return preciceMesh->preciceMeshName == currentMeshName;
             });  
-                  
+
     // if the mesh is not in preciceVolumeMeshes, create it and add it to
     // preciceVolumeMeshes
     if (iter == preciceVolumeMeshes.end()) {
@@ -287,6 +287,7 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
             preciceData.slotNo); // number of fibers if there are fibers
     LOG(INFO) << "after nArrayItems, nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts
               << ", nArrayItems: " << nArrayItems;
+    LOG(INFO) << "before loop over fibers, nPreciceNodesFromFibers: " << nPreciceNodesFromFibers;
     nPreciceNodesFromFibers = 0;
     for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
     // get the mesh partition
@@ -307,9 +308,6 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
       LOG(DEBUG) << ", all available slots: "
                  << SlotConnectorDataHelper<SlotConnectorDataType>::getString(
                         slotConnectorData);
-      LOG(INFO) << "After logging all available slots";
-      LOG(INFO)<< "nPreciceNodesFromFibers: " << nPreciceNodesFromFibers
-                << ", preciceMesh->nNodesLocal: " << preciceData.preciceMesh->nNodesLocal;
       LOG(FATAL)
           << currentPreciceData
           << ": Mesh does not match slot in "
