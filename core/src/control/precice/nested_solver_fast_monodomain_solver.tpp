@@ -528,7 +528,7 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::preciceWriteData(
           //   int slotNo, int arrayIndex, const std::vector<dof_no_t>
           //   &dofNosLocal, std::vector<double> &values);
             dofNosLocalWithoutGhosts.resize(nDofsLocalWithoutGhosts);
-            LOG(INFO) << "Getting values for slot No " << preciceData.slotNo
+            LOG(DEBUG) << "Getting values for slot No " << preciceData.slotNo
                     << ", arrayIndex " << arrayIndex
                     << ", nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts << ", dofNosLocalWithoutGhosts.size(): " << dofNosLocalWithoutGhosts.size();
             SlotConnectorDataHelper<SlotConnectorDataType>::slotGetValues(
