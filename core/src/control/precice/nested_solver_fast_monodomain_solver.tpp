@@ -286,23 +286,8 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
         SlotConnectorDataHelper<SlotConnectorDataType>::nArrayItems(
             slotConnectorData,
             preciceData.slotNo); // number of fibers if there are fibers
-    LOG(INFO) << "after nArrayItems, nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts
+    LOG(INFO) << "after nArrayItems,  nPreciceNodesFromFibers: " << nPreciceNodesFromFibers
               << ", nArrayItems: " << nArrayItems;
-    LOG(INFO) << "before loop over fibers, nPreciceNodesFromFibers: " << nPreciceNodesFromFibers;
-    nPreciceNodesFromFibers = 0;
-    for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
-    // get the mesh partition
-    meshPartitionBase =
-        SlotConnectorDataHelper<
-            SlotConnectorDataType>::getMeshPartitionBase(slotConnectorData,
-                                                        preciceData.slotNo,
-                                                        arrayIndex);
-    
-
-    int nDofsLocalWithoutGhosts = meshPartitionBase->nDofsLocalWithoutGhosts();
-    nPreciceNodesFromFibers += nDofsLocalWithoutGhosts;
-    
-    }
     
     if (nPreciceNodesFromFibers !=
         preciceData.preciceMesh->nNodesLocal) {
