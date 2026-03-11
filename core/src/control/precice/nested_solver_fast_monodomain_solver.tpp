@@ -211,7 +211,7 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::
 
         preciceMesh->nNodesLocal = nPreciceNodesFromFibers;
 
-        LOG(INFO) << "Collected " << geometryValues.size()
+        LOG(DEBUG) << "collected " << geometryValues.size()
                    << " node positions from the " << nArrayItems << " fibers";
 
       }
