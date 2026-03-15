@@ -371,7 +371,6 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::preciceReadData(
 
       // allocate temporary memory
       scalarValues_.resize(nEntries);
-
       // get all data at once
       preciceParticipant->readData(
           preciceData.preciceMesh->preciceMeshName, preciceData.preciceDataName,
@@ -381,9 +380,11 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::preciceReadData(
       std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase =
           SlotConnectorDataHelper<SlotConnectorDataType>::getMeshPartitionBase(
               slotConnectorData, preciceData.slotNo, 0);
+      LOG(INFO)<<"right after getMeshPartitionBase";
 
       int nDofsLocalWithoutGhosts =
           meshPartitionBase->nDofsLocalWithoutGhosts();
+      LOG(INFO)<<"nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts;
 
       // get the vector of values [0,1,...,nDofsLocalWithGhosts]
       const std::vector<PetscInt> &dofNosLocalWithGhosts =
@@ -400,26 +401,47 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::preciceReadData(
       // store received data in field variable
       if (preciceData.isGeometryField) {
         // loop over fibers if there are any
+        int scalarValueIndex = 0;
         for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
           // fill the vector geometryValues_ with the geometry values of the
           // current fiber or mesh
+          std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase =
+            SlotConnectorDataHelper<SlotConnectorDataType>::getMeshPartitionBase(
+              slotConnectorData, preciceData.slotNo, arrayIndex);
+         nDofsLocalWithoutGhosts =
+          meshPartitionBase->nDofsLocalWithoutGhosts();
+        LOG(INFO) << "inside fiber loop,  for arrayIndex " << arrayIndex << "/" << nArrayItems << ", nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts;
           geometryValues_.resize(nDofsLocalWithoutGhosts);
           for (int dofNoLocal = 0; dofNoLocal < nDofsLocalWithoutGhosts;
                dofNoLocal++) {
+            
             for (int componentNo = 0; componentNo < 3; componentNo++) {
               geometryValues_[dofNoLocal][componentNo] =
-                  scalarValues_[3 * (arrayIndex * nDofsLocalWithoutGhosts +
+                  scalarValues_[3 * (scalarValueIndex +
                                      dofNoLocal) +
                                 componentNo];
               //
             }
           }
+          scalarValueIndex += nDofsLocalWithoutGhosts;
+        LOG(INFO) << "before slotsetgeometryvalues";
+      // get the vector of values [0,1,...,nDofsLocalWithGhosts]
+      const std::vector<PetscInt> &dofNosLocalWithGhosts =
+          meshPartitionBase->dofNosLocal();
+      std::vector<PetscInt> dofNosLocalWithoutGhosts(
+          dofNosLocalWithGhosts.begin(),
+          dofNosLocalWithGhosts.begin() + nDofsLocalWithoutGhosts);
+        LOG(INFO) << "After getting dofNosLocalWithoutGhosts, with size " << dofNosLocalWithoutGhosts.size() << ", before slotSetGeometryValues";
 
           SlotConnectorDataHelper<SlotConnectorDataType>::slotSetGeometryValues(
               slotConnectorData, preciceData.slotNo, arrayIndex,
               dofNosLocalWithoutGhosts, geometryValues_);
+        LOG(INFO) << "after looping over fibers";
         }
       } else {
+        LOG(INFO) << "Setting values for slot No " << preciceData.slotNo
+                  << ", nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts
+                  << ", nArrayItems: " << nArrayItems;
         // loop over fibers if there are any
         for (int arrayIndex = 0; arrayIndex < nArrayItems; arrayIndex++) {
           // fill the vector geometryValues_ with the geometry values of the
@@ -433,6 +455,7 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::preciceReadData(
               slotConnectorData, preciceData.slotNo, arrayIndex,
               dofNosLocalWithoutGhosts, scalarValuesOfMesh_);
         }
+        LOG(INFO) << "after looping over fibers";
       }
     }
   }
