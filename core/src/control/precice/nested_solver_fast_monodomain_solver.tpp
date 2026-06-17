@@ -410,7 +410,7 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::preciceReadData(
               slotConnectorData, preciceData.slotNo, arrayIndex);
          nDofsLocalWithoutGhosts =
           meshPartitionBase->nDofsLocalWithoutGhosts();
-        LOG(INFO) << "inside fiber loop,  for arrayIndex " << arrayIndex << "/" << nArrayItems << ", nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts;
+        LOG(DEBUG) << "inside fiber loop,  for arrayIndex " << arrayIndex << "/" << nArrayItems << ", nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts;
           geometryValues_.resize(nDofsLocalWithoutGhosts);
           for (int dofNoLocal = 0; dofNoLocal < nDofsLocalWithoutGhosts;
                dofNoLocal++) {
@@ -424,15 +424,12 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::preciceReadData(
             }
           }
           scalarValueIndex += nDofsLocalWithoutGhosts;
-        LOG(INFO) << "before slotsetgeometryvalues";
       // get the vector of values [0,1,...,nDofsLocalWithGhosts]
       const std::vector<PetscInt> &dofNosLocalWithGhosts =
           meshPartitionBase->dofNosLocal();
       std::vector<PetscInt> dofNosLocalWithoutGhosts(
           dofNosLocalWithGhosts.begin(),
           dofNosLocalWithGhosts.begin() + nDofsLocalWithoutGhosts);
-        LOG(INFO) << "After getting dofNosLocalWithoutGhosts, with size " << dofNosLocalWithoutGhosts.size() << ", before slotSetGeometryValues";
-
           SlotConnectorDataHelper<SlotConnectorDataType>::slotSetGeometryValues(
               slotConnectorData, preciceData.slotNo, arrayIndex,
               dofNosLocalWithoutGhosts, geometryValues_);
