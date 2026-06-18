@@ -380,11 +380,10 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::preciceReadData(
       std::shared_ptr<Partition::MeshPartitionBase> meshPartitionBase =
           SlotConnectorDataHelper<SlotConnectorDataType>::getMeshPartitionBase(
               slotConnectorData, preciceData.slotNo, 0);
-      LOG(INFO)<<"right after getMeshPartitionBase";
 
       int nDofsLocalWithoutGhosts =
           meshPartitionBase->nDofsLocalWithoutGhosts();
-      LOG(INFO)<<"nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts;
+      LOG(DEBUG)<<"nDofsLocalWithoutGhosts: " << nDofsLocalWithoutGhosts;
 
       // get the vector of values [0,1,...,nDofsLocalWithGhosts]
       const std::vector<PetscInt> &dofNosLocalWithGhosts =
@@ -433,7 +432,6 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::preciceReadData(
           SlotConnectorDataHelper<SlotConnectorDataType>::slotSetGeometryValues(
               slotConnectorData, preciceData.slotNo, arrayIndex,
               dofNosLocalWithoutGhosts, geometryValues_);
-        LOG(INFO) << "after looping over fibers";
         }
       } else {
         LOG(INFO) << "Setting values for slot No " << preciceData.slotNo
@@ -452,7 +450,6 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::preciceReadData(
               slotConnectorData, preciceData.slotNo, arrayIndex,
               dofNosLocalWithoutGhosts, scalarValuesOfMesh_);
         }
-        LOG(INFO) << "after looping over fibers";
       }
     }
   }
@@ -588,10 +585,7 @@ void PreciceAdapterNestedSolver<FastMonodomainSolver<T1>>::preciceWriteData(
 
           LOG(INFO) << "Wrote " << scalarValues_.size() << " values to precice for data \""
                      << preciceData.preciceDataName << "\" on mesh \""
-                     << preciceData.preciceMesh->preciceMeshName
-                     << "\" the first three values are: " << 
-                     scalarValues_[0] << ", " << scalarValues_[1] << ", " << scalarValues_[2];
-
+                     << preciceData.preciceMesh->preciceMeshName;
     }
   }
   LOG(DEBUG) << "write volume data to precice complete";
