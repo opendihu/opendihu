@@ -15,20 +15,11 @@ jobs:
          python-version: '3.14'
          check-latest: true
       - name: Install pre-commit
-        run: |
-          pip install pre-commit
-          pre-commit clean
-          pre-commit install
+        run: pip install pre-commit
       - name: Run checks
-        run: pre-commit run --all-files --show-diff-on-failure --color always -v
-      - name: Print clang-format and hook versions
+        run: pre-commit run -a --show-diff-on-failure --color always -v
+      - name: Print pre-commit, clang-format, and hook versions
         if: always()
         run: |
-          echo "installed clang-format version: " && clang-format --version
-          echo "pre-commit hook versions: " && cat ~/.cache/pre-commit/*/.version
-      - name: Git status
-        if: always()
-        run: git status
-      - name: Full diff
-        if: always()
-        run: git diff
+          echo "Version of pre-commit: " && pre-commit --version
+          echo "Version of clang-format pre-commit hook: " && cat ~/.cache/pre-commit/*/.version
