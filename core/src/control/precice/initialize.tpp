@@ -136,7 +136,6 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
   // initializePreciceVolumeData();
   //  parse scalingFactor from settings
   scalingFactor_ = this->specificSettings_.getOptionDouble("scalingFactor", 1);
-
 }
 
 template <typename NestedSolver>

@@ -516,7 +516,7 @@ void MuscleContractionSolver<MeshType, Term,
                                        TargetFieldVariableType0>(
                 geometryFieldSource, geometryFieldTarget, -1, -1, false);
       }
-      
+
       // for first order meshes
       using TargetFunctionSpaceType1 = ::FunctionSpace::FunctionSpace<
           Mesh::StructuredDeformableOfDimension<3>,

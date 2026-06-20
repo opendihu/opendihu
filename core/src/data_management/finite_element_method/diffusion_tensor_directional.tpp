@@ -153,8 +153,9 @@ DiffusionTensorDirectional<FunctionSpaceType>::diffusionTensor(
       LOG(INFO) << ", spatiallyVaryingPrefactor: " << spatiallyVaryingPrefactor;
       LOG(INFO) << "diffusionTensor from settings: " << std::endl
                 << this->diffusionTensor_.value(elementNoLocal).data();
-      LOG(INFO) << "additionalDiffusionTensor: " << std::endl
-                << this->additionalDiffusionTensor_.value(elementNoLocal).data();
+      LOG(INFO)
+          << "additionalDiffusionTensor: " << std::endl
+          << this->additionalDiffusionTensor_.value(elementNoLocal).data();
       LOG(INFO) << "resulting diffusion tensor in direction " << directionVector
                 << ":" << std::endl
                 << diffusionTensor.data();
