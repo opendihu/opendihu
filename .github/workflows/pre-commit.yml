@@ -1,7 +1,13 @@
 name: Code Style
 on:
   push:
+    paths:
+      - '**.[cht]pp'
+      - '**.h'
   pull_request:
+    paths:
+      - '**.[cht]pp'
+      - '**.h'
 
 jobs:
   formatting:
