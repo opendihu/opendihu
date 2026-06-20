@@ -1,4 +1,5 @@
 #include "specialized_solver/fast_monodomain_solver/fast_monodomain_solver_base.h"
+
 #include "partition/rank_subset.h"
 #include "control/diagnostic_tool/stimulation_logging.h"
 
