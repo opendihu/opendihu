@@ -1,13 +1,7 @@
 name: Code Style
 on:
   push:
-    branches:
-      - main
-      - develop
   pull_request:
-    paths:
-      - '**.[cht]pp'
-      - '**.h'
   workflow_dispatch:
 
 jobs:
