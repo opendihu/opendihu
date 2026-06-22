@@ -1,8 +1,10 @@
 .sconsign.dblite
+.scons_node_count
 *.o
 *.a
 **/*.so
-*/.sconf_temp*
+**/.sconf_temp/
+**/.scr/
 **/*bp*
 config.log
 build_debug
