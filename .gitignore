@@ -1,4 +1,5 @@
 .sconsign.dblite
+.scons_node_count
 *.o
 *.a
 **/*.so
