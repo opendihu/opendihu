@@ -389,7 +389,7 @@ void MeshPartition<FunctionSpace::FunctionSpace<MeshType, BasisFunctionType>,
   // initialize local natural ordering if has not yet been done
   initializeDofNosLocalNaturalOrdering();
 
-  //LOG(DEBUG) << "mesh partition after refinement: " << *this;
+  // LOG(DEBUG) << "mesh partition after refinement: " << *this;
 }
 
 } // namespace Partition

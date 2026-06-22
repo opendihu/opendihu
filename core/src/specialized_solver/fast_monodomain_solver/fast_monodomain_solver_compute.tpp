@@ -178,22 +178,26 @@ void FastMonodomainSolverBase<
   // neighbors
   fiberPointBuffersStatesAreCloseToEquilibrium_[0] = active;
   fiberPointBuffersStatesAreCloseToEquilibrium_[nPointBuffers - 1] = active;
-  
+
   int fiberDataNo = 0;
   int pointBuffersNoAtFiberStart = 0;
 
   for (global_no_t pointBuffersNo = 0; pointBuffersNo < nPointBuffers;
        pointBuffersNo++) {
-    LOG(DEBUG) << "inside loop over pointBuffers, iteration " << pointBuffersNo << "/"
-               << nPointBuffers;
+    LOG(DEBUG) << "inside loop over pointBuffers, iteration " << pointBuffersNo
+               << "/" << nPointBuffers;
 
     // determine if the point buffer belongs to a new fiberDataNo
-    const bool newFiber = (pointBuffersNo-pointBuffersNoAtFiberStart) * Vc::double_v::size() / fiberData_[fiberDataNo].valuesLength;
+    const bool newFiber = (pointBuffersNo - pointBuffersNoAtFiberStart) *
+                          Vc::double_v::size() /
+                          fiberData_[fiberDataNo].valuesLength;
 
     if (newFiber) {
       pointBuffersNoAtFiberStart = pointBuffersNo;
       fiberDataNo++;
-      LOG(DEBUG) << "at pointbuffersNo " << pointBuffersNo << " starts fiberDataNo: " << fiberDataNo << " with size: " << fiberData_[fiberDataNo].valuesLength;
+      LOG(DEBUG) << "at pointbuffersNo " << pointBuffersNo
+                 << " starts fiberDataNo: " << fiberDataNo
+                 << " with size: " << fiberData_[fiberDataNo].valuesLength;
     }
 
     int indexInFiber = pointBuffersNo * Vc::double_v::size() -
@@ -392,7 +396,9 @@ void FastMonodomainSolverBase<
     // perform forward substitution
     // loop over entries / rows of matrices
     for (int valueNo = 0; valueNo < nValues; valueNo++) {
-      LOG(DEBUG) << "for fiberDataNo "<< fiberDataNo <<" in config named " << fiberData_[fiberDataNo].fiberNoGlobal << ", forward substitution, valueNo: " << valueNo << "/"
+      LOG(DEBUG) << "for fiberDataNo " << fiberDataNo << " in config named "
+                 << fiberData_[fiberDataNo].fiberNoGlobal
+                 << ", forward substitution, valueNo: " << valueNo << "/"
                  << nValues;
       // new with CN
       double a = 0;
