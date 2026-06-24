@@ -1,6 +1,46 @@
+import read_structured_vtk
+import json
+
 
 # scenario name for log file
 scenario_name = "spindles"
+
+# geometry
+muscle_name = "muscle6"
+geometry_input_folder = "../" + muscle_name + "/"
+mechanics_mesh_file = geometry_input_folder + "structured_" + muscle_name + ".vtk"
+
+points, bs_x, bs_y, bs_z = read_structured_vtk.read_structured_vtk(mechanics_mesh_file)
+el_x, el_y, el_z = int((bs_x-1)/2), int((bs_y-1)/2), int((bs_z-1)/2)
+meshes = { # create 3D mechanics mesh
+    "3Dmesh": {
+        "nElements":            [el_x, el_y, el_z],
+        "nodePositions":        points,
+        "logKey":               "mesh3D",
+        "inputMeshIsGlobal":    True,
+        "nRanks":               1,
+    }
+}
+
+fiber_mesh_file = geometry_input_folder + "/fibers" + muscle_name +".json"
+with open(fiber_mesh_file,"r") as f:
+	fdata = json.load(f)
+
+fiber_idx = 0
+for fiber in fdata:
+	fdict = fdata[fiber]
+	npos = [[fdict[ii]['x'],fdict[ii]['y'],fdict[ii]['z']] for ii in range(len(fdict)) ]
+	meshName = "MeshFiber_{}".format(fiber_idx)
+	meshes[meshName] = {
+			"nElements":		      [len(fdict)-1],
+			"nodePositions":	    npos,
+			"inputMeshIsGlobal":	True,
+			"nRanks":				      1,
+	}
+	fiber_idx += 1
+     
+n_fibers_total = fiber_idx
+
 
 # material parameters
 # --------------------
@@ -69,14 +109,14 @@ use_lumped_mass_matrix = False            # which formulation to use, the formul
 
 # timing parameters
 # -----------------
-end_time = 5_000.0                  # [ms] end time of the simulation
+end_time = 50.0                  # [ms] end time of the simulation
 #end_time = 1000.0                   # [ms] end time of the simulation
 stimulation_frequency = 100*1e-3    # [ms^-1] sampling frequency of stimuli in firing_times_file, in stimulations per ms, number before 1e-3 factor is in Hertz.
 stimulation_frequency_jitter = 0    # [-] jitter in percent of the frequency, added and substracted to the stimulation_frequency after each stimulation
 dt_0D = 1e-3                        # [ms] timestep width of ODEs (1e-3)
 dt_multidomain = 1e-3               # [ms] timestep width of the multidomain solver, i.e. the diffusion
 dt_splitting = dt_multidomain       # [ms] timestep width of strang splitting between 0D and multidomain, this is the same as the dt_multidomain, because we do not want to subcycle for the diffusion part
-dt_elasticity = 10                   # [ms] time step width of elasticity solver
+dt_elasticity = 1                   # [ms] time step width of elasticity solver
 
 dt_neurons = 1e-2                   # [ms] time step width for all neuron solvers
 dt_muscle_spindles     = dt_neurons # [ms] timestep width of cellml solver of muscle spindles
@@ -92,15 +132,14 @@ output_timestep_multidomain = 1     # [ms] timestep for fiber output, 0.5
 output_timestep_elasticity = dt_elasticity  # [ms] timestep for elasticity output files
 output_timestep_neurons = 1         # [ms] timestep for output of files for neurons
 output_timestep_motoneuron = 1      # [ms] timestep for output of files for motoneuron
+output_timestep_fibers = 0.1         # [ms] timestep for output of files for fibers
 
 # input files
-#multidomain_cellml_file = "../../../input/hodgkin_huxley-razumova.cellml"
+fiber_cellml_file = "../../../input/hodgkin_huxley-razumova.cellml"
 fiber_file = "../../../input/left_biceps_brachii_9x9fibers.bin"
-fiber_file = "../../../input/left_biceps_brachii_13x13fibers.bin"
 fat_mesh_file = fiber_file + "_fat.bin"
 firing_times_file = "../../../input/MU_firing_times_always.txt"    # use setSpecificStatesCallEnableBegin and setSpecificStatesCallFrequency
-firing_times_file = "../../../input/MU_firing_times_once.txt"    # use setSpecificStatesCallEnableBegin and setSpecificStatesCallFrequency
-fiber_distribution_file = "../../../input/MU_fibre_distribution_10MUs.txt"
+fiber_distribution_file = "../../../input/MU_fibre_distribution_3780.txt"
 
 # stride for sampling the 3D elements from the fiber data
 # a higher number leads to less 3D elements
@@ -118,7 +157,7 @@ sampling_factor_elasticity_fat_y = 0.5
 
 # neurons and sensors
 # muscle spindles
-n_muscle_spindles = 3
+n_muscle_spindles = 4
 muscle_spindle_cellml_file = "../../../input/hodgkin_huxley_1952.cellml"
 muscle_spindle_mappings = {
   ("parameter", 0):           "membrane/i_Stim",   # stimulation
@@ -207,11 +246,14 @@ def callback_muscle_spindles_input(input_values, output_values, current_time, sl
                         this function every time. Using this buffer, it is possible to implement a time delay of signals.
   """
   # map from λ in the 3D mesh to muscle spindles model input
-  
+
   # get number of input and output values
   n_input_values = len(input_values)      # = n_muscle_spindles
   n_output_values = len(output_values[0]) # = n_muscle_spindles (per output slot if there are multiple)
   
+  f = open("out/output_spindles.csv", "a")
+  f.write(str(current_time))
+
   for i in range(n_input_values):
     stretch = input_values[i]
     
@@ -220,8 +262,15 @@ def callback_muscle_spindles_input(input_values, output_values, current_time, sl
       stretch = 1
       
     output_values[0][i] = abs(stretch-1) * 150
-  
-  #print("stretch at muscle spindles: {}, output: {}".format(input_values, output_values))
+    f.write(" ")
+    f.write(str(stretch))
+    f.write(" ")
+    f.write(str(output_values[0][i]))
+
+    print("stretch at muscle spindle {}/{}: {}, output: {}".format(i, n_input_values, input_values[i], output_values[0][i]))
+
+  f.write("\n")
+  f.close()
   
 def callback_muscle_spindles_to_motoneurons(input_values, output_values, current_time, slot_nos, buffer):
   """
@@ -487,3 +536,23 @@ def callback_motoneuron_output(input_values, output_values, current_time, slot_n
   n_input_values = len(input_values)      # 1 (1 motoneuron)
   n_output_values = len(output_values[0]) # =N (number of points in neuromuscular junction, this is all nodes in the x-y plane at the center of the muscle)
   
+
+fast_monodomain_solver_optimizations = True # enable the optimizations in the fast multidomain solver
+diffusion_solver_type = "cg"  
+diffusion_preconditioner_type = "none"      # preconditioner
+
+mapping_tolerance = 0.1
+
+# Boundary conditions: 
+contraction_dirichlet_bc = {}
+
+# set Dirichlet BC
+k = 0
+for j in range(bs_y):
+  for i in range(bs_x):
+    contraction_dirichlet_bc[k*bs_x*bs_y + j*bs_x + i] = [None,None,0.0,None,None,None]
+       
+# set Neumann BC
+k = el_z-1
+contraction_neumann_bc = [{"element": k*el_x*el_y + j*el_x + i, "constantVector": [0, 0, 0], "face": "2+"} for j in range(el_y) for i in range(el_x)]
+

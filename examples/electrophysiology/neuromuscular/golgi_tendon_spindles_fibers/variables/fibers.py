@@ -142,7 +142,7 @@ use_lumped_mass_matrix = False            # which formulation to use, the formul
 
 # timing parameters
 # -----------------
-end_time = 5_000.0                  # [ms] end time of the simulation
+end_time = 0.5                  # [ms] end time of the simulation
 dt_0D = 2.5e-5                        # [ms] timestep width of ODEs (1e-3), for shorten use 2.5e-5
 dt_1D = 2.5e-5                      # [ms] timestep width of the 1D electric conduction problem, for shorten use 2.5e-5
 dt_splitting = 2.5e-5                # [ms] timestep width of strang splitting between 0D and 1D for the fibers, for shorten use 2.5e-5
