@@ -209,6 +209,11 @@ void FastMonodomainSolverBase<
         (unsigned long)(fiberCenterIndex - indexInFiber) <
         Vc::double_v::size(); // note that this is different from abs(...)
 
+    // SIMD lane within this buffer that holds the stimulation point, or -1 if
+    // the stimulation point is not among the points of this buffer
+    int stimulationLaneIndex =
+        currentPointIsInCenter ? (fiberCenterIndex - indexInFiber) : -1;
+
     VLOG(3) << "currentPointIsInCenter: " << currentPointIsInCenter
             << ", pointBuffersNo: " << pointBuffersNo
             << ", fiberDataNo: " << fiberDataNo
@@ -267,7 +272,8 @@ void FastMonodomainSolverBase<
           fiberPointBuffersParameters_[pointBuffersNo], currentTime,
           timeStepWidth, stimulateCurrentPoint, argumentStoreAlgebraics,
           fiberPointBuffersAlgebraicsForTransfer_[pointBuffersNo],
-          algebraicsForTransferIndices_, valueForStimulatedPoint_);
+          algebraicsForTransferIndices_, valueForStimulatedPoint_,
+          stimulationLaneIndex);
     } // loop over timesteps
 
     equilibriumAccelerationUpdate(statesPreviousValues, pointBuffersNo);

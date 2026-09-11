@@ -427,12 +427,14 @@ protected:
       generateGpuSource_; //< if the GPU source code should be generated, if not
                           // it reuses the existing file, this is for debugging
 
-  void (*compute0DInstance_)(Vc::double_v[], std::vector<Vc::double_v> &,
-                             double, double, bool, bool,
-                             std::vector<Vc::double_v> &,
-                             const std::vector<int> &,
-                             double); //< runtime-created and loaded function to
-                                      // compute one Heun step of the 0D problem
+  void (*compute0DInstance_)(
+      Vc::double_v[], std::vector<Vc::double_v> &, double, double, bool, bool,
+      std::vector<Vc::double_v> &, const std::vector<int> &, double,
+      int); //< runtime-created and loaded function to compute one Heun step
+            // of the 0D problem; the last parameter is the SIMD lane index
+            // (0..Vc::double_v::size()-1) of the point to stimulate within
+            // this buffer, or -1 if no point of this buffer is to be
+            // stimulated
   void (*computeMonodomain_)(
       const float *parameters, double *algebraicsForTransfer,
       double *statesForTransfer, const float *elementLengths, double startTime,

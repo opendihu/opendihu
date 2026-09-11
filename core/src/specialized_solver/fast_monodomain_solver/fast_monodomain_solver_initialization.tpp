@@ -375,7 +375,7 @@ void FastMonodomainSolverBase<
         // value from the center
         if (neuromuscularJunctionRelativeSize_ <= 0.0) {
           fiberData_.at(fiberDataNo).fiberStimulationPointIndex =
-              (int)(fiberData_.at(fiberDataNo).valuesLength / 2);
+              (int)(fiberData_.at(fiberDataNo).valuesLength - 1);
         } else {
           fiberData_.at(fiberDataNo).fiberStimulationPointIndex =
               (int)(fiberData_.at(fiberDataNo).valuesLength *
@@ -889,8 +889,8 @@ void FastMonodomainSolverBase<
   compute0DInstance_ =
       (void (*)(Vc::double_v[], std::vector<Vc::double_v> &, double, double,
                 bool, bool, std::vector<Vc::double_v> &,
-                const std::vector<int> &, double))dlsym(handle,
-                                                        "compute0DInstance");
+                const std::vector<int> &, double,
+                int))dlsym(handle, "compute0DInstance");
   initializeStates_ =
       (void (*)(Vc::double_v states[]))dlsym(handle, "initializeStates");
 

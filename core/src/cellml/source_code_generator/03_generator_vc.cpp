@@ -1016,7 +1016,7 @@ void CellmlSourceCodeGeneratorVc::generateSourceFileFastMonodomain(
       << "                       bool storeAlgebraicsForTransfer, "
          "std::vector<Vc::double_v> &algebraicsForTransfer, const "
          "std::vector<int> &algebraicsForTransferIndices, double "
-         "valueForStimulatedPoint) \n"
+         "valueForStimulatedPoint, int stimulationLaneIndex) \n"
       << "{\n"
       << "  // assert that Vc::double_v::size() is the same as in opendihu, "
          "otherwise there will be problems\n"
@@ -1139,13 +1139,11 @@ void CellmlSourceCodeGeneratorVc::generateSourceFileFastMonodomain(
   }
   sourceCode << "\n\n"
              << R"(
-  // if stimulation, set value of Vm (state0)
-  if (stimulate)
+  // if stimulation, set value of Vm (state0) at the specific SIMD lane that
+  // holds the point to stimulate
+  if (stimulate && stimulationLaneIndex >= 0)
   {
-    for (int i = 0; i < std::min(3,(int)Vc::double_v::size()); i++)
-    {
-      algebraicState0[i] = valueForStimulatedPoint;
-    }
+    algebraicState0[stimulationLaneIndex] = valueForStimulatedPoint;
   }
   // compute new rates, rhs(y*)
 )";
@@ -1221,12 +1219,9 @@ void CellmlSourceCodeGeneratorVc::generateSourceFileFastMonodomain(
   }
 
   sourceCode << R"(
-  if (stimulate)
+  if (stimulate && stimulationLaneIndex >= 0)
   {
-    for (int i = 0; i < std::min(3,(int)Vc::double_v::size()); i++)
-    {
-      states[0][i] = valueForStimulatedPoint;
-    }
+    states[0][stimulationLaneIndex] = valueForStimulatedPoint;
   }
   // store algebraics for transfer
   if (storeAlgebraicsForTransfer)
