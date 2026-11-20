@@ -63,8 +63,9 @@ XBRAID_DOWNLOAD = True
 # OpenCOR, utility to view CellML models and to convert them from xml format to c code
 OPENCOR_DOWNLOAD = True
 
-# preCICE coupling library, set both to True in order to use precice
-LIBXML2_DOWNLOAD = True
+# preCICE coupling library
+# libxml2 is required by preCICE. By default the system installation is used (e.g. `sudo apt install libxml2-dev`).
+LIBXML2_DOWNLOAD = False
 PRECICE_DOWNLOAD = True
 
 # MPI

@@ -5,8 +5,7 @@ class libxml2(Package):
 
     def __init__(self, **kwargs):
         defaults = {
-            #'download_url': 'https://git.gnome.org/browse/libxml2/snapshot/libxml2-2.9.7.zip',
-            'download_url': 'ftp://xmlsoft.org/libxml2/libxml2-git-snapshot.tar.gz',
+            'download_url': 'https://download.gnome.org/sources/libxml2/2.9/libxml2-2.9.14.tar.xz',
         }
         defaults.update(kwargs)
         super(libxml2, self).__init__(**defaults)
