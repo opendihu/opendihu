@@ -62,9 +62,13 @@ XBRAID_DOWNLOAD = True
 OPENCOR_DOWNLOAD = True
 
 # preCICE coupling library
-# libxml2 is required by preCICE. By default the system installation is used (e.g. `sudo apt install libxml2-dev`).
+# libxml2 is a dependency required by preCICE which can be installed using `sudo apt install libxml2-dev`. For historical reasons we provide the option to download from a tarball by setting LIBXML2_DOWNLOAD = True.  
+# preCICE is an optional dependency to run partitioned simulations, i.e., multiple OpenDiHu solvers or OpenDiHu solvers coupled to external software. 
+# You can install preCICE by setting PRECICE_DOWNLOAD = True. If you already have built preCICE in your system you can point to it to avoid having multiple installations of preCICE. In that case keep PRECICE_DOWNLOAD = False and set PRECICE_INC_DIR PRECICE_LIB_DIR
 LIBXML2_DOWNLOAD = False
-PRECICE_DOWNLOAD = True
+PRECICE_DOWNLOAD = False
+#PRECICE_INC_DIR = "/path/to/precice/include"
+#PRECICE_LIB_DIR = "/path/to/precice/build"
 
 # MPI
 # MPI is normally detected by running the mpicc command. If this is not available, you can provide the MPI_DIR manually.
