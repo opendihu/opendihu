@@ -46,10 +46,8 @@ SEMT_DOWNLOAD = True
 # EasyLoggingPP, provides logging facilities
 EASYLOGGINGPP_DOWNLOAD = True
 
-# ADIOS2, adaptable I/O library, needed for interfacing MegaMol
-ADIOS_DOWNLOAD = True
-
 # MegaMol, visualization framework of VISUS, optional, needs ADIOS2
+ADIOS_DOWNLOAD = False # ADIOS2, adaptable I/O library, needed for interfacing MegaMol
 MEGAMOL_DOWNLOAD = False    # install MegaMol from official git repo, but needed is the private repo, ask Tobias Rau for access to use MegaMol with opendihu
 
 # Vc, vectorization types and C++ utility to produce vectorized code (but does not support AVX-512)
