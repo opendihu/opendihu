@@ -2,7 +2,6 @@ import sys, os
 import timeit
 import argparse
 import importlib
-import distutils.util
 
 # parse rank arguments
 rank_no = int(sys.argv[-2])
@@ -16,7 +15,7 @@ sys.path.insert(0, os.path.join(script_path,'variables'))
 import variables              # file variables.py, defined default values for all parameters, you can set the parameters there
 
 # define command line arguments
-mbool = lambda x:bool(distutils.util.strtobool(x))   # function to parse bool arguments
+mbool = lambda x: str(x).strip().lower() in ("y", "yes", "t", "true", "on", "1")   # function to parse bool arguments
 parser = argparse.ArgumentParser(description='precice_config')
 parser.add_argument('--case_name', help='The name to identify this run in the log.', default=variables.case_name)
 parser.add_argument('--precice_file', help='The precice_config.xml file.', default=variables.precice_file)

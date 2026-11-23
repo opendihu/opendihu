@@ -49,8 +49,6 @@ void DihuContext::initializePython(int argc, char *argv[],
   // VLOG(4) << "PyEval_ReleaseLock()";
   // PyEval_ReleaseLock();
 
-  Py_SetStandardStreamEncoding(NULL, NULL);
-
   // import emb module which captures stderr
   PyImport_ImportModule("emb");
 

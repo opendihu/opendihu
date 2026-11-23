@@ -2,7 +2,6 @@ import sys, os
 import timeit
 import argparse
 import importlib
-import distutils.util
 
 # parse rank arguments
 rank_no = int(sys.argv[-2])

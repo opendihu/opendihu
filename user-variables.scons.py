@@ -28,11 +28,15 @@ PETSC_DOWNLOAD = True
 HDF5_DOWNLOAD = True
 NLOHMANNJSON_DOWNLOAD = False
 
-# Python 3.9, note that this also builds the C-API which is usually not included in the normal python3 installation of your system, therefore it is recommended that you leave it at 'True'
-PYTHON_DOWNLOAD = True
+# Python 3.12, True: download and build python into dependencies/python (takes a while).
+# False: use the existing system python3 (or PYTHON_DIR/bin/python3 if PYTHON_DIR is set). This needs the
+# python C-API headers and shared library, e.g. `sudo apt install python3-dev` on Ubuntu.
+PYTHON_DOWNLOAD = False
 
 # Python packages - they are now all combined with the option PYTHONPACKAGES_DOWNLOAD
-PYTHONPACKAGES_DOWNLOAD = True
+# True: pip-install numpy, scipy, matplotlib, ... into the downloaded python (only works with PYTHON_DOWNLOAD = True).
+# False: use the packages of the existing python, install them yourself (at least numpy is required for the check).
+PYTHONPACKAGES_DOWNLOAD = False
 
 # Base64, encoding library for binary vtk (paraview) output files
 BASE64_DOWNLOAD = True

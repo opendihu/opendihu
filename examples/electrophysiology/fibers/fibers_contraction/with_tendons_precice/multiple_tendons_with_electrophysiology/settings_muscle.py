@@ -4,7 +4,6 @@ import sys, os
 import timeit
 import argparse
 import importlib
-import distutils.util
 
 # set title of terminal
 title = "muscle"
@@ -42,7 +41,7 @@ else:
 
 
 # define command line arguments
-mbool = lambda x:bool(distutils.util.strtobool(x))   # function to parse bool arguments
+mbool = lambda x: str(x).strip().lower() in ("y", "yes", "t", "true", "on", "1")   # function to parse bool arguments
 parser = argparse.ArgumentParser(description='muscle')
 parser.add_argument('--case_name',                       help='The name to identify this run in the log.',   default=variables.case_name)
 parser.add_argument('--precice_config_file',                       help='The name to identify this run in the log.',   default=variables.precice_config_file)

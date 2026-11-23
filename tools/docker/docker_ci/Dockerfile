@@ -9,7 +9,8 @@ RUN apt-get update && \
     cmake \
     libffi-dev \
     vim \
-    python-is-python3
+    python-is-python3 \
+    python3-dev python3-numpy
 
 # git -> Dockerfile
 # wget unzip -> Download dependencies
@@ -18,6 +19,7 @@ RUN apt-get update && \
 # libffi-dev -> Solves error at run time: ModuleNotFoundError: No module named '_ctypes’
 # vim -> optional
 # python-is-python3 -> make `python` point to python3 (needed for some scripts that call python instead of python3)
+# python3-dev python3-numpy -> system python used by opendihu (PYTHON_DOWNLOAD = False), numpy is needed by the python packages check and the unit tests
 
 WORKDIR /workspace
 

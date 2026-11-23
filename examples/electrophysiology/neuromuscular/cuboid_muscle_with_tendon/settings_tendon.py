@@ -18,7 +18,7 @@ from create_partitioned_meshes_for_settings import *   # file create_partitioned
 from helper import *
 
 # define command line arguments
-mbool = lambda x:bool(distutils.util.strtobool(x))   # function to parse bool arguments
+mbool = lambda x: str(x).strip().lower() in ("y", "yes", "t", "true", "on", "1")   # function to parse bool arguments
 parser = argparse.ArgumentParser(description='precice_config')
 parser.add_argument('--case_name', help='The name to identify this run in the log.', default=variables.case_name)
 parser.add_argument('--precice_file', help='The precice_config.xml file.', default=variables.precice_file)

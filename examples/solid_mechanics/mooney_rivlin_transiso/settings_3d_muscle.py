@@ -4,7 +4,6 @@
 import numpy as np
 import pickle
 import argparse
-import distutils.util
 import sys, os
 sys.path.insert(0, '..')
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
@@ -15,7 +14,7 @@ own_rank_no = (int)(sys.argv[-2])
 n_ranks = (int)(sys.argv[-1])
 
 # define command line arguments
-mbool = lambda x:bool(distutils.util.strtobool(x))   # function to parse bool arguments
+mbool = lambda x: str(x).strip().lower() in ("y", "yes", "t", "true", "on", "1")   # function to parse bool arguments
 parser = argparse.ArgumentParser(description='3d_hyperelasticity')
 parser.add_argument('--scenario_name',         help='The name to identify this run in the log.',      default="3d_muscle")
 parser.add_argument('--njacobi',               help='Frequency of Jacobi recomputation.', type=int,   default=5)
