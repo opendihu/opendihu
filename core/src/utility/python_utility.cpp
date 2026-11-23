@@ -449,7 +449,7 @@ std::string PythonUtility::getString(PyObject *object, int indent,
     bool objectBool = PyObject_IsTrue(object);
     line << std::boolalpha << objectBool;
   } else if (PyUnicode_Check(object)) {
-    std::string str = PyUnicode_AS_DATA(object);
+    std::string str = PyUnicode_AsUTF8(object);
     line << "\"" << str << "\"";
   } else if (PyFunction_Check(object)) {
     line << "<function object>";
