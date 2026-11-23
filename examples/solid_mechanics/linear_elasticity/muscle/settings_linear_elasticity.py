@@ -5,14 +5,13 @@
 import numpy as np
 import sys, os
 import argparse
-import distutils.util
 sys.path.insert(0, '..')
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 import variables              # file variables.py, defined default values for all parameters, you can set the parameters there
 from create_partitioned_meshes_for_settings import *   # file create_partitioned_meshes_for_settings with helper functions about own subdomain
 
 # define command line arguments
-mbool = lambda x:bool(distutils.util.strtobool(x))   # function to parse bool arguments
+mbool = lambda x: str(x).strip().lower() in ("y", "yes", "t", "true", "on", "1")   # function to parse bool arguments
 parser = argparse.ArgumentParser(description='3d_hyperelasticity')
 parser.add_argument('--yforce',                help='Applied force in y direction.',      type=float,   default=-0.4)
 parser.add_argument('--zforce',                help='Applied force in z direction.',      type=float,   default=-3)

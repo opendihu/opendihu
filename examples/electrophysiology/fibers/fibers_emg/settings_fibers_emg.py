@@ -24,7 +24,6 @@ import sys, os
 import timeit
 import argparse
 import importlib
-import distutils.util
 
 # parse rank arguments
 rank_no = (int)(sys.argv[-2])
@@ -53,7 +52,7 @@ if ".py" in sys.argv[0]:
   sys.argv = sys.argv[1:]     # remove first argument, which now has already been parsed
 
 # define command line arguments
-mbool = lambda x:bool(distutils.util.strtobool(x))   # function to parse bool arguments
+mbool = lambda x: str(x).strip().lower() in ("y", "yes", "t", "true", "on", "1")   # function to parse bool arguments
 parser = argparse.ArgumentParser(description='fibers_emg')
 parser.add_argument('--scenario_name',                       help='The name to identify this run in the log.',            default=variables.scenario_name)
 parser.add_argument('--n_subdomains', nargs=3,               help='Number of subdomains in x,y,z direction.',             type=int)

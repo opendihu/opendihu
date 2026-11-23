@@ -4,7 +4,6 @@
 import numpy as np
 import sys, os
 import argparse
-import distutils.util
 sys.path.append(os.path.dirname(__file__))
 import compute_sizes
 
@@ -13,7 +12,7 @@ rank_no = (int)(sys.argv[-2])
 n_ranks = (int)(sys.argv[-1])
 
 # define command line arguments
-mbool = lambda x:bool(distutils.util.strtobool(x))   # function to parse bool arguments
+mbool = lambda x: str(x).strip().lower() in ("y", "yes", "t", "true", "on", "1")   # function to parse bool arguments
 parser = argparse.ArgumentParser(description='Program that generates 3D meshes and 1D fiber meshes out of the surface of a muscle. The program implements the parallel algorithm involving partitioning, harmonic maps and streamline tracing.')
 parser.add_argument('--input_filename_or_splines_or_stl',             default="splines",  help='The input filename of the surface triangulation. "splines" and "stl" will be replaced by existing files in input directory')
 parser.add_argument('--output_filename',                              default="",         help='Filename of the output bin file, "0x0" gets replaced by the actual number of fibers in the file.')
