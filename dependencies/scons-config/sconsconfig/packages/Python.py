@@ -8,13 +8,7 @@ class Python(Package):
 
   def __init__(self, **kwargs):
     defaults = {
-      #'download_url': 'https://www.python.org/ftp/python/2.7.14/Python-2.7.14.tgz',
-      #'download_url': 'https://www.python.org/ftp/python/2.7.12/Python-2.7.12.tgz',
-      #'download_url': 'https://www.python.org/ftp/python/3.4.6/Python-3.4.6.tgz'
-      #'download_url': 'https://www.python.org/ftp/python/3.5.3/Python-3.5.3.tgz'
-      #'download_url': 'https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz'
-      #'download_url': 'https://github.com/stackless-dev/stackless/archive/3.6-slp.zip'  # stackless-python
-      'download_url': 'https://www.python.org/ftp/python/3.9.0/Python-3.9.0.tgz'
+      'download_url': 'https://www.python.org/ftp/python/3.12.16/Python-3.12.16.tgz'
     }
 
     defaults.update(kwargs)
@@ -40,10 +34,10 @@ class Python(Package):
 
   def check(self, ctx):
     env = ctx.env
-    ctx.Message('Checking for Python 3.9 ...    ')
-    
-    # python 3.9
-    self.libs = ["python3.9"]
+    ctx.Message('Checking for Python 3.12 ...   ')
+
+    # python 3.12
+    self.libs = ["python3.12"]
     self.headers = ["Python.h"]
  
     self.set_build_handler([
