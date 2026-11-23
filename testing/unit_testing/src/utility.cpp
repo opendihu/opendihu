@@ -1,6 +1,7 @@
 #include "utility.h"
 
 #include <Python.h> // this has to be the first included header
+#include <python_home.h> // defines PYTHON_HOME_DIRECTORY (prefix of the downloaded or existing python)
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -313,8 +314,8 @@ void assertParallelEqualsSerialOutputFiles(
 
   // command line version
   std::stringstream command;
-  command << "../../../dependencies/python/install/bin/python3 "
-             "../../../scripts/validate_parallel.py ";
+  command << PYTHON_HOME_DIRECTORY << "/bin/python3 "
+          << "../../../scripts/validate_parallel.py ";
   for (auto filename : outputFilesToCheck) {
     command << filename << " ";
   }
