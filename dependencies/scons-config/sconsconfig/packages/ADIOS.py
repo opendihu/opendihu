@@ -6,7 +6,7 @@ class ADIOS(Package):
 
   def __init__(self, **kwargs):
     defaults = {
-        'download_url': 'https://github.com/ornladios/ADIOS2/archive/v2.4.0.zip',
+        'download_url': 'https://github.com/ornladios/ADIOS2/archive/v2.4.0.tar.gz',  # tar.gz instead of zip: python's zipfile drops executable permissions, which breaks "make install"
     }
     defaults.update(kwargs)
     super(ADIOS, self).__init__(**defaults)
@@ -148,6 +148,7 @@ int main(int argc, char *argv[])
       'mkdir -p ${PREFIX}',
       'cd ${SOURCE_DIR} && mkdir -p build && cd build && '+ctx.env["cmake"]+' -DCMAKE_INSTALL_PREFIX=${PREFIX} \
       -DCMAKE_BUILD_TYPE=RELEASE -DADIOS2_USE_SST=OFF -DADIOS2_USE_Fortran=OFF -DADIOS2_BUILD_TESTING=OFF -DADIOS2_BUILD_EXAMPLE=OFF \
+      -DADIOS2_USE_Python=OFF \
       -DCMAKE_C_COMPILER='+ctx.env["CC"]+' -DCMAKE_CXX_COMPILER='+ctx.env["CXX"]+' ..',
       '!cd ${SOURCE_DIR}/build && make all install'
     ])
