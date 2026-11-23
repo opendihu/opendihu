@@ -32,14 +32,63 @@ class Python(Package):
       }
 '''
 
+  def use_existing_python(self, ctx):
+    """
+    Configure an already installed python (e.g. the system python) instead of downloading one.
+    The interpreter is "python3" from the PATH, or PYTHON_DIR/bin/python3 if PYTHON_DIR is given.
+    Its include directory, library and prefix are queried with sysconfig, and a python_home.h
+    with the prefix of this python is generated, which is needed by the opendihu core.
+    Returns the python version as string, e.g. "3.12", or None on failure.
+    """
+    env = ctx.env
+    python_dir = self.get_option(env, 'PYTHON_DIR')
+    executable = os.path.join(python_dir, 'bin', 'python3') if python_dir else 'python3'
+
+    query = 'import sys, sysconfig; print(sysconfig.get_config_var("VERSION")); print(sys.base_prefix); ' \
+      'print(sysconfig.get_paths()["include"]); print(sysconfig.get_config_var("LIBDIR"))'
+    try:
+      output = subprocess.check_output([executable, '-I', '-c', query], universal_newlines=True)
+      version, prefix, include_dir, lib_dir = output.strip().split('\n')
+    except Exception as e:
+      ctx.Log('Could not query python interpreter "{}": {}\n'.format(executable, e))
+      return None
+    ctx.Log('Using existing python "{}": version {}, prefix {}, include dir {}, lib dir {}\n'.format(
+      executable, version, prefix, include_dir, lib_dir))
+
+    # write python_home.h to a directory inside opendihu, because the python include directory is usually not writable
+    python_home_include_dir = os.path.join(self.determine_dependencies_dir(ctx), 'python', 'existing_python', 'include')
+    os.makedirs(python_home_include_dir, exist_ok=True)
+    with open(os.path.join(python_home_include_dir, 'python_home.h'), 'w') as f:
+      f.write('#define PYTHON_HOME_DIRECTORY "{}"\n'.format(prefix))
+
+    # let the package search use exactly these directories (PYTHON_INC_DIR/PYTHON_LIB_DIR replace PYTHON_DIR)
+    if 'PYTHON_DIR' in env:
+      del env['PYTHON_DIR']
+    env['PYTHON_INC_DIR'] = include_dir + ';' + python_home_include_dir
+    env['PYTHON_LIB_DIR'] = lib_dir
+    self.libs = ['python' + version]
+    self.existing_python_configured = True
+    return version
+
   def check(self, ctx):
     env = ctx.env
-    ctx.Message('Checking for Python 3.12 ...   ')
-
-    # python 3.12
-    self.libs = ["python3.12"]
     self.headers = ["Python.h"]
- 
+
+    # download and build python, unless PYTHON_DOWNLOAD = False, then use the existing (system) python
+    download = self.have_any_options(env, 'PYTHON_DOWNLOAD', 'DOWNLOAD_ALL', 'PYTHON_REBUILD')
+    user_given_paths = not getattr(self, 'existing_python_configured', False) \
+      and self.have_any_options(env, 'PYTHON_INC_DIR', 'PYTHON_LIB_DIR', 'PYTHON_LIBS')
+    if download or user_given_paths:
+      ctx.Message('Checking for Python 3.12 ...   ')
+      self.libs = ["python3.12"]
+    else:
+      version = self.use_existing_python(ctx)
+      ctx.Message('Checking for Python {} ...'.format(version or '').ljust(31))
+      if version is None:
+        self.check_required(False, ctx)
+        ctx.Result(False)
+        return False
+
     self.set_build_handler([
       'mkdir -p ${PREFIX}',
       'cd ${SOURCE_DIR} && chmod +x ./configure && ./configure --enable-shared --prefix=${PREFIX} \
