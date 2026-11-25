@@ -20,7 +20,7 @@ class PETSc(Package):
 
   def __init__(self, **kwargs):
     defaults = {
-      'download_url': 'https://web.cels.anl.gov/projects/petsc/download/release-snapshots/petsc-lite-3.15.5.tar.gz'
+      'download_url': 'https://web.cels.anl.gov/projects/petsc/download/release-snapshots/petsc-lite-3.19.6.tar.gz'
     }
     defaults.update(kwargs)
     super(PETSc, self).__init__(**defaults)
@@ -63,7 +63,7 @@ class PETSc(Package):
         #'PATH=${PATH}:${DEPENDENCIES_DIR}/bison/install/bin \
         './configure --prefix=${PREFIX} --with-debugging=no --with-shared-libraries=1 \
           --download-fblaslapack=1 \
-          --download-mumps --download-scalapack --download-parmetis --download-metis --download-ptscotch --download-sundials --download-hypre \
+          --download-mumps --download-scalapack --download-parmetis --download-metis --download-ptscotch --download-sundials2 --download-hypre \
           COPTFLAGS=-O3\
           CXXOPTFLAGS=-O3\
           --with-mpi-dir=${MPI_DIR} --with-batch\
@@ -87,7 +87,7 @@ class PETSc(Package):
         '$rm -rf $(ls | grep "linux")',
         './configure --prefix=${PREFIX} --with-shared-libraries=1 --with-debugging=yes \
           --download-fblaslapack=1 \
-          --download-mumps --download-scalapack --download-parmetis --download-metis --download-ptscotch --download-sundials --download-hypre \
+          --download-mumps --download-scalapack --download-parmetis --download-metis --download-ptscotch --download-sundials2 --download-hypre \
          | tee out.txt',
         '$$(sed -n \'/Configure stage complete./{n;p;}\' out.txt) | tee out2.txt',
         '$$(sed -n \'/Now to install the libraries do:/{n;p;}\' out2.txt)',
@@ -103,7 +103,7 @@ class PETSc(Package):
         '$rm -rf $(ls | grep "linux")',
         './configure --prefix=${PREFIX} --with-shared-libraries=1 --with-debugging=no  \
           --download-fblaslapack=1 \
-          --download-mumps --download-scalapack --download-parmetis --download-metis --download-ptscotch --download-sundials --download-hypre \
+          --download-mumps --download-scalapack --download-parmetis --download-metis --download-ptscotch --download-sundials2 --download-hypre \
           COPTFLAGS=-O3\
           CXXOPTFLAGS=-O3\
           FOPTFLAGS=-O3 | tee out.txt',
@@ -135,7 +135,7 @@ class PETSc(Package):
           './configure --prefix=${PREFIX} --with-shared-libraries=1 --with-debugging=yes \
             --with-cc='+env["mpicc"]+' --with-cxx='+env["mpiCC"]+' --with-batch \
             --download-fblaslapack=1 \
-            --download-mumps --download-scalapack --download-parmetis --download-metis --download-ptscotch --download-sundials --download-hypre \
+            --download-mumps --download-scalapack --download-parmetis --download-metis --download-ptscotch --download-sundials2 --download-hypre \
            | tee out.txt',
           '$$(sed -n \'/Configure stage complete./{n;p;}\' out.txt) | tee out2.txt',
           '$$(sed -n \'/Now to install the libraries do:/{n;p;}\' out2.txt)',
@@ -147,7 +147,7 @@ class PETSc(Package):
           '$rm -rf $(ls | grep "linux")',
           './configure --prefix=${PREFIX} --with-shared-libraries=1 --with-debugging=no \
             --with-cc='+env["mpicc"]+' --with-cxx='+env["mpiCC"]+' \
-            --download-mumps --download-scalapack --download-parmetis --download-metis --download-ptscotch --download-sundials --download-hypre \
+            --download-mumps --download-scalapack --download-parmetis --download-metis --download-ptscotch --download-sundials2 --download-hypre \
             COPTFLAGS=-O3 \
             CXXOPTFLAGS=-O3 \
             FOPTFLAGS=-O3 | tee out.txt',
@@ -172,7 +172,7 @@ class PETSc(Package):
           './configure --prefix=${PREFIX} --with-shared-libraries=1 --with-debugging=yes \
             --with-mpi-dir=${MPI_DIR} --with-batch \
             --download-fblaslapack=1 \
-            --download-mumps --download-scalapack --download-parmetis --download-metis --download-ptscotch --download-sundials --download-hypre \
+            --download-mumps --download-scalapack --download-parmetis --download-metis --download-ptscotch --download-sundials2 --download-hypre \
            | tee out.txt',
           '$$(sed -n \'/Configure stage complete./{n;p;}\' out.txt) | tee out2.txt',
           '$$(sed -n \'/Now to install the libraries do:/{n;p;}\' out2.txt)',
@@ -184,7 +184,7 @@ class PETSc(Package):
           '$rm -rf $(ls | grep "linux")',
           './configure --prefix=${PREFIX} --with-shared-libraries=1 --with-debugging=no \
             --with-mpi-dir=${MPI_DIR} \
-            --download-mumps --download-scalapack --download-parmetis --download-metis --download-ptscotch --download-sundials --download-hypre \
+            --download-mumps --download-scalapack --download-parmetis --download-metis --download-ptscotch --download-sundials2 --download-hypre \
             COPTFLAGS=-O3 \
             CXXOPTFLAGS=-O3 \
             FOPTFLAGS=-O3 | tee out.txt',
