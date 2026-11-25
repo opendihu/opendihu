@@ -25,7 +25,10 @@ class PETSc(Package):
     defaults.update(kwargs)
     super(PETSc, self).__init__(**defaults)
     self.sub_dirs = [('include','lib')]
-    self.libs = [['cmumps', 'HYPRE', 'petsc', 'scalapack', 'parmetis', 'dmumps', 'smumps', 'zmumps', 'mumps_common', 'cmumps', 'scalapack', 'petsc', 'pord', 'parmetis', 'petsc', 'dmumps', 'petsc', 'smumps']]
+    # alternative sets of libraries, they are tried in this order
+    self.libs = [['cmumps', 'HYPRE', 'petsc', 'scalapack', 'parmetis', 'dmumps', 'smumps', 'zmumps', 'mumps_common', 'cmumps', 'scalapack', 'petsc', 'pord', 'parmetis', 'petsc', 'dmumps', 'petsc', 'smumps'],   # PETSc downloaded and built by opendihu
+      ['petsc_real'],   # system PETSc on Debian/Ubuntu (PETSC_DIR = "/usr/lib/petsc"), the shared library already links MUMPS, HYPRE etc.
+      ['petsc']]        # other existing PETSc installations with shared libraries
       # ['petsc', 'cmumps', 'dmumps', 'HYPRE', 'mumps_common', 'pord', 'scalapack', 'smumps', 'sundials_cvode', 'sundials_nvecparallel', 'sundials_nvecserial', 'zmumps', 'parmetis']]
     self.headers = ['petsc.h']
 
