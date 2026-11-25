@@ -23,7 +23,7 @@ public:
   double loadCheckpoint();
 
 protected:
-  double savedCurrentTime_;     //< the saved value of the simulation time
+  double savedCurrentTime_;  //< the saved value of the simulation time
   Vec savedState_ = nullptr; //< Petsc Vec that stores the whole data
 };
 

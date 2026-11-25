@@ -148,7 +148,7 @@ protected:
                // for each component
   Vec valuesContiguous_ =
       nullptr; //< global vector that has all values of the components
-                  // concatenated, i.e. in a "struct of arrays" memory layout
+               // concatenated, i.e. in a "struct of arrays" memory layout
   Vec vectorNestedGlobal_; //< a VecNest object containing the global values,
                            // only in used if nComponents > 1
 };
@@ -391,8 +391,8 @@ protected:
                                               // that holds the actual data
   Vec valuesContiguous_ =
       nullptr; //< global vector that has all values of the components
-                  // concatenated, i.e. in a "struct of arrays" memory layout.
-                  // This is never used if nComponents = 1
+               // concatenated, i.e. in a "struct of arrays" memory layout.
+               // This is never used if nComponents = 1
 
   std::vector<PetscInt>
       temporaryIndicesVector_; //< a temporary vector that will be used whenever
