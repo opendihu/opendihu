@@ -418,11 +418,18 @@ std::string getStringLinearConvergedReason(KSPConvergedReason convergedReason) {
         ": used by the preonly preconditioner that always uses ONE iteration, "
         "or when the KSPConvergedSkip() convergence test routine is set.";
 
+#if PETSC_VERSION_LT(3, 19, 0)
   case KSP_CONVERGED_CG_NEG_CURVE:
     return ANSI_COLOR_GREEN "KSP_CONVERGED_CG_NEG_CURVE" ANSI_COLOR_RESET;
 
   case KSP_CONVERGED_CG_CONSTRAINED:
     return ANSI_COLOR_GREEN "KSP_CONVERGED_CG_CONSTRAINED" ANSI_COLOR_RESET;
+#else
+  // since PETSc 3.19, KSP_CONVERGED_CG_NEG_CURVE is KSP_CONVERGED_NEG_CURVE and
+  // KSP_CONVERGED_CG_CONSTRAINED is the same value as KSP_CONVERGED_STEP_LENGTH
+  case KSP_CONVERGED_NEG_CURVE:
+    return ANSI_COLOR_GREEN "KSP_CONVERGED_NEG_CURVE" ANSI_COLOR_RESET;
+#endif
 
   case KSP_CONVERGED_STEP_LENGTH:
     return ANSI_COLOR_GREEN "KSP_CONVERGED_STEP_LENGTH" ANSI_COLOR_RESET;
