@@ -646,7 +646,7 @@ void HyperelasticityInitialize<
 
   combinedMatrixJacobian_ = createPartitionedPetscMat("combinedJacobian");
 
-  solverMatrixAdditionalNumericJacobian_ = PETSC_NULL;
+  solverMatrixAdditionalNumericJacobian_ = nullptr;
 
   // if both numeric and analytic jacobian are used, create additional matrix
   // that will hold the numeric jacobian
@@ -1053,7 +1053,7 @@ void HyperelasticityInitialize<
     // both is in use
 
     // if both matrices are used
-    if (solverMatrixAdditionalNumericJacobian_ != PETSC_NULL) {
+    if (solverMatrixAdditionalNumericJacobian_ != nullptr) {
       filename << "_analytic";
       combinedMatrixJacobian_->dumpMatrixGlobalNatural(filename.str());
 

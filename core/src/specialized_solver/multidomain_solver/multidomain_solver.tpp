@@ -85,10 +85,10 @@ MultidomainSolver<FiniteElementMethodPotentialFlow,
         this->context_["Activation"]);
   }
 
-  singleSystemMatrix_ = PETSC_NULL;
-  singleSolution_ = PETSC_NULL;
-  singleRightHandSide_ = PETSC_NULL;
-  singlePreconditionerMatrix_ = PETSC_NULL;
+  singleSystemMatrix_ = nullptr;
+  singleSolution_ = nullptr;
+  singleRightHandSide_ = nullptr;
+  singlePreconditionerMatrix_ = nullptr;
   lastNumberOfIterations_ = 0;
 }
 
@@ -411,7 +411,7 @@ void MultidomainSolver<
   PetscErrorCode ierr;
   ierr = MatNullSpaceCreate(
       data().functionSpace()->meshPartition()->mpiCommunicator(), PETSC_TRUE, 0,
-      PETSC_NULL, &nullSpace);
+      nullptr, &nullSpace);
   CHKERRV(ierr);
   ierr = MatSetNullSpace(singleSystemMatrix_, nullSpace);
   CHKERRV(ierr);

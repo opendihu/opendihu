@@ -892,7 +892,7 @@ void PartitionedPetscVecNComponentsStructured<
   PetscErrorCode ierr;
 
   // create contiguos vector if it does not exist yet
-  if (valuesContiguous_ == PETSC_NULL) {
+  if (valuesContiguous_ == nullptr) {
     // ierr = VecCreate(this->meshPartition_->mpiCommunicator(),
     // &valuesContiguous_);
     // CHKERRABORT(this->meshPartition_->mpiCommunicator(),ierr);

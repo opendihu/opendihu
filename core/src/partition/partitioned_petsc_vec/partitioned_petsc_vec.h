@@ -147,8 +147,8 @@ protected:
       values_; //< the (serial) Petsc vectors that contains all the data, one
                // for each component
   Vec valuesContiguous_ =
-      PETSC_NULL; //< global vector that has all values of the components
-                  // concatenated, i.e. in a "struct of arrays" memory layout
+      nullptr; //< global vector that has all values of the components
+               // concatenated, i.e. in a "struct of arrays" memory layout
   Vec vectorNestedGlobal_; //< a VecNest object containing the global values,
                            // only in used if nComponents > 1
 };
@@ -390,9 +390,9 @@ protected:
   std::array<Vec, nComponents> vectorGlobal_; //< the global distributed vector
                                               // that holds the actual data
   Vec valuesContiguous_ =
-      PETSC_NULL; //< global vector that has all values of the components
-                  // concatenated, i.e. in a "struct of arrays" memory layout.
-                  // This is never used if nComponents = 1
+      nullptr; //< global vector that has all values of the components
+               // concatenated, i.e. in a "struct of arrays" memory layout.
+               // This is never used if nComponents = 1
 
   std::vector<PetscInt>
       temporaryIndicesVector_; //< a temporary vector that will be used whenever
