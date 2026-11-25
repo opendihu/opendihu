@@ -459,7 +459,7 @@ Vec &PartitionedPetscVec<FunctionSpaceType, nComponents,
   PetscErrorCode ierr;
 
   // create contiguos vector if it does not exist yet
-  if (valuesContiguous_ == PETSC_NULL) {
+  if (valuesContiguous_ == nullptr) {
     ierr =
         VecCreate(this->meshPartition_->mpiCommunicator(), &valuesContiguous_);
     CHKERRABORT(this->meshPartition_->mpiCommunicator(), ierr);
@@ -519,7 +519,7 @@ void PartitionedPetscVec<FunctionSpaceType, nComponents,
   if (nComponents == 1)
     return;
 
-  assert(valuesContiguous_ != PETSC_NULL);
+  assert(valuesContiguous_ != nullptr);
   if (this->currentRepresentation_ !=
       Partition::values_representation_t::representationContiguous) {
     LOG(FATAL) << "Called restoreValuesContiguous() without previous "

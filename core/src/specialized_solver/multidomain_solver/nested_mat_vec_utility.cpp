@@ -37,7 +37,7 @@ void createVecFromNestedVec(Vec nestedVec, Vec &singleVec,
   CHKERRV(ierr);
 
   // if Vec object does not yet exist, create new one
-  if (singleVec == PETSC_NULL) {
+  if (singleVec == nullptr) {
 
     // get the total sizes of all nested vecs
     int nEntriesGlobal = 0;
@@ -268,7 +268,7 @@ void createMatFromNestedMat(Mat nestedMat, Mat &singleMat,
          nestedMatColumnNo++) {
       Mat currentMat = nestedMats[nestedMatRowNo][nestedMatColumnNo];
 
-      if (currentMat != PETSC_NULL) {
+      if (currentMat != nullptr) {
         PetscInt nColumns = 0;
         ierr = MatGetSize(currentMat, &nRowsGlobalNestedMats[nestedMatRowNo],
                           &nColumns);
@@ -292,7 +292,7 @@ void createMatFromNestedMat(Mat nestedMat, Mat &singleMat,
          nestedMatRowNo++) {
       Mat currentMat = nestedMats[nestedMatRowNo][nestedMatColumnNo];
 
-      if (currentMat != PETSC_NULL) {
+      if (currentMat != nullptr) {
 
         PetscInt nRows = 0;
         ierr = MatGetSize(currentMat, &nRows,
@@ -327,7 +327,7 @@ void createMatFromNestedMat(Mat nestedMat, Mat &singleMat,
          nestedMatColumnNo++) {
       Mat currentMat = nestedMats[nestedMatRowNo][nestedMatColumnNo];
 
-      if (currentMat != PETSC_NULL) {
+      if (currentMat != nullptr) {
         PetscInt rowNoGlobalBegin = 0;
         PetscInt rowNoGlobalEnd = 0;
         ierr = MatGetOwnershipRange(currentMat, &rowNoGlobalBegin,
@@ -365,7 +365,7 @@ void createMatFromNestedMat(Mat nestedMat, Mat &singleMat,
   LOG(DEBUG) << "nMaximumNonzerosPerRow: " << nMaximumNonzerosPerRow;
 
   // if Mat object does not yet exist, create new one
-  if (singleMat == PETSC_NULL) {
+  if (singleMat == nullptr) {
     ierr = MatCreate(mpiCommunicator, &singleMat);
     CHKERRV(ierr);
     ierr = MatSetSizes(singleMat, nRowsLocal, nColumnsLocal, nRowsGlobal,
@@ -429,7 +429,7 @@ void createMatFromNestedMat(Mat nestedMat, Mat &singleMat,
          nestedMatRowNo++) {
       Mat currentMat = nestedMats[nestedMatRowNo][nestedMatColumnNo];
 
-      if (currentMat != PETSC_NULL) {
+      if (currentMat != nullptr) {
         ierr = MatGetOwnershipRangesColumn(
             currentMat, &columnRangesNested[nestedMatColumnNo]);
         CHKERRV(ierr);
@@ -461,7 +461,7 @@ void createMatFromNestedMat(Mat nestedMat, Mat &singleMat,
          nestedMatColumnNo++) {
       Mat currentMat = nestedMats[nestedMatRowNo][nestedMatColumnNo];
 
-      if (currentMat != PETSC_NULL) {
+      if (currentMat != nullptr) {
         PetscInt rowNoGlobalBegin = 0;
         PetscInt rowNoGlobalEnd = 0;
         ierr = MatGetOwnershipRange(currentMat, &rowNoGlobalBegin,

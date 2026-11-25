@@ -119,7 +119,7 @@ void MultidomainWithFatSolver<FiniteElementMethodPotentialFlow,
   PetscErrorCode ierr;
   ierr = MatNullSpaceCreate(
       data().functionSpace()->meshPartition()->mpiCommunicator(), PETSC_TRUE, 0,
-      PETSC_NULL, &nullSpace);
+      nullptr, &nullSpace);
   CHKERRV(ierr);
   ierr = MatSetNullSpace(this->singleSystemMatrix_, nullSpace);
   CHKERRV(ierr);
