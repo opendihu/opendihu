@@ -21,9 +21,12 @@ CC = "g++"         # C++ compiler
 mpiCC = "mpic++"   # MPI C++ wrapper
 cmake="cmake"      # cmake command
 
-# PETSc, this also downloads and installs MUMPS (direct solver package) and its dependencies PT-Scotch, SCAlapack, ParMETIS, METIS
-PETSC_DOWNLOAD = True
-#PETSC_DIR = "/usr/lib/petsc/"
+# PETSc, True: download and build PETSc into dependencies/petsc, this also downloads and installs MUMPS (direct solver package)
+# and its dependencies PT-Scotch, SCAlapack, ParMETIS, METIS (takes a while).
+# False: use an existing PETSc given by PETSC_DIR. On Debian/Ubuntu install the system PETSc with `sudo apt install petsc-dev`,
+# it includes MUMPS and HYPRE. Without root rights, set PETSC_DOWNLOAD = True.
+PETSC_DOWNLOAD = False
+PETSC_DIR = "/usr/lib/petsc"
 
 HDF5_DOWNLOAD = True
 NLOHMANNJSON_DOWNLOAD = False
