@@ -70,8 +70,8 @@ void DihuContext::initializePython(int argc, char *argv[],
   PyStatus status =
       PyConfig_SetBytesString(&config, &config.program_name, programName);
   if (!PyStatus_Exception(status))
-    status = PyConfig_SetBytesString(&config, &config.home,
-                                     PYTHON_HOME_DIRECTORY);
+    status =
+        PyConfig_SetBytesString(&config, &config.home, PYTHON_HOME_DIRECTORY);
   if (!PyStatus_Exception(status))
     status = PyConfig_SetBytesArgv(&config, argvToConfig.size(),
                                    argvToConfig.data());
