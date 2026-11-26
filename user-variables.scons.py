@@ -181,5 +181,11 @@ if os.environ.get("PE_ENV") is not None:  # if on hazelhen
   #   module load cray-libsci
   #   module load cray-petsc  (or cray-petsc-64 for big data)
 
+# Optionally, you can create a "user-variables.local.scons.py" file in this directory and
+# use this for settings that are specific to your own machine, e.g. paths to own installations of preCICE.
+# That file is not tracked by git and overrides the values above.
+import os
+if os.path.isfile("user-variables.local.scons.py"):
+  exec(open("user-variables.local.scons.py").read())
 
 

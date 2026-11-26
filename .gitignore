@@ -1,3 +1,4 @@
+user-variables.local.scons.py
 .sconsign.dblite
 .scons_node_count
 *.o
