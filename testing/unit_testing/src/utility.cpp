@@ -332,16 +332,19 @@ void assertParallelEqualsSerialOutputFiles(
   source << validationScriptFile.rdbuf();
   validationScriptFile.close();
 
-  // prepare command line arguments
-  int nCommandLineArguments = outputFilesToCheck.size() + 1;
-  std::vector<wchar_t *> argvWChar(nCommandLineArguments);
-  argvWChar[0] =
-      Py_DecodeLocale(std::string("validate_parallel.py").c_str(), NULL);
+  // prepare command line arguments, set sys.argv (PySys_SetArgvEx is
+  // deprecated)
+  PyObject *argvList = PyList_New(0);
+  PyObject *argument = PyUnicode_DecodeFSDefault("validate_parallel.py");
+  PyList_Append(argvList, argument);
+  Py_DECREF(argument);
   for (int i = 0; i < outputFilesToCheck.size(); i++) {
-    argvWChar[i + 1] = Py_DecodeLocale(outputFilesToCheck[i].c_str(), NULL);
+    argument = PyUnicode_DecodeFSDefault(outputFilesToCheck[i].c_str());
+    PyList_Append(argvList, argument);
+    Py_DECREF(argument);
   }
-
-  PySys_SetArgvEx(nCommandLineArguments, argvWChar.data(), 0);
+  PySys_SetObject("argv", argvList);
+  Py_DECREF(argvList);
 
   // wait a bit until files are ready to be opened by the python script
   std::this_thread::sleep_for(std::chrono::milliseconds(20));

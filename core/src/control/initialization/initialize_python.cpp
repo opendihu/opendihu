@@ -13,23 +13,37 @@ void DihuContext::initializePython(int argc, char *argv[],
   // make program name of executable available in the script
   char const *programName = argv[0];
 
-  wchar_t *programNameWChar = Py_DecodeLocale(programName, NULL);
-  Py_SetProgramName(programNameWChar); /* optional but recommended */
-
   // pass information to "opendihu" module that can be accessed from within the
   // settings script
   PythonOpendihu::programName = std::string(programName);
   PythonOpendihu::metaText = metaText();
   PythonOpendihu::versionText = versionText();
 
-  // set python home and path, apparently this is not needed
   VLOG(1) << "python home directory: \"" << PYTHON_HOME_DIRECTORY << "\"";
-  std::string pythonSearchPath = PYTHON_HOME_DIRECTORY;
-  // std::string pythonSearchPath =
-  // std::string("/store/software/opendihu/dependencies/python/install");
-  const wchar_t *pythonSearchPathWChar =
-      Py_DecodeLocale(pythonSearchPath.c_str(), NULL);
-  Py_SetPythonHome((wchar_t *)pythonSearchPathWChar);
+
+  // prepare the command line arguments for the python config script (sys.argv)
+
+  // determine if the first argument (argv[1]) is *.py, then it is also
+  // discarded always remove the first argument, which is the name of the
+  // executable
+  int numberArgumentsToRemove = (explicitConfigFileGiven ? 2 : 1);
+
+  // add the own rank no and the number of ranks at the end as command line
+  // arguments
+  int nArgumentsToConfig = argc - numberArgumentsToRemove + 2;
+  VLOG(4) << "nArgumentsToConfig: " << nArgumentsToConfig
+          << ", numberArgumentsToRemove: " << numberArgumentsToRemove;
+
+  // set own rank no and number of ranks in parameters
+  Control::PerformanceMeasurement::setParameter("rankNo", ownRankNoCommWorld_);
+  Control::PerformanceMeasurement::setParameter("nRanks", nRanksCommWorld_);
+
+  std::vector<std::string> argumentsToConfig;
+  for (int i = 0; i < nArgumentsToConfig - 2; i++) {
+    argumentsToConfig.push_back(argv[i + numberArgumentsToRemove]);
+  }
+  argumentsToConfig.push_back(std::to_string(ownRankNoCommWorld_));
+  argumentsToConfig.push_back(std::to_string(nRanksCommWorld_));
 
   // add the emb module that captures stderr to the existing table of built-in
   // modules
@@ -38,12 +52,53 @@ void DihuContext::initializePython(int argc, char *argv[],
   // add the opendihu module that holds some constants
   PyImport_AppendInittab("opendihu", PythonOpendihu::PyInit_opendihu);
 
+#if PY_VERSION_HEX >= 0x03080000
+  // initialize python with the PyConfig API, this replaces the deprecated
+  // functions Py_SetProgramName, Py_SetPythonHome and PySys_SetArgvEx
+  std::vector<char *> argvToConfig;
+  for (std::string &argument : argumentsToConfig) {
+    argvToConfig.push_back(&argument[0]);
+  }
+
+  PyConfig config;
+  PyConfig_InitPythonConfig(&config);
+
+  // pass all arguments unchanged to sys.argv, do not parse them as options of
+  // the python interpreter (like PySys_SetArgvEx did)
+  config.parse_argv = 0;
+
+  PyStatus status =
+      PyConfig_SetBytesString(&config, &config.program_name, programName);
+  if (!PyStatus_Exception(status))
+    status =
+        PyConfig_SetBytesString(&config, &config.home, PYTHON_HOME_DIRECTORY);
+  if (!PyStatus_Exception(status))
+    status = PyConfig_SetBytesArgv(&config, argvToConfig.size(),
+                                   argvToConfig.data());
+  if (!PyStatus_Exception(status))
+    status = Py_InitializeFromConfig(&config);
+  PyConfig_Clear(&config);
+
+  if (PyStatus_Exception(status)) {
+    LOG(FATAL) << "Could not initialize python: "
+               << (status.err_msg ? status.err_msg : "unknown error");
+  }
+#else
+  // python < 3.8 does not have the PyConfig API
+  wchar_t *programNameWChar = Py_DecodeLocale(programName, NULL);
+  Py_SetProgramName(programNameWChar); /* optional but recommended */
+
+  const wchar_t *pythonSearchPathWChar =
+      Py_DecodeLocale(PYTHON_HOME_DIRECTORY, NULL);
+  Py_SetPythonHome((wchar_t *)pythonSearchPathWChar);
+
   // initialize python
   Py_Initialize();
 
   // only python <= 3.6 needs to additionally call PyEval_InitThreads
 #if PY_MINOR_VERSION <= 6
   PyEval_InitThreads();
+#endif
 #endif
 
   // VLOG(4) << "PyEval_ReleaseLock()";
@@ -77,49 +132,20 @@ void DihuContext::initializePython(int argc, char *argv[],
                     << "/scripts/geometry_manipulation" << "')" << std::endl;
   PyRun_SimpleString(codeForPythonPath.str().c_str());
 
-  // pass on command line arguments to python config script
-
-  // determine if the first argument (argv[1]) is *.py, then it is also
-  // discarded always remove the first argument, which is the name of the
-  // executable
-  int numberArgumentsToRemove = (explicitConfigFileGiven ? 2 : 1);
-
-  // add the own rank no and the number of ranks at the end as command line
-  // arguments
-
-  int nArgumentsToConfig = argc - numberArgumentsToRemove + 2;
-  VLOG(4) << "nArgumentsToConfig: " << nArgumentsToConfig
-          << ", numberArgumentsToRemove: " << numberArgumentsToRemove;
-
-  char **argvReduced = new char *[nArgumentsToConfig];
-  wchar_t **argumentToConfigWChar = new wchar_t *[nArgumentsToConfig];
-
-  // set given command line arguments
-  for (int i = 0; i < nArgumentsToConfig - 2; i++) {
-    argvReduced[i] = argv[i + numberArgumentsToRemove];
-    argumentToConfigWChar[i] = Py_DecodeLocale(argvReduced[i], NULL);
-  }
-
-  // add rank no and nRanks
-  // set own rank no and number of ranks in parameters
-  Control::PerformanceMeasurement::setParameter("rankNo", ownRankNoCommWorld_);
-  Control::PerformanceMeasurement::setParameter("nRanks", nRanksCommWorld_);
-
-  // convert to wchar_t
-  std::stringstream rankNoStr, nRanksStr;
-  rankNoStr << ownRankNoCommWorld_;
-  nRanksStr << nRanksCommWorld_;
-  argumentToConfigWChar[nArgumentsToConfig - 2] =
-      Py_DecodeLocale(rankNoStr.str().c_str(), NULL);
-  argumentToConfigWChar[nArgumentsToConfig - 1] =
-      Py_DecodeLocale(nRanksStr.str().c_str(), NULL);
-
   if (VLOG_IS_ON(1) && pythonConfig_.pyObject()) {
     PythonUtility::printDict(pythonConfig_.pyObject());
   }
 
+#if PY_VERSION_HEX < 0x03080000
   // pass reduced list of command line arguments to python script
-  PySys_SetArgvEx(nArgumentsToConfig, argumentToConfigWChar, 0);
+  // (with python >= 3.8 this is done by PyConfig above)
+  std::vector<wchar_t *> argumentsToConfigWChar;
+  for (const std::string &argument : argumentsToConfig) {
+    argumentsToConfigWChar.push_back(Py_DecodeLocale(argument.c_str(), NULL));
+  }
+  PySys_SetArgvEx(argumentsToConfigWChar.size(), argumentsToConfigWChar.data(),
+                  0);
+#endif
 
   // check different python setting for debugging
   wchar_t *homeWChar = Py_GetPythonHome();
